@@ -1,0 +1,4 @@
+{
+  "cancer": [{ "value": 1, "label": "Lung Cancer Adenocarcinoma" }],
+  "gene": [{ "value": "ACHE", "label": "ACHE" }]
+}
