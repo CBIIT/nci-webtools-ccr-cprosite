@@ -42,6 +42,34 @@ export default function ExploreForm({ onSubmit, onReset }) {
         </Form.Select>
       </Form.Group>
 
+      <Form.Group className="mb-3" controlId="dataset">
+        <Form.Label className="required">Dataset</Form.Label>
+        <Form.Select onBlur={handleBlur} required>
+          <option value="" hidden>
+            No dataset selected
+          </option>
+          {fields.dataset.map((o) => (
+            <option value={o.value} key={`dataset-${o.value}`}>
+              {o.label}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
+      <Form.Group className="mb-3" controlId="analysis">
+        <Form.Label className="required">Dataset</Form.Label>
+        <Form.Select onBlur={handleBlur} required>
+          <option value="" hidden>
+            No analysis selected
+          </option>
+          {fields.analysis.map((o) => (
+            <option value={o.value} key={`analysis-${o.value}`}>
+              {o.label}
+            </option>
+          ))}
+        </Form.Select>
+      </Form.Group>
+
       <Form.Group className="mb-3" controlId="gene">
         <Form.Label className="required">Gene</Form.Label>
         <Form.Control
