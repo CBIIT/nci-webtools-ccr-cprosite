@@ -25,7 +25,7 @@ COPY client /client/
 
 RUN npm run build \
  && rm -rf /var/www/html \
- && mv /client/build /var/www/html/
+ && mv /client/build /var/www/html/ \
  && chown -r apache:apache /var/www/html
 
 WORKDIR /var/www/html
