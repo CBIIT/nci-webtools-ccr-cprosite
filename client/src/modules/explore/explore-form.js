@@ -19,7 +19,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    
+
     if (onSubmit) onSubmit(form);
   }
 
@@ -29,15 +29,23 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   async function handleMultiChange(option) {
-    setCancerList(option)
-    await mergeForm({ ['cancer']: option})
+
+    // Add all cancer types if "All Tumor Types" is selected
+    if (option.length >= 1 && option[option.length-1].value === 1) {
+      setCancerList( fields.cancer.slice(1) )
+      await mergeForm({ ['cancer']: fields.cancer.slice(1) })
+    }
+    else {
+      setCancerList(option)
+      await mergeForm({ ['cancer']: option })
+    }
   }
 
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="cancer">
         <Form.Label className="required">Cancer</Form.Label>
-        <Select placeholder="No cancer selected" name="cancer" isMulti='true' value={cancerList} onChange={handleMultiChange} options={fields.cancer} required/>
+        <Select placeholder="No cancer selected" name="cancer" isMulti='true' value={cancerList} onChange={handleMultiChange} options={fields.cancer} />
 
       </Form.Group>
 
