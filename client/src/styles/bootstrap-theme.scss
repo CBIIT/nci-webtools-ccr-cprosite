@@ -60,6 +60,13 @@ a,
   }
 }
 
+.cover-image {
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
 .loader {
   z-index: 9999;
   opacity: 0.7;
