@@ -2,14 +2,18 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { NavLink } from "react-router-dom";
+import CoverImage from "./images/home.png";
 
 export default function Home() {
   return (
     <>
-      <div className="bg-primary text-light py-7 mb-4">
+      <div
+        className="shadow-sm py-7 mb-4 cover-image"
+        style={{ backgroundImage: `url(${CoverImage})` }}
+      >
         <Container>
           <h1 className="mb-3">Welcome to CPTAC Search</h1>
-          <NavLink className="btn btn-lg btn-outline-light" to="/explore">
+          <NavLink className="btn btn-lg btn-outline-primary" to="/explore">
             Explore Cancer Types
           </NavLink>
         </Container>
