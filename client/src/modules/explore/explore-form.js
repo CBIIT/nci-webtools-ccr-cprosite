@@ -1,5 +1,6 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
+import Select from 'react-select';
 import { useRecoilState, useRecoilValue } from "recoil";
 import { fieldsState, defaultFormState } from "./explore.state";
 import { useState } from "react";
@@ -7,6 +8,7 @@ import { useState } from "react";
 export default function ExploreForm({ onSubmit, onReset }) {
   const fields = useRecoilValue(fieldsState);
   const [form, setForm] = useState(defaultFormState);
+  const [cancerList, setCancerList] = useState([])
   const mergeForm = (obj) => setForm({ ...form, ...obj });
 
   function handleBlur(event) {
@@ -17,7 +19,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-
+    
     if (onSubmit) onSubmit(form);
   }
 
@@ -26,25 +28,22 @@ export default function ExploreForm({ onSubmit, onReset }) {
     if (onReset) onReset(defaultFormState);
   }
 
+  async function handleMultiChange(option) {
+    setCancerList(option)
+    await mergeForm({ ['cancer']: option})
+  }
+
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="cancer">
         <Form.Label className="required">Cancer</Form.Label>
-        <Form.Select onBlur={handleBlur} required>
-          <option value="" hidden>
-            No cancer selected
-          </option>
-          {fields.cancer.map((o) => (
-            <option value={o.value} key={`cancer-${o.value}`}>
-              {o.label}
-            </option>
-          ))}
-        </Form.Select>
+        <Select placeholder="No cancer selected" name="cancer" isMulti='true' value={cancerList} onChange={handleMultiChange} options={fields.cancer} required/>
+
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="dataset">
         <Form.Label className="required">Dataset</Form.Label>
-        <Form.Select onBlur={handleBlur} required>
+        <Form.Select name="dataset" onBlur={handleBlur} required>
           <option value="" hidden>
             No dataset selected
           </option>
@@ -57,8 +56,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="analysis">
-        <Form.Label className="required">Dataset</Form.Label>
-        <Form.Select onBlur={handleBlur} required>
+        <Form.Label className="required">Analysis</Form.Label>
+        <Form.Select name='analysis' onBlur={handleBlur} required>
           <option value="" hidden>
             No analysis selected
           </option>
@@ -73,6 +72,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       <Form.Group className="mb-3" controlId="gene">
         <Form.Label className="required">Gene</Form.Label>
         <Form.Control
+          name="gene"
           onBlur={handleBlur}
           type="text"
           placeholder="No gene selected"

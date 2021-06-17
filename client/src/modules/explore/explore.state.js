@@ -9,6 +9,8 @@ export const fieldsState = selector({
 export const defaultFormState = {
   cancer: "",
   gene: "",
+  analysis: "",
+  dataset: ""
 };
 
 export const formState = atom({
