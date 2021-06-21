@@ -68,7 +68,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <Form.Group className="mb-3" controlId="analysis">
         <Form.Label className="required">Analysis</Form.Label>
-        <Form.Select name='analysis' onBlur={handleBlur} required>
+        <Form.Select name='analysis' onBlur={(e) => { handleBlur(e); setCorrelation('tumorVsControl')}} required>
           <option value="" hidden>
             No analysis selected
           </option>

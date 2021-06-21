@@ -23,5 +23,5 @@
     { "value": "correlation", "label": "Correlation"}
   ],
   "gene": [{ "value": "ACHE", "label": "ACHE" }],
-  "correlation": "tumorVsControl"
+  "correlation": ""
 }
