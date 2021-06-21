@@ -8,6 +8,7 @@ import { useState } from "react";
 export default function ExploreForm({ onSubmit, onReset }) {
   const fields = useRecoilValue(fieldsState);
   const [form, setForm] = useState(defaultFormState);
+  const [correlation, setCorrelation] = useState('')
   const [cancerList, setCancerList] = useState([])
   const mergeForm = (obj) => setForm({ ...form, ...obj });
 
@@ -97,6 +98,57 @@ export default function ExploreForm({ onSubmit, onReset }) {
           ))}
         </datalist>
       </Form.Group>
+
+      <fieldset disabled={form.analysis !== 'correlation'} className="border px-3 mb-4">
+        <legend className="legend">Correlation</legend>
+
+        <Form.Group className="row mb-3" controlId="correlation-type">
+          <Form.Check className="col-md-5" type='radio' inline>
+            <Form.Check.Input
+              type='radio'
+              name='correlation'
+              value='tumorVsControl'
+              checked={correlation === 'tumorVsControl'}
+              onChange={(e) => {
+                setCorrelation(e.target.value);
+                handleBlur(e);
+              }}
+            />
+            <Form.Check.Label style={{ fontWeight: 'normal' }}>
+              Tumor vs Control
+            </Form.Check.Label>
+          </Form.Check>
+          <Form.Check className="col-md-5" type='radio' inline>
+            <Form.Check.Input
+              type='radio'
+              name='correlation'
+              value='geneVsGene'
+              checked={correlation === 'geneVsGene'}
+              onChange={(e) => {
+                setCorrelation(e.target.value);
+                handleBlur(e);
+              }}
+            />
+            <Form.Check.Label style={{ fontWeight: 'normal' }}>
+              Gene vs Gene
+            </Form.Check.Label>
+          </Form.Check>
+
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="correlated-gene">
+          <Form.Label className="required">Correlated Gene</Form.Label>
+          <Form.Control
+            name="correlated-gene"
+            onBlur={handleBlur}
+            disabled={form.correlation !== 'geneVsGene'}
+            type="text"
+            placeholder="No gene selected"
+            list="genes"
+            required
+          />
+        </Form.Group>
+      </fieldset>
 
       <div className="text-end">
         <Button variant="outline-danger" className="me-1" type="reset">

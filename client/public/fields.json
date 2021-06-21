@@ -20,8 +20,8 @@
   ],
   "analysis": [
     { "value": "tumor-control", "label": "Tumor vs Control"},
-    { "value": "paired", "label": "Tumor vs Control paired"},
     { "value": "correlation", "label": "Correlation"}
   ],
-  "gene": [{ "value": "ACHE", "label": "ACHE" }]
+  "gene": [{ "value": "ACHE", "label": "ACHE" }],
+  "correlation": "tumorVsControl"
 }
