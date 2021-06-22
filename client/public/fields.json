@@ -1,4 +1,27 @@
 {
-  "cancer": [{ "value": 1, "label": "Lung Cancer Adenocarcinoma" }],
-  "gene": [{ "value": "ACHE", "label": "ACHE" }]
+  "cancer": [
+    { "value": 1, "label": "All Tumor Types" },
+    { "value": 2, "label": "Breast Cancer" },
+    { "value": 3, "label": "Colon Cancer" },
+    { "value": 4, "label": "Head & Neck Cancer"},
+    { "value": 5, "label": "Kidney Cancer" },
+    { "value": 6, "label": "Liver Cancer" },
+    { "value": 7, "label": "Lung Cancer Adenocarcinoma" },
+    { "value": 8, "label": "Lung SC" },
+    { "value": 9, "label": "Ovarian Cancer" },
+    { "value": 10, "label": "PDAC" },
+    { "value": 11, "label": "Uterine Cancer" }
+  ],
+  "dataset": [
+    { "value": "protein-abundance", "label": "Protein Abundance"},
+    { "value": "phosphorylation-site", "label": "Phosphorylation Site"},
+    { "value": "phosphorylation-protein", "label": "Phosphorylation/Protein"},
+    { "value": "rna-level", "label": "RNA LEVEL"}
+  ],
+  "analysis": [
+    { "value": "tumor-control", "label": "Tumor vs Control"},
+    { "value": "correlation", "label": "Correlation"}
+  ],
+  "gene": [{ "value": "ACHE", "label": "ACHE" }],
+  "correlation": ""
 }
