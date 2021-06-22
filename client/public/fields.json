@@ -6,7 +6,7 @@
     { "value": 4, "label": "Head & Neck Cancer"},
     { "value": 5, "label": "Kidney Cancer" },
     { "value": 6, "label": "Liver Cancer" },
-    { "value": 7, "label": "Lung Cancer Adenocarcinoma" },
+    { "value": 7, "label": "Lung Cancer AD" },
     { "value": 8, "label": "Lung SC" },
     { "value": 9, "label": "Ovarian Cancer" },
     { "value": 10, "label": "PDAC" },
