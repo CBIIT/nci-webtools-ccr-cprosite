@@ -7,11 +7,11 @@ export const fieldsState = selector({
 });
 
 export const defaultFormState = {
-  cancer: "",
+  cancer: [],
   gene: "",
   analysis: "",
   dataset: "",
-  correlation: 'tumorVsControl'
+  correlation: "tumorVsControl",
 };
 
 export const formState = atom({
