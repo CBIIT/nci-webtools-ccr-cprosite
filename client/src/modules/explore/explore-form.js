@@ -139,7 +139,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Form.Group className="mb-3" controlId="correlated-gene">
           <Form.Label className="required">Correlated Gene</Form.Label>
           <Form.Control
-            name="correlated-gene"
+            name="correlatedGene"
             onBlur={handleBlur}
             disabled={form.correlation !== 'geneVsGene'}
             type="text"

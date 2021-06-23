@@ -22,6 +22,6 @@
     { "value": "tumor-control", "label": "Tumor vs Control"},
     { "value": "correlation", "label": "Correlation"}
   ],
-  "gene": [{ "value": "ACHE", "label": "ACHE" }],
+  "gene": [{ "value": "CDK1", "label": "CDK1" }],
   "correlation": ""
 }

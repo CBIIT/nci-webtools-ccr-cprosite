@@ -11,6 +11,18 @@ import Results from "./results";
 export default function Explore() {
   function handleSubmit(event) {
     console.log("submit", event);
+
+    const {
+      cancer,
+      gene,
+      analysis,
+      dataset,
+      correlation,
+      correlatedGene
+    } = event;
+
+    console.log(cancer)
+    console.log(correlation)
   }
 
   function handleReset(event) {

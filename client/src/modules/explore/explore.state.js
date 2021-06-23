@@ -11,7 +11,7 @@ export const defaultFormState = {
   gene: "",
   analysis: "",
   dataset: "",
-  correlation: 'tumorVsControl'
+  correlation: ""
 };
 
 export const formState = atom({
