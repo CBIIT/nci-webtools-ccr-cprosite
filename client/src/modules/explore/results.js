@@ -25,11 +25,11 @@ export default function Results() {
       Header: "Case Value",
       Filter: RangeFilter,
     },
-    {
-      accessor: "proteinLogRatioChange",
-      Header: "Fold Change Value",
-      Filter: RangeFilter,
-    },
+    // {
+    //   accessor: "proteinLogRatioChange",
+    //   Header: "Fold Change Value",
+    //   Filter: RangeFilter,
+    // },
   ];
 
   const boxPlotData = [
