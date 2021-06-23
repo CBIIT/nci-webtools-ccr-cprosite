@@ -69,17 +69,17 @@ async function readFileAsArray(filePath, headers) {
 }
 
 function importTable(database, tableName, headers, rows) {
-  database.exec(`
-        drop table if exists "${tableName}";
-        create temporary table "${tableName}" (
-            ${headers.map((header) => `"${header}" text`).join(",")}
-        );
-    `);
+  database.exec(
+    `drop table if exists "${tableName}";
+    create table "${tableName}" (
+        ${headers.map((header) => `"${header}" text`).join(",")}
+    );`,
+  );
 
   const placeholders = headers.map((header) => "?").join(",");
-  const insertStatement = database.prepare(`
-        insert into "${tableName}" values (${placeholders});
-    `);
+  const insertStatement = database.prepare(
+    `insert into "${tableName}" values (${placeholders})`,
+  );
 
   const insertRows = database.transaction((rows) => {
     for (const row of rows) {
