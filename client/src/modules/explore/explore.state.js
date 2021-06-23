@@ -7,7 +7,7 @@ export const fieldsState = selector({
 });
 
 export const defaultFormState = {
-  cancer: "",
+  cancer: [],
   gene: "",
   analysis: "",
   dataset: "",
