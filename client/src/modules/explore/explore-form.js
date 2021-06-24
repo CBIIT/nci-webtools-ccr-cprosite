@@ -1,6 +1,7 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Select from "react-select";
+import classNames from "classnames";
 import { useRecoilValue } from "recoil";
 import { fieldsState, defaultFormState } from "./explore.state";
 import { useState } from "react";
@@ -132,7 +133,16 @@ export default function ExploreForm({ onSubmit, onReset }) {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="correlated-gene">
-          <Form.Label className="required">Correlated Gene</Form.Label>
+          <Form.Label
+            className={classNames(
+              "required",
+              (form.analysis !== "correlation" ||
+                form.correlation !== "geneVsGene") &&
+                "text-muted",
+            )}
+          >
+            Correlated Gene
+          </Form.Label>
           <Form.Control
             name="correlated-gene"
             onBlur={handleChange}
