@@ -6,6 +6,11 @@ export const fieldsState = selector({
   get: ({ get }) => query("fields.json"),
 });
 
+export const casesState = selector({
+  key: "explore.casesState",
+  get: ({ get }) => query("sampleCases.json"),
+});
+
 export const defaultFormState = {
   cancer: [],
   gene: "",

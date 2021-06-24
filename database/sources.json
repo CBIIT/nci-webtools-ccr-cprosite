@@ -19,8 +19,8 @@
     ]
   },
   {
-    "name": "S056",
-    "fullName": "Proteogenomic Characterization Reveals Therapeutic Vulnerabilities In Lung Adenocarcinoma",
+    "name": "luad",
+    "study": "Proteogenomic Characterization Reveals Therapeutic Vulnerabilities In Lung Adenocarcinoma",
     "cancer": "Lung Adenocarcinoma",
     "summaryUrl": "https://cptac-data-portal.georgetown.edu/study-summary/S056",
     "files": [
@@ -46,10 +46,10 @@
         "table": "luad_stage_proteome"
       },
       {
-        "name": "phosphosite",
+        "name": "phosphoproteome",
         "url": "https://cptc-xfer.uis.georgetown.edu/publicData/Phase_III_Data/CPTAC_LUAD_S046/CPTAC_LUAD_Phosphoproteome_CDAP_Protein_Report.r1/CPTAC3_Lung_Adeno_Carcinoma_Phosphoproteome.phosphosite.tmt10.tsv",
         "filePath": "data/luad/phosphosite.tsv",
-        "table": "luad_stage_phosphosite"
+        "table": "luad_stage_phosphoproteome"
       }
     ]
   }

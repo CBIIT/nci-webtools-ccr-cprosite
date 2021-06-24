@@ -11,9 +11,16 @@ const args = require("minimist")(process.argv.slice(2));
 
   if (fs.existsSync(databaseFilePath)) fs.unlinkSync(databaseFilePath);
 
+  const mainSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
+  const templateSql = await fsp.readFile("schema/tables/template.sql", "utf-8");
+
   // create schema
   const database = sqlite(databaseFilePath);
-  database.exec(await fsp.readFile("schema/tables/main.sql", "utf-8"));
+  database.exec(mainSql);
+  database.function(
+    "extract",
+    (string, delimiter, index) => string.split(delimiter)[index],
+  );
 
   // import all sources into staging tables
   for (const source of sources) {
@@ -21,15 +28,22 @@ const args = require("minimist")(process.argv.slice(2));
 
     // import global tables and proceed with study-specific imports
     if (source.name === "GLOBAL") {
-      database.exec(`
-                insert into gene(id, symbol, name) 
-                select id, symbol, name 
-                from stage_gene 
-                where id is not null 
-                order by id asc 
-            `);
+      database.exec(
+        `insert into gene(id, name, description) 
+        select id, symbol, name 
+        from stage_gene 
+        where id is not null 
+        order by id asc`,
+      );
       continue;
     }
+
+    // otherwise, continue importing sources
+    const tablePrefix = source.name;
+    const tableSql = templateSql.replace(/TABLE_PREFIX/g, tablePrefix);
+    const caseTable = `${tablePrefix}_case`;
+    database.exec(tableSql);
+    database.exec("begin transaction");
 
     // retrieve stage table names and columns
     const stage = source.files.reduce(
@@ -46,13 +60,10 @@ const args = require("minimist")(process.argv.slice(2));
     );
 
     // insert study entry
-    const { lastInsertRowid: studyId } = database
-      .prepare(
-        `insert into study(name, cancer) 
-                values (:name, :name)`,
-      )
+    const { lastInsertRowid: cancerId } = database
+      .prepare(`insert into cancer(name, study) values (:cancer, :study)`)
       .run({
-        name: source.name,
+        study: source.study,
         cancer: source.cancer,
       });
 
@@ -62,76 +73,100 @@ const args = require("minimist")(process.argv.slice(2));
       .all();
 
     for (const sample of samples) {
-      console.log(`importing sample ${sample.case_id}`);
+      console.log(`importing sample for case: ${sample.case_id}`);
 
       const logRatioColumn = `${sample.aliquot} Log Ratio`;
       const unsharedLogRatioColumn = `${sample.aliquot} Unshared Log Ratio`;
-      const { lastInsertRowid: sampleId } = database
-        .prepare(
-          `insert into sample(study_id, case_id, is_tumor)
-                    values (:study_id, :case_id, :is_tumor)`,
-        )
-        .run({
-          study_id: studyId,
-          case_id: sample.case_id,
-          is_tumor: sample.type === "Tumor" ? 1 : 0,
-        });
+      let stageProteomeLogRatioColumn = null;
+      let stagePhosphoproteomeLogRatioColumn = null;
 
-      if (
-        stage.proteome.columns.includes(logRatioColumn) &&
-        stage.proteome.columns.includes(unsharedLogRatioColumn)
-      ) {
+      if (stage.proteome.columns.includes(unsharedLogRatioColumn)) {
+        stageProteomeLogRatioColumn = unsharedLogRatioColumn;
+      } else if (stage.proteome.columns.includes(logRatioColumn)) {
+        stageProteomeLogRatioColumn = logRatioColumn;
+      }
+
+      if (stage.phosphoproteome.columns.includes(unsharedLogRatioColumn)) {
+        stagePhosphoproteomeLogRatioColumn = unsharedLogRatioColumn;
+      } else if (stage.phosphoproteome.columns.includes(logRatioColumn)) {
+        stagePhosphoproteomeLogRatioColumn = logRatioColumn;
+      }
+
+      const caseTableProteinLogRatioColumn =
+        sample.type === "Normal"
+          ? "proteinLogRatioControl"
+          : "proteinLogRatioCase";
+
+      const caseTablePhosphoproteinLogRatioColumn =
+        sample.type === "Normal"
+          ? "phosphoproteinLogRatioControl"
+          : "phosphoproteinLogRatioCase";
+
+      if (stageProteomeLogRatioColumn) {
         database.exec(
-          `insert into proteome 
-                    (
-                        study_id,
-                        gene_id, 
-                        sample_id,
-                        log_ratio,
-                        unshared_log_ratio
-                    )
-                    select
-                        ${studyId},
-                        g."id",
-                        ${sampleId},
-                        sp."${logRatioColumn}",
-                        sp."${unsharedLogRatioColumn}"
-                    from "${stage.proteome.table}" sp
-                    join gene g on g.symbol = sp.Gene;`,
-        );
-      } else {
-        console.warn(
-          `Warning: proteome columns not found for sample: ${sample.case_id} (${sample.aliquot})`,
+          `insert into "${caseTable}"
+          (
+            geneId,
+            cancerId,
+            name,
+            ${caseTableProteinLogRatioColumn}
+          )
+          select
+            g."id",
+            ${cancerId},
+            '${sample.case_id}',
+            sp."${stageProteomeLogRatioColumn}" as logRatio
+          from "${stage.proteome.table}" sp
+          join gene g on g.name = sp.Gene
+          on conflict("geneId", "cancerId", "name") do update set
+            "${caseTableProteinLogRatioColumn}" = excluded."${caseTableProteinLogRatioColumn}"`,
         );
       }
 
-      if (stage.phosphosite.columns.includes(logRatioColumn)) {
-        database.exec(`
-                    insert into phosphoproteome
-                    (
-                        study_id,
-                        gene_id, 
-                        sample_id,
-                        peptide,
-                        phosphorylation_site,
-                        log_ratio
-                    )
-                    select
-                        ${studyId},
-                        g."id",
-                        ${sampleId},
-                        sp."Peptide",
-                        sp."Phosphosite",
-                        sp."${logRatioColumn}"
-                    from "${stage.phosphosite.table}" sp
-                    join gene g on g.symbol = sp.Gene;
-                `);
-      } else {
-        console.warn(
-          `Warning: phosphosite columns not found for sample: ${sample.case_id} (${sample.aliquot})`,
+      if (stagePhosphoproteomeLogRatioColumn) {
+        database.exec(
+          `insert into "${caseTable}"
+          (
+            geneId,
+            cancerId,
+            name,
+            ${caseTablePhosphoproteinLogRatioColumn},
+            accession,
+            phosphorylationSite,
+            phosphopeptide
+          )
+          select
+            g."id",
+            ${cancerId},
+            '${sample.case_id}',
+            sp."${stagePhosphoproteomeLogRatioColumn}",
+            extract(sp."Phosphosite", ':', 0),
+            extract(sp."Phosphosite", ':', 1),
+            sp."Peptide"
+          from "${stage.phosphoproteome.table}" sp
+          join gene g on g.name = sp.Gene
+          on conflict("geneId", "cancerId", "name") do update set
+            "${caseTablePhosphoproteinLogRatioColumn}" = excluded."${caseTablePhosphoproteinLogRatioColumn}",
+            "accession" = excluded."accession",
+            "phosphorylationSite" = excluded."phosphorylationSite",
+            "phosphopeptide" = excluded."phosphopeptide"`,
         );
       }
     }
+
+    database.exec(
+      `update "${caseTable}" 
+        set proteinLogRatioChange = proteinLogRatioCase - proteinLogRatioControl
+        where proteinLogRatioCase is not null and proteinLogRatioControl is not null`,
+    );
+
+    database.exec(
+      `update "${caseTable}" 
+        set phosphoproteinLogRatioChange = phosphoproteinLogRatioCase - phosphoproteinLogRatioControl
+        where phosphoproteinLogRatioCase is not null and phosphoproteinLogRatioControl is not null`,
+    );
+
+    database.exec("commit");
   }
 
   console.log("Generating indexes");
