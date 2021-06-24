@@ -108,6 +108,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             name="correlation"
             type="radio"
             id="correlationTumorVsControl"
+            value="tumorVsControl"
             checked={
               form.analysis === "correlation" &&
               form.correlation === "tumorVsControl"
@@ -121,6 +122,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             name="correlation"
             type="radio"
             id={`correlationGeneVsGene`}
+            value="geneVsGene"
             checked={
               form.analysis === "correlation" &&
               form.correlation === "geneVsGene"
