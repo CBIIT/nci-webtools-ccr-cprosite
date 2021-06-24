@@ -98,8 +98,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <fieldset
         disabled={form.analysis !== "correlation"}
-        className="border px-3 mb-4"
-      >
+        className="border px-3 mb-4">
         <legend className="legend">Correlation</legend>
 
         <Form.Group className="mb-3">
@@ -139,8 +138,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               (form.analysis !== "correlation" ||
                 form.correlation !== "geneVsGene") &&
                 "text-muted",
-            )}
-          >
+            )}>
             Correlated Gene
           </Form.Label>
           <Form.Control

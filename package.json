@@ -33,7 +33,8 @@
     "bracketSpacing": true,
     "arrowParens": "always",
     "htmlWhitespaceSensitivity": "ignore",
-    "singleQuote": false
+    "singleQuote": false,
+    "jsxBracketSameLine": true
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
