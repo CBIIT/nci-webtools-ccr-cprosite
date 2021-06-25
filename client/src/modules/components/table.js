@@ -11,7 +11,7 @@ export function TextFilter({
   return (
     <Form.Control
       value={filterValue || ""}
-      onChange={(e) => setFilter(e.target.value || undefined)}
+      onBlur={(e) => setFilter(e.target.value || undefined)}
       placeholder={placeholder || `Search...`}
       aria-label={aria}
     />
@@ -30,14 +30,14 @@ export function RangeFilter({
         placeholder={minPlaceholder || "Min value"}
         type="number"
         value={filterValue[0] || ""}
-        onChange={(e) => setFilter((old = []) => [getInputValue(e), old[1]])}
+        onBlur={(e) => setFilter((old = []) => [getInputValue(e), old[1]])}
         aria-label={aria + " Min"}
       />
       <Form.Control
         placeholder={maxPlaceholder || "Max value"}
         type="number"
         value={filterValue[1] || ""}
-        onChange={(e) => setFilter((old = []) => [old[0], getInputValue(e)])}
+        onBlur={(e) => setFilter((old = []) => [old[0], getInputValue(e)])}
         aria-label={aria + " Max"}
       />
     </InputGroup>
@@ -137,8 +137,7 @@ export default function Table({ columns, data, options }) {
             name="select-page-size"
             aria-label="Select page size"
             value={pageSize}
-            onChange={(e) => setPageSize(Number(e.target.value))}
-          >
+            onChange={(e) => setPageSize(Number(e.target.value))}>
             {[10, 25, 50, 100].map((pageSize) => (
               <option key={pageSize} value={pageSize}>
                 Show {pageSize}
@@ -149,14 +148,12 @@ export default function Table({ columns, data, options }) {
           <Pagination className="mb-0">
             <Pagination.First
               onClick={() => gotoPage(0)}
-              disabled={!canPreviousPage}
-            >
+              disabled={!canPreviousPage}>
               First
             </Pagination.First>
             <Pagination.Prev
               onClick={() => previousPage()}
-              disabled={!canPreviousPage}
-            >
+              disabled={!canPreviousPage}>
               Previous
             </Pagination.Prev>
             <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage}>
@@ -164,8 +161,7 @@ export default function Table({ columns, data, options }) {
             </Pagination.Next>
             <Pagination.Last
               onClick={() => gotoPage(pageCount - 1)}
-              disabled={!canNextPage}
-            >
+              disabled={!canNextPage}>
               Last
             </Pagination.Last>
           </Pagination>
