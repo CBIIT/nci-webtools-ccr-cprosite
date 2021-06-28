@@ -96,7 +96,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         </datalist>
       </Form.Group>
 
-      <fieldset
+      {form.analysis === 'correlation' && <fieldset
         disabled={form.analysis !== "correlation"}
         className="border px-3 mb-4">
         <legend className="legend">Correlation</legend>
@@ -154,7 +154,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             required
           />
         </Form.Group>
-      </fieldset>
+      </fieldset>}
 
       <div className="text-end">
         <Button variant="outline-danger" className="me-1" type="reset">
