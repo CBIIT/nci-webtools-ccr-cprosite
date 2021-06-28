@@ -5,10 +5,14 @@ import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
-import { casesState } from "./explore.state";
+import { casesState, formState } from "./explore.state";
+
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
+  const form = useRecoilValue(formState)
+  const tumors = form.cancer.map((c) => c.value)
+
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -34,13 +38,13 @@ export default function Results() {
 
   const boxPlotData = [
     {
-      y: cases.map((c) => c.proteinLogRatioControl),
+      y: cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioControl),
       type: "box",
       boxpoints: "all",
       name: "Case",
     },
     {
-      y: cases.map((c) => c.proteinLogRatioCase),
+      y: cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioCase),
       type: "box",
       boxpoints: "all",
       name: "Control",
@@ -54,8 +58,8 @@ export default function Results() {
     {
       x: ["Control", "Case"],
       y: [
-        average(cases.map((c) => c.proteinLogRatioControl)),
-        average(cases.map((c) => c.proteinLogRatioCase)),
+        average(cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioControl)),
+        average(cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioCase)),
       ],
       type: "bar",
     },
@@ -96,6 +100,7 @@ export default function Results() {
 
   return (
     <Tabs defaultActiveKey="proteinAbundance" className="mb-3">
+      {console.log(form)}
       <Tab eventKey="proteinAbundance" title="Protein Abundance">
         <Row>
           <Col xl={6}>
@@ -122,7 +127,7 @@ export default function Results() {
 
         <Table
           columns={proteinAbundanceColumns}
-          data={cases.filter((c) => c.proteinLogRatioControl !== null)}
+          data={cases.filter((c) => tumors.includes(c.cancerId)).filter((c) => c.proteinLogRatioControl !== null)}
         />
       </Tab>
     </Tabs>

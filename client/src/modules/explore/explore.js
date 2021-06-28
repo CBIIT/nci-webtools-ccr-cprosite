@@ -15,18 +15,6 @@ export default function Explore() {
   function handleSubmit(event) {
     setForm(event);
     console.log("submit", event);
-
-    const {
-      cancer,
-      gene,
-      analysis,
-      dataset,
-      correlation,
-      correlatedGene
-    } = event;
-
-    console.log(cancer)
-    console.log(correlation)
   }
 
   function handleReset(event) {

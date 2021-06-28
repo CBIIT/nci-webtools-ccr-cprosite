@@ -291,7 +291,7 @@
   {
     "id": 192716,
     "geneId": 86,
-    "cancerId": 1,
+    "cancerId": 2,
     "name": "C3L-00422",
     "proteinLogRatioControl": 0.13865055122649977,
     "proteinLogRatioCase": 0.028516869645935472,
@@ -308,7 +308,7 @@
   {
     "id": 464588,
     "geneId": 86,
-    "cancerId": 1,
+    "cancerId": 2,
     "name": "C3L-00510",
     "proteinLogRatioControl": -0.11867443180804216,
     "proteinLogRatioCase": 0.625066529555376,
@@ -325,7 +325,7 @@
   {
     "id": 1110284,
     "geneId": 86,
-    "cancerId": 1,
+    "cancerId": 2,
     "name": "C3L-00604",
     "proteinLogRatioControl": -0.13664622560291195,
     "proteinLogRatioCase": 0.2120088078129525,
@@ -342,7 +342,7 @@
   {
     "id": 102092,
     "geneId": 86,
-    "cancerId": 1,
+    "cancerId": 2,
     "name": "C3L-00893",
     "proteinLogRatioControl": -0.09110519661977706,
     "proteinLogRatioCase": 0.2213410882157209,

@@ -1,16 +1,16 @@
 {
   "cancer": [
-    { "value": 1, "label": "All Tumor Types" },
-    { "value": 2, "label": "Breast Cancer" },
-    { "value": 3, "label": "Colon Cancer" },
-    { "value": 4, "label": "Head & Neck Cancer" },
-    { "value": 5, "label": "Kidney Cancer" },
-    { "value": 6, "label": "Liver Cancer" },
-    { "value": 7, "label": "Lung Cancer AD" },
-    { "value": 8, "label": "Lung SC" },
-    { "value": 9, "label": "Ovarian Cancer" },
-    { "value": 10, "label": "PDAC" },
-    { "value": 11, "label": "Uterine Cancer" }
+    { "value": 0, "label": "All Tumor Types" },
+    { "value": 1, "label": "Breast Cancer" },
+    { "value": 2, "label": "Colon Cancer" },
+    { "value": 3, "label": "Head & Neck Cancer" },
+    { "value": 4, "label": "Kidney Cancer" },
+    { "value": 5, "label": "Liver Cancer" },
+    { "value": 6, "label": "Lung Cancer AD" },
+    { "value": 7, "label": "Lung SC" },
+    { "value": 8, "label": "Ovarian Cancer" },
+    { "value": 9, "label": "PDAC" },
+    { "value": 10, "label": "Uterine Cancer" }
   ],
   "dataset": [
     { "value": "protein-abundance", "label": "Protein Abundance" },
