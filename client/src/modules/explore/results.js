@@ -54,17 +54,21 @@ export default function Results() {
   const average = (values) =>
     values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
 
-  const barPlotData = [
-    {
-      x: ["Control", "Case"],
-      y: [
-        average(cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioControl)),
-        average(cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioCase)),
-      ],
-      type: "bar",
-    },
-  ];
+  function barPlotData(cancerId) {
 
+    console.log(cases.filter((c) => cancerId === c.cancerId))
+
+    return ([
+      {
+        x: ["Control", "Case"],
+        y: [
+          average(cases.filter((c) => cancerId === c.cancerId).map((c) => c.proteinLogRatioControl)),
+          average(cases.filter((c) => cancerId === c.cancerId).map((c) => c.proteinLogRatioCase)),
+        ],
+        type: "bar",
+      },
+    ])
+  }
   const defaultLayout = {
     xaxis: {
       zeroline: false,
@@ -100,8 +104,34 @@ export default function Results() {
 
   return (
     <Tabs defaultActiveKey="proteinAbundance" className="mb-3">
-      {console.log(form)}
+
       <Tab eventKey="proteinAbundance" title="Protein Abundance">
+        {tumors.length > 1 ? <Row>
+          {
+            tumors.map((e, index) => {
+              if (cases.filter((c) => tumors[index] === c.cancerId).length !== 0) {
+                return (
+                  <Col>
+                    <Plot
+                      key={index}
+                      data={barPlotData(tumors[index])}
+                      layout={defaultLayout}
+                      config={defaultConfig}
+                      useResizeHandler
+                      className="flex-fill w-100"
+                      style={{ height: "800px" }}
+                    />
+                  </Col>
+                )
+              }
+              /*else{
+                return(
+                  No data available plot
+                )
+              }*/
+            })
+          }
+        </Row> :
         <Row>
           <Col xl={6}>
             <Plot
@@ -115,7 +145,7 @@ export default function Results() {
           </Col>
           <Col xl={6}>
             <Plot
-              data={barPlotData}
+              data={barPlotData(tumors[0])}
               layout={defaultLayout}
               config={defaultConfig}
               useResizeHandler
@@ -123,7 +153,7 @@ export default function Results() {
               style={{ height: "800px" }}
             />
           </Col>
-        </Row>
+        </Row>}
 
         <Table
           columns={proteinAbundanceColumns}
