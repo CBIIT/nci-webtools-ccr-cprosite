@@ -61,13 +61,13 @@ export default function Results() {
       y: cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioControl),
       type: "box",
       boxpoints: "all",
-      name: "Case",
+      name: "Control",
     },
     {
       y: cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioCase),
       type: "box",
       boxpoints: "all",
-      name: "Control",
+      name: "Case",
     },
   ];
 
@@ -77,7 +77,7 @@ export default function Results() {
   function barPlotData(tumor) {
     return ([
       {
-        x: ["Control", "Case"],
+        x: ["Control<br>n=" + tumor.controlNum, "Case<br>n=" + tumor.caseNum],
         y: [
           tumor.controlAverage,
           tumor.caseAverage,
@@ -89,29 +89,21 @@ export default function Results() {
 
   const averages = form.cancer.map((c) => {
 
-    if (cases.filter((g) => c.value === g.cancerId).length !== 0) {
-      return (
-        {
-          'id': c.value,
-          'name': c.label,
-          'controlAverage': average(cases.filter((d) => c.value === d.cancerId).map((e) => e.proteinLogRatioControl)),
-          'caseAverage': average(cases.filter((d) => c.value === d.cancerId).map((e) => e.proteinLogRatioCase))
-        }
-      )
-    }
-    else {
-      return (
-        {
-          'id': c.value,
-          'name': c.label,
-          'controlAverage': 'NA',
-          'caseAverage': 'NA',
-        }
-      )
-    }
-  })
+    const caseFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => e.proteinLogRatioCase)
+    const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => e.proteinLogRatioControl)
 
-  console.log(averages)
+    return (
+      {
+        'id': c.value,
+        'name': c.label,
+        'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter) : 'NA',
+        'caseAverage': !isNaN(caseFilter[0]) ? average(caseFilter) : 'NA',
+        'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,
+        'caseNum': !isNaN(caseFilter[0]) ? caseFilter.length : 0,
+      }
+    )
+
+  })
 
   const defaultLayout = {
     xaxis: {
@@ -152,20 +144,20 @@ export default function Results() {
       <Tab eventKey="proteinAbundance" title="Protein Abundance">
         {averages.length > 1 ? <Row>
           {
-            averages.map((e, index) => {
-                return (
-                  <Col xl={3}>
-                    <Plot
-                      key={index}
-                      data={barPlotData(e)}
-                      layout={{ ...defaultLayout, title: e.name }}
-                      config={defaultConfig}
-                      useResizeHandler
-                      className="flex-fill w-100"
-                      style={{ height: "500px" }}
-                    />
-                  </Col>
-                )
+            averages.map((e) => {
+              return (
+                <Col key={e.name} xl={3}>
+                  <Plot
+                    key={`${e.name}-plot`}
+                    data={barPlotData(e)}
+                    layout={{ ...defaultLayout, title: e.name }}
+                    config={defaultConfig}
+                    useResizeHandler
+                    className="flex-fill w-100"
+                    style={{ height: "500px" }}
+                  />
+                </Col>
+              )
             })
           }
         </Row> :
