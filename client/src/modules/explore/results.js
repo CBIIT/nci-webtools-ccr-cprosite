@@ -36,6 +36,26 @@ export default function Results() {
     // },
   ];
 
+  const summaryColumns = [
+    {
+      accessor: 'name',
+      Header: "Tumor Type",
+      Filter: TextFilter,
+    },
+    {
+      accessor: 'controlAverage',
+      Header: 'Average Control',
+      Filter: RangeFilter,
+    },
+    {
+      accessor: 'caseAverage',
+      Header: 'Average Case',
+      Filter: RangeFilter,
+    }
+  ]
+
+
+
   const boxPlotData = [
     {
       y: cases.filter((c) => tumors.includes(c.cancerId)).map((c) => c.proteinLogRatioControl),
@@ -54,21 +74,45 @@ export default function Results() {
   const average = (values) =>
     values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
 
-  function barPlotData(cancerId) {
-
-    console.log(cases.filter((c) => cancerId === c.cancerId))
-
+  function barPlotData(tumor) {
     return ([
       {
         x: ["Control", "Case"],
         y: [
-          average(cases.filter((c) => cancerId === c.cancerId).map((c) => c.proteinLogRatioControl)),
-          average(cases.filter((c) => cancerId === c.cancerId).map((c) => c.proteinLogRatioCase)),
+          tumor.controlAverage,
+          tumor.caseAverage,
         ],
         type: "bar",
       },
     ])
   }
+
+  const averages = form.cancer.map((c) => {
+
+    if (cases.filter((g) => c.value === g.cancerId).length !== 0) {
+      return (
+        {
+          'id': c.value,
+          'name': c.label,
+          'controlAverage': average(cases.filter((d) => c.value === d.cancerId).map((e) => e.proteinLogRatioControl)),
+          'caseAverage': average(cases.filter((d) => c.value === d.cancerId).map((e) => e.proteinLogRatioCase))
+        }
+      )
+    }
+    else {
+      return (
+        {
+          'id': c.value,
+          'name': c.label,
+          'controlAverage': 'NA',
+          'caseAverage': 'NA',
+        }
+      )
+    }
+  })
+
+  console.log(averages)
+
   const defaultLayout = {
     xaxis: {
       zeroline: false,
@@ -106,59 +150,58 @@ export default function Results() {
     <Tabs defaultActiveKey="proteinAbundance" className="mb-3">
 
       <Tab eventKey="proteinAbundance" title="Protein Abundance">
-        {tumors.length > 1 ? <Row>
+        {averages.length > 1 ? <Row>
           {
-            tumors.map((e, index) => {
-              if (cases.filter((c) => tumors[index] === c.cancerId).length !== 0) {
+            averages.map((e, index) => {
                 return (
-                  <Col>
+                  <Col xl={3}>
                     <Plot
                       key={index}
-                      data={barPlotData(tumors[index])}
-                      layout={defaultLayout}
+                      data={barPlotData(e)}
+                      layout={{ ...defaultLayout, title: e.name }}
                       config={defaultConfig}
                       useResizeHandler
                       className="flex-fill w-100"
-                      style={{ height: "800px" }}
+                      style={{ height: "500px" }}
                     />
                   </Col>
                 )
-              }
-              /*else{
-                return(
-                  No data available plot
-                )
-              }*/
             })
           }
         </Row> :
-        <Row>
-          <Col xl={6}>
-            <Plot
-              data={boxPlotData}
-              layout={defaultLayout}
-              config={defaultConfig}
-              useResizeHandler
-              className="w-100"
-              style={{ height: "800px" }}
-            />
-          </Col>
-          <Col xl={6}>
-            <Plot
-              data={barPlotData(tumors[0])}
-              layout={defaultLayout}
-              config={defaultConfig}
-              useResizeHandler
-              className="w-100"
-              style={{ height: "800px" }}
-            />
-          </Col>
-        </Row>}
+          <Row>
+            <Col xl={6}>
+              <Plot
+                data={boxPlotData}
+                layout={defaultLayout}
+                config={defaultConfig}
+                useResizeHandler
+                className="w-100"
+                style={{ height: "800px" }}
+              />
+            </Col>
+            <Col xl={6}>
+              <Plot
+                data={barPlotData(averages[0])}
+                layout={defaultLayout}
+                config={defaultConfig}
+                useResizeHandler
+                className="w-100"
+                style={{ height: "800px" }}
+              />
+            </Col>
+          </Row>}
 
-        <Table
-          columns={proteinAbundanceColumns}
-          data={cases.filter((c) => tumors.includes(c.cancerId)).filter((c) => c.proteinLogRatioControl !== null)}
-        />
+        {averages.length > 1 ?
+          <Table
+            columns={summaryColumns}
+            data={averages}
+          />
+          :
+          <Table
+            columns={proteinAbundanceColumns}
+            data={cases.filter((c) => tumors.includes(c.cancerId)).filter((c) => c.proteinLogRatioControl !== null)}
+          />}
       </Tab>
     </Tabs>
   );
