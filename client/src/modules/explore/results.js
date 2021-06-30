@@ -192,7 +192,11 @@ export default function Results() {
           :
           <Table
             columns={proteinAbundanceColumns}
-            data={cases.filter((c) => tumors.includes(c.cancerId)).filter((c) => c.proteinLogRatioControl !== null)}
+            data={cases.filter((c) => tumors.includes(c.cancerId)).map((c) => { 
+              return({...c, 
+                proteinLogRatioCase: c.proteinLogRatioCase !== null ? c.proteinLogRatioCase.toFixed(4) : 'NA', 
+                proteinLogRatioControl: c.proteinLogRatioControl !== null ? c.proteinLogRatioControl.toFixed(4) : 'NA'})
+            })}
           />}
       </Tab>
     </Tabs>
