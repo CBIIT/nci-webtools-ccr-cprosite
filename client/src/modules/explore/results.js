@@ -96,8 +96,8 @@ export default function Results() {
       {
         'id': c.value,
         'name': c.label,
-        'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter) : 'NA',
-        'caseAverage': !isNaN(caseFilter[0]) ? average(caseFilter) : 'NA',
+        'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter).toFixed(4) : 'NA',
+        'caseAverage': !isNaN(caseFilter[0]) ? average(caseFilter).toFixed(4) : 'NA',
         'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,
         'caseNum': !isNaN(caseFilter[0]) ? caseFilter.length : 0,
       }
