@@ -146,7 +146,7 @@ export default function Results() {
           {
             averages.map((e) => {
               return (
-                <Col key={e.name} xl={3}>
+                <Col key={e.name} xl={3} md={6} >
                   <Plot
                     key={`${e.name}-plot`}
                     data={barPlotData(e)}
