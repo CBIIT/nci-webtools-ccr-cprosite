@@ -4,7 +4,6 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button"
 import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
 import { casesState, formState } from "./explore.state";
@@ -90,6 +89,7 @@ export default function Results() {
   const average = (values) =>
     values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
 
+  /*
   function barPlotData(tumor) {
     return ([
       {
@@ -101,7 +101,7 @@ export default function Results() {
         type: "bar",
       },
     ])
-  }
+  }*/
 
 
   const averages = form.cancer.map((c) => {
@@ -219,6 +219,18 @@ export default function Results() {
               style={{ height: "800px", minWidth: '100%' }}
             />
           </Col>
+          {/*
+          <Col xl={6}>
+            <Plot
+              data={barPlotData(averages.find(x => x.id === view))}
+              layout={defaultLayout}
+              config={defaultConfig}
+              useResizeHandler
+              className="w-100"
+              style={{ height: "800px" }}
+            />
+          </Col>
+          */}
         </Row>
         <Table
           columns={proteinAbundanceColumns}
