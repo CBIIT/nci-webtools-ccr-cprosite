@@ -106,8 +106,8 @@ export default function Results() {
 
   const averages = form.cancer.map((c) => {
 
-    const caseFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => e.proteinLogRatioCase)
-    const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => e.proteinLogRatioControl)
+    const caseFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => Math.pow(2,e.proteinLogRatioCase))
+    const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => Math.pow(2,e.proteinLogRatioControl))
 
     return (
       {
@@ -145,7 +145,7 @@ export default function Results() {
       zeroline: false,
     },
     yaxis: {
-      title: "Log Protein Abundance",
+      title: "Protein Abundance",
       zeroline: false,
     },
     legend: {
