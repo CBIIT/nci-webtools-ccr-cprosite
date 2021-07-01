@@ -116,7 +116,7 @@ export default function Results() {
         'link': <a onClick={() => {setView(c.value); setTab('caseView')}} href='javascript:void(0)'>{c.label}</a>,
         'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter).toFixed(4) : 'NA',
         'caseAverage': !isNaN(caseFilter[0]) ? average(caseFilter).toFixed(4) : 'NA',
-        'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,
+        'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,  
         'caseNum': !isNaN(caseFilter[0]) ? caseFilter.length : 0,
       }
     )
@@ -210,24 +210,13 @@ export default function Results() {
           </Form.Select>
         </Form.Group>
         <Row>
-          <Col xl={6}>
+          <Col xl={12}>
             <Plot
               data={boxPlotData}
-              layout={defaultLayout}
+              layout={{...defaultLayout, yaxis: { title: 'Log Protien Abundance', zeroline: false}, autosize: true}}
               config={defaultConfig}
               useResizeHandler
-              className="w-100"
-              style={{ height: "800px" }}
-            />
-          </Col>
-          <Col xl={6}>
-            <Plot
-              data={barPlotData(averages.find(x => x.id === view))}
-              layout={defaultLayout}
-              config={defaultConfig}
-              useResizeHandler
-              className="w-100"
-              style={{ height: "800px" }}
+              style={{ height: "800px", minWidth: '100%' }}
             />
           </Col>
         </Row>
