@@ -104,28 +104,28 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Form.Group className="mb-3">
           <Form.Check
             inline
-            label="Tumor vs Control"
+            label="To Another Protein"
             name="correlation"
             type="radio"
-            id="correlationTumorVsControl"
-            value="tumorVsControl"
+            id="correlationToAnotherProtein"
+            value="toAnotherProtein"
             checked={
               form.analysis === "correlation" &&
-              form.correlation === "tumorVsControl"
+              form.correlation === "toAnotherProtein"
             }
             onChange={handleChange}
           />
 
           <Form.Check
             inline
-            label="Gene vs Gene"
+            label="Protein and mRNA"
             name="correlation"
             type="radio"
-            id={`correlationGeneVsGene`}
-            value="geneVsGene"
+            id={`correlationMRNA`}
+            value="proteinMRNA"
             checked={
               form.analysis === "correlation" &&
-              form.correlation === "geneVsGene"
+              form.correlation === "proteinMRNA"
             }
             onChange={handleChange}
           />
@@ -146,7 +146,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             onBlur={handleChange}
             disabled={
               form.analysis !== "correlation" ||
-              form.correlation !== "geneVsGene"
+              form.correlation !== "proteinMRNA"
             }
             type="text"
             placeholder="No gene selected"
