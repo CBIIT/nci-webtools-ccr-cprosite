@@ -34,11 +34,11 @@ export default function Results() {
       Header: "Tumor Value",
       Filter: RangeFilter,
     },
-    // {
-    //   accessor: "proteinLogRatioChange",
-    //   Header: "Fold Change Value",
-    //   Filter: RangeFilter,
-    // },
+    {
+      accessor: "proteinLogRatioChange",
+      Header: "Fold Change Value",
+      Filter: RangeFilter,
+    },
   ];
 
   const summaryColumns = [
@@ -106,17 +106,17 @@ export default function Results() {
 
   const averages = form.cancer.map((c) => {
 
-    const tumorFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => Math.pow(2,e.proteinLogRatioCase))
-    const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => Math.pow(2,e.proteinLogRatioControl))
+    const tumorFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => Math.pow(2, e.proteinLogRatioCase))
+    const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => Math.pow(2, e.proteinLogRatioControl))
 
     return (
       {
         'id': c.value,
         'name': c.label,
-        'link': <a onClick={() => {setView(c.value); setTab('tumorView')}} href='javascript:void(0)'>{c.label}</a>,
+        'link': <a onClick={() => { setView(c.value); setTab('tumorView') }} href='javascript:void(0)'>{c.label}</a>,
         'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter).toFixed(4) : 'NA',
         'tumorAverage': !isNaN(tumorFilter[0]) ? average(tumorFilter).toFixed(4) : 'NA',
-        'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,  
+        'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,
         'tumorNum': !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
       }
     )
@@ -136,6 +136,17 @@ export default function Results() {
         y: averages.map((c) => c.tumorAverage),
         type: 'bar',
         name: 'Tumor'
+      }
+    ])
+  }
+
+  function foldData() {
+    return ([
+      {
+        type: 'bar',
+        x: cases.filter((c) => view === c.cancerId).map((c) => c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null),
+        y: cases.filter((c) => view === c.cancerId).map((c) => c.proteinLogRatioChange ? c.name : null),
+        orientation: 'h'
       }
     ])
   }
@@ -181,7 +192,7 @@ export default function Results() {
           <Col xl={12}>
             <Plot
               data={multiBarPlotData()}
-              layout={{ ...defaultLayout, barmode:'group' }}
+              layout={{ ...defaultLayout, barmode: 'group' }}
               config={defaultConfig}
               useResizeHandler
               className="flex-fill w-100"
@@ -213,7 +224,7 @@ export default function Results() {
           <Col xl={12}>
             <Plot
               data={boxPlotData}
-              layout={{...defaultLayout, yaxis: { title: 'Log Protien Abundance', zeroline: false}, autosize: true}}
+              layout={{ ...defaultLayout, yaxis: { title: 'Log Protien Abundance', zeroline: false }, autosize: true }}
               config={defaultConfig}
               useResizeHandler
               style={{ height: "800px", minWidth: '100%' }}
@@ -232,13 +243,22 @@ export default function Results() {
           </Col>
           */}
         </Row>
+        <Plot
+          data={foldData()}
+          config={defaultConfig}
+          layout={{ autosize: true, xaxis: {title: 'Log Fold Change', zeroline: false}, barmode: 'stack', yaxis: {categoryorder: 'total ascending'}}}
+          useResizeHandler
+          style={{  minWidth: '100%' }}
+        />
+
         <Table
           columns={proteinAbundanceColumns}
           data={cases.filter((c) => view === c.cancerId).map((c) => {
             return ({
               ...c,
               proteinLogRatioCase: c.proteinLogRatioCase ? c.proteinLogRatioCase.toFixed(4) : 'NA',
-              proteinLogRatioControl: c.proteinLogRatioControl  ? c.proteinLogRatioControl.toFixed(4) : 'NA'
+              proteinLogRatioControl: c.proteinLogRatioControl ? c.proteinLogRatioControl.toFixed(4) : 'NA',
+              proteinLogRatioChange: c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : 'NA'
             })
           })}
         />
