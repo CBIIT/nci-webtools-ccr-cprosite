@@ -31,7 +31,7 @@ export default function Results() {
     },
     {
       accessor: "proteinLogRatioCase",
-      Header: "Case Value",
+      Header: "Tumor Value",
       Filter: RangeFilter,
     },
     // {
@@ -53,8 +53,8 @@ export default function Results() {
       Filter: RangeFilter,
     },
     {
-      accessor: 'caseAverage',
-      Header: 'Average Case',
+      accessor: 'tumorAverage',
+      Header: 'Average Tumor',
       Filter: RangeFilter,
     },
     {
@@ -63,8 +63,8 @@ export default function Results() {
       Filter: RangeFilter,
     },
     {
-      accessor: 'caseNum',
-      Header: 'Case Count',
+      accessor: 'tumorNum',
+      Header: 'Tumor Count',
       Filter: RangeFilter,
     }
   ]
@@ -82,7 +82,7 @@ export default function Results() {
       y: cases.filter((c) => c.cancerId === view).map((c) => c.proteinLogRatioCase),
       type: "box",
       boxpoints: "all",
-      name: "Case",
+      name: "Tumor",
     },
   ];
 
@@ -106,18 +106,18 @@ export default function Results() {
 
   const averages = form.cancer.map((c) => {
 
-    const caseFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => Math.pow(2,e.proteinLogRatioCase))
+    const tumorFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => Math.pow(2,e.proteinLogRatioCase))
     const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => Math.pow(2,e.proteinLogRatioControl))
 
     return (
       {
         'id': c.value,
         'name': c.label,
-        'link': <a onClick={() => {setView(c.value); setTab('caseView')}} href='javascript:void(0)'>{c.label}</a>,
+        'link': <a onClick={() => {setView(c.value); setTab('tumorView')}} href='javascript:void(0)'>{c.label}</a>,
         'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter).toFixed(4) : 'NA',
-        'caseAverage': !isNaN(caseFilter[0]) ? average(caseFilter).toFixed(4) : 'NA',
+        'tumorAverage': !isNaN(tumorFilter[0]) ? average(tumorFilter).toFixed(4) : 'NA',
         'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,  
-        'caseNum': !isNaN(caseFilter[0]) ? caseFilter.length : 0,
+        'tumorNum': !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
       }
     )
 
@@ -133,9 +133,9 @@ export default function Results() {
       },
       {
         x: averages.map((c) => c.name),
-        y: averages.map((c) => c.caseAverage),
+        y: averages.map((c) => c.tumorAverage),
         type: 'bar',
-        name: 'Case'
+        name: 'Tumor'
       }
     ])
   }
@@ -198,10 +198,10 @@ export default function Results() {
 
       </Tab>
 
-      <Tab eventKey="caseView" title="Case View">
+      <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="m-3 col-xl-3" controlId="tumorView">
           <Form.Label>Tumor Type</Form.Label>
-          <Form.Select name="tumorView" onChange={(e) => setView(parseInt(e.target.value))} value={view} required>
+          <Form.Select name="caseView" onChange={(e) => setView(parseInt(e.target.value))} value={view} required>
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
