@@ -15,7 +15,7 @@ export default function Results() {
   const tumors = form.cancer.map((c) => c.value)
   const [view, setView] = useState(tumors[0])
   const [tab, setTab] = useState('summary')
-
+  
 
 
   const proteinAbundanceColumns = [
@@ -149,6 +149,7 @@ export default function Results() {
   function foldData() {
 
     var caseList = cases.filter((c) => view === c.cancerId).sort((a,b) => (a.proteinLogRatioChange > b.proteinLogRatioChange) ? 1 : -1)
+    console.log(`${(cases.filter((c) => view === c.cancerId).length).toString()*60} px`)
 
     return ([
       {
@@ -257,7 +258,7 @@ export default function Results() {
           config={defaultConfig}
           layout={{ autosize: true, xaxis: {title: 'Log Fold Change', zeroline: false}, barmode: 'stack'}}
           useResizeHandler
-          style={{  minWidth: '100%', height: '800px' }}
+          style={{  minWidth: '100%', minHeight: `1200px` }}
         />
 
         <Table
