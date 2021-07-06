@@ -66,6 +66,11 @@ export default function Results() {
       accessor: 'tumorNum',
       Header: 'Tumor Count',
       Filter: RangeFilter,
+    },
+    {
+      accessor: 'pValue',
+      Header: 'P Value',
+      Filter: RangeFilter
     }
   ]
 
@@ -118,6 +123,7 @@ export default function Results() {
         'tumorAverage': !isNaN(tumorFilter[0]) ? average(tumorFilter).toFixed(4) : 'NA',
         'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,
         'tumorNum': !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
+        'pValue': (Math.random() * Math.pow(1,-8)).toFixed(4)
       }
     )
 
@@ -261,7 +267,7 @@ export default function Results() {
               ...c,
               proteinLogRatioCase: c.proteinLogRatioCase ? c.proteinLogRatioCase.toFixed(4) : 'NA',
               proteinLogRatioControl: c.proteinLogRatioControl ? c.proteinLogRatioControl.toFixed(4) : 'NA',
-              proteinLogRatioChange: c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : 'NA'
+              proteinLogRatioChange: c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : 'NA',
             })
           })}
         />
