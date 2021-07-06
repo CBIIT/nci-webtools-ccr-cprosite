@@ -141,11 +141,14 @@ export default function Results() {
   }
 
   function foldData() {
+
+    var caseList = cases.filter((c) => view === c.cancerId).sort((a,b) => (a.proteinLogRatioChange > b.proteinLogRatioChange) ? 1 : -1)
+
     return ([
       {
         type: 'bar',
-        x: cases.filter((c) => view === c.cancerId).map((c) => c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null),
-        y: cases.filter((c) => view === c.cancerId).map((c) => c.proteinLogRatioChange ? c.name : null),
+        x: caseList.map((c) => c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null),
+        y: caseList.map((c) => c.proteinLogRatioChange ? c.name : null),
         orientation: 'h'
       }
     ])
@@ -246,9 +249,9 @@ export default function Results() {
         <Plot
           data={foldData()}
           config={defaultConfig}
-          layout={{ autosize: true, xaxis: {title: 'Log Fold Change', zeroline: false}, barmode: 'stack', yaxis: {categoryorder: 'total ascending'}}}
+          layout={{ autosize: true, xaxis: {title: 'Log Fold Change', zeroline: false}, barmode: 'stack'}}
           useResizeHandler
-          style={{  minWidth: '100%' }}
+          style={{  minWidth: '100%', height: '800px' }}
         />
 
         <Table
