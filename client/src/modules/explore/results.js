@@ -238,7 +238,7 @@ export default function Results() {
         <Form.Group className="row m-3" controlId="tumorView">
           <Form.Label
             className="col-xl-1 col-xs-12 col-form-label"
-            style={{ minWidth: "100px" }}>
+            style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
           <div className="col-xl-3">
