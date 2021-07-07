@@ -76,18 +76,18 @@ export default function Results() {
     {
       y: cases
         .filter((c) => c.cancerId === view)
-        .map((c) => c.proteinLogRatioControl),
-      type: "box",
-      boxpoints: "all",
-      name: "Control",
-    },
-    {
-      y: cases
-        .filter((c) => c.cancerId === view)
         .map((c) => c.proteinLogRatioCase),
       type: "box",
       boxpoints: "all",
       name: "Tumor",
+    },
+    {
+      y: cases
+        .filter((c) => c.cancerId === view)
+        .map((c) => c.proteinLogRatioControl),
+      type: "box",
+      boxpoints: "all",
+      name: "Control",
     },
   ];
 
