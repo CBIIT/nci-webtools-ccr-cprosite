@@ -1,6 +1,7 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import classNames from "classnames";
 import { useRecoilValue } from "recoil";
 import { fieldsState, defaultFormState } from "./explore.state";
@@ -28,11 +29,18 @@ export default function ExploreForm({ onSubmit, onReset }) {
     if (onReset) onReset(defaultFormState);
   }
 
-  function handleMultiChange(selection = []) {
+  function handleSelectChange(name, selection = []) {
     // Add all cancer types if "All Tumor Types" is selected
-    if (selection.find((option) => option.value === 0))
+    if (name === "cancer" && selection.find((option) => option.value === 0))
       selection = fields.cancer.slice(1);
-    mergeForm({ cancer: selection });
+    mergeForm({ [name]: selection });
+  }
+
+  // avoid loading all genes as Select options
+  function filterGenes(value, limit = 100) {
+    return fields.gene
+      .filter((gene) => !value || gene.label.startsWith(value.toUpperCase()))
+      .slice(0, limit);
   }
 
   return (
@@ -44,7 +52,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           name="cancer"
           isMulti="true"
           value={form.cancer}
-          onChange={handleMultiChange}
+          onChange={(ev) => handleSelectChange("cancer", ev)}
           options={fields.cancer}
         />
       </Form.Group>
@@ -55,11 +63,12 @@ export default function ExploreForm({ onSubmit, onReset }) {
           <option value="" hidden>
             No dataset selected
           </option>
-          {fields.dataset.map((o) => (
-            <option value={o.value} key={`dataset-${o.value}`}>
-              {o.label}
-            </option>
-          ))}
+          <option value="protein-abundance">Protein Abundance</option>
+          <option value="phosphorylation-site">Phosphorylation Site</option>
+          <option value="phosphorylation-protein">
+            Phosphorylation/Protein
+          </option>
+          <option value="rna-level">RNA LEVEL</option>
         </Form.Select>
       </Form.Group>
 
@@ -69,92 +78,90 @@ export default function ExploreForm({ onSubmit, onReset }) {
           <option value="" hidden>
             No analysis selected
           </option>
-          {fields.analysis.map((o) => (
-            <option value={o.value} key={`analysis-${o.value}`}>
-              {o.label}
-            </option>
-          ))}
+          <option value="tumor-control">Tumor vs Control</option>
+          <option value="correlation">Correlation</option>
         </Form.Select>
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="gene">
         <Form.Label className="required">Gene</Form.Label>
-        <Form.Control
-          name="gene"
-          onBlur={handleChange}
-          type="text"
+        <AsyncSelect
           placeholder="No gene selected"
-          list="genes"
-          required
+          name="gene"
+          value={form.gene}
+          onChange={(ev) => handleSelectChange("gene", ev)}
+          defaultOptions
+          loadOptions={(inputValue, callback) =>
+            callback(filterGenes(inputValue))
+          }
+          clearIndicator
         />
-        <datalist id="genes">
-          {fields.gene.map((o) => (
-            <option value={o.value} key={`gene-${o.value}`}>
-              {o.label}
-            </option>
-          ))}
-        </datalist>
       </Form.Group>
 
-      {form.analysis === 'correlation' && <fieldset
-        disabled={form.analysis !== "correlation"}
-        className="border px-3 mb-4">
-        <legend className="legend">Correlation</legend>
+      {form.analysis === "correlation" && (
+        <fieldset
+          disabled={form.analysis !== "correlation"}
+          className="border px-3 mb-4">
+          <legend className="legend">Correlation</legend>
 
-        <Form.Group className="mb-3">
-          <Form.Check
-            inline
-            label="To Another Protein"
-            name="correlation"
-            type="radio"
-            id="correlationToAnotherProtein"
-            value="toAnotherProtein"
-            checked={
-              form.analysis === "correlation" &&
-              form.correlation === "toAnotherProtein"
-            }
-            onChange={handleChange}
-          />
+          <Form.Group className="mb-3">
+            <Form.Check
+              inline
+              label="To Another Protein"
+              name="correlation"
+              type="radio"
+              id="correlationToAnotherProtein"
+              value="toAnotherProtein"
+              checked={
+                form.analysis === "correlation" &&
+                form.correlation === "toAnotherProtein"
+              }
+              onChange={handleChange}
+            />
 
-          <Form.Check
-            inline
-            label="Protein and mRNA"
-            name="correlation"
-            type="radio"
-            id={`correlationMRNA`}
-            value="proteinMRNA"
-            checked={
-              form.analysis === "correlation" &&
-              form.correlation === "proteinMRNA"
-            }
-            onChange={handleChange}
-          />
-        </Form.Group>
+            <Form.Check
+              inline
+              label="Protein and mRNA"
+              name="correlation"
+              type="radio"
+              id={`correlationMRNA`}
+              value="proteinMRNA"
+              checked={
+                form.analysis === "correlation" &&
+                form.correlation === "proteinMRNA"
+              }
+              onChange={handleChange}
+            />
+          </Form.Group>
 
-        <Form.Group className="mb-3" controlId="correlated-gene">
-          <Form.Label
-            className={classNames(
-              "required",
-              (form.analysis !== "correlation" ||
-                form.correlation !== "geneVsGene") &&
-                "text-muted",
-            )}>
-            Correlated Gene
-          </Form.Label>
-          <Form.Control
-            name="correlated-gene"
-            onBlur={handleChange}
-            disabled={
-              form.analysis !== "correlation" ||
-              form.correlation !== "proteinMRNA"
-            }
-            type="text"
-            placeholder="No gene selected"
-            list="genes"
-            required
-          />
-        </Form.Group>
-      </fieldset>}
+          <Form.Group className="mb-3" controlId="correlated-gene">
+            <Form.Label
+              className={classNames(
+                "required",
+                (form.analysis !== "correlation" ||
+                  form.correlation !== "geneVsGene") &&
+                  "text-muted",
+              )}>
+              Correlated Gene
+            </Form.Label>
+            <AsyncSelect
+              placeholder="No gene selected"
+              name="correlatedGene"
+              value={form.correlatedGene}
+              onChange={(ev) => handleSelectChange("correlatedGene", ev)}
+              isDisabled={
+                form.analysis !== "correlation" ||
+                form.correlation !== "geneVsGene"
+              }
+              defaultOptions
+              loadOptions={(inputValue, callback) =>
+                callback(filterGenes(inputValue))
+              }
+              clearIndicator
+            />
+          </Form.Group>
+        </fieldset>
+      )}
 
       <div className="text-end">
         <Button variant="outline-danger" className="me-1" type="reset">
