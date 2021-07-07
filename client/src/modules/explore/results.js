@@ -11,12 +11,10 @@ import { useState } from "react";
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
-  const form = useRecoilValue(formState)
-  const tumors = form.cancer.map((c) => c.value)
-  const [view, setView] = useState(tumors[0])
-  const [tab, setTab] = useState('summary')
-  
-
+  const form = useRecoilValue(formState);
+  const tumors = form.cancer.map((c) => c.value);
+  const [view, setView] = useState(tumors[0]);
+  const [tab, setTab] = useState("summary");
 
   const proteinAbundanceColumns = [
     {
@@ -43,48 +41,50 @@ export default function Results() {
 
   const summaryColumns = [
     {
-      accessor: 'link',
+      accessor: "link",
       Header: "Tumor Type",
       Filter: TextFilter,
     },
     {
-      accessor: 'controlAverage',
-      Header: 'Average Control',
+      accessor: "controlAverage",
+      Header: "Average Control",
       Filter: RangeFilter,
     },
     {
-      accessor: 'tumorAverage',
-      Header: 'Average Tumor',
+      accessor: "tumorAverage",
+      Header: "Average Tumor",
       Filter: RangeFilter,
     },
     {
-      accessor: 'controlNum',
-      Header: 'Control Count',
+      accessor: "controlNum",
+      Header: "Control Count",
       Filter: RangeFilter,
     },
     {
-      accessor: 'tumorNum',
-      Header: 'Tumor Count',
+      accessor: "tumorNum",
+      Header: "Tumor Count",
       Filter: RangeFilter,
     },
     {
-      accessor: 'pValue',
-      Header: 'P Value',
-      Filter: RangeFilter
-    }
-  ]
-
-
+      accessor: "pValue",
+      Header: "P Value",
+      Filter: RangeFilter,
+    },
+  ];
 
   const boxPlotData = [
     {
-      y: cases.filter((c) => c.cancerId === view).map((c) => c.proteinLogRatioControl),
+      y: cases
+        .filter((c) => c.cancerId === view)
+        .map((c) => c.proteinLogRatioControl),
       type: "box",
       boxpoints: "all",
       name: "Control",
     },
     {
-      y: cases.filter((c) => c.cancerId === view).map((c) => c.proteinLogRatioCase),
+      y: cases
+        .filter((c) => c.cancerId === view)
+        .map((c) => c.proteinLogRatioCase),
       type: "box",
       boxpoints: "all",
       name: "Tumor",
@@ -108,57 +108,78 @@ export default function Results() {
     ])
   }*/
 
-
   const averages = form.cancer.map((c) => {
+    const tumorFilter = cases
+      .filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null)
+      .map((e) => Math.pow(2, e.proteinLogRatioCase));
+    const controlFilter = cases
+      .filter(
+        (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
+      )
+      .map((e) => Math.pow(2, e.proteinLogRatioControl));
 
-    const tumorFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null).map((e) => Math.pow(2, e.proteinLogRatioCase))
-    const controlFilter = cases.filter((d) => c.value === d.cancerId && d.proteinLogRatioControl !== null).map((e) => Math.pow(2, e.proteinLogRatioControl))
-
-    return (
-      {
-        'id': c.value,
-        'name': c.label,
-        'link': <a onClick={() => { setView(c.value); setTab('tumorView') }} href='javascript:void(0)'>{c.label}</a>,
-        'controlAverage': !isNaN(controlFilter[0]) ? average(controlFilter).toFixed(4) : 'NA',
-        'tumorAverage': !isNaN(tumorFilter[0]) ? average(tumorFilter).toFixed(4) : 'NA',
-        'controlNum': !isNaN(controlFilter[0]) ? controlFilter.length : 0,
-        'tumorNum': !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
-        'pValue': (Math.random() * Math.pow(1,-8)).toFixed(4)
-      }
-    )
-
-  })
+    return {
+      id: c.value,
+      name: c.label,
+      link: (
+        <a
+          onClick={() => {
+            setView(c.value);
+            setTab("tumorView");
+          }}
+          href="javascript:void(0)">
+          {c.label}
+        </a>
+      ),
+      controlAverage: !isNaN(controlFilter[0])
+        ? average(controlFilter).toFixed(4)
+        : "NA",
+      tumorAverage: !isNaN(tumorFilter[0])
+        ? average(tumorFilter).toFixed(4)
+        : "NA",
+      controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
+      tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
+      pValue: (Math.random() * Math.pow(1, -8)).toFixed(4),
+    };
+  });
 
   function multiBarPlotData() {
-    return ([
+    return [
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.controlAverage),
-        type: 'bar',
-        name: 'Control'
+        type: "bar",
+        name: "Control",
       },
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.tumorAverage),
-        type: 'bar',
-        name: 'Tumor'
-      }
-    ])
+        type: "bar",
+        name: "Tumor",
+      },
+    ];
   }
 
   function foldData() {
+    var caseList = cases
+      .filter((c) => view === c.cancerId)
+      .sort((a, b) =>
+        a.proteinLogRatioChange > b.proteinLogRatioChange ? 1 : -1,
+      );
+    console.log(
+      `${cases.filter((c) => view === c.cancerId).length.toString() * 60} px`,
+    );
 
-    var caseList = cases.filter((c) => view === c.cancerId).sort((a,b) => (a.proteinLogRatioChange > b.proteinLogRatioChange) ? 1 : -1)
-    console.log(`${(cases.filter((c) => view === c.cancerId).length).toString()*60} px`)
-
-    return ([
+    return [
       {
-        type: 'bar',
-        x: caseList.map((c) => c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null),
-        y: caseList.map((c) => c.proteinLogRatioChange ? c.name : null),
-        orientation: 'h'
-      }
-    ])
+        type: "bar",
+        x: caseList.map((c) =>
+          c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null,
+        ),
+        y: caseList.map((c) => (c.proteinLogRatioChange ? c.name : null)),
+        orientation: "h",
+      },
+    ];
   }
 
   const defaultLayout = {
@@ -196,33 +217,31 @@ export default function Results() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-
       <Tab eventKey="summary" title="Summary">
         <Row>
           <Col xl={12}>
             <Plot
               data={multiBarPlotData()}
-              layout={{ ...defaultLayout, barmode: 'group' }}
+              layout={{ ...defaultLayout, barmode: "group" }}
               config={defaultConfig}
               useResizeHandler
               className="flex-fill w-100"
               style={{ height: "500px" }}
             />
           </Col>
-
         </Row>
 
-        <Table
-          columns={summaryColumns}
-          data={averages}
-        />
-
+        <Table columns={summaryColumns} data={averages} />
       </Tab>
 
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="m-3 col-xl-3" controlId="tumorView">
           <Form.Label>Tumor Type</Form.Label>
-          <Form.Select name="caseView" onChange={(e) => setView(parseInt(e.target.value))} value={view} required>
+          <Form.Select
+            name="caseView"
+            onChange={(e) => setView(parseInt(e.target.value))}
+            value={view}
+            required>
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
@@ -234,10 +253,14 @@ export default function Results() {
           <Col xl={12}>
             <Plot
               data={boxPlotData}
-              layout={{ ...defaultLayout, yaxis: { title: 'Log Protien Abundance', zeroline: false }, autosize: true }}
+              layout={{
+                ...defaultLayout,
+                yaxis: { title: "Log Protien Abundance", zeroline: false },
+                autosize: true,
+              }}
               config={defaultConfig}
               useResizeHandler
-              style={{ height: "800px", minWidth: '100%' }}
+              style={{ height: "800px", minWidth: "100%" }}
             />
           </Col>
           {/*
@@ -256,21 +279,33 @@ export default function Results() {
         <Plot
           data={foldData()}
           config={defaultConfig}
-          layout={{ autosize: true, xaxis: {title: 'Log Fold Change', zeroline: false}, barmode: 'stack'}}
+          layout={{
+            autosize: true,
+            xaxis: { title: "Log Fold Change", zeroline: false },
+            barmode: "stack",
+          }}
           useResizeHandler
-          style={{  minWidth: '100%', minHeight: `1200px` }}
+          style={{ minWidth: "100%", minHeight: `1200px` }}
         />
 
         <Table
           columns={proteinAbundanceColumns}
-          data={cases.filter((c) => view === c.cancerId).map((c) => {
-            return ({
-              ...c,
-              proteinLogRatioCase: c.proteinLogRatioCase ? c.proteinLogRatioCase.toFixed(4) : 'NA',
-              proteinLogRatioControl: c.proteinLogRatioControl ? c.proteinLogRatioControl.toFixed(4) : 'NA',
-              proteinLogRatioChange: c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : 'NA',
-            })
-          })}
+          data={cases
+            .filter((c) => view === c.cancerId)
+            .map((c) => {
+              return {
+                ...c,
+                proteinLogRatioCase: c.proteinLogRatioCase
+                  ? c.proteinLogRatioCase.toFixed(4)
+                  : "NA",
+                proteinLogRatioControl: c.proteinLogRatioControl
+                  ? c.proteinLogRatioControl.toFixed(4)
+                  : "NA",
+                proteinLogRatioChange: c.proteinLogRatioChange
+                  ? c.proteinLogRatioChange.toFixed(4)
+                  : "NA",
+              };
+            })}
         />
       </Tab>
     </Tabs>
