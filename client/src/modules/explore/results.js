@@ -34,7 +34,7 @@ export default function Results() {
     },
     {
       accessor: "proteinLogRatioChange",
-      Header: "Fold Change Value",
+      Header: "Log Fold Change Value",
       Filter: RangeFilter,
     },
   ];
