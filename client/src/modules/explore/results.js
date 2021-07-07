@@ -46,23 +46,23 @@ export default function Results() {
       Filter: TextFilter,
     },
     {
-      accessor: "controlAverage",
-      Header: "Average Control",
-      Filter: RangeFilter,
-    },
-    {
       accessor: "tumorAverage",
       Header: "Average Tumor",
       Filter: RangeFilter,
     },
     {
-      accessor: "controlNum",
-      Header: "Control Count",
+      accessor: "controlAverage",
+      Header: "Average Control",
       Filter: RangeFilter,
     },
     {
       accessor: "tumorNum",
       Header: "Tumor Count",
+      Filter: RangeFilter,
+    },
+    {
+      accessor: "controlNum",
+      Header: "Control Count",
       Filter: RangeFilter,
     },
     {
@@ -147,15 +147,15 @@ export default function Results() {
     return [
       {
         x: averages.map((c) => c.name),
-        y: averages.map((c) => c.controlAverage),
-        type: "bar",
-        name: "Control",
-      },
-      {
-        x: averages.map((c) => c.name),
         y: averages.map((c) => c.tumorAverage),
         type: "bar",
         name: "Tumor",
+      },
+      {
+        x: averages.map((c) => c.name),
+        y: averages.map((c) => c.controlAverage),
+        type: "bar",
+        name: "Control",
       },
     ];
   }
@@ -235,19 +235,25 @@ export default function Results() {
       </Tab>
 
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="m-3 col-xl-3" controlId="tumorView">
-          <Form.Label>Tumor Type</Form.Label>
-          <Form.Select
-            name="caseView"
-            onChange={(e) => setView(parseInt(e.target.value))}
-            value={view}
-            required>
-            {form.cancer.map((o) => (
-              <option value={o.value} key={`dataset-${o.value}`}>
-                {o.label}
-              </option>
-            ))}
-          </Form.Select>
+        <Form.Group className="row m-3" controlId="tumorView">
+          <Form.Label
+            className="col-xl-1 col-xs-12 col-form-label"
+            style={{ minWidth: "100px" }}>
+            Tumor Type
+          </Form.Label>
+          <div className="col-xl-3">
+            <Form.Select
+              name="caseView"
+              onChange={(e) => setView(parseInt(e.target.value))}
+              value={view}
+              required>
+              {form.cancer.map((o) => (
+                <option value={o.value} key={`dataset-${o.value}`}>
+                  {o.label}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
         </Form.Group>
         <Row>
           <Col xl={12}>
