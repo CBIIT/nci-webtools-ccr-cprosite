@@ -222,7 +222,11 @@ export default function Results() {
           <Col xl={12}>
             <Plot
               data={multiBarPlotData()}
-              layout={{ ...defaultLayout, barmode: "group" }}
+              layout={{
+                ...defaultLayout,
+                title: "Average Tumor and Control",
+                barmode: "group",
+              }}
               config={defaultConfig}
               useResizeHandler
               className="flex-fill w-100"
@@ -263,6 +267,7 @@ export default function Results() {
               data={boxPlotData}
               layout={{
                 ...defaultLayout,
+                title: "Tumor vs Control",
                 yaxis: { title: "Log Protien Abundance", zeroline: false },
                 autosize: true,
               }}
@@ -290,6 +295,7 @@ export default function Results() {
             config={defaultConfig}
             layout={{
               autosize: true,
+              title: "Log Fold Change",
               xaxis: { title: "Log Fold Change", zeroline: false },
               barmode: "stack",
             }}
