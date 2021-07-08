@@ -218,7 +218,7 @@ export default function Results() {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
-        <Row>
+        <Row className="m-3">
           <Col xl={12}>
             <Plot
               data={multiBarPlotData()}
@@ -231,11 +231,13 @@ export default function Results() {
           </Col>
         </Row>
 
-        <Table columns={summaryColumns} data={averages} />
+        <div className="m-3">
+          <Table columns={summaryColumns} data={averages} />
+        </div>
       </Tab>
 
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="row m-3" controlId="tumorView">
+        <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label
             className="col-xl-1 col-xs-12 col-form-label"
             style={{ minWidth: "120px" }}>
@@ -255,7 +257,7 @@ export default function Results() {
             </Form.Select>
           </div>
         </Form.Group>
-        <Row>
+        <Row className="m-3">
           <Col xl={12}>
             <Plot
               data={boxPlotData}
@@ -282,37 +284,41 @@ export default function Results() {
           </Col>
           */}
         </Row>
-        <Plot
-          data={foldData()}
-          config={defaultConfig}
-          layout={{
-            autosize: true,
-            xaxis: { title: "Log Fold Change", zeroline: false },
-            barmode: "stack",
-          }}
-          useResizeHandler
-          style={{ minWidth: "100%", minHeight: `1200px` }}
-        />
+        <div className="m-3">
+          <Plot
+            data={foldData()}
+            config={defaultConfig}
+            layout={{
+              autosize: true,
+              xaxis: { title: "Log Fold Change", zeroline: false },
+              barmode: "stack",
+            }}
+            useResizeHandler
+            style={{ minWidth: "100%", minHeight: `1200px` }}
+          />
+        </div>
 
-        <Table
-          columns={proteinAbundanceColumns}
-          data={cases
-            .filter((c) => view === c.cancerId)
-            .map((c) => {
-              return {
-                ...c,
-                proteinLogRatioCase: c.proteinLogRatioCase
-                  ? c.proteinLogRatioCase.toFixed(4)
-                  : "NA",
-                proteinLogRatioControl: c.proteinLogRatioControl
-                  ? c.proteinLogRatioControl.toFixed(4)
-                  : "NA",
-                proteinLogRatioChange: c.proteinLogRatioChange
-                  ? c.proteinLogRatioChange.toFixed(4)
-                  : "NA",
-              };
-            })}
-        />
+        <div className="m-3">
+          <Table
+            columns={proteinAbundanceColumns}
+            data={cases
+              .filter((c) => view === c.cancerId)
+              .map((c) => {
+                return {
+                  ...c,
+                  proteinLogRatioCase: c.proteinLogRatioCase
+                    ? c.proteinLogRatioCase.toFixed(4)
+                    : "NA",
+                  proteinLogRatioControl: c.proteinLogRatioControl
+                    ? c.proteinLogRatioControl.toFixed(4)
+                    : "NA",
+                  proteinLogRatioChange: c.proteinLogRatioChange
+                    ? c.proteinLogRatioChange.toFixed(4)
+                    : "NA",
+                };
+              })}
+          />
+        </div>
       </Tab>
     </Tabs>
   );
