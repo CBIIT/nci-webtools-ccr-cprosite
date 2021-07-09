@@ -20,22 +20,18 @@ export default function Results() {
     {
       accessor: "name",
       Header: "Patient ID",
-      Filter: TextFilter,
-    },
-    {
-      accessor: "proteinLogRatioControl",
-      Header: "Control Value",
-      Filter: RangeFilter,
     },
     {
       accessor: "proteinLogRatioCase",
       Header: "Tumor Value",
-      Filter: RangeFilter,
+    },
+    {
+      accessor: "proteinLogRatioControl",
+      Header: "Control Value",
     },
     {
       accessor: "proteinLogRatioChange",
       Header: "Log Fold Change Value",
-      Filter: RangeFilter,
     },
   ];
 
@@ -43,32 +39,26 @@ export default function Results() {
     {
       accessor: "link",
       Header: "Tumor Type",
-      Filter: TextFilter,
     },
     {
       accessor: "tumorAverage",
       Header: "Average Tumor",
-      Filter: RangeFilter,
     },
     {
       accessor: "controlAverage",
       Header: "Average Control",
-      Filter: RangeFilter,
     },
     {
       accessor: "tumorNum",
       Header: "Tumor Count",
-      Filter: RangeFilter,
     },
     {
       accessor: "controlNum",
       Header: "Control Count",
-      Filter: RangeFilter,
     },
     {
       accessor: "pValue",
       Header: "P Value",
-      Filter: RangeFilter,
     },
   ];
 
@@ -224,7 +214,7 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: "Average Tumor and Control",
+                title: "<b>Average Tumor and Control</b>",
                 barmode: "group",
               }}
               config={defaultConfig}
@@ -267,7 +257,7 @@ export default function Results() {
               data={boxPlotData}
               layout={{
                 ...defaultLayout,
-                title: "Tumor vs Control",
+                title: "<b>Tumor vs Control</b>",
                 yaxis: { title: "Log Protien Abundance", zeroline: false },
                 autosize: true,
               }}
@@ -295,7 +285,7 @@ export default function Results() {
             config={defaultConfig}
             layout={{
               autosize: true,
-              title: "Log Fold Change",
+              title: "<b>Log Fold Change</b>",
               xaxis: { title: "Log Fold Change", zeroline: false },
               barmode: "stack",
             }}
