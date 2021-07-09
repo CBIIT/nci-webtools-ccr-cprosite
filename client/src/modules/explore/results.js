@@ -19,46 +19,46 @@ export default function Results() {
   const proteinAbundanceColumns = [
     {
       accessor: "name",
-      Header: "Patient ID",
+      Header: <b>Patient ID</b>,
     },
     {
       accessor: "proteinLogRatioCase",
-      Header: "Tumor Value",
+      Header: <b>Tumor Value</b>,
     },
     {
       accessor: "proteinLogRatioControl",
-      Header: "Control Value",
+      Header: <b>Control Value</b>,
     },
     {
       accessor: "proteinLogRatioChange",
-      Header: "Log Fold Change Value",
+      Header: <b>Log Fold Change Value</b>,
     },
   ];
 
   const summaryColumns = [
     {
       accessor: "link",
-      Header: "Tumor Type",
+      Header: <b>Tumor Type</b>,
     },
     {
       accessor: "tumorAverage",
-      Header: "Average Tumor",
+      Header: <b>Average Tumor</b>,
     },
     {
       accessor: "controlAverage",
-      Header: "Average Control",
+      Header: <b>Average Control</b>,
     },
     {
       accessor: "tumorNum",
-      Header: "Tumor Count",
+      Header: <b>Tumor Count</b>,
     },
     {
       accessor: "controlNum",
-      Header: "Control Count",
+      Header: <b>Control Count</b>,
     },
     {
       accessor: "pValue",
-      Header: "P Value",
+      Header: <b>P Value</b>,
     },
   ];
 

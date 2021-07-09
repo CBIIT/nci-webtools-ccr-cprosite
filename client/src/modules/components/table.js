@@ -75,12 +75,14 @@ export default function Table({ columns, data, options }) {
   return (
     <>
       <div className="table-responsive">
-        <BootstrapTable {...getTableProps()} striped hover bordered>
+        <BootstrapTable {...getTableProps()} striped hover>
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <th
+                    style={{ borderBottom: "5px" }}
+                    {...column.getHeaderProps(column.getSortByToggleProps())}>
                     {column.render("Header")}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
@@ -95,7 +97,7 @@ export default function Table({ columns, data, options }) {
                 ))}
               </tr>
             ))}
-            {headerGroups.map((headerGroup) => (
+            {/*headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <td {...column.getHeaderProps()}>
@@ -105,7 +107,7 @@ export default function Table({ columns, data, options }) {
                   </td>
                 ))}
               </tr>
-            ))}
+                ))*/}
           </thead>
 
           <tbody {...getTableBodyProps()}>
@@ -114,7 +116,11 @@ export default function Table({ columns, data, options }) {
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                    <td
+                      style={{ whiteSpace: "nowrap" }}
+                      {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </td>
                   ))}
                 </tr>
               );
