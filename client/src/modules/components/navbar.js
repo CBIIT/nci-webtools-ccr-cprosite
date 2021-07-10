@@ -15,8 +15,7 @@ export default function Navbar({ links = [], className, children }) {
               key={link.path}
               activeClassName="active"
               className="nav-link"
-              exact={link.exact}
-            >
+              exact={link.exact}>
               {link.title}
             </NavLink>
           ))}
