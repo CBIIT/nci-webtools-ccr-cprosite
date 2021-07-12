@@ -39,6 +39,7 @@ export default function Results() {
     {
       accessor: "link",
       Header: <b>Tumor Type</b>,
+      sort: true,
     },
     {
       accessor: "tumorAverage",
