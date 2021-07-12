@@ -61,6 +61,14 @@ export default function Results() {
       accessor: "pValue",
       Header: <b>P Value</b>,
     },
+    {
+      accessor: "tumorError",
+      Header: <b>Tumor Standard Error</b>,
+    },
+    {
+      accessor: "controlError",
+      Header: <b>Control Standard Error</b>,
+    },
   ];
 
   const boxPlotData = [
@@ -99,6 +107,19 @@ export default function Results() {
     ])
   }*/
 
+  function calcStandardError(values, average) {
+    var result = 0;
+
+    for (var i = 0; i < values.length; i++) {
+      result += Math.pow(values[0] - average, 2);
+    }
+
+    result = result / values.length;
+    result = Math.sqrt(result) / Math.sqrt(values.length);
+
+    return !isNaN(result) ? result.toFixed(4) : "NA";
+  }
+
   const averages = form.cancer.map((c) => {
     const tumorFilter = cases
       .filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null)
@@ -108,6 +129,13 @@ export default function Results() {
         (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
       )
       .map((e) => Math.pow(2, e.proteinLogRatioControl));
+
+    const controlAverage = !isNaN(controlFilter[0])
+      ? average(controlFilter).toFixed(4)
+      : "NA";
+    const tumorAverage = !isNaN(tumorFilter[0])
+      ? average(tumorFilter).toFixed(4)
+      : "NA";
 
     return {
       id: c.value,
@@ -122,15 +150,27 @@ export default function Results() {
           {c.label}
         </a>
       ),
-      controlAverage: !isNaN(controlFilter[0])
-        ? average(controlFilter).toFixed(4)
-        : "NA",
-      tumorAverage: !isNaN(tumorFilter[0])
-        ? average(tumorFilter).toFixed(4)
-        : "NA",
+      controlAverage: controlAverage,
+      tumorAverage: tumorAverage,
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
       pValue: (Math.random() * Math.pow(1, -8)).toFixed(4),
+      tumorError: calcStandardError(
+        cases
+          .filter(
+            (d) => c.value === d.cancerId && d.proteinLogRatioCase !== null,
+          )
+          .map((e) => e.proteinLogRatioCase),
+        tumorAverage,
+      ),
+      controlError: calcStandardError(
+        cases
+          .filter(
+            (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
+          )
+          .map((e) => e.proteinLogRatioControl),
+        controlAverage,
+      ),
     };
   });
 
@@ -139,12 +179,16 @@ export default function Results() {
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.tumorAverage),
+        text: averages.map((c) => c.tumorError),
+        textposition: "outside",
         type: "bar",
         name: "Tumor",
       },
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.controlAverage),
+        text: averages.map((c) => c.controlError),
+        textposition: "outside",
         type: "bar",
         name: "Control",
       },

@@ -82,7 +82,6 @@ export default function Table({ columns, data, options }) {
                 {headerGroup.headers.map((column) => (
                   <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     {column.render("Header")}
-                    {console.log(column)}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
                         <i className="bi bi-sort-down text-primary ml-1" />
