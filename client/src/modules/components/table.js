@@ -80,9 +80,7 @@ export default function Table({ columns, data, options }) {
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th
-                    style={{ borderBottom: "5px" }}
-                    {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                     {column.render("Header")}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
@@ -90,6 +88,8 @@ export default function Table({ columns, data, options }) {
                       ) : (
                         <i className="bi bi-sort-up text-primary ml-1" />
                       )
+                    ) : column.id === "link" ? (
+                      <i className="bi bi-sort-up text-primary ml-1" />
                     ) : (
                       ""
                     )}

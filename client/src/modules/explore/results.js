@@ -4,6 +4,8 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
+import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
+import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
 import { casesState, formState } from "./explore.state";
@@ -15,6 +17,8 @@ export default function Results() {
   const tumors = form.cancer.map((c) => c.value);
   const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
+
+  const [plotTab, setPlot] = useState("tumorVsControl");
 
   const proteinAbundanceColumns = [
     {
@@ -39,6 +43,7 @@ export default function Results() {
     {
       accessor: "link",
       Header: <b>Tumor Type</b>,
+      sort: true,
     },
     {
       accessor: "tumorAverage",
@@ -59,6 +64,14 @@ export default function Results() {
     {
       accessor: "pValue",
       Header: <b>P Value</b>,
+    },
+    {
+      accessor: "tumorError",
+      Header: <b>Tumor Standard Error</b>,
+    },
+    {
+      accessor: "controlError",
+      Header: <b>Control Standard Error</b>,
     },
   ];
 
@@ -98,6 +111,19 @@ export default function Results() {
     ])
   }*/
 
+  function calcStandardError(values, average) {
+    var result = 0;
+
+    for (var i = 0; i < values.length; i++) {
+      result += Math.pow(values[0] - average, 2);
+    }
+
+    result = result / values.length;
+    result = Math.sqrt(result) / Math.sqrt(values.length);
+
+    return !isNaN(result) ? result.toFixed(4) : "NA";
+  }
+
   const averages = form.cancer.map((c) => {
     const tumorFilter = cases
       .filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null)
@@ -107,6 +133,13 @@ export default function Results() {
         (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
       )
       .map((e) => Math.pow(2, e.proteinLogRatioControl));
+
+    const controlAverage = !isNaN(controlFilter[0])
+      ? average(controlFilter).toFixed(4)
+      : "NA";
+    const tumorAverage = !isNaN(tumorFilter[0])
+      ? average(tumorFilter).toFixed(4)
+      : "NA";
 
     return {
       id: c.value,
@@ -121,15 +154,27 @@ export default function Results() {
           {c.label}
         </a>
       ),
-      controlAverage: !isNaN(controlFilter[0])
-        ? average(controlFilter).toFixed(4)
-        : "NA",
-      tumorAverage: !isNaN(tumorFilter[0])
-        ? average(tumorFilter).toFixed(4)
-        : "NA",
+      controlAverage: controlAverage,
+      tumorAverage: tumorAverage,
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
       pValue: (Math.random() * Math.pow(1, -8)).toFixed(4),
+      tumorError: calcStandardError(
+        cases
+          .filter(
+            (d) => c.value === d.cancerId && d.proteinLogRatioCase !== null,
+          )
+          .map((e) => e.proteinLogRatioCase),
+        tumorAverage,
+      ),
+      controlError: calcStandardError(
+        cases
+          .filter(
+            (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
+          )
+          .map((e) => e.proteinLogRatioControl),
+        controlAverage,
+      ),
     };
   });
 
@@ -138,12 +183,16 @@ export default function Results() {
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.tumorAverage),
+        text: averages.map((c) => c.tumorError),
+        textposition: "outside",
         type: "bar",
         name: "Tumor",
       },
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.controlAverage),
+        text: averages.map((c) => c.controlError),
+        textposition: "outside",
         type: "bar",
         name: "Control",
       },
@@ -170,6 +219,10 @@ export default function Results() {
         orientation: "h",
       },
     ];
+  }
+
+  function handleToggle(e) {
+    setPlot(e.target.control.id);
   }
 
   const defaultLayout = {
@@ -250,22 +303,47 @@ export default function Results() {
               ))}
             </Form.Select>
           </div>
+
+          <ToggleButtonGroup
+            type="radio"
+            name="plot-tab"
+            value={plotTab}
+            className="col-xl-5">
+            <ToggleButton
+              className={
+                plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
+              }
+              id={"tumorVsControl"}
+              onClick={handleToggle}>
+              Tumor vs Control
+            </ToggleButton>
+            <ToggleButton
+              className={
+                plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
+              }
+              id={"foldChange"}
+              onClick={handleToggle}>
+              Log Fold Change
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Form.Group>
         <Row className="m-3">
-          <Col xl={12}>
-            <Plot
-              data={boxPlotData}
-              layout={{
-                ...defaultLayout,
-                title: "<b>Tumor vs Control</b>",
-                yaxis: { title: "Log Protien Abundance", zeroline: false },
-                autosize: true,
-              }}
-              config={defaultConfig}
-              useResizeHandler
-              style={{ height: "800px", minWidth: "100%" }}
-            />
-          </Col>
+          {plotTab === "tumorVsControl" && (
+            <Col xl={12} style={{ height: "800px" }}>
+              <Plot
+                data={boxPlotData}
+                layout={{
+                  ...defaultLayout,
+                  title: "<b>Tumor vs Control</b>",
+                  yaxis: { title: "Log Protien Abundance", zeroline: false },
+                  autosize: true,
+                }}
+                config={defaultConfig}
+                useResizeHandler
+                style={{ height: "800px", minWidth: "100%" }}
+              />
+            </Col>
+          )}
           {/*
           <Col xl={6}>
             <Plot
@@ -279,20 +357,22 @@ export default function Results() {
           </Col>
           */}
         </Row>
-        <div className="m-3">
-          <Plot
-            data={foldData()}
-            config={defaultConfig}
-            layout={{
-              autosize: true,
-              title: "<b>Log Fold Change</b>",
-              xaxis: { title: "Log Fold Change", zeroline: false },
-              barmode: "stack",
-            }}
-            useResizeHandler
-            style={{ minWidth: "100%", minHeight: `1200px` }}
-          />
-        </div>
+        {plotTab === "foldChange" && (
+          <div className="m-3" style={{ height: "800px", overflowY: "scroll" }}>
+            <Plot
+              data={foldData()}
+              config={defaultConfig}
+              layout={{
+                autosize: true,
+                title: "<b>Log Fold Change</b>",
+                xaxis: { title: "Log Fold Change", zeroline: false },
+                barmode: "stack",
+              }}
+              useResizeHandler
+              style={{ minWidth: "100%", height: `1200px` }}
+            />
+          </div>
+        )}
 
         <div className="m-3">
           <Table
