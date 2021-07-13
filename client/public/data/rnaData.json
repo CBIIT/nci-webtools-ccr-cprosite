@@ -1,0 +1,547 @@
+[
+  {
+    "name": "C3L-00001",
+    "normalValue": 3054,
+    "tumorValue": 2318
+  },
+  {
+    "name": "C3L-00009",
+    "normalValue": 3328,
+    "tumorValue": 4200
+  },
+  {
+    "name": "C3L-00080",
+    "normalValue": 2992,
+    "tumorValue": 3328
+  },
+  {
+    "name": "C3L-00083",
+    "normalValue": 3835,
+    "tumorValue": 1479
+  },
+  {
+    "name": "C3L-00093",
+    "normalValue": 6094,
+    "tumorValue": 3878
+  },
+  {
+    "name": "C3L-00094",
+    "normalValue": 3851,
+    "tumorValue": 4183
+  },
+  {
+    "name": "C3L-00095",
+    "normalValue": 3520,
+    "tumorValue": 3942
+  },
+  {
+    "name": "C3L-00140",
+    "normalValue": 3215,
+    "tumorValue": 1869
+  },
+  {
+    "name": "C3L-00144",
+    "normalValue": 2331,
+    "tumorValue": 2566
+  },
+  {
+    "name": "C3L-00263",
+    "normalValue": 9025,
+    "tumorValue": 3592
+  },
+  {
+    "name": "C3L-00279",
+    "normalValue": 5560,
+    "tumorValue": 2571
+  },
+  {
+    "name": "C3L-00368",
+    "normalValue": 2578,
+    "tumorValue": 2756
+  },
+  {
+    "name": "C3L-00412",
+    "normalValue": 2658,
+    "tumorValue": 4280
+  },
+  {
+    "name": "C3L-00422",
+    "normalValue": 3829,
+    "tumorValue": 2052
+  },
+  {
+    "name": "C3L-00510",
+    "normalValue": 2780,
+    "tumorValue": 2395
+  },
+  {
+    "name": "C3L-00604",
+    "normalValue": 3322,
+    "tumorValue": 2374
+  },
+  {
+    "name": "C3L-00893",
+    "normalValue": 4985,
+    "tumorValue": 1945
+  },
+  {
+    "name": "C3L-00913",
+    "normalValue": 5342,
+    "tumorValue": 3525
+  },
+  {
+    "name": "C3L-00973",
+    "normalValue": 3506,
+    "tumorValue": 3180
+  },
+  {
+    "name": "C3L-01330",
+    "normalValue": 3764,
+    "tumorValue": 2081
+  },
+  {
+    "name": "C3L-01632",
+    "normalValue": 3598,
+    "tumorValue": 3763
+  },
+  {
+    "name": "C3L-01682",
+    "normalValue": 4112,
+    "tumorValue": 3752
+  },
+  {
+    "name": "C3L-01683",
+    "normalValue": 3253,
+    "tumorValue": 3744
+  },
+  {
+    "name": "C3L-01862",
+    "normalValue": null,
+    "tumorValue": 2834
+  },
+  {
+    "name": "C3L-01889",
+    "normalValue": 2517,
+    "tumorValue": 1378
+  },
+  {
+    "name": "C3L-01890",
+    "normalValue": 3959,
+    "tumorValue": 1267
+  },
+  {
+    "name": "C3L-01924",
+    "normalValue": 4038,
+    "tumorValue": 3667
+  },
+  {
+    "name": "C3L-02219",
+    "normalValue": 3727,
+    "tumorValue": 2237
+  },
+  {
+    "name": "C3L-02345",
+    "normalValue": 2928,
+    "tumorValue": 3040
+  },
+  {
+    "name": "C3L-02348",
+    "normalValue": 4202,
+    "tumorValue": 3130
+  },
+  {
+    "name": "C3L-02350",
+    "normalValue": 4079,
+    "tumorValue": 3425
+  },
+  {
+    "name": "C3L-02365",
+    "normalValue": 2882,
+    "tumorValue": 2650
+  },
+  {
+    "name": "C3L-02508",
+    "normalValue": 4033,
+    "tumorValue": 3349
+  },
+  {
+    "name": "C3L-02549",
+    "normalValue": 4362,
+    "tumorValue": 2861
+  },
+  {
+    "name": "C3N-00167",
+    "normalValue": 2565,
+    "tumorValue": 2930
+  },
+  {
+    "name": "C3N-00169",
+    "normalValue": 3403,
+    "tumorValue": 3399
+  },
+  {
+    "name": "C3N-00175",
+    "normalValue": 4189,
+    "tumorValue": 2474
+  },
+  {
+    "name": "C3N-00180",
+    "normalValue": 5569,
+    "tumorValue": 2448
+  },
+  {
+    "name": "C3N-00199",
+    "normalValue": 3316,
+    "tumorValue": 2753
+  },
+  {
+    "name": "C3N-00203",
+    "normalValue": 4587,
+    "tumorValue": 3365
+  },
+  {
+    "name": "C3N-00217",
+    "normalValue": 6718,
+    "tumorValue": 2481
+  },
+  {
+    "name": "C3N-00223",
+    "normalValue": 3516,
+    "tumorValue": 1894
+  },
+  {
+    "name": "C3N-00293",
+    "normalValue": 2838,
+    "tumorValue": 3276
+  },
+  {
+    "name": "C3N-00294",
+    "normalValue": null,
+    "tumorValue": 2304
+  },
+  {
+    "name": "C3N-00433",
+    "normalValue": 3588,
+    "tumorValue": 3690
+  },
+  {
+    "name": "C3N-00545",
+    "normalValue": 7018,
+    "tumorValue": 3342
+  },
+  {
+    "name": "C3N-00546",
+    "normalValue": 4792,
+    "tumorValue": 3014
+  },
+  {
+    "name": "C3N-00547",
+    "normalValue": 3318,
+    "tumorValue": 2363
+  },
+  {
+    "name": "C3N-00549",
+    "normalValue": 4719,
+    "tumorValue": 3555
+  },
+  {
+    "name": "C3N-00550",
+    "normalValue": 3945,
+    "tumorValue": 2361
+  },
+  {
+    "name": "C3N-00551",
+    "normalValue": 4132,
+    "tumorValue": 2862
+  },
+  {
+    "name": "C3N-00552",
+    "normalValue": 3386,
+    "tumorValue": 2810
+  },
+  {
+    "name": "C3N-00556",
+    "normalValue": 5090,
+    "tumorValue": 3904
+  },
+  {
+    "name": "C3N-00559",
+    "normalValue": 4477,
+    "tumorValue": 2890
+  },
+  {
+    "name": "C3N-00560",
+    "normalValue": 5011,
+    "tumorValue": 3578
+  },
+  {
+    "name": "C3N-00572",
+    "normalValue": 2960,
+    "tumorValue": 2234
+  },
+  {
+    "name": "C3N-00574",
+    "normalValue": 4475,
+    "tumorValue": 3463
+  },
+  {
+    "name": "C3N-00578",
+    "normalValue": 4681,
+    "tumorValue": 3837
+  },
+  {
+    "name": "C3N-00579",
+    "normalValue": 3455,
+    "tumorValue": 3521
+  },
+  {
+    "name": "C3N-00580",
+    "normalValue": 3562,
+    "tumorValue": 2852
+  },
+  {
+    "name": "C3N-00704",
+    "normalValue": 2882,
+    "tumorValue": 2424
+  },
+  {
+    "name": "C3N-00737",
+    "normalValue": 3608,
+    "tumorValue": 2579
+  },
+  {
+    "name": "C3N-00738",
+    "normalValue": 6348,
+    "tumorValue": 5673
+  },
+  {
+    "name": "C3N-00959",
+    "normalValue": 6284,
+    "tumorValue": 2942
+  },
+  {
+    "name": "C3N-01016",
+    "normalValue": 3541,
+    "tumorValue": 2964
+  },
+  {
+    "name": "C3N-01021",
+    "normalValue": 3126,
+    "tumorValue": 3785
+  },
+  {
+    "name": "C3N-01023",
+    "normalValue": 4055,
+    "tumorValue": 3197
+  },
+  {
+    "name": "C3N-01024",
+    "normalValue": 5575,
+    "tumorValue": 2147
+  },
+  {
+    "name": "C3N-01030",
+    "normalValue": 4206,
+    "tumorValue": 3866
+  },
+  {
+    "name": "C3N-01071",
+    "normalValue": 6474,
+    "tumorValue": 3341
+  },
+  {
+    "name": "C3N-01072",
+    "normalValue": 4543,
+    "tumorValue": 3046
+  },
+  {
+    "name": "C3N-01074",
+    "normalValue": null,
+    "tumorValue": 4412
+  },
+  {
+    "name": "C3N-01405",
+    "normalValue": 2514,
+    "tumorValue": 4140
+  },
+  {
+    "name": "C3N-01410",
+    "normalValue": 3170,
+    "tumorValue": 3436
+  },
+  {
+    "name": "C3N-01413",
+    "normalValue": 4501,
+    "tumorValue": 2107
+  },
+  {
+    "name": "C3N-01414",
+    "normalValue": 6931,
+    "tumorValue": 3324
+  },
+  {
+    "name": "C3N-01415",
+    "normalValue": 3993,
+    "tumorValue": 3358
+  },
+  {
+    "name": "C3N-01416",
+    "normalValue": 4831,
+    "tumorValue": 3187
+  },
+  {
+    "name": "C3N-01488",
+    "normalValue": 4641,
+    "tumorValue": 4358
+  },
+  {
+    "name": "C3N-01489",
+    "normalValue": 3761,
+    "tumorValue": 2669
+  },
+  {
+    "name": "C3N-01799",
+    "normalValue": 3692,
+    "tumorValue": 2748
+  },
+  {
+    "name": "C3N-01823",
+    "normalValue": 3176,
+    "tumorValue": 2667
+  },
+  {
+    "name": "C3N-01842",
+    "normalValue": null,
+    "tumorValue": 2669
+  },
+  {
+    "name": "C3N-02000",
+    "normalValue": 3266,
+    "tumorValue": 2730
+  },
+  {
+    "name": "C3N-02002",
+    "normalValue": 4638,
+    "tumorValue": 2129
+  },
+  {
+    "name": "C3N-02003",
+    "normalValue": 3346,
+    "tumorValue": 2503
+  },
+  {
+    "name": "C3N-02067",
+    "normalValue": 3669,
+    "tumorValue": 3053
+  },
+  {
+    "name": "C3N-02087",
+    "normalValue": 7290,
+    "tumorValue": 2878
+  },
+  {
+    "name": "C3N-02089",
+    "normalValue": 3813,
+    "tumorValue": 2079
+  },
+  {
+    "name": "C3N-02145",
+    "normalValue": 4078,
+    "tumorValue": 2766
+  },
+  {
+    "name": "C3N-02149",
+    "normalValue": 5379,
+    "tumorValue": 2994
+  },
+  {
+    "name": "C3N-02155",
+    "normalValue": 4801,
+    "tumorValue": 3194
+  },
+  {
+    "name": "C3N-02158",
+    "normalValue": 6301,
+    "tumorValue": 3774
+  },
+  {
+    "name": "C3N-02379",
+    "normalValue": 3805,
+    "tumorValue": 3243
+  },
+  {
+    "name": "C3N-02379.1",
+    "normalValue": null,
+    "tumorValue": null
+  },
+  {
+    "name": "C3N-02380",
+    "normalValue": 2536,
+    "tumorValue": 2008
+  },
+  {
+    "name": "C3N-02421",
+    "normalValue": 3947,
+    "tumorValue": 2297
+  },
+  {
+    "name": "C3N-02422",
+    "normalValue": null,
+    "tumorValue": 1416
+  },
+  {
+    "name": "C3N-02423",
+    "normalValue": 2860,
+    "tumorValue": 2686
+  },
+  {
+    "name": "C3N-02424",
+    "normalValue": 3381,
+    "tumorValue": 3120
+  },
+  {
+    "name": "C3N-02433",
+    "normalValue": 4806,
+    "tumorValue": 2551
+  },
+  {
+    "name": "C3N-02529",
+    "normalValue": 3550,
+    "tumorValue": 4044
+  },
+  {
+    "name": "C3N-02572",
+    "normalValue": 2992,
+    "tumorValue": 1911
+  },
+  {
+    "name": "C3N-02582",
+    "normalValue": 3708,
+    "tumorValue": 3288
+  },
+  {
+    "name": "C3N-02586",
+    "normalValue": 2991,
+    "tumorValue": 3335
+  },
+  {
+    "name": "C3N-02587",
+    "normalValue": 3579,
+    "tumorValue": 2074
+  },
+  {
+    "name": "C3N-02587.1",
+    "normalValue": null,
+    "tumorValue": null
+  },
+  {
+    "name": "C3N-02588",
+    "normalValue": 3228,
+    "tumorValue": 2028
+  },
+  {
+    "name": "C3N-02729",
+    "normalValue": 4657,
+    "tumorValue": 1993
+  }
+]
