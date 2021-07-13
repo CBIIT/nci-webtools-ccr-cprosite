@@ -24,10 +24,10 @@ RUN npm install
 COPY client /client/
 
 RUN npm run build \
- && mv /client/build /var/www/html/cptac-search \
+ && mv /client/build /var/www/html/cprosite \
  && chown -R apache:apache /var/www/html
 
-WORKDIR /var/www/html/cptac-search
+WORKDIR /var/www/html/cprosite
 
 EXPOSE 80
 EXPOSE 443

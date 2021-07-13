@@ -1,12 +1,17 @@
 # DynamoDB Schema
 
-| Partition Key   | Sort Key                            | Attributes                                 |
-| --------------- | ----------------------------------- | ------------------------------------------ |
-| cancer#cancerId | cancer#cancerId                     | <ul><li>name</li><li>description</li></ul> |
-| gene#geneId     | gene#geneId                         | <ul><li>name</li><li>description</li></ul> |
-|                 | caseSummary#cancerId                | <ul><li>meanNormalProteinLogRatio</li><li>standardErrorNormalProteinLogRatio</li><li>meanTumorProteinLogRatio</li><li>standardErrorTumorProteinLogRatio</li><li>pValueProteinLogRatio</li><li>meanNormalPhosphoproteinLogRatio</li><li>standardErrorNormalPhosphoproteinLogRatio</li><li>meanTumorPhosphoproteinLogRatio</li><li>standardErrorTumorPhosphoproteinLogRatio</li><li>pValuePhosphoproteinLogRatio</li><li>meanNormalRnaValue</li><li>standardErrorNormalRnaValue</li><li>meanTumorRnaValue</li><li>standardErrorTumorRnaValue</li><li>pValueRnaValue</li><li>meanNormalTcgaRnaValue</li><li>standardErrorNormalTcgaRnaValue</li><li>meanTumorTcgaRnaValue</li><li>standardErrorTumorTcgaRnaValue</li><li>pValueTcgaRnaValue</li> |
-|                 | case#cancerId#caseId                | <ul><li>name</li><li>normalProteinLogRatio</li><li>tumorProteinLogRatio</li><li>normalPhosphoproteinLogRatio</li><li>tumorPhosphoproteinLogRatio</li><li>normalRnaValue</li><li>tumorRnaValue</li><li>normalTcgaRnaValue</li><li>tumorTcgaRnaValue</li><li>accession</li><li>phosphorylationSite</li><li>phosphopeptide</li></ul> |
-|                 | mutation#cancerId#caseId#mutationId | <ul><li>mutationType</li><li>cdnaMutation</li><li>proteinMutation</li><li>startPosition</li><li>endPosition</li></ul> |
+| Partition Key        | Sort Key                            | Attributes                                 |
+| -------------------- | ----------------------------------- | ------------------------------------------ |
+| cancer#cancerId      | cancer#cancerId                     | <ul><li>name</li><li>description</li></ul> |
+| gene#geneId          | gene#geneId                         | <ul><li>name</li><li>description</li></ul> |
+| case#geneId#cancerId | proteinDataSummary#caseId           | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
+|                      | phosphoproteinDataSummary#caseId    | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
+|                      | rnaDataSummary#caseId               | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
+|                      | tcgaRnaDataSummary#caseId           | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
+|                      | proteinData#caseId                  | <ul><li>name</li><li>normalValue</li><li>tumorValue</li></ul> |
+|                      | phosphoproteinData#caseId           | <ul><li>name</li><li>normalValue</li><li>tumorValue</li><li>accession</li><li>phosphorylationSite</li><li>phosphopeptide</li></ul> |
+|                      | rnaData#caseId                      | <ul><li>name</li><li>normalValue</li><li>tumorValue</li></ul> |
+|                      | tcgaRnaData#caseId                  | <ul><li>name</li><li>normalValue</li><li>tumorValue</li></ul> |
 
 # Import Process
 
