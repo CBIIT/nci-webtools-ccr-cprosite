@@ -183,16 +183,22 @@ export default function Results() {
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.tumorAverage),
-        text: averages.map((c) => c.tumorError),
-        textposition: "outside",
+        error_y: {
+          type: "data",
+          array: averages.map((c) => c.tumorError),
+          visible: true,
+        },
         type: "bar",
         name: "Tumor",
       },
       {
         x: averages.map((c) => c.name),
         y: averages.map((c) => c.controlAverage),
-        text: averages.map((c) => c.controlError),
-        textposition: "outside",
+        error_y: {
+          type: "data",
+          array: averages.map((c) => c.controlError),
+          visible: true,
+        },
         type: "bar",
         name: "Control",
       },
