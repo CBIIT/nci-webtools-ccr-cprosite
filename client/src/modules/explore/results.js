@@ -4,6 +4,8 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
+import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
+import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
 import { casesState, formState } from "./explore.state";
@@ -15,6 +17,8 @@ export default function Results() {
   const tumors = form.cancer.map((c) => c.value);
   const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
+
+  const [plotTab, setPlot] = useState("tumorVsControl");
 
   const proteinAbundanceColumns = [
     {
@@ -217,6 +221,10 @@ export default function Results() {
     ];
   }
 
+  function handleToggle(e) {
+    setPlot(e.target.control.id);
+  }
+
   const defaultLayout = {
     xaxis: {
       zeroline: false,
@@ -295,22 +303,47 @@ export default function Results() {
               ))}
             </Form.Select>
           </div>
+
+          <ToggleButtonGroup
+            type="radio"
+            name="plot-tab"
+            value={plotTab}
+            className="col-xl-5">
+            <ToggleButton
+              className={
+                plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
+              }
+              id={"tumorVsControl"}
+              onClick={handleToggle}>
+              Tumor vs Control
+            </ToggleButton>
+            <ToggleButton
+              className={
+                plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
+              }
+              id={"foldChange"}
+              onClick={handleToggle}>
+              Log Fold Change
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Form.Group>
         <Row className="m-3">
-          <Col xl={12}>
-            <Plot
-              data={boxPlotData}
-              layout={{
-                ...defaultLayout,
-                title: "<b>Tumor vs Control</b>",
-                yaxis: { title: "Log Protien Abundance", zeroline: false },
-                autosize: true,
-              }}
-              config={defaultConfig}
-              useResizeHandler
-              style={{ height: "800px", minWidth: "100%" }}
-            />
-          </Col>
+          {plotTab === "tumorVsControl" && (
+            <Col xl={12} style={{ height: "800px" }}>
+              <Plot
+                data={boxPlotData}
+                layout={{
+                  ...defaultLayout,
+                  title: "<b>Tumor vs Control</b>",
+                  yaxis: { title: "Log Protien Abundance", zeroline: false },
+                  autosize: true,
+                }}
+                config={defaultConfig}
+                useResizeHandler
+                style={{ height: "800px", minWidth: "100%" }}
+              />
+            </Col>
+          )}
           {/*
           <Col xl={6}>
             <Plot
@@ -324,20 +357,22 @@ export default function Results() {
           </Col>
           */}
         </Row>
-        <div className="m-3">
-          <Plot
-            data={foldData()}
-            config={defaultConfig}
-            layout={{
-              autosize: true,
-              title: "<b>Log Fold Change</b>",
-              xaxis: { title: "Log Fold Change", zeroline: false },
-              barmode: "stack",
-            }}
-            useResizeHandler
-            style={{ minWidth: "100%", minHeight: `1200px` }}
-          />
-        </div>
+        {plotTab === "foldChange" && (
+          <div className="m-3" style={{ height: "800px", overflowY: "scroll" }}>
+            <Plot
+              data={foldData()}
+              config={defaultConfig}
+              layout={{
+                autosize: true,
+                title: "<b>Log Fold Change</b>",
+                xaxis: { title: "Log Fold Change", zeroline: false },
+                barmode: "stack",
+              }}
+              useResizeHandler
+              style={{ minWidth: "100%", height: `1200px` }}
+            />
+          </div>
+        )}
 
         <div className="m-3">
           <Table
