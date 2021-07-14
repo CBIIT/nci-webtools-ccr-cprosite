@@ -198,7 +198,8 @@ export default function Results() {
 
     return {
       name: c[0],
-      peptide: patients.filter((d) => d.phosphopeptide)[0].phosphopeptide,
+      peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
+        .phosphopeptide,
       tumorAverage: tumorAverage,
       normalAverage: normalAverage,
       link: (
