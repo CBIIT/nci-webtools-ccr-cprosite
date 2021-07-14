@@ -59,7 +59,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <Form.Group className="mb-3" controlId="dataset">
         <Form.Label className="required">Dataset</Form.Label>
-        <Form.Select name="dataset" onBlur={handleChange} required>
+        <Form.Select name="dataset" onChange={handleChange} required>
           <option value="" hidden>
             No dataset selected
           </option>
@@ -97,6 +97,18 @@ export default function ExploreForm({ onSubmit, onReset }) {
           clearIndicator
         />
       </Form.Group>
+
+      {form.dataset === "phosphorylation-site" && (
+        <Form.Group className="mb-3" controlId="combination">
+          <Form.Label className="required">Combination</Form.Label>
+          <Form.Select name="combination" onChange={handleChange} required>
+            <option value="" hidden>
+              No combination selected
+            </option>
+            <option value="cdk1">CDK1</option>
+          </Form.Select>
+        </Form.Group>
+      )}
 
       {form.analysis === "correlation" && (
         <fieldset

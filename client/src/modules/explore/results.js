@@ -8,16 +8,17 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
-import { casesState, formState } from "./explore.state";
+import { casesState, formState, siteState } from "./explore.state";
 import { useState } from "react";
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
+  const sites = useRecoilValue(siteState);
   const form = useRecoilValue(formState);
+  const dataset = form.dataset;
   const tumors = form.cancer.map((c) => c.value);
   const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
-
   const [plotTab, setPlot] = useState("tumorVsControl");
 
   const proteinAbundanceColumns = [
@@ -36,6 +37,21 @@ export default function Results() {
     {
       accessor: "proteinLogRatioChange",
       Header: <b>Log Fold Change Value</b>,
+    },
+  ];
+
+  const phosphorylationColumns = [
+    {
+      accessor: "name",
+      Header: <b>Patient ID</b>,
+    },
+    {
+      accessor: "tumorValue",
+      Header: <b>Tumor Value</b>,
+    },
+    {
+      accessor: "normalValue",
+      Header: <b>Normal Value</b>,
     },
   ];
 
@@ -94,6 +110,21 @@ export default function Results() {
     },
   ];
 
+  const phosBoxData = [
+    {
+      y: sites.map((c) => c.tumorValue),
+      type: "box",
+      boxpoints: "all",
+      name: "Tumor",
+    },
+    {
+      y: sites.map((c) => c.normalValue),
+      type: "box",
+      boxpoints: "all",
+      name: "Normal",
+    },
+  ];
+
   const average = (values) =>
     values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
 
@@ -123,6 +154,14 @@ export default function Results() {
 
     return !isNaN(result) ? result.toFixed(4) : "NA";
   }
+
+  const phosphorylationData = sites.map((c) => {
+    return {
+      name: c.name,
+      tumorValue: c.tumorValue,
+      normalValue: c.normalValue,
+    };
+  });
 
   const averages = form.cancer.map((c) => {
     const tumorFilter = cases
@@ -215,13 +254,20 @@ export default function Results() {
       `${cases.filter((c) => view === c.cancerId).length.toString() * 60} px`,
     );
 
+    const values = caseList.map((c) =>
+      c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null,
+    );
+
     return [
       {
         type: "bar",
-        x: caseList.map((c) =>
-          c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null,
-        ),
+        x: values,
         y: caseList.map((c) => (c.proteinLogRatioChange ? c.name : null)),
+        marker: {
+          color: values.map((c) =>
+            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+          ),
+        },
         orientation: "h",
       },
     ];
@@ -266,141 +312,173 @@ export default function Results() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summary" title="Summary">
-        <Row className="m-3">
-          <Col xl={12}>
-            <Plot
-              data={multiBarPlotData()}
-              layout={{
-                ...defaultLayout,
-                title: "<b>Average Tumor and Control</b>",
-                barmode: "group",
-              }}
-              config={defaultConfig}
-              useResizeHandler
-              className="flex-fill w-100"
-              style={{ height: "500px" }}
-            />
-          </Col>
-        </Row>
+      {dataset === "protein-abundance" && (
+        <Tab eventKey="summary" title="Summary">
+          {dataset === "protein-abundance" && (
+            <div>
+              <Row className="m-3">
+                <Col xl={12}>
+                  <Plot
+                    data={multiBarPlotData()}
+                    layout={{
+                      ...defaultLayout,
+                      title: "<b>Average Tumor and Control</b>",
+                      barmode: "group",
+                    }}
+                    config={defaultConfig}
+                    useResizeHandler
+                    className="flex-fill w-100"
+                    style={{ height: "500px" }}
+                  />
+                </Col>
+              </Row>
 
-        <div className="m-3">
-          <Table columns={summaryColumns} data={averages} />
-        </div>
-      </Tab>
+              <div className="m-3">
+                <Table columns={summaryColumns} data={averages} />
+              </div>
+            </div>
+          )}
+        </Tab>
+      )}
 
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label
-            className="col-xl-1 col-xs-12 col-form-label"
-            style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-          <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(e) => setView(parseInt(e.target.value))}
-              value={view}
-              required>
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
-                </option>
-              ))}
-            </Form.Select>
-          </div>
+        {dataset === "protein-abundance" && (
+          <div>
+            <Form.Group className="row mx-3" controlId="tumorView">
+              <Form.Label
+                className="col-xl-1 col-xs-12 col-form-label"
+                style={{ minWidth: "120px" }}>
+                Tumor Type
+              </Form.Label>
+              <div className="col-xl-3">
+                <Form.Select
+                  name="caseView"
+                  onChange={(e) => setView(parseInt(e.target.value))}
+                  value={view}
+                  required>
+                  {form.cancer.map((o) => (
+                    <option value={o.value} key={`dataset-${o.value}`}>
+                      {o.label}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
 
-          <ToggleButtonGroup
-            type="radio"
-            name="plot-tab"
-            value={plotTab}
-            className="col-xl-5">
-            <ToggleButton
-              className={
-                plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
-              }
-              id={"tumorVsControl"}
-              onClick={handleToggle}>
-              Tumor vs Control
-            </ToggleButton>
-            <ToggleButton
-              className={
-                plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
-              }
-              id={"foldChange"}
-              onClick={handleToggle}>
-              Log Fold Change
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Form.Group>
-        <Row className="m-3">
-          {plotTab === "tumorVsControl" && (
-            <Col xl={12} style={{ height: "800px" }}>
-              <Plot
-                data={boxPlotData}
-                layout={{
-                  ...defaultLayout,
-                  title: "<b>Tumor vs Control</b>",
-                  yaxis: { title: "Log Protien Abundance", zeroline: false },
-                  autosize: true,
-                }}
-                config={defaultConfig}
-                useResizeHandler
-                style={{ height: "800px", minWidth: "100%" }}
+              <ToggleButtonGroup
+                type="radio"
+                name="plot-tab"
+                value={plotTab}
+                className="col-xl-5">
+                <ToggleButton
+                  className={
+                    plotTab === "tumorVsControl"
+                      ? "btn-primary"
+                      : "btn-secondary"
+                  }
+                  id={"tumorVsControl"}
+                  onClick={handleToggle}>
+                  Tumor vs Control
+                </ToggleButton>
+                <ToggleButton
+                  className={
+                    plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
+                  }
+                  id={"foldChange"}
+                  onClick={handleToggle}>
+                  Log Fold Change
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Form.Group>
+            <Row className="m-3">
+              {plotTab === "tumorVsControl" && (
+                <Col xl={12} style={{ height: "800px" }}>
+                  <Plot
+                    data={boxPlotData}
+                    layout={{
+                      ...defaultLayout,
+                      title: "<b>Tumor vs Control</b>",
+                      yaxis: {
+                        title: "Log Protien Abundance",
+                        zeroline: false,
+                      },
+                      autosize: true,
+                    }}
+                    config={defaultConfig}
+                    useResizeHandler
+                    style={{ height: "800px", minWidth: "100%" }}
+                  />
+                </Col>
+              )}
+            </Row>
+            {plotTab === "foldChange" && (
+              <div
+                className="m-3"
+                style={{ height: "800px", overflowY: "scroll" }}>
+                <Plot
+                  data={foldData()}
+                  config={defaultConfig}
+                  layout={{
+                    autosize: true,
+                    title: "<b>Log Fold Change</b>",
+                    xaxis: { title: "Log Fold Change", zeroline: false },
+                    barmode: "stack",
+                  }}
+                  useResizeHandler
+                  style={{ minWidth: "100%", height: `1200px` }}
+                />
+              </div>
+            )}
+
+            <div className="m-3">
+              <Table
+                columns={proteinAbundanceColumns}
+                data={cases
+                  .filter((c) => view === c.cancerId)
+                  .map((c) => {
+                    return {
+                      ...c,
+                      proteinLogRatioCase: c.proteinLogRatioCase
+                        ? c.proteinLogRatioCase.toFixed(4)
+                        : "NA",
+                      proteinLogRatioControl: c.proteinLogRatioControl
+                        ? c.proteinLogRatioControl.toFixed(4)
+                        : "NA",
+                      proteinLogRatioChange: c.proteinLogRatioChange
+                        ? c.proteinLogRatioChange.toFixed(4)
+                        : "NA",
+                    };
+                  })}
               />
-            </Col>
-          )}
-          {/*
-          <Col xl={6}>
-            <Plot
-              data={barPlotData(averages.find(x => x.id === view))}
-              layout={defaultLayout}
-              config={defaultConfig}
-              useResizeHandler
-              className="w-100"
-              style={{ height: "800px" }}
-            />
-          </Col>
-          */}
-        </Row>
-        {plotTab === "foldChange" && (
-          <div className="m-3" style={{ height: "800px", overflowY: "scroll" }}>
-            <Plot
-              data={foldData()}
-              config={defaultConfig}
-              layout={{
-                autosize: true,
-                title: "<b>Log Fold Change</b>",
-                xaxis: { title: "Log Fold Change", zeroline: false },
-                barmode: "stack",
-              }}
-              useResizeHandler
-              style={{ minWidth: "100%", height: `1200px` }}
-            />
+            </div>
           </div>
         )}
 
-        <div className="m-3">
-          <Table
-            columns={proteinAbundanceColumns}
-            data={cases
-              .filter((c) => view === c.cancerId)
-              .map((c) => {
-                return {
-                  ...c,
-                  proteinLogRatioCase: c.proteinLogRatioCase
-                    ? c.proteinLogRatioCase.toFixed(4)
-                    : "NA",
-                  proteinLogRatioControl: c.proteinLogRatioControl
-                    ? c.proteinLogRatioControl.toFixed(4)
-                    : "NA",
-                  proteinLogRatioChange: c.proteinLogRatioChange
-                    ? c.proteinLogRatioChange.toFixed(4)
-                    : "NA",
-                };
-              })}
-          />
-        </div>
+        {dataset === "phosphorylation-site" && (
+          <div>
+            <Row className="m-3">
+              <Col xl={12} style={{ height: "800px" }}>
+                <Plot
+                  data={phosBoxData}
+                  layout={{
+                    ...defaultLayout,
+                    title: "<b>Tumor vs Normal</b>",
+                    yaxis: { title: "Phosphorylation Level", zeroline: false },
+                    autosize: true,
+                  }}
+                  config={defaultConfig}
+                  useResizeHandler
+                  style={{ height: "800px", minWidth: "100%" }}
+                />
+              </Col>
+            </Row>
+            <Row className="m-3">
+              <Table
+                columns={phosphorylationColumns}
+                data={phosphorylationData}
+              />
+            </Row>
+          </div>
+        )}
       </Tab>
     </Tabs>
   );

@@ -11,12 +11,18 @@ export const casesState = selector({
   get: ({ get }) => query("sampleCases.json"),
 });
 
+export const siteState = selector({
+  key: "explore.siteState",
+  get: ({ get }) => query("data/phosphoproteinData.json"),
+});
+
 export const defaultFormState = {
   cancer: [],
   gene: "",
   analysis: "",
   dataset: "",
   correlation: "toAnotherProtein",
+  combination: "",
 };
 
 export const formState = atom({
