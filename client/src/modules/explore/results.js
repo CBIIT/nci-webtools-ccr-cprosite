@@ -10,18 +10,22 @@ import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
 import { casesState, formState, siteState } from "./explore.state";
 import { useState } from "react";
+import _ from "lodash";
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
-  const sites = useRecoilValue(siteState);
   const form = useRecoilValue(formState);
   const dataset = form.dataset;
   const tumors = form.cancer.map((c) => c.value);
+
   const [view, setView] = useState(tumors[0]);
-  const [tab, setTab] = useState(
-    dataset === "protein-abundance" ? "summary" : "tumorView",
-  );
+  const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
+
+  const sites = Object.entries(
+    _.groupBy(useRecoilValue(siteState), "phosphorylationSite"),
+  ).filter((c) => c[0] !== "null");
+  const [phosView, setPhosView] = useState(sites[0][0]);
 
   const proteinAbundanceColumns = [
     {
@@ -42,7 +46,7 @@ export default function Results() {
     },
   ];
 
-  const phosphorylationColumns = [
+  const phosSiteColumns = [
     {
       accessor: "name",
       Header: <b>Patient ID</b>,
@@ -54,6 +58,41 @@ export default function Results() {
     {
       accessor: "normalValue",
       Header: <b>Normal Value</b>,
+    },
+  ];
+
+  const phosSummaryColumns = [
+    {
+      accessor: "link",
+      Header: <b>Phosphorylation Site</b>,
+    },
+    {
+      accessor: "peptide",
+      Header: <b>Peptide</b>,
+    },
+    {
+      accessor: "tumorAverage",
+      Header: <b>Average Tumor</b>,
+    },
+    {
+      accessor: "normalAverage",
+      Header: <b>Average Normal</b>,
+    },
+    {
+      accessor: "tumorNum",
+      Header: <b>Tumor Count</b>,
+    },
+    {
+      accessor: "normalNum",
+      Header: <b>Normal Count</b>,
+    },
+    {
+      accessor: "tumorError",
+      Header: <b>Tumor Standard Error</b>,
+    },
+    {
+      accessor: "normalError",
+      Header: <b>Normal Standard Error</b>,
     },
   ];
 
@@ -112,21 +151,6 @@ export default function Results() {
     },
   ];
 
-  const phosBoxData = [
-    {
-      y: sites.map((c) => c.tumorValue),
-      type: "box",
-      boxpoints: "all",
-      name: "Tumor",
-    },
-    {
-      y: sites.map((c) => c.normalValue),
-      type: "box",
-      boxpoints: "all",
-      name: "Normal",
-    },
-  ];
-
   const average = (values) =>
     values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
 
@@ -158,12 +182,56 @@ export default function Results() {
   }
 
   const phosphorylationData = sites.map((c) => {
+    const patients = c[1];
+    const tumorFilter = patients
+      .filter((d) => d.tumorValue !== null)
+      .map((e) => e.tumorValue);
+    const normalFilter = patients
+      .filter((d) => d.normalValue !== null)
+      .map((e) => e.normalValue);
+    const tumorAverage = !isNaN(tumorFilter[0])
+      ? average(tumorFilter).toFixed(4)
+      : "NA";
+    const normalAverage = !isNaN(normalFilter[0])
+      ? average(normalFilter).toFixed(4)
+      : "NA";
+
     return {
-      name: c.name,
-      tumorValue: c.tumorValue,
-      normalValue: c.normalValue,
+      name: c[0],
+      peptide: patients.filter((d) => d.phosphopeptide)[0].phosphopeptide,
+      tumorAverage: tumorAverage,
+      normalAverage: normalAverage,
+      link: (
+        <a
+          onClick={() => {
+            setPhosView(c[0]);
+            setTab("tumorView");
+          }}
+          href="javascript:void(0)">
+          {c[0]}
+        </a>
+      ),
+      tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
+      normalNum: !isNaN(normalFilter[0]) ? normalFilter.length : 0,
+      tumorError: calcStandardError(tumorFilter, tumorAverage),
+      normalError: calcStandardError(normalFilter, normalAverage),
     };
   });
+
+  const phosBoxData = [
+    {
+      y: sites.filter((c) => c[0] === phosView)[0][1].map((d) => d.tumorValue),
+      type: "box",
+      boxpoints: "all",
+      name: "Tumor",
+    },
+    {
+      y: sites.filter((c) => c[0] === phosView)[0][1].map((d) => d.normalValue),
+      type: "box",
+      boxpoints: "all",
+      name: "Normal",
+    },
+  ];
 
   const averages = form.cancer.map((c) => {
     const tumorFilter = cases
@@ -218,6 +286,31 @@ export default function Results() {
       ),
     };
   });
+
+  const multiPhosBarPlot = [
+    {
+      x: phosphorylationData.map((c) => c.name),
+      y: phosphorylationData.map((c) => c.tumorAverage),
+      error_y: {
+        type: "data",
+        array: phosphorylationData.map((c) => c.tumorError),
+        visible: true,
+      },
+      type: "bar",
+      name: "Tumor",
+    },
+    {
+      x: phosphorylationData.map((c) => c.name),
+      y: phosphorylationData.map((c) => c.normalAverage),
+      error_y: {
+        type: "data",
+        array: phosphorylationData.map((c) => c.normalError),
+        visible: true,
+      },
+      type: "bar",
+      name: "Normal",
+    },
+  ];
 
   function multiBarPlotData() {
     return [
@@ -314,34 +407,65 @@ export default function Results() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      {dataset === "protein-abundance" && (
-        <Tab eventKey="summary" title="Summary">
-          {dataset === "protein-abundance" && (
-            <div>
-              <Row className="m-3">
-                <Col xl={12}>
-                  <Plot
-                    data={multiBarPlotData()}
-                    layout={{
-                      ...defaultLayout,
-                      title: "<b>Average Tumor and Control</b>",
-                      barmode: "group",
-                    }}
-                    config={defaultConfig}
-                    useResizeHandler
-                    className="flex-fill w-100"
-                    style={{ height: "500px" }}
-                  />
-                </Col>
-              </Row>
+      <Tab eventKey="summary" title="Summary">
+        {dataset === "protein-abundance" && (
+          <div>
+            <Row className="m-3">
+              <Col xl={12}>
+                <Plot
+                  data={multiBarPlotData()}
+                  layout={{
+                    ...defaultLayout,
+                    title: "<b>Average Tumor and Control</b>",
+                    barmode: "group",
+                  }}
+                  config={defaultConfig}
+                  useResizeHandler
+                  className="flex-fill w-100"
+                  style={{ height: "500px" }}
+                />
+              </Col>
+            </Row>
 
-              <div className="m-3">
-                <Table columns={summaryColumns} data={averages} />
-              </div>
+            <div className="m-3">
+              <Table columns={summaryColumns} data={averages} />
             </div>
-          )}
-        </Tab>
-      )}
+          </div>
+        )}
+
+        {dataset === "phosphorylation-site" && (
+          <div>
+            <Row className="m-3">
+              <Col xl={12}>
+                <Plot
+                  data={multiPhosBarPlot}
+                  layout={{
+                    ...defaultLayout,
+                    title: "<b>Average Tumor and Normal</b>",
+                    xaxis: {
+                      title: "Phosphorylation Site",
+                      zeroline: false,
+                    },
+                    yaxis: {
+                      title: "Phosphorylation Level",
+                      zeroline: false,
+                    },
+                    barmode: "group",
+                  }}
+                  config={defaultConfig}
+                  useResizeHandler
+                  className="flex-fill w-100"
+                  style={{ height: "500px" }}
+                />
+              </Col>
+            </Row>
+
+            <div className="m-3">
+              <Table columns={phosSummaryColumns} data={phosphorylationData} />
+            </div>
+          </div>
+        )}
+      </Tab>
 
       <Tab eventKey="tumorView" title="Tumor View">
         {dataset === "protein-abundance" && (
@@ -457,6 +581,52 @@ export default function Results() {
 
         {dataset === "phosphorylation-site" && (
           <div>
+            <Form.Group className="row mx-3" controlId="phosView">
+              <Form.Label
+                className="col-xl-2 col-xs-12 col-form-label"
+                style={{ minWidth: "120px" }}>
+                Phosphorylation Site
+              </Form.Label>
+              <div className="col-xl-3">
+                <Form.Select
+                  name="phosView"
+                  onChange={(e) => setPhosView(e.target.value)}
+                  value={phosView}
+                  required>
+                  {sites.map((c) => (
+                    <option value={c[0]} key={`dataset-${c[0]}`}>
+                      {c[0]}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+
+              {/*<ToggleButtonGroup
+                type="radio"
+                name="plot-tab"
+                value={plotTab}
+                className="col-xl-5">
+                <ToggleButton
+                  className={
+                    plotTab === "tumorVsControl"
+                      ? "btn-primary"
+                      : "btn-secondary"
+                  }
+                  id={"tumorVsControl"}
+                  onClick={handleToggle}>
+                  Tumor vs Control
+                </ToggleButton>
+                <ToggleButton
+                  className={
+                    plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
+                  }
+                  id={"foldChange"}
+                  onClick={handleToggle}>
+                  Log Fold Change
+                </ToggleButton>
+                </ToggleButtonGroup>*/}
+            </Form.Group>
+
             <Row className="m-3">
               <Col xl={12} style={{ height: "800px" }}>
                 <Plot
@@ -475,8 +645,18 @@ export default function Results() {
             </Row>
             <Row className="m-3">
               <Table
-                columns={phosphorylationColumns}
-                data={phosphorylationData}
+                columns={phosSiteColumns}
+                data={sites
+                  .filter((c) => c[0] === phosView)[0][1]
+                  .map((d) => {
+                    return {
+                      name: d.name,
+                      tumorValue: d.tumorValue ? d.tumorValue.toFixed(4) : "NA",
+                      normalValue: d.normalValue
+                        ? d.normalValue.toFixed(4)
+                        : "NA",
+                    };
+                  })}
               />
             </Row>
           </div>
