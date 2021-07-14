@@ -462,7 +462,7 @@ export default function Results() {
                   layout={{
                     ...defaultLayout,
                     title: "<b>Tumor vs Normal</b>",
-                    yaxis: { title: "Phosphrylation Level", zeroline: false },
+                    yaxis: { title: "Phosphorylation Level", zeroline: false },
                     autosize: true,
                   }}
                   config={defaultConfig}
