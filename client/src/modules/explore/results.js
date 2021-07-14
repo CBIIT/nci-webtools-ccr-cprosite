@@ -18,7 +18,9 @@ export default function Results() {
   const dataset = form.dataset;
   const tumors = form.cancer.map((c) => c.value);
   const [view, setView] = useState(tumors[0]);
-  const [tab, setTab] = useState("summary");
+  const [tab, setTab] = useState(
+    dataset === "protein-abundance" ? "summary" : "tumorView",
+  );
   const [plotTab, setPlot] = useState("tumorVsControl");
 
   const proteinAbundanceColumns = [
