@@ -2,7 +2,7 @@
 
 drop table if exists TUMOR_PREFIX;
 create table TUMOR_PREFIX (
-    gene varchar(100),
+    geneId integer,
     caseId varchar(50),
     normalProteinLogRatio float,
     tumorProteinLogRatio float,
@@ -17,44 +17,50 @@ create table TUMOR_PREFIX (
     phosphopeptide varchar(2000)
 );
 
-create unique index TUMOR_PREFIX_gene_caseId_unique_index
-on TUMOR_PREFIX(gene, caseId);
+create unique index TUMOR_PREFIX_geneId_caseId_unique_index
+on TUMOR_PREFIX(geneId, caseId);
 
 
-insert into TUMOR_PREFIX(gene, caseId, normalProteinLogRatio)
+insert into TUMOR_PREFIX(geneId, caseId, normalProteinLogRatio)
 select * from (
-    select 
-        CCgene as gene,
-        regexp_replace(CCid, '-No$', '') as caseId,
-        avg(CCvalue) as normalProteinLogRatio
-    from TUMOR_PREFIXprodata where CCid like '%-No'
-    group by gene, caseId
+    select
+        cast(substring_index(g.id, ':', -1) as unsigned) as geneId,
+        regexp_replace(c.CCid, '-No$', '') as caseId,
+        avg(c.CCvalue) as normalProteinLogRatio
+    from TUMOR_PREFIXprodata c
+    inner join gene g on g.name = c.CCgene or g.previousName = c.CCgene or g.alias = c.CCgene
+    where CCid like '%-No'
+    group by geneId, caseId
 ) as new
 on duplicate key update normalProteinLogRatio = new.normalProteinLogRatio;
 
-insert into TUMOR_PREFIX(gene, caseId, tumorProteinLogRatio)
+insert into TUMOR_PREFIX(geneId, caseId, tumorProteinLogRatio)
 select * from (
-    select 
-        CCgene as gene,
-        regexp_replace(CCid, '-Tu$', '') as caseId,
-        avg(CCvalue) as tumorProteinLogRatio
-    from TUMOR_PREFIXprodata where CCid like '%-Tu'
-    group by gene, caseId
+    select
+        cast(substring_index(g.id, ':', -1) as unsigned) as geneId,
+        regexp_replace(c.CCid, '-Tu$', '') as caseId,
+        avg(c.CCvalue) as tumorProteinLogRatio
+    from TUMOR_PREFIXprodata c
+    inner join gene g on g.name = c.CCgene or g.previousName = c.CCgene or g.alias = c.CCgene
+    where CCid like '%-Tu'
+    group by geneId, caseId
 ) as new
 on duplicate key update tumorProteinLogRatio = new.tumorProteinLogRatio;
 
 
-insert into TUMOR_PREFIX(gene, caseId, normalPhosphoproteinLogRatio, accession, phosphorylationSite, phosphopeptide)
+insert into TUMOR_PREFIX(geneId, caseId, normalPhosphoproteinLogRatio, accession, phosphorylationSite, phosphopeptide)
 select * from (
     select
-        PPgene as gene,
+        cast(substring_index(g.id, ':', -1) as unsigned) as geneId,
         regexp_replace(PPid, '-No$', '') as caseId,
         avg(PPvalue) as normalPhosphoproteinLogRatio,
         substring_index(NPid, ':', 1) as accession,
         substring_index(NPid, ':', -1) as phosphorylationSite,
         Ppep as phosphopeptide
-    from TUMOR_PREFIXphosphodata where PPid like '%-No'
-    group by gene, caseId, accession, phosphorylationSite, phosphopeptide
+    from TUMOR_PREFIXphosphodata c
+    inner join gene g on g.name = c.PPgene or g.previousName = c.PPgene or g.alias = c.PPgene
+    where PPid like '%-No'
+    group by geneId, caseId, accession, phosphorylationSite, phosphopeptide
 ) as new
 on duplicate key update 
     normalPhosphoproteinLogRatio = new.normalPhosphoproteinLogRatio,
@@ -62,19 +68,21 @@ on duplicate key update
     phosphorylationSite = new.phosphorylationSite,
     phosphopeptide = new.phosphopeptide;
 
-insert into TUMOR_PREFIX(gene, caseId, tumorPhosphoproteinLogRatio)
+insert into TUMOR_PREFIX(geneId, caseId, tumorPhosphoproteinLogRatio)
 select * from (
     select
-        PPgene as gene,
+        cast(substring_index(g.id, ':', -1) as unsigned) as geneId,
         regexp_replace(PPid, '-Tu$', '') as caseId,
         avg(PPvalue) as tumorPhosphoproteinLogRatio
-    from TUMOR_PREFIXphosphodata where PPid like '%-Tu'
-    group by gene, caseId
+    from TUMOR_PREFIXphosphodata c
+    inner join gene g on g.name = c.PPgene or g.previousName = c.PPgene or g.alias = c.PPgene
+    where PPid like '%-Tu'
+    group by geneId, caseId
 ) as new
 on duplicate key update tumorPhosphoproteinLogRatio = new.tumorPhosphoproteinLogRatio;
 
 
-insert into TUMOR_PREFIX(gene, caseId, normalRnaValue)
+insert into TUMOR_PREFIX(geneId, caseId, normalRnaValue)
 select * from (
     select
         gene,
@@ -85,7 +93,7 @@ select * from (
 ) as new
 on duplicate key update normalRnaValue = new.normalRnaValue;
 
-insert into TUMOR_PREFIX(gene, caseId, tumorRnaValue)
+insert into TUMOR_PREFIX(geneId, caseId, tumorRnaValue)
 select * from (
     select 
         gene, 
