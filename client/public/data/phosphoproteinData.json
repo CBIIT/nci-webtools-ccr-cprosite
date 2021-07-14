@@ -1,547 +1,874 @@
 [
   {
     "name": "C3L-00001",
-    "normalValue": 3054,
-    "tumorValue": 2318
+    "normalValue": 0.125776,
+    "tumorValue": 0.439012,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00009",
-    "normalValue": 3328,
-    "tumorValue": 4200
+    "normalValue": 0.0450714,
+    "tumorValue": 0.0409902,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00080",
-    "normalValue": 2992,
-    "tumorValue": 3328
+    "normalValue": -0.0379154,
+    "tumorValue": 1.26287,
+    "phosphopeptide": "NACILQASGSPPAKsPTDPK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s366"
   },
   {
     "name": "C3L-00083",
-    "normalValue": 3835,
-    "tumorValue": 1479
+    "normalValue": -0.376646,
+    "tumorValue": -0.274558,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00093",
-    "normalValue": 6094,
-    "tumorValue": 3878
+    "normalValue": -0.00550711,
+    "tumorValue": 0.0233843,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00094",
-    "normalValue": 3851,
-    "tumorValue": 4183
+    "normalValue": -0.292705,
+    "tumorValue": -0.00161062,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00095",
-    "normalValue": 3520,
-    "tumorValue": 3942
+    "normalValue": 1.091,
+    "tumorValue": 0.528071,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00140",
-    "normalValue": 3215,
-    "tumorValue": 1869
+    "normalValue": -0.352081,
+    "tumorValue": 0.325459,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00144",
-    "normalValue": 2331,
-    "tumorValue": 2566
+    "normalValue": -0.0783229,
+    "tumorValue": 0.494169,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00263",
-    "normalValue": 9025,
-    "tumorValue": 3592
+    "normalValue": 0.00231622,
+    "tumorValue": 0.248064,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00279",
-    "normalValue": 5560,
-    "tumorValue": 2571
+    "normalValue": -1.27272,
+    "tumorValue": 0.346938,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00368",
-    "normalValue": 2578,
-    "tumorValue": 2756
+    "normalValue": -0.260428,
+    "tumorValue": 0.778764,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00412",
-    "normalValue": 2658,
-    "tumorValue": 4280
+    "normalValue": -0.630548,
+    "tumorValue": -0.174882,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00422",
-    "normalValue": 3829,
-    "tumorValue": 2052
+    "normalValue": -0.211839,
+    "tumorValue": 0.024966,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00510",
-    "normalValue": 2780,
-    "tumorValue": 2395
+    "normalValue": -0.538394,
+    "tumorValue": 0.0875758,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00604",
-    "normalValue": 3322,
-    "tumorValue": 2374
+    "normalValue": 0.0227632,
+    "tumorValue": 0.707319,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00893",
-    "normalValue": 4985,
-    "tumorValue": 1945
+    "normalValue": 0.170901,
+    "tumorValue": 0.694583,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-00913",
-    "normalValue": 5342,
-    "tumorValue": 3525
+    "normalValue": -0.627381,
+    "tumorValue": 0.0666641,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-00973",
-    "normalValue": 3506,
-    "tumorValue": 3180
+    "normalValue": 0.443347,
+    "tumorValue": 0.892417,
+    "phosphopeptide": "SDCQPNsPTESCSSK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s343"
   },
   {
     "name": "C3L-01330",
-    "normalValue": 3764,
-    "tumorValue": 2081
+    "normalValue": -0.708,
+    "tumorValue": 0.813456,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-01632",
-    "normalValue": 3598,
-    "tumorValue": 3763
+    "normalValue": 0.0464813,
+    "tumorValue": -0.00270393,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-01682",
-    "normalValue": 4112,
-    "tumorValue": 3752
+    "normalValue": 0.183809,
+    "tumorValue": 0.297429,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-01683",
-    "normalValue": 3253,
-    "tumorValue": 3744
+    "normalValue": -0.101073,
+    "tumorValue": 0.0685905,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-01862",
     "normalValue": null,
-    "tumorValue": 2834
+    "tumorValue": 0.389481,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3L-01889",
-    "normalValue": 2517,
-    "tumorValue": 1378
+    "normalValue": 0.191677,
+    "tumorValue": 1.39316,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-01890",
-    "normalValue": 3959,
-    "tumorValue": 1267
+    "normalValue": -0.401606,
+    "tumorValue": -0.143294,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-01924",
-    "normalValue": 4038,
-    "tumorValue": 3667
+    "normalValue": -0.00927829,
+    "tumorValue": 0.30258,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-02219",
-    "normalValue": 3727,
-    "tumorValue": 2237
+    "normalValue": 0.0540972,
+    "tumorValue": 1.02092,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-02345",
-    "normalValue": 2928,
-    "tumorValue": 3040
+    "normalValue": 0.105947,
+    "tumorValue": -0.305047,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-02348",
-    "normalValue": 4202,
-    "tumorValue": 3130
+    "normalValue": -0.229425,
+    "tumorValue": 1.35429,
+    "phosphopeptide": "SDCQPNsPTESCSSK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s343"
   },
   {
     "name": "C3L-02350",
-    "normalValue": 4079,
-    "tumorValue": 3425
+    "normalValue": -0.0791539,
+    "tumorValue": -0.502946,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3L-02365",
-    "normalValue": 2882,
-    "tumorValue": 2650
+    "normalValue": 0.244379,
+    "tumorValue": 0.892872,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3L-02508",
-    "normalValue": 4033,
-    "tumorValue": 3349
+    "normalValue": -1.72302,
+    "tumorValue": -0.432872,
+    "phosphopeptide": "SDCQPNsPTESCSSK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s343"
   },
   {
     "name": "C3L-02549",
-    "normalValue": 4362,
-    "tumorValue": 2861
+    "normalValue": 0.0396294,
+    "tumorValue": -0.0242629,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00167",
-    "normalValue": 2565,
-    "tumorValue": 2930
+    "normalValue": 0.535109,
+    "tumorValue": -0.0258785,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00169",
-    "normalValue": 3403,
-    "tumorValue": 3399
+    "normalValue": -0.152689,
+    "tumorValue": 0.467756,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00175",
-    "normalValue": 4189,
-    "tumorValue": 2474
+    "normalValue": 0.242279,
+    "tumorValue": 0.279278,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00180",
-    "normalValue": 5569,
-    "tumorValue": 2448
+    "normalValue": 0.0444594,
+    "tumorValue": -0.597155,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00199",
-    "normalValue": 3316,
-    "tumorValue": 2753
+    "normalValue": 0.0294751,
+    "tumorValue": 0.842724,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00203",
-    "normalValue": 4587,
-    "tumorValue": 3365
+    "normalValue": -0.412495,
+    "tumorValue": 0.0702578,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00217",
-    "normalValue": 6718,
-    "tumorValue": 2481
+    "normalValue": -0.174087,
+    "tumorValue": 0.836861,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00223",
-    "normalValue": 3516,
-    "tumorValue": 1894
+    "normalValue": 0.301455,
+    "tumorValue": 0.225403,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00293",
-    "normalValue": 2838,
-    "tumorValue": 3276
+    "normalValue": -0.255801,
+    "tumorValue": 0.460526,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00294",
     "normalValue": null,
-    "tumorValue": 2304
+    "tumorValue": -0.143345,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3N-00433",
-    "normalValue": 3588,
-    "tumorValue": 3690
+    "normalValue": -0.0979281,
+    "tumorValue": 0.248679,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00545",
-    "normalValue": 7018,
-    "tumorValue": 3342
+    "normalValue": 0.0460685,
+    "tumorValue": 0.469005,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00546",
-    "normalValue": 4792,
-    "tumorValue": 3014
+    "normalValue": 0.370159,
+    "tumorValue": 0.500383,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00547",
-    "normalValue": 3318,
-    "tumorValue": 2363
+    "normalValue": -0.49785,
+    "tumorValue": 0.663033,
+    "phosphopeptide": "NACILQASGSPPAKsPTDPK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s366"
   },
   {
     "name": "C3N-00549",
-    "normalValue": 4719,
-    "tumorValue": 3555
+    "normalValue": -0.723011,
+    "tumorValue": -0.574983,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00550",
-    "normalValue": 3945,
-    "tumorValue": 2361
+    "normalValue": 0.475603,
+    "tumorValue": -0.705792,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00551",
-    "normalValue": 4132,
-    "tumorValue": 2862
+    "normalValue": 0.00444162,
+    "tumorValue": 0.669992,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00552",
-    "normalValue": 3386,
-    "tumorValue": 2810
+    "normalValue": -0.135033,
+    "tumorValue": 0.547583,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00556",
-    "normalValue": 5090,
-    "tumorValue": 3904
+    "normalValue": -0.473746,
+    "tumorValue": 0.615712,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00559",
-    "normalValue": 4477,
-    "tumorValue": 2890
+    "normalValue": -0.067401,
+    "tumorValue": 0.456204,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00560",
-    "normalValue": 5011,
-    "tumorValue": 3578
+    "normalValue": 0.104539,
+    "tumorValue": 0.678095,
+    "phosphopeptide": "SDCQPNsPTESCSSK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s343"
   },
   {
     "name": "C3N-00572",
-    "normalValue": 2960,
-    "tumorValue": 2234
+    "normalValue": 0.128475,
+    "tumorValue": 0.561693,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00574",
-    "normalValue": 4475,
-    "tumorValue": 3463
+    "normalValue": -0.653409,
+    "tumorValue": -0.0934343,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00578",
-    "normalValue": 4681,
-    "tumorValue": 3837
+    "normalValue": -0.134169,
+    "tumorValue": 1.00189,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00579",
-    "normalValue": 3455,
-    "tumorValue": 3521
+    "normalValue": 0.336296,
+    "tumorValue": 0.215218,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00580",
-    "normalValue": 3562,
-    "tumorValue": 2852
+    "normalValue": 0.0450042,
+    "tumorValue": 0.163655,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00704",
-    "normalValue": 2882,
-    "tumorValue": 2424
+    "normalValue": 0.0721388,
+    "tumorValue": 1.29444,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00737",
-    "normalValue": 3608,
-    "tumorValue": 2579
+    "normalValue": -0.839401,
+    "tumorValue": 0.824482,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-00738",
-    "normalValue": 6348,
-    "tumorValue": 5673
+    "normalValue": -0.0682739,
+    "tumorValue": -0.200257,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-00959",
-    "normalValue": 6284,
-    "tumorValue": 2942
+    "normalValue": 0.484072,
+    "tumorValue": -0.517801,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01016",
-    "normalValue": 3541,
-    "tumorValue": 2964
+    "normalValue": -0.0651032,
+    "tumorValue": -0.2635,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01021",
-    "normalValue": 3126,
-    "tumorValue": 3785
+    "normalValue": -0.713391,
+    "tumorValue": 0.156831,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01023",
-    "normalValue": 4055,
-    "tumorValue": 3197
+    "normalValue": -0.256638,
+    "tumorValue": 0.274958,
+    "phosphopeptide": "NACILQASGSPPAKsPTDPK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s366"
   },
   {
     "name": "C3N-01024",
-    "normalValue": 5575,
-    "tumorValue": 2147
+    "normalValue": -0.00726496,
+    "tumorValue": 0.533997,
+    "phosphopeptide": "NACILQASGSPPAKsPTDPK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s366"
   },
   {
     "name": "C3N-01030",
-    "normalValue": 4206,
-    "tumorValue": 3866
+    "normalValue": -0.464429,
+    "tumorValue": -0.0375672,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01071",
-    "normalValue": 6474,
-    "tumorValue": 3341
+    "normalValue": 0.436942,
+    "tumorValue": 0.201285,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01072",
-    "normalValue": 4543,
-    "tumorValue": 3046
+    "normalValue": 0.072907,
+    "tumorValue": 0.555974,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01074",
     "normalValue": null,
-    "tumorValue": 4412
+    "tumorValue": 0.277234,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3N-01405",
-    "normalValue": 2514,
-    "tumorValue": 4140
+    "normalValue": -0.683025,
+    "tumorValue": 0.669912,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01410",
-    "normalValue": 3170,
-    "tumorValue": 3436
+    "normalValue": -0.364848,
+    "tumorValue": -0.603575,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01413",
-    "normalValue": 4501,
-    "tumorValue": 2107
+    "normalValue": 0.177498,
+    "tumorValue": 0.991244,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01414",
-    "normalValue": 6931,
-    "tumorValue": 3324
+    "normalValue": 0.135779,
+    "tumorValue": 0.173652,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01415",
-    "normalValue": 3993,
-    "tumorValue": 3358
+    "normalValue": -0.634632,
+    "tumorValue": 0.526209,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01416",
-    "normalValue": 4831,
-    "tumorValue": 3187
+    "normalValue": -0.771037,
+    "tumorValue": 0.875092,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01488",
-    "normalValue": 4641,
-    "tumorValue": 4358
+    "normalValue": -0.283467,
+    "tumorValue": 0.0823024,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01489",
-    "normalValue": 3761,
-    "tumorValue": 2669
+    "normalValue": -0.714659,
+    "tumorValue": -0.436886,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01799",
-    "normalValue": 3692,
-    "tumorValue": 2748
+    "normalValue": -0.214381,
+    "tumorValue": 0.563204,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-01823",
-    "normalValue": 3176,
-    "tumorValue": 2667
+    "normalValue": -0.377088,
+    "tumorValue": 0.533849,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-01842",
     "normalValue": null,
-    "tumorValue": 2669
+    "tumorValue": 0.886595,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3N-02000",
-    "normalValue": 3266,
-    "tumorValue": 2730
+    "normalValue": -1.94462,
+    "tumorValue": 0.670987,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02002",
-    "normalValue": 4638,
-    "tumorValue": 2129
+    "normalValue": -0.49978,
+    "tumorValue": 0.130382,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02003",
-    "normalValue": 3346,
-    "tumorValue": 2503
+    "normalValue": -0.123126,
+    "tumorValue": -0.0640783,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02067",
-    "normalValue": 3669,
-    "tumorValue": 3053
+    "normalValue": -0.140525,
+    "tumorValue": 0.421216,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02087",
-    "normalValue": 7290,
-    "tumorValue": 2878
+    "normalValue": 0.24517,
+    "tumorValue": -0.366405,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02089",
-    "normalValue": 3813,
-    "tumorValue": 2079
+    "normalValue": -0.376869,
+    "tumorValue": -0.214239,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02145",
-    "normalValue": 4078,
-    "tumorValue": 2766
+    "normalValue": 0.225927,
+    "tumorValue": 0.938866,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02149",
-    "normalValue": 5379,
-    "tumorValue": 2994
+    "normalValue": -0.586465,
+    "tumorValue": 0.320111,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02155",
-    "normalValue": 4801,
-    "tumorValue": 3194
+    "normalValue": -0.0648257,
+    "tumorValue": 0.590704,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02158",
-    "normalValue": 6301,
-    "tumorValue": 3774
+    "normalValue": -0.16471,
+    "tumorValue": 0.931223,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02379",
-    "normalValue": 3805,
-    "tumorValue": 3243
+    "normalValue": 0.0123014,
+    "tumorValue": null,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02379.1",
     "normalValue": null,
-    "tumorValue": null
+    "tumorValue": null,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3N-02380",
-    "normalValue": 2536,
-    "tumorValue": 2008
+    "normalValue": -0.0504638,
+    "tumorValue": 0.451642,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02421",
-    "normalValue": 3947,
-    "tumorValue": 2297
+    "normalValue": 0.0202951,
+    "tumorValue": 0.998128,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02422",
     "normalValue": null,
-    "tumorValue": 1416
+    "tumorValue": 0.698956,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3N-02423",
-    "normalValue": 2860,
-    "tumorValue": 2686
+    "normalValue": 0.383578,
+    "tumorValue": 0.493242,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02424",
-    "normalValue": 3381,
-    "tumorValue": 3120
+    "normalValue": -0.453923,
+    "tumorValue": 0.117597,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02433",
-    "normalValue": 4806,
-    "tumorValue": 2551
+    "normalValue": -1.73272,
+    "tumorValue": 1.01462,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02529",
-    "normalValue": 3550,
-    "tumorValue": 4044
+    "normalValue": -0.523992,
+    "tumorValue": 0.606543,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02572",
-    "normalValue": 2992,
-    "tumorValue": 1911
+    "normalValue": -0.0465324,
+    "tumorValue": 0.51041,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02582",
-    "normalValue": 3708,
-    "tumorValue": 3288
+    "normalValue": 0.0689586,
+    "tumorValue": 0.700749,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02586",
-    "normalValue": 2991,
-    "tumorValue": 3335
+    "normalValue": -0.0663626,
+    "tumorValue": 1.06658,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   },
   {
     "name": "C3N-02587",
-    "normalValue": 3579,
-    "tumorValue": 2074
+    "normalValue": -0.187311,
+    "tumorValue": null,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02587.1",
     "normalValue": null,
-    "tumorValue": null
+    "tumorValue": null,
+    "phosphopeptide": null,
+    "accession": null,
+    "phosphorylationSite": null
   },
   {
     "name": "C3N-02588",
-    "normalValue": 3228,
-    "tumorValue": 2028
+    "normalValue": -0.103456,
+    "tumorValue": 1.07844,
+    "phosphopeptide": "FIVLNSLNQNAKPEGPEQAELGRLsPR",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s404"
   },
   {
     "name": "C3N-02729",
-    "normalValue": 4657,
-    "tumorValue": 1993
+    "normalValue": -0.608499,
+    "tumorValue": 0.0455311,
+    "phosphopeptide": "AYTAPPACQPPMEPENLDLQsPTK",
+    "accession": "NP_001124317.1",
+    "phosphorylationSite": "s427"
   }
 ]
