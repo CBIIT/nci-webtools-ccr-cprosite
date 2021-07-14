@@ -2,8 +2,8 @@
 
 | Partition Key        | Sort Key                            | Attributes                                 |
 | -------------------- | ----------------------------------- | ------------------------------------------ |
-| cancer#cancerId      | cancer#cancerId                     | <ul><li>name</li><li>description</li></ul> |
 | gene#geneId          | gene#geneId                         | <ul><li>name</li><li>description</li></ul> |
+| cancer#cancerId      | cancer#cancerId                     | <ul><li>name</li><li>description</li></ul> |
 | case#geneId#cancerId | proteinDataSummary#caseId           | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
 |                      | phosphoproteinDataSummary#caseId    | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
 |                      | rnaDataSummary#caseId               | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
