@@ -25,6 +25,9 @@ export default function Results() {
   const sites = Object.entries(
     _.groupBy(useRecoilValue(siteState), "phosphorylationSite"),
   ).filter((c) => c[0] !== "null");
+
+  console.log(sites);
+
   const [phosView, setPhosView] = useState(sites[0][0]);
 
   const proteinAbundanceColumns = [
