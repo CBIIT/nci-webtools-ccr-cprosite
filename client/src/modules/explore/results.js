@@ -250,7 +250,7 @@ export default function Results() {
         y: caseList.map((c) => (c.proteinLogRatioChange ? c.name : null)),
         marker: {
           color: values.map((c) =>
-            c > 0 ? "rgb(31,119,180)" : "rgb(255,0,0)",
+            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
           ),
         },
         orientation: "h",
