@@ -443,6 +443,7 @@ export default function Results() {
                     ...defaultLayout,
                     title: "<b>Average Tumor and Control</b>",
                     barmode: "group",
+                    autosize: true,
                   }}
                   config={defaultConfig}
                   useResizeHandler
@@ -476,6 +477,7 @@ export default function Results() {
                       zeroline: false,
                     },
                     barmode: "group",
+                    autosize: true,
                   }}
                   config={defaultConfig}
                   useResizeHandler
