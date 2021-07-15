@@ -99,7 +99,7 @@ export default function Results() {
       ),
     },
     {
-      accessor: "normalError",
+      accessor: "controlError",
       Header: (
         <div data-toggle="tooltip" title="Control Standard Error">
           <b>Control SE</b>
