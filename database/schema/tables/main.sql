@@ -9,6 +9,6 @@ create table "cancer"
 (
     "id" integer primary key,
     "name" text,
-    "study" text,
-    "rnaValueSource" text
+    "description" text,
+    "study" text
 );
