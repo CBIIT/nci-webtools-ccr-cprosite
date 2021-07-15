@@ -1,18 +1,31 @@
 const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
-const { importSourceTables } = require("./utils");
+const AWS = require('aws-sdk');
+const { importSourceTables, importDynamoDBTable, getTimestamp } = require("./utils");
 const sqlite = require("better-sqlite3");
+const incrstdev = require( '@stdlib/stats/incr/stdev' );
+const wilcoxon = require( '@stdlib/stats/wilcoxon' );
+const { template } = require('lodash');
 const sources = require("./sources.json");
+const config = require('./config.json');
 const args = require("minimist")(process.argv.slice(2));
+const timestamp = getTimestamp(([absolute, relative]) => 
+  `${absolute / 1000}s, ${relative / 1000}s`
+);
+
+if (config.aws) {
+  AWS.config.update(config.aws);
+}
 
 (async function main() {
   const databaseFilePath = args.db || "data.db";
+  const dynamoDB = new AWS.DynamoDB();
 
   if (fs.existsSync(databaseFilePath)) fs.unlinkSync(databaseFilePath);
 
   const mainSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
-  const templateSql = await fsp.readFile("schema/tables/template.sql", "utf-8");
+  const templateSql = template(await fsp.readFile("schema/tables/template.sql", "utf-8"));
 
   // create schema
   const database = sqlite(databaseFilePath);
@@ -21,10 +34,39 @@ const args = require("minimist")(process.argv.slice(2));
     "extract",
     (string, delimiter, index) => string.split(delimiter)[index],
   );
+  database.function(
+    "sqrt",
+    v => Math.sqrt(v)
+  )
+  database.aggregate(
+    "stdev",
+    {
+      start: () => incrstdev(),
+      step: (accumulator, value) => { accumulator(value) },
+      result: (accumulator) => accumulator()
+    }
+  )
+  database.aggregate(
+    "wilcoxon",
+    {
+      start: () => ({x: [], y: []}),
+      step: ({x, y}, xValue, yValue) => { 
+        if (xValue !== null && yValue !== null) {
+          x.push(xValue);
+          y.push(yValue);
+        }
+       },
+      result: ({x, y}) => x.length > 1
+       ? wilcoxon(x, y).pValue
+       : null
+    }
+  );
 
   // import all sources into staging tables
   for (const source of sources) {
+    console.log(`[${timestamp()}] importing source tables`);
     await importSourceTables(database, source, args.force);
+    console.log(`[${timestamp()}] finished importing source tables`);
 
     // import global tables and proceed with study-specific imports
     if (source.name === "GLOBAL") {
@@ -38,10 +80,15 @@ const args = require("minimist")(process.argv.slice(2));
       continue;
     }
 
-    // otherwise, continue importing sources
-    const tablePrefix = source.name;
-    const tableSql = templateSql.replace(/TABLE_PREFIX/g, tablePrefix);
+    // otherwise, continue importing source
+    const tablePrefix = source.files[0].table;
     const caseTable = `${tablePrefix}_case`;
+    const caseSummaryTable = `${tablePrefix}_case_summary`;
+    const tableSql = templateSql({
+      caseTable,
+      caseSummaryTable,
+    });
+
     database.exec(tableSql);
     database.exec("begin transaction");
 
@@ -59,117 +106,211 @@ const args = require("minimist")(process.argv.slice(2));
       {},
     );
 
-    // insert study entry
+    // insert cancer entry
     const { lastInsertRowid: cancerId } = database
       .prepare(`insert into cancer(name, study) values (:cancer, :study)`)
       .run({
-        study: source.study,
         cancer: source.cancer,
+        study: source.study || '',
       });
 
-    // insert proteome and phosphoproteome entries
-    const samples = database
-      .prepare(`select * from "${stage.sample.table}" where type is not null`)
-      .all();
+    console.log(`[${timestamp()}] importing cancers`);
 
-    for (const sample of samples) {
-      console.log(`importing sample for case: ${sample.case_id}`);
+    console.log(stage);
 
-      const logRatioColumn = `${sample.aliquot} Log Ratio`;
-      const unsharedLogRatioColumn = `${sample.aliquot} Unshared Log Ratio`;
-      let stageProteomeLogRatioColumn = null;
-      let stagePhosphoproteomeLogRatioColumn = null;
+    return true;
 
-      if (stage.proteome.columns.includes(unsharedLogRatioColumn)) {
-        stageProteomeLogRatioColumn = unsharedLogRatioColumn;
-      } else if (stage.proteome.columns.includes(logRatioColumn)) {
-        stageProteomeLogRatioColumn = logRatioColumn;
-      }
+    
+    // insert cases
+    database.exec(
+      `insert into "${caseTable}" (
+          geneId,
+          cancerId,
+          name,
+          normalProteinLogRatio,
+          tumorProteinLogRatio,
+          normalPhosphoproteinLogRatio,
+          tumorPhosphoproteinLogRatio,
+          normalRnaValue,
+          tumorRnaValue,
+          normalTcgaBarcode,
+          normalTcgaRnaValue,
+          tumorTcgaBarcode,
+          tumorTcgaRnaValue,
+          accession,
+          phosphorylationSite,
+          phosphopeptide
+      )
+      select
+          geneId,
+          cancerId,
+          name,
+          normalProteinLogRatio,
+          tumorProteinLogRatio,
+          normalPhosphoproteinLogRatio,
+          tumorPhosphoproteinLogRatio,
+          normalRnaValue,
+          tumorRnaValue,
+          normalTcgaBarcode,
+          normalTcgaRnaValue,
+          tumorTcgaBarcode,
+          tumorTcgaRnaValue,
+          accession,
+          phosphorylationSite,
+          phosphopeptide
+      from "${stage.source.table}"`
+    );
 
-      if (stage.phosphoproteome.columns.includes(unsharedLogRatioColumn)) {
-        stagePhosphoproteomeLogRatioColumn = unsharedLogRatioColumn;
-      } else if (stage.phosphoproteome.columns.includes(logRatioColumn)) {
-        stagePhosphoproteomeLogRatioColumn = logRatioColumn;
-      }
+    
 
-      const caseTableProteinLogRatioColumn =
-        sample.type === "Normal"
-          ? "proteinLogRatioControl"
-          : "proteinLogRatioCase";
+    // update normalProteinLogRatio summary
+    for (const type of [
+      'normalProteinLogRatio', 
+      'tumorProteinLogRatio', 
+      'normalPhosphoproteinLogRatio', 
+      'tumorPhosphoproteinLogRatio', 
+      'normalRnaLevel', 
+      'tumorRnaLevel'
+    ]) {
+      
 
-      const caseTablePhosphoproteinLogRatioColumn =
-        sample.type === "Normal"
-          ? "phosphoproteinLogRatioControl"
-          : "phosphoproteinLogRatioCase";
 
-      if (stageProteomeLogRatioColumn) {
-        database.exec(
-          `insert into "${caseTable}"
-          (
+      console.log(`updating summary statistics: ${type}`)
+      database.exec(
+        `insert into "${caseSummaryTable}" (
             geneId,
             cancerId,
-            name,
-            ${caseTableProteinLogRatioColumn}
-          )
-          select
-            g."id",
-            ${cancerId},
-            '${sample.case_id}',
-            sp."${stageProteomeLogRatioColumn}" as logRatio
-          from "${stage.proteome.table}" sp
-          join gene g on g.name = sp.Gene
-          on conflict("geneId", "cancerId", "name") do update set
-            "${caseTableProteinLogRatioColumn}" = excluded."${caseTableProteinLogRatioColumn}"`,
-        );
-      }
-
-      if (stagePhosphoproteomeLogRatioColumn) {
-        database.exec(
-          `insert into "${caseTable}"
-          (
+            ${type}Count,
+            ${type}Mean,
+            ${type}StandardError
+        )
+        select
             geneId,
             cancerId,
-            name,
-            ${caseTablePhosphoproteinLogRatioColumn},
-            accession,
-            phosphorylationSite,
-            phosphopeptide
-          )
-          select
-            g."id",
-            ${cancerId},
-            '${sample.case_id}',
-            sp."${stagePhosphoproteomeLogRatioColumn}",
-            extract(sp."Phosphosite", ':', 0),
-            extract(sp."Phosphosite", ':', 1),
-            sp."Peptide"
-          from "${stage.phosphoproteome.table}" sp
-          join gene g on g.name = sp.Gene
-          on conflict("geneId", "cancerId", "name") do update set
-            "${caseTablePhosphoproteinLogRatioColumn}" = excluded."${caseTablePhosphoproteinLogRatioColumn}",
-            "accession" = excluded."accession",
-            "phosphorylationSite" = excluded."phosphorylationSite",
-            "phosphopeptide" = excluded."phosphopeptide"`,
-        );
-      }
+            count(*),
+            avg(${type}),
+            stdev(${type}) / sqrt(count(*))
+        from "${caseTable}"
+        where ${type} is not null
+        group by geneId, cancerId
+        on conflict("geneId", "cancerId") do update set
+            "${type}Count" = excluded."${type}Count",
+            "${type}Mean" = excluded."${type}Mean",
+            "${type}StandardError" = excluded."${type}StandardError"`
+      );
     }
 
-    database.exec(
-      `update "${caseTable}" 
-        set proteinLogRatioChange = proteinLogRatioCase - proteinLogRatioControl
-        where proteinLogRatioCase is not null and proteinLogRatioControl is not null`,
-    );
-
-    database.exec(
-      `update "${caseTable}" 
-        set phosphoproteinLogRatioChange = phosphoproteinLogRatioCase - phosphoproteinLogRatioControl
-        where phosphoproteinLogRatioCase is not null and phosphoproteinLogRatioControl is not null`,
-    );
+    for (const [type, normalColumn, tumorColumn] of [
+      ['proteinLogRatio', 'normalProteinLogRatio', 'tumorProteinLogRatio'],
+      ['phosphoproteinLogRatio', 'normalPhosphoproteinLogRatio', 'tumorPhosphoproteinLogRatio'],
+      ['rnaValue', 'normalRnaValue', 'tumorRnaValue'],
+      ['tcgaRnaValue', 'normalTcgaRnaValue', 'tumorTcgaRnaValue'],
+    ]) {
+      console.log(`updating p-value: ${type}`)
+      database.exec(
+        `insert into "${caseSummaryTable}" (
+            geneId,
+            cancerId,
+            ${type}P
+        )
+        select
+            geneId,
+            cancerId,
+            wilcoxon(${normalColumn}, ${tumorColumn})
+        from "${caseTable}"
+        group by geneId, cancerId
+        on conflict("geneId", "cancerId") do update set
+            ${type}PValue = excluded."${type}PValue"`
+      );
+    }
 
     database.exec("commit");
+    console.log("Generating indexes");
+    database.exec(await fsp.readFile("schema/indexes/main.sql", "utf-8"));
+  
+    // BEGIN IMPORTING TO DYNAMODB
+  
+    // load cancers
+    // console.log(`[${timestamp()}] importing cancers`);
+    // await importDynamoDBTable(
+    //   dynamoDB,
+    //   config.dynamoDB.tableName,
+    //   database.prepare(
+    //     `select
+    //       'cancer#' || id as partitionKey,
+    //       'cancer#' || id as sortKey,
+    //       'cancer' as entityType,
+    //       *
+    //     from cancer;`
+    //   ).all()
+    // );
+    // console.log(`[${timestamp()}] finished importing cancers`);
+  
+    // // load genes
+    // console.log(`[${timestamp()}] importing genes`);
+    // await importDynamoDBTable(
+    //   dynamoDB,
+    //   config.dynamoDB.tableName,
+    //   database.prepare(
+    //     `select
+    //       'gene#' || id as partitionKey,
+    //       'gene#' || id as sortKey,
+    //       'gene' as entityType,
+    //       *
+    //     from gene`
+    //   ).all()
+    // );
+    // console.log(`[${timestamp()}] finished importing genes`);
+  
+    // // load case summaries
+    // console.log(`[${timestamp()}] importing case summaries`);
+    // await importDynamoDBTable(
+    //   dynamoDB,
+    //   config.dynamoDB.tableName,
+    //   database.prepare(
+    //     `select
+    //       'gene#' || geneId as partitionKey,
+    //       'cancerCaseSummary#' || cancerId as sortKey,
+    //       'cancerCaseSummary' as entityType,
+    //       *
+    //     from ${tablePrefix}_case_summary`
+    //   ).all()
+    // );
+    // console.log(`[${timestamp()}] finished importing case summaries`);
+  
+    // // load cases
+    // console.log(`[${timestamp()}] importing cases`);
+    // await importDynamoDBTable(
+    //   dynamoDB,
+    //   config.dynamoDB.tableName,
+    //   database.prepare(
+    //     `select
+    //       'gene#' || geneId as partitionKey,
+    //       'cancerCase#' || cancerId || '#' || id as sortKey,
+    //       'cancerCase' as entityType,
+    //       *
+    //     from ${tablePrefix}_case`
+    //   ).all()
+    // );
+    // console.log(`[${timestamp()}] finished importing cases`);
+  
+    // // load mutations
+    // console.log(`[${timestamp()}] importing mutations`);
+    // await importDynamoDBTable(
+    //   dynamoDB,
+    //   config.dynamoDB.tableName,
+    //   database.prepare(
+    //     `select
+    //       'gene#' || geneId as partitionKey,
+    //       'cancerCaseMutation#' || cancerId || '#' || caseId || '#' || id as sortKey,
+    //       'cancerCaseMutation' as entityType,
+    //       *
+    //     from ${tablePrefix}_mutation`
+    //   ).all()
+    // );
+    // console.log(`[${timestamp()}] finished importing mutations`);
+  
   }
 
-  console.log("Generating indexes");
-  database.exec(await fsp.readFile("schema/indexes/main.sql", "utf-8"));
   database.close();
 })();
