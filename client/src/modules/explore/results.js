@@ -467,7 +467,7 @@ export default function Results() {
                   data={multiPhosBarPlot}
                   layout={{
                     ...defaultLayout,
-                    title: "<b>Average Tumor and Control</b>",
+                    title: "<b>Breast Cancer Tumor and Control</b>",
                     xaxis: {
                       title: "Phosphorylation Site",
                       zeroline: false,
