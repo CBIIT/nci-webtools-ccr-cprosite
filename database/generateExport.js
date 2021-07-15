@@ -236,7 +236,7 @@ const rnaImportTemplate = _.template(`
 drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from <%= sourceTable %> c

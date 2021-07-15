@@ -96,7 +96,7 @@ on duplicate key update
 drop table if exists breastcptac2rnadata_temp;
 create table breastcptac2rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from breastcptac2rnadata c
@@ -263,7 +263,7 @@ on duplicate key update
 drop table if exists ccrcccptac3rnadata_temp;
 create table ccrcccptac3rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from ccrcccptac3rnadata c
@@ -385,7 +385,7 @@ on duplicate key update
 drop table if exists coloncptac2rnadata_temp;
 create table coloncptac2rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from coloncptac2rnadata c
@@ -786,7 +786,7 @@ on duplicate key update
 drop table if exists lungadcptac3rnadata_temp;
 create table lungadcptac3rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from lungadcptac3rnadata c
@@ -953,7 +953,7 @@ on duplicate key update
 drop table if exists lungsqcptac3rnadata_temp;
 create table lungsqcptac3rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from lungsqcptac3rnadata c
@@ -1120,7 +1120,7 @@ on duplicate key update
 drop table if exists ovcptac2rnadata_temp;
 create table ovcptac2rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from ovcptac2rnadata c
@@ -1502,7 +1502,7 @@ on duplicate key update tumorProteinLogRatio = new.tumorProteinLogRatio;
 drop table if exists uterinecptac3rnadata_temp;
 create table uterinecptac3rnadata_temp as
 select g.id as geneId,
-      regexp_replace(c.value, '-[A-Za-z]{2}$', '') as caseId,
+      regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as caseId,
       avg(c.value) as value,
       c.paid like '%-Tu' as isTumor
 from uterinecptac3rnadata c
