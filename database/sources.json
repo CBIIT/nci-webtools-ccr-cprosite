@@ -14,7 +14,61 @@
         },
         "filePath": "data/gene.tsv",
         "table": "stage_gene",
-        "headers": ["symbol", "name", "id"]
+        "headers": [
+          "symbol",
+          "name",
+          "id"
+        ]
+      }
+    ]
+  },
+  {
+    "cancer": "Breast Cancer",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_breast.csv",
+        "table": "stage_breast_cancer"
+      }
+    ]
+  },
+  {
+    "cancer": "Colon Cancer",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_colon.csv",
+        "table": "stage_colon_cancer"
+      }
+    ]
+  },
+  {
+    "cancer": "Head & Neck Cancer",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_head_and_neck.csv",
+        "table": "stage_head_and_neck_cancer"
+      }
+    ]
+  },
+  {
+    "cancer": "Kidney Cancer",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_kidney.csv",
+        "table": "stage_kidney_cancer"
+      }
+    ]
+  },
+  {
+    "cancer": "Liver Cancer",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_liver.csv",
+        "table": "stage_liver_cancer"
       }
     ]
   },
@@ -25,31 +79,49 @@
     "summaryUrl": "https://cptac-data-portal.georgetown.edu/study-summary/S056",
     "files": [
       {
-        "name": "sample",
-        "url": "https://cptac-data-portal.georgetown.edu/cptac/documents/S046_S056_BI_CPTAC3_LUAD_Discovery_Cohort_Samples_r2_July2020.xlsx",
-        "filePath": "data/luad/sample.xlsx",
-        "table": "luad_stage_sample",
-        "headers": [
-          "case_id",
-          "broad_sample_id",
-          "aliquot",
-          null,
-          null,
-          null,
-          "type"
-        ]
-      },
+        "name": "source",
+        "filePath": "data/cprosite_cancer_lung_adenocarcinoma.csv",
+        "table": "stage_lung_adenocarcinoma"
+      }
+    ]
+  },
+  {
+    "cancer": "Lung Squamous Cell Carcinoma",
+    "files": [
       {
-        "name": "proteome",
-        "url": "https://cptc-xfer.uis.georgetown.edu/publicData/Phase_III_Data/CPTAC_LUAD_S046/CPTAC_LUAD_Proteome_CDAP_Protein_Report.r1/CPTAC3_Lung_Adeno_Carcinoma_Proteome.tmt10.tsv",
-        "filePath": "data/luad/proteome.tsv",
-        "table": "luad_stage_proteome"
-      },
+        "name": "source",
+        "filePath": "data/cprosite_cancer_lung_squamous_cell_carcinoma.csv",
+        "table": "stage_lung_squamous_cell_carcinoma"
+      }
+    ]
+  },
+  {
+    "cancer": "Ovarian Cancer",
+    "files": [
       {
-        "name": "phosphoproteome",
-        "url": "https://cptc-xfer.uis.georgetown.edu/publicData/Phase_III_Data/CPTAC_LUAD_S046/CPTAC_LUAD_Phosphoproteome_CDAP_Protein_Report.r1/CPTAC3_Lung_Adeno_Carcinoma_Phosphoproteome.phosphosite.tmt10.tsv",
-        "filePath": "data/luad/phosphosite.tsv",
-        "table": "luad_stage_phosphoproteome"
+        "name": "source",
+        "filePath": "data/cprosite_cancer_ovarian.csv",
+        "table": "stage_ovarian_cancer"
+      }
+    ]
+  },
+  {
+    "cancer": "Pancreatic Ductal Adenocarcinoma",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_pancreas.csv",
+        "table": "stage_pancreatic_ductal_adenocarcinoma"
+      }
+    ]
+  },
+  {
+    "cancer": "Uterine Cancer",
+    "files": [
+      {
+        "name": "source",
+        "filePath": "data/cprosite_cancer_uterine.csv",
+        "table": "stage_uterine_cancer"
       }
     ]
   }
