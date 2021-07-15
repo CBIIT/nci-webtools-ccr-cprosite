@@ -9,6 +9,7 @@ import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table, { RangeFilter, TextFilter } from "../components/table";
 import Plot from "react-plotly.js";
 import { casesState, formState, siteState } from "./explore.state";
+
 import { useState } from "react";
 import _ from "lodash";
 
@@ -59,8 +60,8 @@ export default function Results() {
       Header: <b>Tumor Value</b>,
     },
     {
-      accessor: "normalValue",
-      Header: <b>Normal Value</b>,
+      accessor: "controlValue",
+      Header: <b>Control Value</b>,
     },
   ];
 
@@ -78,24 +79,32 @@ export default function Results() {
       Header: <b>Average Tumor</b>,
     },
     {
-      accessor: "normalAverage",
-      Header: <b>Average Normal</b>,
+      accessor: "controlAverage",
+      Header: <b>Average Control</b>,
     },
     {
       accessor: "tumorNum",
       Header: <b>Tumor Count</b>,
     },
     {
-      accessor: "normalNum",
-      Header: <b>Normal Count</b>,
+      accessor: "controlNum",
+      Header: <b>Control Count</b>,
     },
     {
       accessor: "tumorError",
-      Header: <b>Tumor Standard Error</b>,
+      Header: (
+        <div data-toggle="tooltip" title="Tumor Standard Error">
+          <b>Tumor SE</b>
+        </div>
+      ),
     },
     {
       accessor: "normalError",
-      Header: <b>Normal Standard Error</b>,
+      Header: (
+        <div data-toggle="tooltip" title="Control Standard Error">
+          <b>Control SE</b>
+        </div>
+      ),
     },
   ];
 
@@ -127,11 +136,19 @@ export default function Results() {
     },
     {
       accessor: "tumorError",
-      Header: <b>Tumor Standard Error</b>,
+      Header: (
+        <div data-toggle="tooltip" title="Tumor Standard Error">
+          <b>Tumor SE</b>
+        </div>
+      ),
     },
     {
       accessor: "controlError",
-      Header: <b>Control Standard Error</b>,
+      Header: (
+        <div data-toggle="tooltip" title="Control Standard Error">
+          <b>Control SE</b>
+        </div>
+      ),
     },
   ];
 
@@ -189,14 +206,14 @@ export default function Results() {
     const tumorFilter = patients
       .filter((d) => d.tumorValue !== null)
       .map((e) => e.tumorValue);
-    const normalFilter = patients
+    const controlFilter = patients
       .filter((d) => d.normalValue !== null)
       .map((e) => e.normalValue);
     const tumorAverage = !isNaN(tumorFilter[0])
       ? average(tumorFilter).toFixed(4)
       : "NA";
-    const normalAverage = !isNaN(normalFilter[0])
-      ? average(normalFilter).toFixed(4)
+    const controlAverage = !isNaN(controlFilter[0])
+      ? average(controlFilter).toFixed(4)
       : "NA";
 
     return {
@@ -204,7 +221,7 @@ export default function Results() {
       peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
         .phosphopeptide,
       tumorAverage: tumorAverage,
-      normalAverage: normalAverage,
+      controlAverage: controlAverage,
       link: (
         <a
           onClick={() => {
@@ -216,9 +233,9 @@ export default function Results() {
         </a>
       ),
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
-      normalNum: !isNaN(normalFilter[0]) ? normalFilter.length : 0,
+      controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorError: calcStandardError(tumorFilter, tumorAverage),
-      normalError: calcStandardError(normalFilter, normalAverage),
+      controlError: calcStandardError(controlFilter, controlAverage),
     };
   });
 
@@ -233,7 +250,7 @@ export default function Results() {
       y: sites.filter((c) => c[0] === phosView)[0][1].map((d) => d.normalValue),
       type: "box",
       boxpoints: "all",
-      name: "Normal",
+      name: "Control",
     },
   ];
 
@@ -299,20 +316,22 @@ export default function Results() {
         type: "data",
         array: phosphorylationData.map((c) => c.tumorError),
         visible: true,
+        color: "rgb(31,119,180)",
       },
       type: "bar",
       name: "Tumor",
     },
     {
       x: phosphorylationData.map((c) => c.name),
-      y: phosphorylationData.map((c) => c.normalAverage),
+      y: phosphorylationData.map((c) => c.controlAverage),
       error_y: {
         type: "data",
-        array: phosphorylationData.map((c) => c.normalError),
+        array: phosphorylationData.map((c) => c.controlError),
         visible: true,
+        color: "rgb(255,127,14)",
       },
       type: "bar",
-      name: "Normal",
+      name: "Control",
     },
   ];
 
@@ -325,6 +344,7 @@ export default function Results() {
           type: "data",
           array: averages.map((c) => c.tumorError),
           visible: true,
+          color: "rgb(31,119,180)",
         },
         type: "bar",
         name: "Tumor",
@@ -336,6 +356,7 @@ export default function Results() {
           type: "data",
           array: averages.map((c) => c.controlError),
           visible: true,
+          color: "rgb(255,127,14)",
         },
         type: "bar",
         name: "Control",
@@ -445,7 +466,7 @@ export default function Results() {
                   data={multiPhosBarPlot}
                   layout={{
                     ...defaultLayout,
-                    title: "<b>Average Tumor and Normal</b>",
+                    title: "<b>Average Tumor and Control</b>",
                     xaxis: {
                       title: "Phosphorylation Site",
                       zeroline: false,
@@ -550,7 +571,10 @@ export default function Results() {
                   layout={{
                     autosize: true,
                     title: "<b>Log Fold Change</b>",
-                    xaxis: { title: "Log Fold Change", zeroline: false },
+                    xaxis: {
+                      title: "Log<sub>2</sub> Fold Change",
+                      zeroline: false,
+                    },
                     barmode: "stack",
                   }}
                   useResizeHandler
@@ -637,7 +661,7 @@ export default function Results() {
                   data={phosBoxData}
                   layout={{
                     ...defaultLayout,
-                    title: "<b>Tumor vs Normal</b>",
+                    title: "<b>Tumor vs Control</b>",
                     yaxis: { title: "Phosphorylation Level", zeroline: false },
                     autosize: true,
                   }}
@@ -656,7 +680,7 @@ export default function Results() {
                     return {
                       name: d.name,
                       tumorValue: d.tumorValue ? d.tumorValue.toFixed(4) : "NA",
-                      normalValue: d.normalValue
+                      controlValue: d.normalValue
                         ? d.normalValue.toFixed(4)
                         : "NA",
                     };
