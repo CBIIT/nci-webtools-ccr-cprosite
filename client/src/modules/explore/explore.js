@@ -23,12 +23,14 @@ export default function Explore() {
     console.log("reset", event);
   }
 
-  function Results() {
+  function results() {
     switch (form.dataset) {
       case "phosphorylation-site":
         return <PhosResults />;
-      default:
+      case "protein-abundance":
         return <Results />;
+      default:
+        return "";
     }
   }
 
@@ -53,7 +55,7 @@ export default function Explore() {
               <ErrorBoundary fallback="An unexpected error occured">
                 <Suspense fallback="Loading...">
                   {![null, undefined, ""].includes(form.gene) ? (
-                    Results()
+                    results()
                   ) : (
                     <h2 className="p-5 h5 d-flex align-items-center justify-content-center">
                       Please Provide Search Parameters
