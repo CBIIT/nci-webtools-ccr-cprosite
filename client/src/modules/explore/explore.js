@@ -8,6 +8,7 @@ import ExploreForm from "./explore-form";
 import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 import Results from "./results";
+import PhosResults from "./phosphorylation-results";
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
@@ -20,6 +21,15 @@ export default function Explore() {
   function handleReset(event) {
     setForm(event);
     console.log("reset", event);
+  }
+
+  function Results() {
+    switch (form.dataset) {
+      case "phosphorylation-site":
+        return <PhosResults />;
+      default:
+        return <Results />;
+    }
   }
 
   return (
@@ -43,7 +53,7 @@ export default function Explore() {
               <ErrorBoundary fallback="An unexpected error occured">
                 <Suspense fallback="Loading...">
                   {![null, undefined, ""].includes(form.gene) ? (
-                    <Results />
+                    Results()
                   ) : (
                     <h2 className="p-5 h5 d-flex align-items-center justify-content-center">
                       Please Provide Search Parameters
