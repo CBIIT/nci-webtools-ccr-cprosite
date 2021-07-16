@@ -7,6 +7,9 @@ create table `<%= proteinDataTable %>` (
     "tumorValue" real
 );
 
+create unique index "<%= proteinDataTable %>_unique_index" on "<%= proteinDataTable %>"("geneId", "cancerId", "name");
+
+
 create table `<%= phosphoproteinDataTable %>` (
     "id" integer primary key,
     "geneId" integer references "gene"("id"),
@@ -19,6 +22,9 @@ create table `<%= phosphoproteinDataTable %>` (
     "phosphopeptide" text
 );
 
+create unique index "<%= phosphoproteinDataTable %>_unique_index" on "<%= phosphoproteinDataTable %>"("geneId", "cancerId", "name");
+
+
 create table `<%= rnaDataTable %>` (
     "id" integer primary key,
     "geneId" integer references "gene"("id"),
@@ -27,6 +33,9 @@ create table `<%= rnaDataTable %>` (
     "normalValue" real,
     "tumorValue" real
 );
+
+create unique index "<%= rnaDataTable %>_unique_index" on "<%= rnaDataTable %>"("geneId", "cancerId", "name");
+
 
 create table `<%= tcgaRnaDataTable %>` (
     "id" integer primary key,
@@ -38,6 +47,73 @@ create table `<%= tcgaRnaDataTable %>` (
     "normalTcgaBarcode" text,
     "tumorTcgaBarcode" text
 );
+
+create unique index "<%= tcgaRnaDataTable %>_unique_index" on "<%= tcgaRnaDataTable %>"("geneId", "cancerId", "name");
+
+
+create table `<%= proteinDataSummaryTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "normalSampleCount" integer,
+    "normalSampleMean" real,
+    "normalSampleStandardError" real,
+    "tumorSampleCount" integer,
+    "tumorSampleMean" real,
+    "tumorSampleStandardError" real,
+    "pValue" real
+);
+
+create unique index "<%= proteinDataSummaryTable %>_unique_index" on "<%= proteinDataSummaryTable %>"("geneId", "cancerId");
+
+
+create table `<%= phosphoproteinDataSummaryTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "normalSampleCount" integer,
+    "normalSampleMean" real,
+    "normalSampleStandardError" real,
+    "tumorSampleCount" integer,
+    "tumorSampleMean" real,
+    "tumorSampleStandardError" real,
+    "pValue" real
+);
+
+create unique index "<%= phosphoproteinDataSummaryTable %>_unique_index" on "<%= phosphoproteinDataSummaryTable %>"("geneId", "cancerId");
+
+
+create table `<%= rnaDataSummaryTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "normalSampleCount" integer,
+    "normalSampleMean" real,
+    "normalSampleStandardError" real,
+    "tumorSampleCount" integer,
+    "tumorSampleMean" real,
+    "tumorSampleStandardError" real,
+    "pValue" real
+);
+
+create unique index "<%= rnaDataSummaryTable %>_unique_index" on "<%= rnaDataSummaryTable %>"("geneId", "cancerId");
+
+
+create table `<%= tcgaRnaDataSummaryTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "normalSampleCount" integer,
+    "normalSampleMean" real,
+    "normalSampleStandardError" real,
+    "tumorSampleCount" integer,
+    "tumorSampleMean" real,
+    "tumorSampleStandardError" real,
+    "pValue" real
+);
+
+create unique index "<%= tcgaRnaDataSummaryTable %>_unique_index" on "<%= tcgaRnaDataSummaryTable %>"("geneId", "cancerId");
+
 
 create table `<%= caseTable %>` (
     "id" integer primary key,

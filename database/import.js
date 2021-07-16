@@ -56,9 +56,11 @@ if (config.aws) {
           y.push(yValue);
         }
        },
-      result: ({x, y}) => x.length > 1
-       ? wilcoxon(x, y).pValue
-       : null
+      result: ({x, y}) => {
+        if (x.length <= 1 || x.every((_x, i) => _x - y[i] === 0))
+          return null;
+        return wilcoxon(x, y).pValue;
+      }
     }
   );
 
@@ -83,17 +85,28 @@ if (config.aws) {
     const tablePrefix = source.files[0].table;
     const caseTable = `${tablePrefix}_case`;
     const caseSummaryTable = `${tablePrefix}_case_summary`;
+
     const proteinDataTable = `${tablePrefix}_protein_data`;
     const phosphoproteinDataTable = `${tablePrefix}_phosphoprotein_data`;
     const rnaDataTable = `${tablePrefix}_rna_data`;
     const tcgaRnaDataTable = `${tablePrefix}_tcga_rna_data`;
+
+    const proteinDataSummaryTable = `${tablePrefix}_protein_data_summary`;
+    const phosphoproteinDataSummaryTable = `${tablePrefix}_phosphoprotein_data_summary`;
+    const rnaDataSummaryTable = `${tablePrefix}_rna_data_summary`;
+    const tcgaRnaDataSummaryTable = `${tablePrefix}_tcga_rna_data_summary`;
+
     const tableSql = templateSql({
       caseTable,
       caseSummaryTable,
       proteinDataTable,
       phosphoproteinDataTable,
       rnaDataTable,
-      tcgaRnaDataTable
+      tcgaRnaDataTable,
+      proteinDataSummaryTable,
+      phosphoproteinDataSummaryTable,
+      rnaDataSummaryTable,
+      tcgaRnaDataSummaryTable,
     });
 
     database.exec(tableSql);
@@ -200,112 +213,85 @@ if (config.aws) {
           tumorTcgaBarcode
       from "${stage.source.table}"`
     );
-      
-    database.exec('commit');
-    return;
-    // insert cases
-    // database.exec(
-    //   `insert into "${caseTable}" (
-    //       geneId,
-    //       cancerId,
-    //       name,
-    //       normalProteinLogRatio,
-    //       tumorProteinLogRatio,
-    //       normalPhosphoproteinLogRatio,
-    //       tumorPhosphoproteinLogRatio,
-    //       normalRnaValue,
-    //       tumorRnaValue,
-    //       normalTcgaBarcode,
-    //       normalTcgaRnaValue,
-    //       tumorTcgaBarcode,
-    //       tumorTcgaRnaValue,
-    //       accession,
-    //       phosphorylationSite,
-    //       phosphopeptide
-    //   )
-    //   select
-    //       geneId,
-    //       ${cancerId},
-    //       caseId,
-    //       normalProteinLogRatio,
-    //       tumorProteinLogRatio,
-    //       normalPhosphoproteinLogRatio,
-    //       tumorPhosphoproteinLogRatio,
-    //       normalRnaValue,
-    //       tumorRnaValue,
-    //       normalTcgaBarcode,
-    //       normalTcgaRnaValue,
-    //       tumorTcgaBarcode,
-    //       tumorTcgaRnaValue,
-    //       accession,
-    //       phosphorylationSite,
-    //       phosphopeptide
-    //   from "${stage.source.table}"`
-    // );
 
     
-
-    // update normalProteinLogRatio summary
-    for (const type of [
-      'normalProteinLogRatio', 
-      'tumorProteinLogRatio', 
-      'normalPhosphoproteinLogRatio', 
-      'tumorPhosphoproteinLogRatio', 
-      'normalRnaLevel', 
-      'tumorRnaLevel'
+    console.log(`updating summary statistics`)
+    for (const [dataTable, dataSummaryTable] of [
+      [proteinDataTable, proteinDataSummaryTable],
+      [phosphoproteinDataTable, phosphoproteinDataSummaryTable],
+      [rnaDataTable, rnaDataSummaryTable],
+      [tcgaRnaDataTable, tcgaRnaDataSummaryTable]
     ]) {
+      // insert normal values
+      console.log(`[${timestamp()}] importing summary data: ${dataSummaryTable}`);
+
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            geneId,
+            cancerId,
+            normalSampleCount,
+            normalSampleMean,
+            normalSampleStandardError
+        )
+        select
+            geneId,
+            cancerId,
+            count(normalValue) as normalSampleCount,
+            avg(normalValue),
+            stdev(normalValue) / sqrt(count(normalValue))
+        from "${dataTable}"
+        where normalValue is not null
+        group by geneId, cancerId
+        on conflict("geneId", "cancerId") do update set
+            "normalSampleCount" = excluded."normalSampleCount",
+            "normalSampleMean" = excluded."normalSampleMean",
+            "normalSampleStandardError" = excluded."normalSampleStandardError"`
+      );
+      console.log(`[${timestamp()}] imported normal sample data`);
+
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            geneId,
+            cancerId,
+            tumorSampleCount,
+            tumorSampleMean,
+            tumorSampleStandardError
+        )
+        select
+            geneId,
+            cancerId,
+            count(tumorValue) as tumorSampleCount,
+            avg(tumorValue),
+            stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
+        from "${dataTable}"
+        where tumorValue is not null
+        group by geneId, cancerId
+        on conflict("geneId", "cancerId") do update set
+            "tumorSampleCount" = excluded."tumorSampleCount",
+            "tumorSampleMean" = excluded."tumorSampleMean",
+            "tumorSampleStandardError" = excluded."tumorSampleStandardError"`
+      );
+      console.log(`[${timestamp()}] imported tumor sample data`);
+
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            geneId,
+            cancerId,
+            pValue
+        )
+        select
+            geneId,
+            cancerId,
+            wilcoxon(normalValue, tumorValue) as pValue
+        from "${dataTable}"
+        group by geneId, cancerId
+        on conflict("geneId", "cancerId") do update set
+          "pValue" = excluded."pValue"`
+      );
+      console.log(`[${timestamp()}] imported p-value`);
+
+    }
       
-
-
-      console.log(`updating summary statistics: ${type}`)
-      database.exec(
-        `insert into "${caseSummaryTable}" (
-            geneId,
-            cancerId,
-            ${type}Count,
-            ${type}Mean,
-            ${type}StandardError
-        )
-        select
-            geneId,
-            cancerId,
-            count(*),
-            avg(${type}),
-            stdev(${type}) / sqrt(count(*))
-        from "${caseTable}"
-        where ${type} is not null
-        group by geneId, cancerId
-        on conflict("geneId", "cancerId") do update set
-            "${type}Count" = excluded."${type}Count",
-            "${type}Mean" = excluded."${type}Mean",
-            "${type}StandardError" = excluded."${type}StandardError"`
-      );
-    }
-
-    for (const [type, normalColumn, tumorColumn] of [
-      ['proteinLogRatio', 'normalProteinLogRatio', 'tumorProteinLogRatio'],
-      ['phosphoproteinLogRatio', 'normalPhosphoproteinLogRatio', 'tumorPhosphoproteinLogRatio'],
-      ['rnaValue', 'normalRnaValue', 'tumorRnaValue'],
-      ['tcgaRnaValue', 'normalTcgaRnaValue', 'tumorTcgaRnaValue'],
-    ]) {
-      console.log(`updating p-value: ${type}`)
-      database.exec(
-        `insert into "${caseSummaryTable}" (
-            geneId,
-            cancerId,
-            ${type}P
-        )
-        select
-            geneId,
-            cancerId,
-            wilcoxon(${normalColumn}, ${tumorColumn})
-        from "${caseTable}"
-        group by geneId, cancerId
-        on conflict("geneId", "cancerId") do update set
-            ${type}PValue = excluded."${type}PValue"`
-      );
-    }
-
     database.exec("commit");
     console.log("Generating indexes");
     database.exec(await fsp.readFile("schema/indexes/main.sql", "utf-8"));
