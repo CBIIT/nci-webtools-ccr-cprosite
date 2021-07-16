@@ -1,3 +1,44 @@
+create table `<%= proteinDataTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "name" text,
+    "normalValue" real,
+    "tumorValue" real
+);
+
+create table `<%= phosphoproteinDataTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "name" text,
+    "normalValue" real,
+    "tumorValue" real,
+    "accession" text,
+    "phosphorylationSite" text,
+    "phosphopeptide" text
+);
+
+create table `<%= rnaDataTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "name" text,
+    "normalValue" real,
+    "tumorValue" real
+);
+
+create table `<%= tcgaRnaDataTable %>` (
+    "id" integer primary key,
+    "geneId" integer references "gene"("id"),
+    "cancerId" integer references "cancer"("id"),
+    "name" text,
+    "normalValue" real,
+    "tumorValue" real,
+    "normalTcgaBarcode" text,
+    "tumorTcgaBarcode" text
+);
+
 create table `<%= caseTable %>` (
     "id" integer primary key,
     "geneId" integer references "gene"("id"),
