@@ -72,9 +72,8 @@ if (config.aws) {
     if (source.name === "GLOBAL") {
       database.exec(
         `insert into gene(id, name, description) 
-        select id, symbol, name 
-        from stage_gene 
-        where id is not null 
+        select id, name, description
+        from stage_gene
         order by id asc`,
       );
       continue;
@@ -84,9 +83,17 @@ if (config.aws) {
     const tablePrefix = source.files[0].table;
     const caseTable = `${tablePrefix}_case`;
     const caseSummaryTable = `${tablePrefix}_case_summary`;
+    const proteinDataTable = `${tablePrefix}_protein_data`;
+    const phosphoproteinDataTable = `${tablePrefix}_phosphoprotein_data`;
+    const rnaDataTable = `${tablePrefix}_rna_data`;
+    const tcgaRnaDataTable = `${tablePrefix}_tcga_rna_data`;
     const tableSql = templateSql({
       caseTable,
       caseSummaryTable,
+      proteinDataTable,
+      phosphoproteinDataTable,
+      rnaDataTable,
+      tcgaRnaDataTable
     });
 
     database.exec(tableSql);
@@ -114,52 +121,127 @@ if (config.aws) {
         study: source.study || '',
       });
 
-    console.log(`[${timestamp()}] importing cancers`);
 
-    console.log(stage);
-
-    return true;
-
-    
-    // insert cases
+    console.log(`[${timestamp()}] importing protein data`);
     database.exec(
-      `insert into "${caseTable}" (
+      `insert into "${proteinDataTable}" (
+        geneId,
+        cancerId,
+        name,
+        normalValue,
+        tumorValue
+      ) select
           geneId,
-          cancerId,
-          name,
+          ${cancerId},
+          caseId,
           normalProteinLogRatio,
-          tumorProteinLogRatio,
+          tumorProteinLogRatio
+      from "${stage.source.table}"`
+    );
+    
+    console.log(`[${timestamp()}] importing phosphoprotein data`);
+    database.exec(
+      `insert into "${phosphoproteinDataTable}" (
+        geneId,
+        cancerId,
+        name,
+        normalValue,
+        tumorValue,
+        accession,
+        phosphorylationSite,
+        phosphopeptide
+      ) select
+          geneId,
+          ${cancerId},
+          caseId,
           normalPhosphoproteinLogRatio,
           tumorPhosphoproteinLogRatio,
-          normalRnaValue,
-          tumorRnaValue,
-          normalTcgaBarcode,
-          normalTcgaRnaValue,
-          tumorTcgaBarcode,
-          tumorTcgaRnaValue,
-          accession,
-          phosphorylationSite,
-          phosphopeptide
-      )
-      select
-          geneId,
-          cancerId,
-          name,
-          normalProteinLogRatio,
-          tumorProteinLogRatio,
-          normalPhosphoproteinLogRatio,
-          tumorPhosphoproteinLogRatio,
-          normalRnaValue,
-          tumorRnaValue,
-          normalTcgaBarcode,
-          normalTcgaRnaValue,
-          tumorTcgaBarcode,
-          tumorTcgaRnaValue,
           accession,
           phosphorylationSite,
           phosphopeptide
       from "${stage.source.table}"`
     );
+
+    console.log(`[${timestamp()}] importing rna data`);
+    database.exec(
+      `insert into "${rnaDataTable}" (
+        geneId,
+        cancerId,
+        name,
+        normalValue,
+        tumorValue
+      ) select
+          geneId,
+          ${cancerId},
+          caseId,
+          normalRnaValue,
+          tumorRnaValue
+      from "${stage.source.table}"`
+    );
+
+
+    console.log(`[${timestamp()}] importing tcga rna data`);
+    database.exec(
+      `insert into "${tcgaRnaDataTable}" (
+        geneId,
+        cancerId,
+        name,
+        normalValue,
+        tumorValue,
+        normalTcgaBarcode,
+        tumorTcgaBarcode
+      ) select
+          geneId,
+          ${cancerId},
+          caseId,
+          normalTcgaRnaValue,
+          tumorTcgaRnaValue,
+          normalTcgaBarcode,
+          tumorTcgaBarcode
+      from "${stage.source.table}"`
+    );
+      
+    database.exec('commit');
+    return;
+    // insert cases
+    // database.exec(
+    //   `insert into "${caseTable}" (
+    //       geneId,
+    //       cancerId,
+    //       name,
+    //       normalProteinLogRatio,
+    //       tumorProteinLogRatio,
+    //       normalPhosphoproteinLogRatio,
+    //       tumorPhosphoproteinLogRatio,
+    //       normalRnaValue,
+    //       tumorRnaValue,
+    //       normalTcgaBarcode,
+    //       normalTcgaRnaValue,
+    //       tumorTcgaBarcode,
+    //       tumorTcgaRnaValue,
+    //       accession,
+    //       phosphorylationSite,
+    //       phosphopeptide
+    //   )
+    //   select
+    //       geneId,
+    //       ${cancerId},
+    //       caseId,
+    //       normalProteinLogRatio,
+    //       tumorProteinLogRatio,
+    //       normalPhosphoproteinLogRatio,
+    //       tumorPhosphoproteinLogRatio,
+    //       normalRnaValue,
+    //       tumorRnaValue,
+    //       normalTcgaBarcode,
+    //       normalTcgaRnaValue,
+    //       tumorTcgaBarcode,
+    //       tumorTcgaRnaValue,
+    //       accession,
+    //       phosphorylationSite,
+    //       phosphopeptide
+    //   from "${stage.source.table}"`
+    // );
 
     
 
