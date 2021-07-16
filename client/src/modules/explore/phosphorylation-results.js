@@ -8,7 +8,7 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { casesState, formState, siteState } from "./explore.state";
+import { siteState } from "./explore.state";
 
 import { useState } from "react";
 import _ from "lodash";
@@ -195,6 +195,7 @@ export default function PhosResults() {
       itemwidth: 40,
     },
     hovermode: "closest",
+    hoverlabel: { bgcolor: "#FFF" },
   };
 
   const defaultConfig = {

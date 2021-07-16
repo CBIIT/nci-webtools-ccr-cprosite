@@ -11,7 +11,6 @@ import Plot from "react-plotly.js";
 import { casesState, formState } from "./explore.state";
 
 import { useState } from "react";
-import _ from "lodash";
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
@@ -249,6 +248,7 @@ export default function Results() {
       itemwidth: 40,
     },
     hovermode: "closest",
+    hoverlabel: { bgcolor: "#FFF" },
   };
 
   const defaultConfig = {
