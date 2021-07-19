@@ -2,7 +2,7 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const fsp = require("fs/promises");
-const readline = require('readline');
+const readline = require("readline");
 const path = require("path");
 const xlsx = require("xlsx");
 const AWS = require("aws-sdk");
@@ -63,9 +63,9 @@ async function getFileHeaders(filePath) {
         parseCsv({
           delimiter: ",",
           to_line: 1,
-        })
-      )
-      
+        }),
+      );
+
       for await (const row of headerRows) {
         return row;
       }
@@ -75,8 +75,8 @@ async function getFileHeaders(filePath) {
         parseCsv({
           delimiter: "\t",
           to_line: 1,
-        })
-      )
+        }),
+      );
 
       for await (const row of headerRows) {
         return row;
@@ -86,7 +86,9 @@ async function getFileHeaders(filePath) {
       const workbook = xlsx.readFile(filePath);
       const [sheetName] = workbook.SheetNames; // first sheet
       return Object.keys(
-        xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], { header: headers })[0]
+        xlsx.utils.sheet_to_json(workbook.Sheets[sheetName], {
+          header: headers,
+        })[0],
       );
 
     default:
@@ -103,7 +105,7 @@ function readFileAsIterable(filePath, headers) {
           columns: headers || true,
           skip_empty_lines: true,
           from_line: headers ? 2 : 1,
-        })
+        }),
       );
 
     case ".tsv":
@@ -113,7 +115,7 @@ function readFileAsIterable(filePath, headers) {
           columns: headers || true,
           skip_empty_lines: true,
           from_line: headers ? 2 : 1,
-        })
+        }),
       );
 
     case ".xlsx":
@@ -141,7 +143,7 @@ async function importTable(database, tableName, headers, rowIterator) {
     `insert into "${tableName}" values (${placeholders})`,
   );
 
-  database.exec('begin transaction');
+  database.exec("begin transaction");
 
   for await (const row of rowIterator) {
     const values = headers
@@ -151,7 +153,7 @@ async function importTable(database, tableName, headers, rowIterator) {
     insertStatement.run(values);
   }
 
-  database.exec('commit');
+  database.exec("commit");
 }
 
 async function importSourceTables(db, source, force) {
@@ -166,40 +168,44 @@ async function importSourceTables(db, source, force) {
 
     // import file to stage table
     console.log(`importing ${file.name} file to table: ${file.table}`);
-    const headers = file.headers || await getFileHeaders(file.filePath);
+    const headers = file.headers || (await getFileHeaders(file.filePath));
     const rows = readFileAsIterable(filePath, file.headers);
     await importTable(db, file.table, Array.from(headers), rows);
   }
 }
 
 async function importDynamoDBTable(service, tableName, data) {
-  const documentClient = new AWS.DynamoDB.DocumentClient({service});
+  const documentClient = new AWS.DynamoDB.DocumentClient({ service });
   const insertBatch = async (batch) => {
     if (!batch.length) return;
-    const { UnprocessedItems: unprocessedItems } = await documentClient.batchWrite({
-      RequestItems: {
-        [tableName]: batch.map(Item => ({
-          PutRequest: { Item }
-        }))
-      }
-    }).promise();
+    const { UnprocessedItems: unprocessedItems } = await documentClient
+      .batchWrite({
+        RequestItems: {
+          [tableName]: batch.map((Item) => ({
+            PutRequest: { Item },
+          })),
+        },
+      })
+      .promise();
 
     if (unprocessedItems && unprocessedItems.length) {
       await sleep(400);
-      console.log(`WARNING: batch write did not succeed, retrying: ${unprocessedItems}`)
+      console.log(
+        `WARNING: batch write did not succeed, retrying: ${unprocessedItems}`,
+      );
       await insertBatch(unprocessedItems);
     }
-  }
+  };
 
   const maxBufferSize = 25;
   const maxParallelBuffers = 40;
   let buffer = [];
   let parallelBuffers = [];
   let count = 0;
-  
+
   for (const item of data) {
     buffer.push(item);
-    count ++;
+    count++;
     if (buffer.length >= maxBufferSize) {
       const bufferItems = buffer.splice(0, buffer.length);
       parallelBuffers.push(bufferItems);
@@ -207,27 +213,27 @@ async function importDynamoDBTable(service, tableName, data) {
       if (parallelBuffers.length >= maxParallelBuffers) {
         await Promise.all(parallelBuffers.map(insertBatch));
         parallelBuffers.splice(0, parallelBuffers.length);
-        console.log(`Inserted ${count} records`)
+        console.log(`Inserted ${count} records`);
       }
     }
   }
 
   // insert last batches
   parallelBuffers.push(buffer);
-  count += parallelBuffers.reduce((acc, curr) => acc += curr.length, 0);
+  count += parallelBuffers.reduce((acc, curr) => (acc += curr.length), 0);
   await Promise.all(parallelBuffers.map(insertBatch));
-  console.log(`Inserted ${count} records`)
+  console.log(`Inserted ${count} records`);
 }
 
-function getTimestamp(formatter = v => v.join(', ')) {
+function getTimestamp(formatter = (v) => v.join(", ")) {
   const start = new Date().getTime();
-  return function() {
+  return function () {
     this.previous = this.now || new Date().getTime();
     this.now = new Date().getTime();
     return formatter([now - start, now - previous]);
-  }
+  };
 }
 
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

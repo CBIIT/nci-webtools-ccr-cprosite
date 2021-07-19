@@ -1,88 +1,86 @@
-const fs = require('fs');
-const _ = require('lodash');
-
+const fs = require("fs");
+const _ = require("lodash");
 
 const config = [
   {
-    cancer: 'cancer_breast',
-    proteinTable: 'breastcptac2prodata',
-    phosphoproteinTable: 'breastcptac2phosphodata',
-    rnaTable: 'breastcptac2rnadata',
-    tcgaRnaTable: 'breastdata',
+    cancer: "cancer_breast",
+    proteinTable: "breastcptac2prodata",
+    phosphoproteinTable: "breastcptac2phosphodata",
+    rnaTable: "breastcptac2rnadata",
+    tcgaRnaTable: "breastdata",
   },
   {
-    cancer: 'cancer_ccrcc',
-    proteinTable: 'ccrcccptac3prodata',
-    phosphoproteinTable: 'ccrcccptac3phosphodata',
-    rnaTable: 'ccrcccptac3rnadata',
-  },
-  
-  {
-    cancer: 'cancer_colon',
-    proteinTable: 'coloncptac2prodata',
-    phosphoproteinTable: 'coloncptac2phosphodata',
-    rnaTable: 'coloncptac2rnadata',
-    tcgaRnaTable: 'colondata',
-  },
-  
-  {
-    cancer: 'cancer_head_and_neck',
-    proteinTable: 'hncptac3prodata',
-    phosphoproteinTable: 'hncptac3phosphodata',
-    tcgaRnaTable: 'hndata',
-  },
-  
-  {
-    cancer: 'cancer_liver',
-    proteinTable: 'liverhcccptacprodata',
-    tcgaRnaTable: 'liverhccdata',
-  },
-  
-  {
-    cancer: 'cancer_lung_adenocarcinoma',
-    proteinTable: 'lungadcptac3prodata',
-    phosphoproteinTable: 'lungadcptac3phosphodata',
-    rnaTable: 'lungadcptac3rnadata',
-    tcgaRnaTable: 'lungaddata',
-  },
-  
-  {
-    cancer: 'cancer_lung_squamous_cell_carcinoma',
-    proteinTable: 'lungsqcptac3prodata',
-    phosphoproteinTable: 'lungsqcptac3phosphodata',
-    rnaTable: 'lungsqcptac3rnadata',
-    tcgaRnaTable: 'lungsqdata',
-  },
-  
-  {
-    cancer: 'cancer_ovarian',
-    proteinTable: 'ovcptac2prodata',
-    phosphoproteinTable: 'ovcptac2phosphodata',
-    rnaTable: 'ovcptac2rnadata',
-    tcgaRnaTable: 'ovdata',
+    cancer: "cancer_kidney",
+    proteinTable: "ccrcccptac3prodata",
+    phosphoproteinTable: "ccrcccptac3phosphodata",
+    rnaTable: "ccrcccptac3rnadata",
   },
 
   {
-    cancer: 'cancer_pancreas',
-    proteinTable: 'pdaccptac3prodata',
-    phosphoproteinTable: 'pdaccptac3phosphodata',
-    tcgaRnaTable: 'pancreasdata',
+    cancer: "cancer_colon",
+    proteinTable: "coloncptac2prodata",
+    phosphoproteinTable: "coloncptac2phosphodata",
+    rnaTable: "coloncptac2rnadata",
+    tcgaRnaTable: "colondata",
   },
 
   {
-    cancer: 'cancer_stomach',
-    proteinSinglePoolTable: 'stomachcptac3prodata',
-    phosphoproteinSinglePoolTable: 'stomachcptac3phosphodata',
-    tcgaRnaTable: 'stomachdata',
+    cancer: "cancer_head_and_neck",
+    proteinTable: "hncptac3prodata",
+    phosphoproteinTable: "hncptac3phosphodata",
+    tcgaRnaTable: "hndata",
   },
 
   {
-    cancer: 'cancer_uterine',
-    proteinTable: 'uterinecptac3prodata',
-    rnaTable: 'uterinecptac3rnadata',
-    tcgaRnaTable: 'uterinedata',
+    cancer: "cancer_liver",
+    proteinTable: "liverhcccptacprodata",
+    tcgaRnaTable: "liverhccdata",
   },
 
+  {
+    cancer: "cancer_lung_adenocarcinoma",
+    proteinTable: "lungadcptac3prodata",
+    phosphoproteinTable: "lungadcptac3phosphodata",
+    rnaTable: "lungadcptac3rnadata",
+    tcgaRnaTable: "lungaddata",
+  },
+
+  {
+    cancer: "cancer_lung_squamous_cell_carcinoma",
+    proteinTable: "lungsqcptac3prodata",
+    phosphoproteinTable: "lungsqcptac3phosphodata",
+    rnaTable: "lungsqcptac3rnadata",
+    tcgaRnaTable: "lungsqdata",
+  },
+
+  {
+    cancer: "cancer_ovarian",
+    proteinTable: "ovcptac2prodata",
+    phosphoproteinTable: "ovcptac2phosphodata",
+    rnaTable: "ovcptac2rnadata",
+    tcgaRnaTable: "ovdata",
+  },
+
+  {
+    cancer: "cancer_pancreas",
+    proteinTable: "pdaccptac3prodata",
+    phosphoproteinTable: "pdaccptac3phosphodata",
+    tcgaRnaTable: "pancreasdata",
+  },
+
+  {
+    cancer: "cancer_stomach",
+    proteinSinglePoolTable: "stomachcptac3prodata",
+    phosphoproteinSinglePoolTable: "stomachcptac3phosphodata",
+    tcgaRnaTable: "stomachdata",
+  },
+
+  {
+    cancer: "cancer_uterine",
+    proteinTable: "uterinecptac3prodata",
+    rnaTable: "uterinecptac3rnadata",
+    tcgaRnaTable: "uterinedata",
+  },
 ];
 
 const mainTableTemplate = _.template(`
@@ -106,7 +104,7 @@ create table <%= mainTable %> (
 );
 create unique index <%= mainTable %>_geneId_caseId_uindex	
 on <%= mainTable %> (geneId, caseId);
-`)
+`);
 
 const proteinImportTemplate = _.template(`
 -- create temporary table for protein abundances
@@ -139,7 +137,6 @@ select * from (
 ) as new
 on duplicate key update tumorProteinLogRatio = new.tumorProteinLogRatio;
 `);
-
 
 const proteinSinglePoolImportTemplate = _.template(`
 -- create temporary table for protein abundances
@@ -201,7 +198,6 @@ select * from (
 on duplicate key update
     tumorPhosphoproteinLogRatio = new.tumorPhosphoproteinLogRatio;
 `);
-
 
 const phosphoproteinSinglePoolImportTemplate = _.template(`
 -- create temporary table for phosphoprotein abundances
@@ -307,9 +303,8 @@ on duplicate key update
     tumorTcgaRnaValue = new.tumorTcgaRnaValue;  
 `);
 
-
 function generateExportSql(config) {
-  let sql = '';
+  let sql = "";
 
   for (const entry of config) {
     const {
@@ -319,21 +314,53 @@ function generateExportSql(config) {
       proteinSinglePoolTable,
       phosphoproteinSinglePoolTable,
       rnaTable,
-      tcgaRnaTable
+      tcgaRnaTable,
     } = entry;
 
     sql += [
-      mainTableTemplate({mainTable}),
-      proteinTable && proteinImportTemplate({mainTable, sourceTable: proteinTable, tempTable: `${proteinTable}_temp` }),
-      phosphoproteinTable && phosphoproteinImportTemplate({mainTable, sourceTable: phosphoproteinTable, tempTable: `${phosphoproteinTable}_temp` }),
-      proteinSinglePoolTable && proteinSinglePoolImportTemplate({mainTable, sourceTable: proteinSinglePoolTable, tempTable: `${proteinSinglePoolTable}_temp` }),
-      phosphoproteinSinglePoolTable && phosphoproteinSinglePoolImportTemplate({mainTable, sourceTable: phosphoproteinSinglePoolTable, tempTable: `${phosphoproteinSinglePoolTable}_temp` }),
-      rnaTable && rnaImportTemplate({mainTable, sourceTable: rnaTable, tempTable: `${rnaTable}_temp` }),
-      tcgaRnaTable && tcgaRnaImportTemplate({mainTable, sourceTable: tcgaRnaTable, tempTable: `${tcgaRnaTable}_temp` }),
-    ].filter(Boolean).join('\n\n');
+      mainTableTemplate({ mainTable }),
+      proteinTable &&
+        proteinImportTemplate({
+          mainTable,
+          sourceTable: proteinTable,
+          tempTable: `${proteinTable}_temp`,
+        }),
+      phosphoproteinTable &&
+        phosphoproteinImportTemplate({
+          mainTable,
+          sourceTable: phosphoproteinTable,
+          tempTable: `${phosphoproteinTable}_temp`,
+        }),
+      proteinSinglePoolTable &&
+        proteinSinglePoolImportTemplate({
+          mainTable,
+          sourceTable: proteinSinglePoolTable,
+          tempTable: `${proteinSinglePoolTable}_temp`,
+        }),
+      phosphoproteinSinglePoolTable &&
+        phosphoproteinSinglePoolImportTemplate({
+          mainTable,
+          sourceTable: phosphoproteinSinglePoolTable,
+          tempTable: `${phosphoproteinSinglePoolTable}_temp`,
+        }),
+      rnaTable &&
+        rnaImportTemplate({
+          mainTable,
+          sourceTable: rnaTable,
+          tempTable: `${rnaTable}_temp`,
+        }),
+      tcgaRnaTable &&
+        tcgaRnaImportTemplate({
+          mainTable,
+          sourceTable: tcgaRnaTable,
+          tempTable: `${tcgaRnaTable}_temp`,
+        }),
+    ]
+      .filter(Boolean)
+      .join("\n\n");
   }
 
   return sql;
 }
 
-fs.writeFileSync('export.sql', generateExportSql(config));
+fs.writeFileSync("export.sql", generateExportSql(config));

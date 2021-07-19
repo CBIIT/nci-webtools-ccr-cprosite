@@ -1,17 +1,21 @@
 const fs = require("fs");
 const fsp = require("fs/promises");
 const path = require("path");
-const AWS = require('aws-sdk');
-const { importSourceTables, importDynamoDBTable, getTimestamp } = require("./utils");
+const AWS = require("aws-sdk");
+const {
+  importSourceTables,
+  importDynamoDBTable,
+  getTimestamp,
+} = require("./utils");
 const sqlite = require("better-sqlite3");
-const incrstdev = require( '@stdlib/stats/incr/stdev' );
-const wilcoxon = require( '@stdlib/stats/wilcoxon' );
-const { template } = require('lodash');
+const incrstdev = require("@stdlib/stats/incr/stdev");
+const wilcoxon = require("@stdlib/stats/wilcoxon");
+const { template } = require("lodash");
 const sources = require("./sources.json");
-const config = require('./config.json');
+const config = require("./config.json");
 const args = require("minimist")(process.argv.slice(2));
-const timestamp = getTimestamp(([absolute, relative]) => 
-  `${absolute / 1000}s, ${relative / 1000}s`
+const timestamp = getTimestamp(
+  ([absolute, relative]) => `${absolute / 1000}s, ${relative / 1000}s`,
 );
 
 if (config.aws) {
@@ -25,7 +29,9 @@ if (config.aws) {
   if (fs.existsSync(databaseFilePath)) fs.unlinkSync(databaseFilePath);
 
   const mainSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
-  const templateSql = template(await fsp.readFile("schema/tables/template.sql", "utf-8"));
+  const templateSql = template(
+    await fsp.readFile("schema/tables/template.sql", "utf-8"),
+  );
 
   // create schema
   const database = sqlite(databaseFilePath);
@@ -34,35 +40,27 @@ if (config.aws) {
     "extract",
     (string, delimiter, index) => string.split(delimiter)[index],
   );
-  database.function(
-    "sqrt",
-    v => Math.sqrt(v)
-  )
-  database.aggregate(
-    "stdev",
-    {
-      start: () => incrstdev(),
-      step: (accumulator, value) => { accumulator(value) },
-      result: (accumulator) => accumulator()
-    }
-  )
-  database.aggregate(
-    "wilcoxon",
-    {
-      start: () => ({x: [], y: []}),
-      step: ({x, y}, xValue, yValue) => { 
-        if (xValue !== null && yValue !== null) {
-          x.push(xValue);
-          y.push(yValue);
-        }
-       },
-      result: ({x, y}) => {
-        if (x.length <= 1 || x.every((_x, i) => _x - y[i] === 0))
-          return null;
-        return wilcoxon(x, y).pValue;
+  database.function("sqrt", (v) => Math.sqrt(v));
+  database.aggregate("stdev", {
+    start: () => incrstdev(),
+    step: (accumulator, value) => {
+      accumulator(value);
+    },
+    result: (accumulator) => accumulator(),
+  });
+  database.aggregate("wilcoxon", {
+    start: () => ({ x: [], y: [] }),
+    step: ({ x, y }, xValue, yValue) => {
+      if (xValue !== null && yValue !== null) {
+        x.push(xValue);
+        y.push(yValue);
       }
-    }
-  );
+    },
+    result: ({ x, y }) => {
+      if (x.length <= 1 || x.every((_x, i) => _x - y[i] === 0)) return null;
+      return wilcoxon(x, y).pValue;
+    },
+  });
 
   // import all sources into staging tables
   for (const source of sources) {
@@ -131,9 +129,8 @@ if (config.aws) {
       .prepare(`insert into cancer(name, study) values (:cancer, :study)`)
       .run({
         cancer: source.cancer,
-        study: source.study || '',
+        study: source.study || "",
       });
-
 
     console.log(`[${timestamp()}] importing protein data`);
     database.exec(
@@ -149,9 +146,9 @@ if (config.aws) {
           caseId,
           normalProteinLogRatio,
           tumorProteinLogRatio
-      from "${stage.source.table}"`
+      from "${stage.source.table}"`,
     );
-    
+
     console.log(`[${timestamp()}] importing phosphoprotein data`);
     database.exec(
       `insert into "${phosphoproteinDataTable}" (
@@ -172,7 +169,7 @@ if (config.aws) {
           accession,
           phosphorylationSite,
           phosphopeptide
-      from "${stage.source.table}"`
+      from "${stage.source.table}"`,
     );
 
     console.log(`[${timestamp()}] importing rna data`);
@@ -189,9 +186,8 @@ if (config.aws) {
           caseId,
           normalRnaValue,
           tumorRnaValue
-      from "${stage.source.table}"`
+      from "${stage.source.table}"`,
     );
-
 
     console.log(`[${timestamp()}] importing tcga rna data`);
     database.exec(
@@ -211,19 +207,20 @@ if (config.aws) {
           tumorTcgaRnaValue,
           normalTcgaBarcode,
           tumorTcgaBarcode
-      from "${stage.source.table}"`
+      from "${stage.source.table}"`,
     );
 
-    
-    console.log(`updating summary statistics`)
+    console.log(`updating summary statistics`);
     for (const [dataTable, dataSummaryTable] of [
       [proteinDataTable, proteinDataSummaryTable],
       [phosphoproteinDataTable, phosphoproteinDataSummaryTable],
       [rnaDataTable, rnaDataSummaryTable],
-      [tcgaRnaDataTable, tcgaRnaDataSummaryTable]
+      [tcgaRnaDataTable, tcgaRnaDataSummaryTable],
     ]) {
       // insert normal values
-      console.log(`[${timestamp()}] importing summary data: ${dataSummaryTable}`);
+      console.log(
+        `[${timestamp()}] importing summary data: ${dataSummaryTable}`,
+      );
 
       database.exec(
         `insert into "${dataSummaryTable}" (
@@ -245,7 +242,7 @@ if (config.aws) {
         on conflict("geneId", "cancerId") do update set
             "normalSampleCount" = excluded."normalSampleCount",
             "normalSampleMean" = excluded."normalSampleMean",
-            "normalSampleStandardError" = excluded."normalSampleStandardError"`
+            "normalSampleStandardError" = excluded."normalSampleStandardError"`,
       );
       console.log(`[${timestamp()}] imported normal sample data`);
 
@@ -269,7 +266,7 @@ if (config.aws) {
         on conflict("geneId", "cancerId") do update set
             "tumorSampleCount" = excluded."tumorSampleCount",
             "tumorSampleMean" = excluded."tumorSampleMean",
-            "tumorSampleStandardError" = excluded."tumorSampleStandardError"`
+            "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
       );
       console.log(`[${timestamp()}] imported tumor sample data`);
 
@@ -286,18 +283,17 @@ if (config.aws) {
         from "${dataTable}"
         group by geneId, cancerId
         on conflict("geneId", "cancerId") do update set
-          "pValue" = excluded."pValue"`
+          "pValue" = excluded."pValue"`,
       );
       console.log(`[${timestamp()}] imported p-value`);
-
     }
-      
+
     database.exec("commit");
     console.log("Generating indexes");
     database.exec(await fsp.readFile("schema/indexes/main.sql", "utf-8"));
-  
+
     // BEGIN IMPORTING TO DYNAMODB
-  
+
     // load cancers
     // console.log(`[${timestamp()}] importing cancers`);
     // await importDynamoDBTable(
@@ -313,7 +309,7 @@ if (config.aws) {
     //   ).all()
     // );
     // console.log(`[${timestamp()}] finished importing cancers`);
-  
+
     // // load genes
     // console.log(`[${timestamp()}] importing genes`);
     // await importDynamoDBTable(
@@ -329,7 +325,7 @@ if (config.aws) {
     //   ).all()
     // );
     // console.log(`[${timestamp()}] finished importing genes`);
-  
+
     // // load case summaries
     // console.log(`[${timestamp()}] importing case summaries`);
     // await importDynamoDBTable(
@@ -345,7 +341,7 @@ if (config.aws) {
     //   ).all()
     // );
     // console.log(`[${timestamp()}] finished importing case summaries`);
-  
+
     // // load cases
     // console.log(`[${timestamp()}] importing cases`);
     // await importDynamoDBTable(
@@ -361,7 +357,7 @@ if (config.aws) {
     //   ).all()
     // );
     // console.log(`[${timestamp()}] finished importing cases`);
-  
+
     // // load mutations
     // console.log(`[${timestamp()}] importing mutations`);
     // await importDynamoDBTable(
@@ -377,7 +373,6 @@ if (config.aws) {
     //   ).all()
     // );
     // console.log(`[${timestamp()}] finished importing mutations`);
-  
   }
 
   database.close();

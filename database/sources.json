@@ -4,21 +4,8 @@
     "files": [
       {
         "name": "gene",
-        "url": "https://biomart.genenames.org/martservice/results",
-        "requestOptions": {
-          "method": "POST",
-          "headers": {
-            "content-type": "application/x-www-form-urlencoded"
-          },
-          "body": "download=true&query=%3C%21DOCTYPE+Query%3E%3CQuery+client%3D%22biomartclient%22+processor%3D%22TSV%22+limit%3D%22-1%22+header%3D%221%22%3E%3CDataset+name%3D%22hgnc_gene_mart%22+config%3D%22hgnc_gene_config%22%3E%3CFilter+name%3D%22hgnc_gene__status_1010%22+value%3D%22Approved%22+filter_list%3D%22%22%2F%3E%3CAttribute+name%3D%22hgnc_gene__approved_symbol_1010%22%2F%3E%3CAttribute+name%3D%22hgnc_gene__approved_name_1010%22%2F%3E%3CAttribute+name%3D%22hgnc_gene__ncbi_gene__gene_id_1026%22%2F%3E%3C%2FDataset%3E%3C%2FQuery%3E"
-        },
-        "filePath": "data/gene.tsv",
-        "table": "stage_gene",
-        "headers": [
-          "symbol",
-          "name",
-          "id"
-        ]
+        "filePath": "data/gene.csv",
+        "table": "stage_gene"
       }
     ]
   },
