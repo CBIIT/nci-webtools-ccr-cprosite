@@ -9,6 +9,8 @@ import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
 import { casesState, formState } from "./explore.state";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 import { useState } from "react";
 
@@ -25,62 +27,120 @@ export default function Results() {
   const proteinAbundanceColumns = [
     {
       accessor: "name",
-      Header: <b>Patient ID</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_patient">Patient ID</Tooltip>}>
+          <b>Patient ID</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "proteinLogRatioCase",
-      Header: <b>Tumor Value</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_tumor_val">Tumor Value</Tooltip>}>
+          <b>Tumor Value</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "proteinLogRatioControl",
-      Header: <b>Control Value</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_control_val">Control Value</Tooltip>}>
+          <b>Control Value</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "proteinLogRatioChange",
-      Header: <b>Log Fold Change Value</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_log_fold">Log Fold Change Value</Tooltip>
+          }>
+          <b>Log Fold Change Value</b>
+        </OverlayTrigger>
+      ),
     },
   ];
 
   const summaryColumns = [
     {
       accessor: "link",
-      Header: <b>Tumor Type</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_tumor">Tumor Type</Tooltip>}>
+          <b>Tumor Type</b>
+        </OverlayTrigger>
+      ),
       sort: true,
     },
     {
       accessor: "tumorAverage",
-      Header: <b>Average Tumor</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_av_tumor">Average Tumor</Tooltip>}>
+          <b>Average Tumor</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "controlAverage",
-      Header: <b>Average Control</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_av_control">Average Control</Tooltip>}>
+          <b>Average Control</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "tumorNum",
-      Header: <b>Tumor Count</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_tumor_count">Tumor Count</Tooltip>}>
+          <b>Tumor Count</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "controlNum",
-      Header: <b>Control Count</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_control_count">Control Count</Tooltip>}>
+          <b>Control Count</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "pValue",
-      Header: <b>P Value</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_pvalue">P Value</Tooltip>}>
+          <b>P Value</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "tumorError",
       Header: (
-        <div data-toggle="tooltip" title="Tumor Standard Error">
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_tumor_se">Tumor Standard Error</Tooltip>
+          }>
           <b>Tumor SE</b>
-        </div>
+        </OverlayTrigger>
       ),
     },
     {
       accessor: "controlError",
       Header: (
-        <div data-toggle="tooltip" title="Control Standard Error">
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_tcontrol_se">Control Stanadard Error</Tooltip>
+          }>
           <b>Control SE</b>
-        </div>
+        </OverlayTrigger>
       ),
     },
   ];

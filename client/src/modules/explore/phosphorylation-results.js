@@ -9,6 +9,8 @@ import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
 import { siteState } from "./explore.state";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 import { useState } from "react";
 import _ from "lodash";
@@ -27,61 +29,114 @@ export default function PhosResults() {
   const phosSiteColumns = [
     {
       accessor: "name",
-      Header: <b>Patient ID</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_patient">Patient ID</Tooltip>}>
+          <b>Patient ID</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "tumorValue",
-      Header: <b>Tumor Value</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_tumor_val">Tumor Value</Tooltip>}>
+          <b>Tumor Value</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "controlValue",
-      Header: <b>Control Value</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_control_val">Control Value</Tooltip>}>
+          <b>Control Value</b>
+        </OverlayTrigger>
+      ),
     },
   ];
 
   const summary = [
     {
       accessor: "link",
-      Header: <b>Phosphorylation Site</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
+          <b>Phosphorylation Site</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "accession",
-      Header: <b>Accession</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_accession">Accession</Tooltip>}>
+          <b>Accession</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "peptide",
-      Header: <b>Peptide</b>,
+      Header: (
+        <OverlayTrigger overlay={<Tooltip id="phos_peptide">Peptide</Tooltip>}>
+          <b>Peptide</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "tumorAverage",
-      Header: <b>Average Tumor</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_av_tumor">Average Tumor</Tooltip>}>
+          <b>Average Tumor</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "controlAverage",
-      Header: <b>Average Control</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_av_control">Average Control</Tooltip>}>
+          <b>Average Control</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "tumorNum",
-      Header: <b>Tumor Count</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_tumor_count">Tumor Count</Tooltip>}>
+          <b>Tumor Count</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "controlNum",
-      Header: <b>Control Count</b>,
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_control_count">Control Count</Tooltip>}>
+          <b>Control Count</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "tumorError",
       Header: (
-        <div data-toggle="tooltip" title="Tumor Standard Error">
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_tumor_se">Tumor Standard Error</Tooltip>}>
           <b>Tumor SE</b>
-        </div>
+        </OverlayTrigger>
       ),
     },
     {
       accessor: "controlError",
       Header: (
-        <div data-toggle="tooltip" title="Control Standard Error">
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="phos_control_se">Control Standard Error</Tooltip>
+          }>
           <b>Control SE</b>
-        </div>
+        </OverlayTrigger>
       ),
     },
   ];
