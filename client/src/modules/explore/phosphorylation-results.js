@@ -318,6 +318,7 @@ export default function PhosResults() {
                 title: "<b>Tumor vs Control</b>",
                 yaxis: { title: "Phosphorylation Level", zeroline: false },
                 autosize: true,
+                boxgap: 0.5,
               }}
               config={defaultConfig}
               useResizeHandler
