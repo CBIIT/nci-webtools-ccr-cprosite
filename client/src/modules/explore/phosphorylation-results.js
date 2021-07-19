@@ -123,7 +123,7 @@ export default function PhosResults() {
         <a
           onClick={() => {
             setPhosView(c[0]);
-            setTab("tumorView");
+            setTab("phosView");
           }}
           href="javascript:void(0)">
           {c[0]}
@@ -250,7 +250,7 @@ export default function PhosResults() {
         </div>
       </Tab>
 
-      <Tab eventKey="tumorView" title="Tumor View">
+      <Tab eventKey="phosView" title="Phosphorylation Site">
         <Form.Group className="row mx-3" controlId="phosView">
           <Form.Label
             className="col-xl-2 col-xs-12 col-form-label"
