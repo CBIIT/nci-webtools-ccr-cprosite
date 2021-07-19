@@ -8,7 +8,7 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { siteState } from "./explore.state";
+import { formState, siteState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
@@ -16,15 +16,16 @@ import { useState } from "react";
 import _ from "lodash";
 
 export default function PhosResults() {
-  const [tab, setTab] = useState("summary");
-  const [plotTab, setPlot] = useState("tumorVsControl");
+  const form = useRecoilValue(formState);
+  const [view, setView] = useState(form.cancer[0].value);
 
   const sites = Object.entries(
     _.groupBy(useRecoilValue(siteState), "phosphorylationSite"),
   ).filter((c) => c[0] !== "null");
 
   const [phosView, setPhosView] = useState(sites[0][0]);
-  console.log(sites);
+  const [tab, setTab] = useState("summary");
+  const [plotTab, setPlot] = useState("tumorVsControl");
 
   const phosSiteColumns = [
     {
@@ -159,7 +160,6 @@ export default function PhosResults() {
 
   const phosphorylationData = sites.map((c) => {
     const patients = c[1];
-    console.log(patients);
     const tumorFilter = patients
       .filter((d) => d.tumorValue !== null)
       .map((e) => e.tumorValue);
@@ -286,13 +286,36 @@ export default function PhosResults() {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
+        <Form.Group className="row mx-3" controlId="tumorView">
+          <Form.Label
+            className="col-xl-1 col-xs-12 col-form-label"
+            style={{ minWidth: "120px" }}>
+            Tumor Type
+          </Form.Label>
+          <div className="col-xl-3">
+            <Form.Select
+              name="caseView"
+              onChange={(e) => {
+                setView(parseInt(e.target.value));
+              }}
+              value={view}
+              required>
+              {form.cancer.map((o) => (
+                <option value={o.value} key={`dataset-${o.value}`}>
+                  {o.label}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+        </Form.Group>
+
         <Row className="m-3">
           <Col xl={12}>
             <Plot
               data={multiPhosBarPlot}
               layout={{
                 ...defaultLayout,
-                title: "<b>Breast Cancer Tumor and Control</b>",
+                title: "<b>Tumor and Control</b>",
                 xaxis: {
                   title: "Phosphorylation Site",
                   zeroline: false,
