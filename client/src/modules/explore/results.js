@@ -294,6 +294,18 @@ export default function Results() {
         },
         orientation: "h",
       },
+      {
+        type: "bar",
+        x: values,
+        y: caseList.map((c) => (c.proteinLogRatioChange ? c.name : null)),
+        marker: {
+          color: values.map((c) =>
+            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+          ),
+        },
+        xaxis: "x2",
+        orientation: "h",
+      },
     ];
   }
 
@@ -442,17 +454,17 @@ export default function Results() {
               config={defaultConfig}
               layout={{
                 autosize: true,
-                title: "<b>Log Fold Change</b>",
+                title: "<b>Log<sub>2</sub> Fold Change</b>",
                 xaxis: {
                   title: "Log<sub>2</sub> Fold Change",
                   zeroline: false,
                 },
                 xaxis2: {
-                  title: "test",
                   zeroline: false,
                   overlaying: "x",
                   side: "top",
                 },
+                showlegend: false,
                 barmode: "stack",
               }}
               useResizeHandler
