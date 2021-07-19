@@ -45,6 +45,10 @@ export default function PhosResults() {
       Header: <b>Phosphorylation Site</b>,
     },
     {
+      accessor: "accession",
+      Header: <b>Accession</b>,
+    },
+    {
       accessor: "peptide",
       Header: <b>Peptide</b>,
     },
@@ -100,6 +104,7 @@ export default function PhosResults() {
 
   const phosphorylationData = sites.map((c) => {
     const patients = c[1];
+    console.log(patients);
     const tumorFilter = patients
       .filter((d) => d.tumorValue !== null)
       .map((e) => e.tumorValue);
@@ -117,6 +122,7 @@ export default function PhosResults() {
       name: c[0],
       peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
         .phosphopeptide,
+      accession: patients.filter((d) => d.accession != null)[0].accession,
       tumorAverage: tumorAverage,
       controlAverage: controlAverage,
       link: (
@@ -169,12 +175,18 @@ export default function PhosResults() {
       type: "box",
       boxpoints: "all",
       name: "Tumor",
+      marker: {
+        size: 9,
+      },
     },
     {
       y: sites.filter((c) => c[0] === phosView)[0][1].map((d) => d.normalValue),
       type: "box",
       boxpoints: "all",
       name: "Control",
+      marker: {
+        size: 9,
+      },
     },
   ];
 
