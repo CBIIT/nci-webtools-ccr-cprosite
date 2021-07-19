@@ -22,7 +22,9 @@ export default function Results() {
   const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
-  const [foldSize, setFoldSize] = useState("4000px");
+  const [foldSize, setFoldSize] = useState(
+    `${cases.filter((c) => tumors[0] === c.cancerId).length.toString() * 20}px`,
+  );
 
   const proteinAbundanceColumns = [
     {
