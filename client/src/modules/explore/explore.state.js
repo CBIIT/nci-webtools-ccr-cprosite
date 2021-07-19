@@ -22,7 +22,6 @@ export const defaultFormState = {
   analysis: "",
   dataset: "",
   correlation: "toAnotherProtein",
-  combination: "",
 };
 
 export const formState = atom({

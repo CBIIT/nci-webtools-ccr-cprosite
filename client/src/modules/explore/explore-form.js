@@ -98,18 +98,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
         />
       </Form.Group>
 
-      {form.dataset === "phosphorylation-site" && (
-        <Form.Group className="mb-3" controlId="combination">
-          <Form.Label className="required">Combination</Form.Label>
-          <Form.Select name="combination" onChange={handleChange} required>
-            <option value="" hidden>
-              No combination selected
-            </option>
-            <option value="cdk1">CDK1</option>
-          </Form.Select>
-        </Form.Group>
-      )}
-
       {form.analysis === "correlation" && (
         <fieldset
           disabled={form.analysis !== "correlation"}
