@@ -20,6 +20,7 @@ export default function Results() {
   const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
+  const [foldSize, setFoldSize] = useState("4000px");
 
   const proteinAbundanceColumns = [
     {
@@ -92,6 +93,9 @@ export default function Results() {
       type: "box",
       boxpoints: "all",
       name: "Tumor",
+      marker: {
+        size: 9,
+      },
     },
     {
       y: cases
@@ -100,6 +104,9 @@ export default function Results() {
       type: "box",
       boxpoints: "all",
       name: "Control",
+      marker: {
+        size: 9,
+      },
     },
   ];
 
@@ -208,9 +215,6 @@ export default function Results() {
       .sort((a, b) =>
         a.proteinLogRatioChange > b.proteinLogRatioChange ? 1 : -1,
       );
-    console.log(
-      `${cases.filter((c) => view === c.cancerId).length.toString() * 60} px`,
-    );
 
     const values = caseList.map((c) =>
       c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null,
@@ -305,7 +309,16 @@ export default function Results() {
           <div className="col-xl-3">
             <Form.Select
               name="caseView"
-              onChange={(e) => setView(parseInt(e.target.value))}
+              onChange={(e) => {
+                setView(parseInt(e.target.value));
+                setFoldSize(
+                  `${
+                    cases
+                      .filter((c) => parseInt(e.target.value) === c.cancerId)
+                      .length.toString() * 20
+                  }px`,
+                );
+              }}
               value={view}
               required>
               {form.cancer.map((o) => (
@@ -315,7 +328,6 @@ export default function Results() {
               ))}
             </Form.Select>
           </div>
-
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
@@ -351,6 +363,7 @@ export default function Results() {
                     title: "Log Protien Abundance",
                     zeroline: false,
                   },
+                  boxgap: 0.5,
                   autosize: true,
                 }}
                 config={defaultConfig}
@@ -372,10 +385,16 @@ export default function Results() {
                   title: "Log<sub>2</sub> Fold Change",
                   zeroline: false,
                 },
+                xaxis2: {
+                  title: "test",
+                  zeroline: false,
+                  overlaying: "x",
+                  side: "top",
+                },
                 barmode: "stack",
               }}
               useResizeHandler
-              style={{ minWidth: "100%", height: `1200px` }}
+              style={{ minWidth: "100%", height: foldSize, minHeight: "400px" }}
             />
           </div>
         )}
