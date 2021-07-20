@@ -347,7 +347,7 @@ export default function PhosResults() {
         <Form.Group className="row mx-3" controlId="phosView">
           <Form.Label
             className="col-xl-2 col-xs-12 col-form-label"
-            style={{ minWidth: "120px" }}>
+            style={{ minWidth: "200px" }}>
             Phosphorylation Site
           </Form.Label>
           <div className="col-xl-3">
