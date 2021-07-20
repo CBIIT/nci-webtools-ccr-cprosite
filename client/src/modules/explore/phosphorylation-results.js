@@ -230,8 +230,9 @@ export default function PhosResults() {
       type: "box",
       boxpoints: "all",
       name: "Tumor",
+      jitter: 0.6,
       marker: {
-        size: 9,
+        size: 8,
       },
     },
     {
@@ -239,8 +240,10 @@ export default function PhosResults() {
       type: "box",
       boxpoints: "all",
       name: "Control",
+      jitter: 0.6,
+      jitter: 0.6,
       marker: {
-        size: 9,
+        size: 8,
       },
     },
   ];
@@ -396,7 +399,8 @@ export default function PhosResults() {
                 title: "<b>Tumor vs Control</b>",
                 yaxis: { title: "Phosphorylation Level", zeroline: false },
                 autosize: true,
-                boxgap: 0.5,
+                boxgroupgap: 0.4,
+                boxgap: 0.4,
               }}
               config={defaultConfig}
               useResizeHandler

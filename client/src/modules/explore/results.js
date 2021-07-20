@@ -155,8 +155,9 @@ export default function Results() {
       type: "box",
       boxpoints: "all",
       name: "Tumor",
+      jitter: 0.6,
       marker: {
-        size: 9,
+        size: 8,
       },
     },
     {
@@ -166,8 +167,9 @@ export default function Results() {
       type: "box",
       boxpoints: "all",
       name: "Control",
+      jitter: 0.6,
       marker: {
-        size: 9,
+        size: 8,
       },
     },
   ];
@@ -437,12 +439,13 @@ export default function Results() {
                     title: "Log Protien Abundance",
                     zeroline: false,
                   },
-                  boxgap: 0.5,
+                  boxgroupgap: 0.4,
+                  boxgap: 0.4,
                   autosize: true,
                 }}
                 config={defaultConfig}
                 useResizeHandler
-                style={{ height: "800px", minWidth: "100%" }}
+                style={{ height: "800px" }}
               />
             </Col>
           )}
