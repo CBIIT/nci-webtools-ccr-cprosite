@@ -9,6 +9,7 @@ import ErrorBoundary from "../components/error-boundary";
 import { formState } from "./explore.state";
 import Results from "./results";
 import PhosResults from "./phosphorylation-results";
+import ProteinCorrelation from "./protein-correlation";
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
@@ -28,7 +29,11 @@ export default function Explore() {
       case "phosphorylation-site":
         return <PhosResults />;
       case "protein-abundance":
-        return <Results />;
+        return form.analysis === "tumorVsControl" ? (
+          <Results />
+        ) : (
+          <ProteinCorrelation />
+        );
       default:
         return "";
     }

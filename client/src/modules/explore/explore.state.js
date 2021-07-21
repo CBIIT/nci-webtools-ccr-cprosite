@@ -16,12 +16,23 @@ export const siteState = selector({
   get: ({ get }) => query("data/phosphoproteinData.json"),
 });
 
+export const proteinState = selector({
+  key: "explore.proteinState",
+  get: ({ get }) => query("data/proteinData.json"),
+});
+
+export const rnaState = selector({
+  key: "explore.rnaState",
+  get: ({ get }) => query("data/rnaData.json"),
+});
+
 export const defaultFormState = {
   cancer: [],
   gene: "",
   analysis: "",
   dataset: "",
   correlation: "toAnotherProtein",
+  correlatedGene: "",
 };
 
 export const formState = atom({

@@ -138,7 +138,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
             <Form.Label
               className={classNames(
                 "required",
-                form.analysis !== "correlation" && "text-muted",
+                (form.analysis !== "correlation" ||
+                  form.correlation !== "toAnotherProtein") &&
+                  "text-muted",
               )}>
               Correlated Gene
             </Form.Label>
@@ -147,7 +149,10 @@ export default function ExploreForm({ onSubmit, onReset }) {
               name="correlatedGene"
               value={form.correlatedGene}
               onChange={(ev) => handleSelectChange("correlatedGene", ev)}
-              isDisabled={form.analysis !== "correlation"}
+              isDisabled={
+                form.analysis !== "correlation" ||
+                form.correlation !== "toAnotherProtein"
+              }
               defaultOptions
               loadOptions={(inputValue, callback) =>
                 callback(filterGenes(inputValue))
