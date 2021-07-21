@@ -68,7 +68,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           <option value="phosphorylation-protein">
             Phosphorylation/Protein
           </option>
-          <option value="rna-level">RNA LEVEL</option>
+          <option value="rna-level">RNA Level</option>
         </Form.Select>
       </Form.Group>
 
