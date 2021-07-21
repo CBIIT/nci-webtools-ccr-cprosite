@@ -24,6 +24,7 @@ export default function PhosResults() {
   ).filter((c) => c[0] !== "null");
 
   const [phosView, setPhosView] = useState(sites[0][0]);
+  const [site, setSite] = useState(sites[0][1][0]);
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
@@ -34,31 +35,6 @@ export default function PhosResults() {
         <OverlayTrigger
           overlay={<Tooltip id="phos_patient">Patient ID</Tooltip>}>
           <b>Patient ID</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "phosSite",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
-          <b>Phosphorylation Site</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "accession",
-      Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_site">Accession</Tooltip>}>
-          <b>Accession</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "peptide",
-      Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_site">Peptide</Tooltip>}>
-          <b>Peptide</b>
         </OverlayTrigger>
       ),
     },
@@ -377,6 +353,8 @@ export default function PhosResults() {
         </div>
       </Tab>
 
+      {console.log(sites[phosView])}
+
       <Tab eventKey="phosView" title="Phosphorylation Site">
         <Form.Group className="row mx-3" controlId="phosView">
           <Form.Label
@@ -387,7 +365,10 @@ export default function PhosResults() {
           <div className="col-xl-3">
             <Form.Select
               name="phosView"
-              onChange={(e) => setPhosView(e.target.value)}
+              onChange={(e) => {
+                setPhosView(e.target.value);
+                setSite(sites.filter((c) => c[0] === e.target.value)[0][1][0]);
+              }}
               value={phosView}
               required>
               {sites.map((c) => (
@@ -398,30 +379,38 @@ export default function PhosResults() {
             </Form.Select>
           </div>
 
-          {/*<ToggleButtonGroup
-                    type="radio"
-                    name="plot-tab"
-                    value={plotTab}
-                    className="col-xl-5">
-                    <ToggleButton
-                      className={
-                        plotTab === "tumorVsControl"
-                          ? "btn-primary"
-                          : "btn-secondary"
-                      }
-                      id={"tumorVsControl"}
-                      onClick={handleToggle}>
-                      Tumor vs Control
-                    </ToggleButton>
-                    <ToggleButton
-                      className={
-                        plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
-                      }
-                      id={"foldChange"}
-                      onClick={handleToggle}>
-                      Log Fold Change
-                    </ToggleButton>
-                    </ToggleButtonGroup>*/}
+          <ToggleButtonGroup
+            type="radio"
+            name="plot-tab"
+            value={plotTab}
+            className="col-xl-5">
+            <ToggleButton
+              className={
+                plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
+              }
+              id={"tumorVsControl"}
+              onClick={handleToggle}>
+              Tumor vs Control
+            </ToggleButton>
+            <ToggleButton
+              className={
+                plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
+              }
+              id={"foldChange"}
+              onClick={handleToggle}>
+              Log Fold Change
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Form.Group>
+
+        <Form.Group className="row m-3">
+          <div className="col-xl-5" style={{ minWidth: "200px" }}>
+            Accession: {site.accession}
+          </div>
+
+          <div className="col-xl-6" style={{ minWidth: "200px" }}>
+            Peptide: {site.phosphopeptide}
+          </div>
         </Form.Group>
 
         <Row className="m-3">
@@ -450,15 +439,11 @@ export default function PhosResults() {
               .map((d) => {
                 return {
                   name: d.name,
-                  phosSite: d.phosphorylationSite,
-                  accession: d.accession,
-                  peptide: d.phosphopeptide,
                   tumorValue: d.tumorValue ? d.tumorValue.toFixed(4) : "NA",
                   controlValue: d.normalValue ? d.normalValue.toFixed(4) : "NA",
                 };
               })}
           />
-          {console.log(sites.filter((c) => c[0] === phosView)[0][1])}
         </Row>
       </Tab>
     </Tabs>
