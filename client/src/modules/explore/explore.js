@@ -29,7 +29,7 @@ export default function Explore() {
       case "phosphorylation-site":
         return <PhosResults />;
       case "protein-abundance":
-        return form.analysis === "tumorVsControl" ? (
+        return form.analysis === "tumor-control" ? (
           <Results />
         ) : (
           <ProteinCorrelation />

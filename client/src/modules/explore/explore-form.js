@@ -59,7 +59,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <Form.Group className="mb-3" controlId="dataset">
         <Form.Label className="required">Dataset</Form.Label>
-        <Form.Select name="dataset" onChange={handleChange} required>
+        <Form.Select
+          name="dataset"
+          value={form.dataset}
+          onChange={handleChange}
+          required>
           <option value="" hidden>
             No dataset selected
           </option>
@@ -74,7 +78,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <Form.Group className="mb-3" controlId="analysis">
         <Form.Label className="required">Analysis</Form.Label>
-        <Form.Select name="analysis" onChange={handleChange} required>
+        <Form.Select
+          name="analysis"
+          value={form.analysis}
+          onChange={handleChange}
+          required>
           <option value="" hidden>
             No analysis selected
           </option>
