@@ -25,6 +25,66 @@ export default function ProteinCorrelation() {
 
   const [tab, setTab] = useState("summary");
 
+  const correlationColumns = [
+    {
+      accessor: "name",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_patient">Patient ID</Tooltip>
+          }>
+          <b>Patient ID</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinTumor",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_tumor">
+              Protein Tumor Value
+            </Tooltip>
+          }>
+          <b>Protein Tumor Value</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "rnaTumor",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_rna_tumor">RNA Tumor Value</Tooltip>}>
+          <b>RNA Tumor Value</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinControl",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_control">
+              Protein Control Value
+            </Tooltip>
+          }>
+          <b>Protein Control Value</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "rnaControl",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_rna_control">RNA Control Value</Tooltip>
+          }>
+          <b>RNA Control Value</b>
+        </OverlayTrigger>
+      ),
+    },
+  ];
+
   const proteinRNA = proteinData.map((e) => {
     const rna = rnaData.find((d) => {
       return e.name === d.name;
@@ -134,6 +194,21 @@ export default function ProteinCorrelation() {
             { decimals: 4 },
           )}
         </Row>
+
+        <div className="m-3">
+          <Table
+            columns={correlationColumns}
+            data={proteinRNA.map((c) => {
+              return {
+                name: c.name,
+                proteinTumor: c.proteinTumor,
+                proteinControl: c.proteinControl,
+                rnaTumor: c.rnaTumor,
+                rnaControl: c.rnaControl,
+              };
+            })}
+          />
+        </div>
       </Tab>
     </Tabs>
   );
