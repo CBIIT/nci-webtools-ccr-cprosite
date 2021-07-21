@@ -142,32 +142,30 @@ export default function ExploreForm({ onSubmit, onReset }) {
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="correlated-gene">
-            <Form.Label
-              className={classNames(
-                "required",
-                (form.analysis !== "correlation" ||
-                  form.correlation !== "toAnotherProtein") &&
-                  "text-muted",
-              )}>
-              Correlated Gene
-            </Form.Label>
-            <AsyncSelect
-              placeholder="No gene selected"
-              name="correlatedGene"
-              value={form.correlatedGene}
-              onChange={(ev) => handleSelectChange("correlatedGene", ev)}
-              isDisabled={
-                form.analysis !== "correlation" ||
-                form.correlation !== "toAnotherProtein"
-              }
-              defaultOptions
-              loadOptions={(inputValue, callback) =>
-                callback(filterGenes(inputValue))
-              }
-              clearIndicator
-            />
-          </Form.Group>
+          {form.correlation === "toAnotherProtein" && (
+            <Form.Group className="mb-3" controlId="correlated-gene">
+              <Form.Label
+                className={classNames(
+                  "required",
+                  (form.analysis !== "correlation" ||
+                    form.correlation !== "toAnotherProtein") &&
+                    "text-muted",
+                )}>
+                Correlated Gene
+              </Form.Label>
+              <AsyncSelect
+                placeholder="No gene selected"
+                name="correlatedGene"
+                value={form.correlatedGene}
+                onChange={(ev) => handleSelectChange("correlatedGene", ev)}
+                defaultOptions
+                loadOptions={(inputValue, callback) =>
+                  callback(filterGenes(inputValue))
+                }
+                clearIndicator
+              />
+            </Form.Group>
+          )}
         </fieldset>
       )}
 
