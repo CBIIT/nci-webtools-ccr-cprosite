@@ -38,6 +38,31 @@ export default function PhosResults() {
       ),
     },
     {
+      accessor: "phosSite",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
+          <b>Phosphorylation Site</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "accession",
+      Header: (
+        <OverlayTrigger overlay={<Tooltip id="phos_site">Accession</Tooltip>}>
+          <b>Accession</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "peptide",
+      Header: (
+        <OverlayTrigger overlay={<Tooltip id="phos_site">Peptide</Tooltip>}>
+          <b>Peptide</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
       accessor: "tumorValue",
       Header: (
         <OverlayTrigger
@@ -140,6 +165,14 @@ export default function PhosResults() {
         </OverlayTrigger>
       ),
     },
+    {
+      accessor: "pValue",
+      Header: (
+        <OverlayTrigger overlay={<Tooltip id="phos_pValue">P Value</Tooltip>}>
+          <b>P Value</b>
+        </OverlayTrigger>
+      ),
+    },
   ];
 
   const average = (values) =>
@@ -194,6 +227,7 @@ export default function PhosResults() {
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorError: calcStandardError(tumorFilter, tumorAverage),
       controlError: calcStandardError(controlFilter, controlAverage),
+      pValue: (Math.random() * Math.pow(1, -8)).toFixed(4),
     };
   });
 
@@ -416,11 +450,15 @@ export default function PhosResults() {
               .map((d) => {
                 return {
                   name: d.name,
+                  phosSite: d.phosphorylationSite,
+                  accession: d.accession,
+                  peptide: d.phosphopeptide,
                   tumorValue: d.tumorValue ? d.tumorValue.toFixed(4) : "NA",
                   controlValue: d.normalValue ? d.normalValue.toFixed(4) : "NA",
                 };
               })}
           />
+          {console.log(sites.filter((c) => c[0] === phosView)[0][1])}
         </Row>
       </Tab>
     </Tabs>
