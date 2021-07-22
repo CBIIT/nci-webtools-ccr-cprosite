@@ -412,6 +412,11 @@ export default function Results() {
               ))}
             </Form.Select>
           </div>
+          <div
+            className="col-xl-1 col-form-label"
+            style={{ minWidth: "180px" }}>
+            Gene: {form.gene.label}
+          </div>
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
@@ -434,12 +439,6 @@ export default function Results() {
               Log Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
-
-          <Form.Group className="row my-3">
-            <div className="col-xl-2" style={{ minWidth: "200px" }}>
-              Gene: {form.gene.label}
-            </div>
-          </Form.Group>
         </Form.Group>
         <Row className="m-3">
           {plotTab === "tumorVsControl" && (

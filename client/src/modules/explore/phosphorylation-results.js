@@ -329,6 +329,11 @@ export default function PhosResults() {
               ))}
             </Form.Select>
           </div>
+          <div
+            className="col-xl-2 col-form-label"
+            style={{ minWidth: "200px" }}>
+            Gene: {form.gene.label}
+          </div>
         </Form.Group>
 
         <Row className="m-3">
