@@ -81,7 +81,14 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Form.Select
           name="analysis"
           value={form.analysis}
-          onChange={handleChange}
+          onChange={(e) => {
+            if (e.target.value === "tumor-control")
+              mergeForm({
+                ["correlatedGene"]: "",
+                ["analysis"]: "tumor-control",
+              });
+            else handleChange(e);
+          }}
           required>
           <option value="" hidden>
             No analysis selected
