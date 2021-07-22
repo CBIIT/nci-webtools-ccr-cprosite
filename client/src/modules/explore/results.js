@@ -159,6 +159,7 @@ export default function Results() {
       marker: {
         size: 8,
       },
+      hovertemplate: "%{y}<extra></extra>",
     },
     {
       y: cases
@@ -171,6 +172,7 @@ export default function Results() {
       marker: {
         size: 8,
       },
+      hovertemplate: "%{y}<extra></extra>",
     },
   ];
 
@@ -257,6 +259,7 @@ export default function Results() {
         },
         type: "bar",
         name: "Tumor",
+        hovertemplate: "%{x}: %{y} <extra></extra>",
       },
       {
         x: averages.map((c) => c.name),
@@ -269,6 +272,7 @@ export default function Results() {
         },
         type: "bar",
         name: "Control",
+        hovertemplate: "%{x}: %{y} <extra></extra>",
       },
     ];
   }
@@ -328,7 +332,11 @@ export default function Results() {
       itemwidth: 40,
     },
     hovermode: "closest",
-    hoverlabel: { bgcolor: "#FFF" },
+    hoverlabel: {
+      bgcolor: "#FFF",
+      font: { color: "#000" },
+      bordercolor: "#D3D3D3",
+    },
   };
 
   const defaultConfig = {
@@ -426,6 +434,12 @@ export default function Results() {
               Log Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
+
+          <Form.Group className="row my-3">
+            <div className="col-xl-2" style={{ minWidth: "200px" }}>
+              Gene: {form.gene.label}
+            </div>
+          </Form.Group>
         </Form.Group>
         <Row className="m-3">
           {plotTab === "tumorVsControl" && (

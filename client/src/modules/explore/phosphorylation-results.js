@@ -219,6 +219,7 @@ export default function PhosResults() {
       },
       type: "bar",
       name: "Tumor",
+      hovertemplate: "%{x}: %{y} <extra></extra>",
     },
     {
       x: phosphorylationData.map((c) => c.name),
@@ -231,6 +232,7 @@ export default function PhosResults() {
       },
       type: "bar",
       name: "Control",
+      hovertemplate: "%{x}: %{y} <extra></extra>",
     },
   ];
 
@@ -244,6 +246,7 @@ export default function PhosResults() {
       marker: {
         size: 8,
       },
+      hovertemplate: "%{y}<extra></extra>",
     },
     {
       y: sites.filter((c) => c[0] === phosView)[0][1].map((d) => d.normalValue),
@@ -255,6 +258,7 @@ export default function PhosResults() {
       marker: {
         size: 8,
       },
+      hovertemplate: "%{y}<extra></extra>",
     },
   ];
 
@@ -275,7 +279,12 @@ export default function PhosResults() {
       itemwidth: 40,
     },
     hovermode: "closest",
-    hoverlabel: { bgcolor: "#FFF" },
+    hoverlabel: {
+      bgcolor: "#FFF",
+      font: { color: "#000" },
+      bordercolor: "#D3D3D3",
+      nameLength: 0,
+    },
   };
 
   const defaultConfig = {
@@ -298,7 +307,7 @@ export default function PhosResults() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summary" title="Summary">
+      <Tab eventKey="summary" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label
             className="col-xl-1 col-xs-12 col-form-label"
@@ -353,13 +362,11 @@ export default function PhosResults() {
         </div>
       </Tab>
 
-      {console.log(sites[phosView])}
-
       <Tab eventKey="phosView" title="Phosphorylation Site">
         <Form.Group className="row mx-3" controlId="phosView">
           <Form.Label
             className="col-xl-2 col-xs-12 col-form-label"
-            style={{ minWidth: "200px" }}>
+            style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
           <div className="col-xl-3">
@@ -404,11 +411,15 @@ export default function PhosResults() {
         </Form.Group>
 
         <Form.Group className="row m-3">
-          <div className="col-xl-5" style={{ minWidth: "200px" }}>
+          <div className="col-xl-2" style={{ minWidth: "200px" }}>
+            Gene: {form.gene.label}
+          </div>
+
+          <div className="col-xl-3" style={{ minWidth: "200px" }}>
             Accession: {site.accession}
           </div>
 
-          <div className="col-xl-6" style={{ minWidth: "200px" }}>
+          <div className="col-xl-5" style={{ minWidth: "200px" }}>
             Peptide: {site.phosphopeptide}
           </div>
         </Form.Group>

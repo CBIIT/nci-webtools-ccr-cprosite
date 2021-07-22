@@ -113,7 +113,11 @@ export default function ProteinCorrelation() {
       itemwidth: 40,
     },
     hovermode: "closest",
-    hoverlabel: { bgcolor: "#FFF" },
+    hoverlabel: {
+      bgcolor: "#FFF",
+      font: { color: "#000" },
+      bordercolor: "#D3D3D3",
+    },
   };
 
   const defaultConfig = {
@@ -141,6 +145,7 @@ export default function ProteinCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
+      hovertemplate: "(%{x},%{y})<extra></extra>",
     },
     {
       x: proteinRNA.map((e) => e.proteinControl),
@@ -148,16 +153,9 @@ export default function ProteinCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Control",
+      hovertemplate: "(%{x},%{y})<extra></extra>",
     },
   ];
-
-  console.log(
-    calculateCorrelation(
-      proteinRNA.map((e) => e.proteinTumor),
-      proteinRNA.map((e) => e.rnaTumor),
-      { decimals: 4 },
-    ),
-  );
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
@@ -168,7 +166,7 @@ export default function ProteinCorrelation() {
               data={proteinRNAScatter}
               layout={{
                 ...defaultLayout,
-                title: "<b>Protein and mRNA</b>",
+                title: "<b>Protein and mRNA Correlation</b>",
                 autosize: true,
               }}
               config={defaultConfig}
