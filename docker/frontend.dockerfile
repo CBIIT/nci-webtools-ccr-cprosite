@@ -1,4 +1,4 @@
-FROM centos:8.3.2011
+FROM quay.io/centos/centos:stream8
 
 RUN dnf -y update \
  && dnf -y install \
@@ -13,6 +13,9 @@ RUN dnf -y update \
     nodejs \
  && dnf clean all
 
+# Add custom httpd configuration
+COPY docker/cprosite.conf /etc/httpd/conf.d/cprosite.conf
+
 RUN mkdir /client
 
 WORKDIR /client
@@ -24,10 +27,9 @@ RUN npm install
 COPY client /client/
 
 RUN npm run build \
- && mv /client/build /var/www/html/cprosite \
- && chown -R apache:apache /var/www/html
+ && mv /client/build /var/www/html/cprosite
 
-WORKDIR /var/www/html/cprosite
+WORKDIR /var/www/html
 
 EXPOSE 80
 EXPOSE 443
