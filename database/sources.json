@@ -1,115 +1,65 @@
 [
   {
-    "name": "GLOBAL",
-    "files": [
-      {
-        "name": "gene",
-        "filePath": "data/gene.csv",
-        "table": "stage_gene"
-      }
+    "filePath": "data/gene.csv",
+    "table": "gene",
+    "headers": ["id", "name", "description"]
+  },
+  {
+    "filePath": "data/cancer.csv",
+    "table": "cancer",
+    "headers": ["id", "name", "description", "study"]
+  },
+  {
+    "filePath": "data/proteinData.csv",
+    "table": "proteinData",
+    "headers": [
+      "id",
+      "cancerId",
+      "geneId",
+      "participantId",
+      "normalValue",
+      "tumorValue"
     ]
   },
   {
-    "cancer": "Breast Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_breast.csv",
-        "table": "stage_breast_cancer"
-      }
+    "filePath": "data/phosphoproteinData.csv",
+    "table": "phosphoproteinData",
+    "headers": [
+      "id",
+      "cancerId",
+      "geneId",
+      "participantId",
+      "normalValue",
+      "tumorValue",
+      "accession",
+      "phosphorylationSite",
+      "phosphopeptide"
     ]
   },
   {
-    "cancer": "Colon Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_colon.csv",
-        "table": "stage_colon_cancer"
-      }
+    "filePath": "data/rnaData.csv",
+    "table": "rnaData",
+    "headers": [
+      "id",
+      "cancerId",
+      "geneId",
+      "participantId",
+      "normalValue",
+      "tumorValue"
     ]
   },
   {
-    "cancer": "Head & Neck Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_head_and_neck.csv",
-        "table": "stage_head_and_neck_cancer"
-      }
-    ]
-  },
-  {
-    "cancer": "Kidney Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_kidney.csv",
-        "table": "stage_kidney_cancer"
-      }
-    ]
-  },
-  {
-    "cancer": "Liver Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_liver.csv",
-        "table": "stage_liver_cancer"
-      }
-    ]
-  },
-  {
-    "name": "luad",
-    "study": "Proteogenomic Characterization Reveals Therapeutic Vulnerabilities In Lung Adenocarcinoma",
-    "cancer": "Lung Adenocarcinoma",
-    "summaryUrl": "https://cptac-data-portal.georgetown.edu/study-summary/S056",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_lung_adenocarcinoma.csv",
-        "table": "stage_lung_adenocarcinoma"
-      }
-    ]
-  },
-  {
-    "cancer": "Lung Squamous Cell Carcinoma",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_lung_squamous_cell_carcinoma.csv",
-        "table": "stage_lung_squamous_cell_carcinoma"
-      }
-    ]
-  },
-  {
-    "cancer": "Ovarian Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_ovarian.csv",
-        "table": "stage_ovarian_cancer"
-      }
-    ]
-  },
-  {
-    "cancer": "Pancreatic Ductal Adenocarcinoma",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_pancreas.csv",
-        "table": "stage_pancreatic_ductal_adenocarcinoma"
-      }
-    ]
-  },
-  {
-    "cancer": "Uterine Cancer",
-    "files": [
-      {
-        "name": "source",
-        "filePath": "data/cprosite_cancer_uterine.csv",
-        "table": "stage_uterine_cancer"
-      }
+    "filePath": "data/tcgaRnaData.csv",
+    "table": "tcgaRnaData",
+    "headers": [
+      "id",
+      "cancerId",
+      "geneId",
+      "participantId",
+      "normalValue",
+      "tumorValue",
+      "normalSampleBarcode",
+      "tumorSampleBarcode"
     ]
   }
 ]
