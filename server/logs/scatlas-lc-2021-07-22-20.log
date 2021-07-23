@@ -1,0 +1,23 @@
+[scatlas-lc] [30160] [2021-07-22 20:49:21] [info] - Application is running on port: 10000
+[scatlas-lc] [27220] [2021-07-22 20:49:21] [info] - Application is running on port: 10000
+[scatlas-lc] [30288] [2021-07-22 20:49:21] [info] - Application is running on port: 10000
+[scatlas-lc] [27228] [2021-07-22 20:49:21] [info] - Application is running on port: 10000
+[scatlas-lc] [2276] [2021-07-22 20:49:21] [info] - Application is running on port: 10000
+[scatlas-lc] [29272] [2021-07-22 20:49:21] [info] - Application is running on port: 10000
+[scatlas-lc] [30176] [2021-07-22 20:49:22] [info] - Application is running on port: 10000
+[scatlas-lc] [23588] [2021-07-22 20:49:22] [info] - Application is running on port: 10000
+[scatlas-lc] [23588] [2021-07-22 20:49:30] [info] - [ '/ping', {}, {} ]
+[scatlas-lc] [23588] [2021-07-22 20:49:39] [info] - [ '/lookup', {}, {} ]
+[scatlas-lc] [23588] [2021-07-22 20:51:11] [info] - [ '/lookup', {}, {} ]
+[scatlas-lc] [30620] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [4956] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [34312] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [35164] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [23436] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [35672] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [33580] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [33500] [2021-07-22 20:52:01] [info] - Application is running on port: 10000
+[scatlas-lc] [33500] [2021-07-22 20:52:07] [info] - [ '/lookup', {}, {} ]
+[scatlas-lc] [33500] [2021-07-22 20:52:29] [info] - [ '/lookup', {}, {} ]
+[scatlas-lc] [33500] [2021-07-22 20:52:42] [info] - [ '/lookup', {}, {} ]
+[scatlas-lc] [33500] [2021-07-22 20:53:11] [info] - [ '/query', { table: 'proteinData', geneId: '5', cancerId: '5' }, {} ]
