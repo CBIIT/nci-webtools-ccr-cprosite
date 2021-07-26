@@ -25,6 +25,11 @@ export default function ProteinCorrelation() {
 
   const [view, setView] = useState(form.cancer[0].value);
   const [tab, setTab] = useState("summary");
+  const [numType, setNumType] = useState("log2");
+
+  function handleToggle(e) {
+    setNumType(e.target.control.id);
+  }
 
   const correlationColumns = [
     {
@@ -153,16 +158,24 @@ export default function ProteinCorrelation() {
 
   const proteinRNAScatter = [
     {
-      x: proteinRNA.map((e) => e.proteinTumor),
-      y: proteinRNA.map((e) => e.rnaTumor),
+      x: proteinRNA.map((e) =>
+        numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor),
+      ),
+      y: proteinRNA.map((e) =>
+        numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
+      ),
       mode: "markers",
       type: "scatter",
       name: "Tumor",
       hovertemplate: "(%{x},%{y})<extra></extra>",
     },
     {
-      x: proteinRNA.map((e) => e.proteinControl),
-      y: proteinRNA.map((e) => e.rnaControl),
+      x: proteinRNA.map((e) =>
+        numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl),
+      ),
+      y: proteinRNA.map((e) =>
+        numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl),
+      ),
       mode: "markers",
       type: "scatter",
       name: "Control",
@@ -199,7 +212,28 @@ export default function ProteinCorrelation() {
             style={{ minWidth: "200px" }}>
             Gene: {form.gene.label}
           </div>
+          <ToggleButtonGroup
+            type="radio"
+            name="plot-tab"
+            value={numType}
+            className="col-xl-5">
+            <ToggleButton
+              className={numType === "log2" ? "btn-primary" : "btn-secondary"}
+              id={"log2"}
+              onClick={handleToggle}>
+              Log<sub>2</sub> vs Log<sub>2</sub>
+            </ToggleButton>
+            <ToggleButton
+              className={
+                numType === "numeric" ? "btn-primary" : "btn-secondary"
+              }
+              id={"numeric"}
+              onClick={handleToggle}>
+              Numeric vs Numeric
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Form.Group>
+
         <Row className="m-3">
           <Col xl={12}>
             <Plot
@@ -222,16 +256,28 @@ export default function ProteinCorrelation() {
             <div className="col-xl-4 my-2 d-flex justify-content-center">
               Tumor Correlation:{" "}
               {calculateCorrelation(
-                proteinRNA.map((e) => e.proteinTumor),
-                proteinRNA.map((e) => e.rnaTumor),
+                proteinRNA.map((e) =>
+                  numType === "log2"
+                    ? e.proteinTumor
+                    : Math.pow(2, e.proteinTumor),
+                ),
+                proteinRNA.map((e) =>
+                  numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
+                ),
                 { decimals: 4 },
               )}
             </div>
             <div className="col-xl-4 my-2 d-flex justify-content-center">
               Control Correlation:{" "}
               {calculateCorrelation(
-                proteinRNA.map((e) => e.proteinControl),
-                proteinRNA.map((e) => e.rnaControl),
+                proteinRNA.map((e) =>
+                  numType === "log2"
+                    ? e.proteinControl
+                    : Math.pow(2, e.proteinControl),
+                ),
+                proteinRNA.map((e) =>
+                  numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl),
+                ),
                 { decimals: 4 },
               )}
             </div>
@@ -240,11 +286,27 @@ export default function ProteinCorrelation() {
               Total Correlation:{" "}
               {calculateCorrelation(
                 proteinRNA
-                  .map((e) => e.proteinControl)
-                  .concat(proteinRNA.map((e) => e.proteinTumor)),
+                  .map((e) =>
+                    numType === "log2"
+                      ? e.proteinControl
+                      : Math.pow(2, e.proteinControl),
+                  )
+                  .concat(
+                    proteinRNA.map((e) =>
+                      numType === "log2"
+                        ? e.proteinTumor
+                        : Math.pow(2, e.proteinTumor),
+                    ),
+                  ),
                 proteinRNA
-                  .map((e) => e.rnaControl)
-                  .concat(proteinRNA.map((e) => e.rnaTumor)),
+                  .map((e) =>
+                    numType === "log2" ? e.rnaControl : e.rnaControl,
+                  )
+                  .concat(
+                    proteinRNA.map((e) =>
+                      numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
+                    ),
+                  ),
                 { decimals: 4 },
               )}
             </div>
