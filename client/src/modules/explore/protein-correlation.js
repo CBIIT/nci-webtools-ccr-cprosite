@@ -23,6 +23,7 @@ export default function ProteinCorrelation() {
   const compareGene = form.correlatedGene;
   const type = form.correlation;
 
+  const [view, setView] = useState(form.cancer[0].value);
   const [tab, setTab] = useState("summary");
 
   const correlationColumns = [
@@ -172,6 +173,33 @@ export default function ProteinCorrelation() {
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Correlation">
+        <Form.Group className="row mx-3" controlId="tumorView">
+          <Form.Label
+            className="col-xl-1 col-xs-12 col-form-label"
+            style={{ minWidth: "120px" }}>
+            Tumor Type
+          </Form.Label>
+          <div className="col-xl-3">
+            <Form.Select
+              name="caseView"
+              onChange={(e) => {
+                setView(parseInt(e.target.value));
+              }}
+              value={view}
+              required>
+              {form.cancer.map((o) => (
+                <option value={o.value} key={`dataset-${o.value}`}>
+                  {o.label}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+          <div
+            className="col-xl-2 col-form-label"
+            style={{ minWidth: "200px" }}>
+            Gene: {form.gene.label}
+          </div>
+        </Form.Group>
         <Row className="m-3">
           <Col xl={12}>
             <Plot
@@ -188,37 +216,40 @@ export default function ProteinCorrelation() {
             />
           </Col>
         </Row>
-        <Row className="m-3">
-          <div className="col-xl-4">
-            Tumor Correlation:{" "}
-            {calculateCorrelation(
-              proteinRNA.map((e) => e.proteinTumor),
-              proteinRNA.map((e) => e.rnaTumor),
-              { decimals: 4 },
-            )}
-          </div>
-          <div className="col-xl-4">
-            Control Correlation:{" "}
-            {calculateCorrelation(
-              proteinRNA.map((e) => e.proteinControl),
-              proteinRNA.map((e) => e.rnaControl),
-              { decimals: 4 },
-            )}
-          </div>
 
-          <div className="col-xl-4">
-            Total Correlation:{" "}
-            {calculateCorrelation(
-              proteinRNA
-                .map((e) => e.proteinControl)
-                .concat(proteinRNA.map((e) => e.proteinTumor)),
-              proteinRNA
-                .map((e) => e.rnaControl)
-                .concat(proteinRNA.map((e) => e.rnaTumor)),
-              { decimals: 4 },
-            )}
-          </div>
-        </Row>
+        <fieldset className="m-3 border">
+          <Row>
+            <div className="col-xl-4 my-2 d-flex justify-content-center">
+              Tumor Correlation:{" "}
+              {calculateCorrelation(
+                proteinRNA.map((e) => e.proteinTumor),
+                proteinRNA.map((e) => e.rnaTumor),
+                { decimals: 4 },
+              )}
+            </div>
+            <div className="col-xl-4 my-2 d-flex justify-content-center">
+              Control Correlation:{" "}
+              {calculateCorrelation(
+                proteinRNA.map((e) => e.proteinControl),
+                proteinRNA.map((e) => e.rnaControl),
+                { decimals: 4 },
+              )}
+            </div>
+
+            <div className="col-xl-4 my-2 d-flex justify-content-center">
+              Total Correlation:{" "}
+              {calculateCorrelation(
+                proteinRNA
+                  .map((e) => e.proteinControl)
+                  .concat(proteinRNA.map((e) => e.proteinTumor)),
+                proteinRNA
+                  .map((e) => e.rnaControl)
+                  .concat(proteinRNA.map((e) => e.rnaTumor)),
+                { decimals: 4 },
+              )}
+            </div>
+          </Row>
+        </fieldset>
 
         <div className="m-3">
           <Table
