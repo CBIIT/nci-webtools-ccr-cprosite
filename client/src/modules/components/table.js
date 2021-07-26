@@ -45,7 +45,6 @@ export function RangeFilter({
 }
 
 export default function Table({ columns, data, options }) {
-  console.log(options);
   const {
     getTableProps,
     getTableBodyProps,

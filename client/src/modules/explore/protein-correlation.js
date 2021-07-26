@@ -72,6 +72,7 @@ export default function ProteinCorrelation() {
         </OverlayTrigger>
       ),
     },
+
     {
       accessor: "rnaControl",
       Header: (
@@ -85,7 +86,8 @@ export default function ProteinCorrelation() {
     },
   ];
 
-  const proteinRNA = proteinData.map((e) => {
+  //Organize datasets (unfiltered)
+  const getData = proteinData.map((e) => {
     const rna = rnaData.find((d) => {
       return e.name === d.name;
     });
@@ -94,10 +96,20 @@ export default function ProteinCorrelation() {
       name: e.name,
       proteinTumor: e.tumorValue,
       proteinControl: e.normalValue,
-      rnaTumor: rna.tumorValue,
-      rnaControl: rna.normalValue,
+      //Converting rna value to log values, may not need to do this depending on values from actual dataset
+      rnaTumor: Number(Math.log2(rna.tumorValue).toFixed(4)),
+      rnaControl: Number(Math.log2(rna.normalValue).toFixed(4)),
     };
   });
+
+  //Filter points with missing data points that would cause issues with correlation calculation
+  const proteinRNA = getData.filter(
+    (e) =>
+      typeof e.proteinTumor === "number" &&
+      typeof e.rnaTumor === "number" &&
+      typeof e.proteinControl === "number" &&
+      typeof e.rnaControl === "number",
+  );
 
   const defaultLayout = {
     xaxis: {
@@ -177,20 +189,35 @@ export default function ProteinCorrelation() {
           </Col>
         </Row>
         <Row className="m-3">
-          Tumor Correlation:{" "}
-          {calculateCorrelation(
-            proteinRNA.map((e) => e.proteinTumor),
-            proteinRNA.map((e) => e.rnaTumor),
-            { decimals: 4 },
-          )}
-        </Row>
-        <Row className="m-3">
-          Control Correlation:{" "}
-          {calculateCorrelation(
-            proteinRNA.map((e) => e.proteinControl),
-            proteinRNA.map((e) => e.rnaControl),
-            { decimals: 4 },
-          )}
+          <div className="col-xl-4">
+            Tumor Correlation:{" "}
+            {calculateCorrelation(
+              proteinRNA.map((e) => e.proteinTumor),
+              proteinRNA.map((e) => e.rnaTumor),
+              { decimals: 4 },
+            )}
+          </div>
+          <div className="col-xl-4">
+            Control Correlation:{" "}
+            {calculateCorrelation(
+              proteinRNA.map((e) => e.proteinControl),
+              proteinRNA.map((e) => e.rnaControl),
+              { decimals: 4 },
+            )}
+          </div>
+
+          <div className="col-xl-4">
+            Total Correlation:{" "}
+            {calculateCorrelation(
+              proteinRNA
+                .map((e) => e.proteinControl)
+                .concat(proteinRNA.map((e) => e.proteinTumor)),
+              proteinRNA
+                .map((e) => e.rnaControl)
+                .concat(proteinRNA.map((e) => e.rnaTumor)),
+              { decimals: 4 },
+            )}
+          </div>
         </Row>
 
         <div className="m-3">
