@@ -45,6 +45,7 @@ export function RangeFilter({
 }
 
 export default function Table({ columns, data, options }) {
+  console.log(options);
   const {
     getTableProps,
     getTableBodyProps,
@@ -80,7 +81,9 @@ export default function Table({ columns, data, options }) {
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column, index) => (
-                  <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <th
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                    style={{ whiteSpace: "nowrap" }}>
                     {column.render("Header")}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
@@ -88,8 +91,6 @@ export default function Table({ columns, data, options }) {
                       ) : (
                         <i className="bi bi-sort-up text-primary ml-1" />
                       )
-                    ) : index === 0 ? (
-                      <i className="bi bi-sort-up text-primary ml-1" />
                     ) : (
                       ""
                     )}
