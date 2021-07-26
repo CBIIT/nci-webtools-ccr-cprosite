@@ -55,6 +55,19 @@ export default function Results() {
       ),
     },
     {
+      accessor: "proteinDiff",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_diff">
+              Difference between tumor and control values
+            </Tooltip>
+          }>
+          <b>Difference</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
       accessor: "proteinLogRatioChange",
       Header: (
         <OverlayTrigger
@@ -93,6 +106,19 @@ export default function Results() {
         <OverlayTrigger
           overlay={<Tooltip id="protein_av_control">Average Control</Tooltip>}>
           <b>Average Control</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinDiff",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_diff">
+              Difference between tumor and control values
+            </Tooltip>
+          }>
+          <b>Difference</b>
         </OverlayTrigger>
       ),
     },
@@ -224,6 +250,10 @@ export default function Results() {
       ),
       controlAverage: controlAverage,
       tumorAverage: tumorAverage,
+      proteinDiff:
+        !isNaN(controlAverage) && !isNaN(tumorAverage)
+          ? Math.abs(controlAverage - tumorAverage).toFixed(4)
+          : "NA",
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
       pValue: (Math.random() * Math.pow(1, -8)).toFixed(4),
@@ -506,6 +536,15 @@ export default function Results() {
                   proteinLogRatioChange: c.proteinLogRatioChange
                     ? c.proteinLogRatioChange.toFixed(4)
                     : "NA",
+                  proteinDiff:
+                    c.proteinLogRatioCase && c.proteinLogRatioControl
+                      ? Math.abs(
+                          (
+                            c.proteinLogRatioControl.toFixed(4) -
+                            c.proteinLogRatioCase.toFixed(4)
+                          ).toFixed(4),
+                        )
+                      : "NA",
                 };
               })}
           />

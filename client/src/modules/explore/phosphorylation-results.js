@@ -56,6 +56,19 @@ export default function PhosResults() {
         </OverlayTrigger>
       ),
     },
+    {
+      accessor: "proteinDiff",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_diff">
+              Difference between tumor and control values
+            </Tooltip>
+          }>
+          <b>Difference</b>
+        </OverlayTrigger>
+      ),
+    },
   ];
 
   const summary = [
@@ -100,6 +113,19 @@ export default function PhosResults() {
         <OverlayTrigger
           overlay={<Tooltip id="phos_av_control">Average Control</Tooltip>}>
           <b>Average Control</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinDiff",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_diff">
+              Difference between tumor and control values
+            </Tooltip>
+          }>
+          <b>Difference</b>
         </OverlayTrigger>
       ),
     },
@@ -189,6 +215,10 @@ export default function PhosResults() {
       accession: patients.filter((d) => d.accession != null)[0].accession,
       tumorAverage: tumorAverage,
       controlAverage: controlAverage,
+      proteinDiff:
+        !isNaN(controlAverage) && !isNaN(tumorAverage)
+          ? Math.abs(controlAverage - tumorAverage).toFixed(4)
+          : "NA",
       link: (
         <a
           onClick={() => {
@@ -457,6 +487,14 @@ export default function PhosResults() {
                   name: d.name,
                   tumorValue: d.tumorValue ? d.tumorValue.toFixed(4) : "NA",
                   controlValue: d.normalValue ? d.normalValue.toFixed(4) : "NA",
+                  proteinDiff:
+                    d.tumorValue && d.normalValue
+                      ? Math.abs(
+                          (
+                            d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
+                          ).toFixed(4),
+                        )
+                      : "NA",
                 };
               })}
           />
