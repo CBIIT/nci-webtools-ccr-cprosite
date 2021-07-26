@@ -171,7 +171,7 @@ export default function ProteinCorrelation() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summary" title="Summary">
+      <Tab eventKey="summary" title="Correlation">
         <Row className="m-3">
           <Col xl={12}>
             <Plot
