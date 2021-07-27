@@ -519,6 +519,12 @@ export default function Results() {
           </div>
         )}
 
+        <fieldset className="m-3 border">
+          <div className="col-xl-12 my-2 d-flex justify-content-center">
+            P Value: {averages.find((e) => e.id === view).pValue}
+          </div>
+        </fieldset>
+
         <div className="m-3">
           <Table
             columns={proteinAbundanceColumns}

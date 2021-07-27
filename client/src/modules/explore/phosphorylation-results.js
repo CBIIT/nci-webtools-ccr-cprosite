@@ -477,6 +477,14 @@ export default function PhosResults() {
             />
           </Col>
         </Row>
+
+        <fieldset className="m-3 border">
+          <div className="col-xl-12 my-2 d-flex justify-content-center">
+            P Value:{" "}
+            {phosphorylationData.find((e) => e.name === phosView).pValue}
+          </div>
+        </fieldset>
+
         <Row className="m-3">
           <Table
             columns={phosSiteColumns}
