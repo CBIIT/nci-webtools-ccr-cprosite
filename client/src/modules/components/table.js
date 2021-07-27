@@ -82,8 +82,11 @@ export default function Table({ columns, data, options }) {
                 {headerGroup.headers.map((column, index) => (
                   <th
                     {...column.getHeaderProps(column.getSortByToggleProps())}
-                    style={{ whiteSpace: "nowrap" }}>
+                    style={{
+                      whiteSpace: column.id === "pValue" ? "nowrap" : "normal",
+                    }}>
                     {column.render("Header")}
+
                     {column.isSorted ? (
                       column.isSortedDesc ? (
                         <i className="bi bi-sort-down text-primary ml-1" />

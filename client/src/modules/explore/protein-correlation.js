@@ -44,11 +44,11 @@ export default function ProteinCorrelation() {
       ),
     },
     {
-      accessor: "proteinTumor",
+      accessor: "proteinTumorNum",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_correlation_tumor">
+            <Tooltip id="protein_correlation_tumor_num">
               Protein Tumor Value
             </Tooltip>
           }>
@@ -57,20 +57,52 @@ export default function ProteinCorrelation() {
       ),
     },
     {
-      accessor: "rnaTumor",
+      accessor: "proteinTumor",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_rna_tumor">RNA Tumor Value</Tooltip>}>
+          overlay={
+            <Tooltip id="protein_correlation_tumor_log2">
+              Protein Tumor Log<sub>2</sub>
+            </Tooltip>
+          }>
+          <b>
+            Protein Tumor Log<sub>2</sub>
+          </b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "rnaTumorNum",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_rna_tumor_num">RNA Tumor Value</Tooltip>
+          }>
           <b>RNA Tumor Value</b>
         </OverlayTrigger>
       ),
     },
     {
-      accessor: "proteinControl",
+      accessor: "rnaTumor",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_correlation_control">
+            <Tooltip id="protein_rna_tumor_log2">
+              RNA Tumor (Log<sub>2</sub>)
+            </Tooltip>
+          }>
+          <b>
+            RNA Tumor Log<sub>2</sub>
+          </b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinControlNum",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_control_num">
               Protein Control Value
             </Tooltip>
           }>
@@ -80,13 +112,43 @@ export default function ProteinCorrelation() {
     },
 
     {
+      accessor: "proteinControl",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_control_log2">
+              Protein Control Log<sub>2</sub>
+            </Tooltip>
+          }>
+          <b>
+            Protein Control Log<sub>2</sub>
+          </b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "rnaControlNum",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_rna_contro_num">RNA Control Value</Tooltip>
+          }>
+          <b>RNA Control Value</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
       accessor: "rnaControl",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_rna_control">RNA Control Value</Tooltip>
+            <Tooltip id="protein_rna_contro_log2">
+              RNA Control (Log<sub>2</sub>)
+            </Tooltip>
           }>
-          <b>RNA Control Value</b>
+          <b>
+            RNA Control Log<sub>2</sub>
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -101,10 +163,14 @@ export default function ProteinCorrelation() {
     return {
       name: e.name,
       proteinTumor: e.tumorValue,
+      proteinTumorNum: Number(Math.pow(2, e.tumorValue).toFixed(4)),
       proteinControl: e.normalValue,
+      proteinControlNum: Number(Math.pow(2, e.normalValue).toFixed(4)),
       //Converting rna value to log values, may not need to do this depending on values from actual dataset
       rnaTumor: Number(Math.log2(rna.tumorValue).toFixed(4)),
+      rnaTumorNum: rna.tumorValue,
       rnaControl: Number(Math.log2(rna.normalValue).toFixed(4)),
+      rnaControlNum: rna.normalValue,
     };
   });
 
@@ -320,9 +386,13 @@ export default function ProteinCorrelation() {
               return {
                 name: c.name,
                 proteinTumor: c.proteinTumor,
+                proteinTumorNum: c.proteinTumorNum,
                 proteinControl: c.proteinControl,
+                proteinControlNum: c.proteinControlNum,
                 rnaTumor: c.rnaTumor,
+                rnaTumorNum: c.rnaTumorNum,
                 rnaControl: c.rnaControl,
+                rnaControlNum: c.rnaControlNum,
               };
             })}
           />
