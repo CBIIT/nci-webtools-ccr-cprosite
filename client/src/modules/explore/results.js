@@ -533,7 +533,7 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: "<b>Average Tumor and Adjacent Normal</b>",
+                title: `<b>Average Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 barmode: "group",
                 autosize: true,
               }}
@@ -617,7 +617,7 @@ export default function Results() {
                 data={boxPlotData}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>Tumor vs Adjacent Normal (${form.gene.label}) </b>`,
+                  title: `<b>Tumor vs Adjacent Normal</b> (Gene: ${form.gene.label})`,
                   yaxis: {
                     title: "Log Protien Abundance",
                     zeroline: false,
@@ -640,7 +640,7 @@ export default function Results() {
                 config={defaultConfig}
                 layout={{
                   autosize: true,
-                  title: "<b>Log<sub>2</sub> Fold Change</b>",
+                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${form.gene.label})`,
                   xaxis: {
                     title: "Log<sub>2</sub> Fold Change",
                     zeroline: false,
