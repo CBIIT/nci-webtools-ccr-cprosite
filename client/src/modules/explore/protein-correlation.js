@@ -273,11 +273,7 @@ export default function ProteinCorrelation() {
               ))}
             </Form.Select>
           </div>
-          <div
-            className="col-xl-2 col-form-label"
-            style={{ minWidth: "200px" }}>
-            Gene: {form.gene.label}
-          </div>
+          <div className="col-xl-2 col-form-label">Gene: {form.gene.label}</div>
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
