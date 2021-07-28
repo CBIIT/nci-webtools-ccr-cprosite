@@ -51,8 +51,10 @@ export default function PhosResults() {
       accessor: "controlValue",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="phos_control_val">Control Value</Tooltip>}>
-          <b>Control Value</b>
+          overlay={
+            <Tooltip id="phos_control_val">Adjacent Normal Value</Tooltip>
+          }>
+          <b>Adjacent Normal Value</b>
         </OverlayTrigger>
       ),
     },
@@ -62,10 +64,12 @@ export default function PhosResults() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Difference between tumor and control values
+              Difference between Tumor and Adjacent Normal values
             </Tooltip>
           }>
-          <b>Difference</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -111,8 +115,10 @@ export default function PhosResults() {
       accessor: "controlAverage",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="phos_av_control">Average Control</Tooltip>}>
-          <b>Average Control</b>
+          overlay={
+            <Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>
+          }>
+          <b>Average Adjacent Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -122,10 +128,13 @@ export default function PhosResults() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Difference between tumor and control values
+              Average Protein Phosphorylation Level Difference (log<sub>2</sub>{" "}
+              ratio between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Difference</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -133,7 +142,9 @@ export default function PhosResults() {
       accessor: "tumorNum",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="phos_tumor_count">Tumor Count</Tooltip>}>
+          overlay={
+            <Tooltip id="phos_tumor_count">Tumor Sample Number</Tooltip>
+          }>
           <b>Tumor Count</b>
         </OverlayTrigger>
       ),
@@ -142,8 +153,21 @@ export default function PhosResults() {
       accessor: "controlNum",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="phos_control_count">Control Count</Tooltip>}>
-          <b>Control Count</b>
+          overlay={
+            <Tooltip id="phos_control_count">
+              Adjacent Normal Sample Number
+            </Tooltip>
+          }>
+          <b>Adjacent Normal Count</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValue",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_pValue">Mann-Whitney U Test</Tooltip>}>
+          <b>P Value</b>
         </OverlayTrigger>
       ),
     },
@@ -161,17 +185,11 @@ export default function PhosResults() {
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="phos_control_se">Control Standard Error</Tooltip>
+            <Tooltip id="phos_control_se">
+              Adjacent Normal Standard Error
+            </Tooltip>
           }>
-          <b>Control SE</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "pValue",
-      Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_pValue">P Value</Tooltip>}>
-          <b>P Value</b>
+          <b>Adjacent Normal SE</b>
         </OverlayTrigger>
       ),
     },
@@ -261,7 +279,7 @@ export default function PhosResults() {
         color: "rgb(255,127,14)",
       },
       type: "bar",
-      name: "Control",
+      name: "Adjacent Normal",
       hovertemplate: "%{x}: %{y} <extra></extra>",
     },
   ];
@@ -282,7 +300,7 @@ export default function PhosResults() {
       y: sites.filter((c) => c[0] === phosView)[0][1].map((d) => d.normalValue),
       type: "box",
       boxpoints: "all",
-      name: "Control",
+      name: "Adjacent Normal",
       jitter: 0.6,
       jitter: 0.6,
       marker: {
@@ -359,11 +377,6 @@ export default function PhosResults() {
               ))}
             </Form.Select>
           </div>
-          <div
-            className="col-xl-2 col-form-label"
-            style={{ minWidth: "200px" }}>
-            Gene: {form.gene.label}
-          </div>
         </Form.Group>
 
         <Row className="m-3">
@@ -372,7 +385,7 @@ export default function PhosResults() {
               data={multiPhosBarPlot}
               layout={{
                 ...defaultLayout,
-                title: "<b>Tumor and Control</b>",
+                title: `<b>Tumor and Control</b> (Gene: ${form.gene.label})`,
                 xaxis: {
                   title: "Phosphorylation Site",
                   zeroline: false,
@@ -432,7 +445,7 @@ export default function PhosResults() {
               }
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Control
+              Tumor vs Adjacent Normal
             </ToggleButton>
             <ToggleButton
               className={
@@ -445,27 +458,13 @@ export default function PhosResults() {
           </ToggleButtonGroup>
         </Form.Group>
 
-        <Form.Group className="row m-3">
-          <div className="col-xl-2" style={{ minWidth: "200px" }}>
-            Gene: {form.gene.label}
-          </div>
-
-          <div className="col-xl-3" style={{ minWidth: "200px" }}>
-            Accession: {site.accession}
-          </div>
-
-          <div className="col-xl-5" style={{ minWidth: "200px" }}>
-            Peptide: {site.phosphopeptide}
-          </div>
-        </Form.Group>
-
-        <Row className="m-3">
+        <Row className="mx-3 mt-3">
           <Col xl={12} style={{ height: "800px" }}>
             <Plot
               data={phosBoxData}
               layout={{
                 ...defaultLayout,
-                title: "<b>Tumor vs Control</b>",
+                title: `<b>Tumor vs Control</b> (Gene: ${form.gene.label})`,
                 yaxis: { title: "Phosphorylation Level", zeroline: false },
                 autosize: true,
                 boxgroupgap: 0.4,
@@ -478,10 +477,17 @@ export default function PhosResults() {
           </Col>
         </Row>
 
-        <fieldset className="m-3 border">
-          <div className="col-xl-12 my-2 d-flex justify-content-center">
+        <fieldset className="mx-5 mb-5 border row" style={{ color: "grey" }}>
+          <div className="col-xl-3 my-2 d-flex justify-content-center">
             P Value:{" "}
             {phosphorylationData.find((e) => e.name === phosView).pValue}
+          </div>
+          <div className="col-xl-3 my-2 d-flex justify-content-center">
+            Accession: {site.accession}
+          </div>
+
+          <div className="col-xl-5 my-2 d-flex justify-content-center">
+            Peptide: {site.phosphopeptide}
           </div>
         </fieldset>
 
