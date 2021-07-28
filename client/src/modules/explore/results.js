@@ -45,35 +45,23 @@ export default function Results() {
     },
     {
       accessor: "proteinLogRatioCase",
-      label: "Tumor Value",
+      label: "Tumor Abundance",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_tumor_val">Tumor Value</Tooltip>}>
-          <b>Tumor Value</b>
+          overlay={<Tooltip id="protein_tumor_val">Tumor Abundance</Tooltip>}>
+          <b>Tumor Abundance</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "proteinLogRatioControl",
-      label: "Normal Value",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="protein_normal_val">Normal Value</Tooltip>}>
-          <b>Normal Value</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "proteinDiff",
-      label: "Difference",
+      label: "Adjacent Normal Value",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_diff">
-              Difference between tumor and control values
-            </Tooltip>
+            <Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>
           }>
-          <b>Difference</b>
+          <b>Adjacent Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -84,7 +72,8 @@ export default function Results() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_log_fold">
-              Log<sub>2</sub> Fold Change Value
+              Average Protein Abundance Difference (log<sub>2</sub> ratio
+              between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
           <b>
@@ -119,11 +108,13 @@ export default function Results() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Normal",
+      label: "Average Adjacent Normal",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_av_normal">Average Normal</Tooltip>}>
-          <b>Average Normal</b>
+          overlay={
+            <Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>
+          }>
+          <b>Average Adjacent Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -166,7 +157,7 @@ export default function Results() {
     },
     {
       accessor: "controlNum",
-      label: "Normal Count",
+      label: "Adjaceent Normal Count",
       Header: (
         <OverlayTrigger
           overlay={
@@ -174,7 +165,7 @@ export default function Results() {
               Adjacent Normal Sample Number
             </Tooltip>
           }>
-          <b>Normal Count</b>
+          <b>Adjacent Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -192,13 +183,15 @@ export default function Results() {
     },
     {
       accessor: "controlError",
-      label: "Control SE",
+      label: "Adjacent Normal SE",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_tcontrol_se">Control Stanadard Error</Tooltip>
+            <Tooltip id="protein_tcontrol_se">
+              Adjacent Normal Stanadard Error
+            </Tooltip>
           }>
-          <b>Control SE</b>
+          <b>Adjacent Normal SE</b>
         </OverlayTrigger>
       ),
     },
@@ -224,7 +217,7 @@ export default function Results() {
         .map((c) => c.proteinLogRatioControl),
       type: "box",
       boxpoints: "all",
-      name: "Normal",
+      name: "Adjacent Normal",
       jitter: 0.6,
       marker: {
         size: 8,
@@ -342,7 +335,7 @@ export default function Results() {
           color: "rgb(255,127,14)",
         },
         type: "bar",
-        name: "Normal",
+        name: "Adjacent Normal",
         hovertemplate: "%{x}: %{y} <extra></extra>",
       },
     ];
@@ -540,7 +533,7 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: "<b>Average Tumor and Control</b>",
+                title: "<b>Average Tumor and Adjacent Normal</b>",
                 barmode: "group",
                 autosize: true,
               }}
@@ -594,11 +587,6 @@ export default function Results() {
               ))}
             </Form.Select>
           </div>
-          <div
-            className="col-xl-1 col-form-label"
-            style={{ minWidth: "180px" }}>
-            Gene: {form.gene.label}
-          </div>
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
@@ -622,14 +610,14 @@ export default function Results() {
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
-        <Row className="m-3">
+        <Row className="mx-3 mt-3">
           {plotTab === "tumorVsControl" && (
             <Col xl={12} style={{ height: "800px" }}>
               <Plot
                 data={boxPlotData}
                 layout={{
                   ...defaultLayout,
-                  title: "<b>Tumor vs Adjacent Normal</b>",
+                  title: `<b>Tumor vs Adjacent Normal (${form.gene.label}) </b>`,
                   yaxis: {
                     title: "Log Protien Abundance",
                     zeroline: false,
@@ -644,35 +632,42 @@ export default function Results() {
               />
             </Col>
           )}
-        </Row>
-        {plotTab === "foldChange" && (
-          <div className="m-3" style={{ height: "800px", overflowY: "scroll" }}>
-            <Plot
-              data={foldData()}
-              config={defaultConfig}
-              layout={{
-                autosize: true,
-                title: "<b>Log<sub>2</sub> Fold Change</b>",
-                xaxis: {
-                  title: "Log<sub>2</sub> Fold Change",
-                  zeroline: false,
-                },
-                xaxis2: {
-                  zeroline: false,
-                  overlaying: "x",
-                  side: "top",
-                },
-                showlegend: false,
-                barmode: "stack",
-              }}
-              useResizeHandler
-              style={{ minWidth: "100%", height: foldSize, minHeight: "400px" }}
-            />
-          </div>
-        )}
 
-        <fieldset className="m-3 border">
-          <div className="col-xl-12 my-2 d-flex justify-content-center">
+          {plotTab === "foldChange" && (
+            <Col xl={12} style={{ height: "800px", overflowY: "scroll" }}>
+              <Plot
+                data={foldData()}
+                config={defaultConfig}
+                layout={{
+                  autosize: true,
+                  title: "<b>Log<sub>2</sub> Fold Change</b>",
+                  xaxis: {
+                    title: "Log<sub>2</sub> Fold Change",
+                    zeroline: false,
+                  },
+                  xaxis2: {
+                    zeroline: false,
+                    overlaying: "x",
+                    side: "top",
+                  },
+                  showlegend: false,
+                  barmode: "stack",
+                }}
+                useResizeHandler
+                style={{
+                  minWidth: "100%",
+                  height: foldSize,
+                  minHeight: "400px",
+                }}
+              />
+            </Col>
+          )}
+        </Row>
+
+        <fieldset className="mx-5 border">
+          <div
+            className="col-xl-12 d-flex justify-content-center"
+            style={{ color: "grey" }}>
             P Value: {averages.find((e) => e.id === view).pValue}
           </div>
         </fieldset>
