@@ -4,15 +4,21 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { casesState, formState } from "./explore.state";
+import { casesState, formState, proteinDataState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import { query } from "../../services/query";
+import ReactExport from "react-data-export";
+import React, { useState } from "react";
 
-import { useState } from "react";
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
@@ -29,6 +35,7 @@ export default function Results() {
   const proteinAbundanceColumns = [
     {
       accessor: "name",
+      label: "Patient ID",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="protein_patient">Patient ID</Tooltip>}>
@@ -38,6 +45,7 @@ export default function Results() {
     },
     {
       accessor: "proteinLogRatioCase",
+      label: "Tumor Value",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="protein_tumor_val">Tumor Value</Tooltip>}>
@@ -47,15 +55,17 @@ export default function Results() {
     },
     {
       accessor: "proteinLogRatioControl",
+      label: "Normal Value",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_control_val">Control Value</Tooltip>}>
-          <b>Control Value</b>
+          overlay={<Tooltip id="protein_normal_val">Normal Value</Tooltip>}>
+          <b>Normal Value</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "proteinDiff",
+      label: "Difference",
       Header: (
         <OverlayTrigger
           overlay={
@@ -69,12 +79,17 @@ export default function Results() {
     },
     {
       accessor: "proteinLogRatioChange",
+      label: "Log2 Fold Change Value",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_log_fold">Log Fold Change Value</Tooltip>
+            <Tooltip id="protein_log_fold">
+              Log<sub>2</sub> Fold Change Value
+            </Tooltip>
           }>
-          <b>Log Fold Change Value</b>
+          <b>
+            Log<sub>2</sub> Fold Change Value
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -83,6 +98,7 @@ export default function Results() {
   const summaryColumns = [
     {
       accessor: "link",
+      label: "Tumor Type",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="protein_tumor">Tumor Type</Tooltip>}>
@@ -93,6 +109,7 @@ export default function Results() {
     },
     {
       accessor: "tumorAverage",
+      label: "Average Tumor",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="protein_av_tumor">Average Tumor</Tooltip>}>
@@ -102,55 +119,68 @@ export default function Results() {
     },
     {
       accessor: "controlAverage",
+      label: "Average Normal",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_av_control">Average Control</Tooltip>}>
-          <b>Average Control</b>
+          overlay={<Tooltip id="protein_av_normal">Average Normal</Tooltip>}>
+          <b>Average Normal</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "proteinDiff",
+      label: "Tumor vs Adjacent Normal",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Difference between tumor and control values
+              Average Protein Abundance Difference (log<sub>2</sub> ratio
+              between Tu vs No)
             </Tooltip>
           }>
-          <b>Difference</b>
+          <b>Tumor vs Adjacent Normal</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValue",
+      label: "P Value",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="protein_pvalue">Mann-Whitney U Test</Tooltip>}>
+          <b>P Value</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "tumorNum",
+      label: "Tumor Count",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_tumor_count">Tumor Count</Tooltip>}>
+          overlay={
+            <Tooltip id="protein_tumor_count">Tumor Sample Number</Tooltip>
+          }>
           <b>Tumor Count</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "controlNum",
+      label: "Normal Count",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_control_count">Control Count</Tooltip>}>
-          <b>Control Count</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "pValue",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="protein_pvalue">P Value</Tooltip>}>
-          <b>P Value</b>
+          overlay={
+            <Tooltip id="protein_normal_count">
+              Adjacent Normal Sample Number
+            </Tooltip>
+          }>
+          <b>Normal Count</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "tumorError",
+      label: "Tumor SE",
       Header: (
         <OverlayTrigger
           overlay={
@@ -162,6 +192,7 @@ export default function Results() {
     },
     {
       accessor: "controlError",
+      label: "Control SE",
       Header: (
         <OverlayTrigger
           overlay={
@@ -193,7 +224,7 @@ export default function Results() {
         .map((c) => c.proteinLogRatioControl),
       type: "box",
       boxpoints: "all",
-      name: "Control",
+      name: "Normal",
       jitter: 0.6,
       marker: {
         size: 8,
@@ -248,31 +279,41 @@ export default function Results() {
           {c.label}
         </a>
       ),
-      controlAverage: controlAverage,
-      tumorAverage: tumorAverage,
+      controlAverage: !isNaN(controlAverage) ? Number(controlAverage) : "NA",
+      tumorAverage: !isNaN(tumorAverage) ? Number(tumorAverage) : "NA",
       proteinDiff:
         !isNaN(controlAverage) && !isNaN(tumorAverage)
-          ? Math.abs(controlAverage - tumorAverage).toFixed(4)
+          ? Number(Math.abs(controlAverage - tumorAverage).toFixed(4))
           : "NA",
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
-      pValue: (Math.random() * Math.pow(1, -8)).toFixed(4),
-      tumorError: calcStandardError(
-        cases
-          .filter(
-            (d) => c.value === d.cancerId && d.proteinLogRatioCase !== null,
+      pValue: Number((Math.random() * Math.pow(1, -8)).toFixed(4)),
+      tumorError: !isNaN(tumorAverage)
+        ? Number(
+            calcStandardError(
+              cases
+                .filter(
+                  (d) =>
+                    c.value === d.cancerId && d.proteinLogRatioCase !== null,
+                )
+                .map((e) => e.proteinLogRatioCase),
+              tumorAverage,
+            ),
           )
-          .map((e) => e.proteinLogRatioCase),
-        tumorAverage,
-      ),
-      controlError: calcStandardError(
-        cases
-          .filter(
-            (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
+        : "NA",
+      controlError: !isNaN(controlAverage)
+        ? Number(
+            calcStandardError(
+              cases
+                .filter(
+                  (d) =>
+                    c.value === d.cancerId && d.proteinLogRatioControl !== null,
+                )
+                .map((e) => e.proteinLogRatioControl),
+              controlAverage,
+            ),
           )
-          .map((e) => e.proteinLogRatioControl),
-        controlAverage,
-      ),
+        : "NA",
     };
   });
 
@@ -301,7 +342,7 @@ export default function Results() {
           color: "rgb(255,127,14)",
         },
         type: "bar",
-        name: "Control",
+        name: "Normal",
         hovertemplate: "%{x}: %{y} <extra></extra>",
       },
     ];
@@ -348,6 +389,109 @@ export default function Results() {
   function handleToggle(e) {
     setPlot(e.target.control.id);
   }
+
+  function exportSummarySettings() {
+    var settings = form.cancer.map((e) => {
+      return [{ value: e.label }];
+    });
+    settings[0].push({ value: "Protein Abundance" });
+    settings[0].push({ value: "Tumor vs Control" });
+    settings[0].push({ value: form.gene.label });
+
+    return [
+      {
+        columns: [
+          { title: "Tumor", width: { wpx: 160 } },
+          { title: "Protein Abundance", width: { wpx: 160 } },
+          { title: "Analysis", width: { wpx: 160 } },
+          { title: "Gene", width: { wpx: 160 } },
+        ],
+        data: settings,
+      },
+    ];
+  }
+
+  const exportSummary = [
+    {
+      columns: summaryColumns.map((e) => {
+        return { title: e.label, width: { wpx: 160 } };
+      }),
+      data: averages.map((e) => {
+        return [
+          { value: e.name },
+          { value: e.tumorAverage },
+          { value: e.controlAverage },
+          { value: e.proteinDiff },
+          { value: e.pValue },
+          { value: e.tumorNum },
+          { value: e.controlNum },
+          { value: e.tumorError },
+          { value: e.controlError },
+        ];
+      }),
+    },
+  ];
+
+  /*
+  const exportAbundanceSettings = [
+    {
+      columns: [
+        { title: 'Tumor', width: { wpx: 160 } },
+        { title: "Protein Abundance", width: { wpx: 160 } },
+        { title: 'Analysis', width: { wpx: 160 } },
+        { title: 'Gene', width: { wpx: 160 } },
+      ],
+      data: [
+        { value: view },
+        { value: 'Protein Abundance' },
+        { value: 'Tumor vs Control' },
+        { value: form.gene.label }
+      ]
+    }
+  ]*/
+
+  const exportAbundance = [
+    {
+      columns: proteinAbundanceColumns.map((e) => {
+        return { title: e.label, width: { wpx: 160 } };
+      }),
+      data: cases
+        .filter((c) => view === c.cancerId)
+        .map((c) => {
+          return [
+            { value: c.name },
+            {
+              value: c.proteinLogRatioCase
+                ? Number(c.proteinLogRatioCase.toFixed(4))
+                : "NA",
+            },
+            {
+              value: c.proteinLogRatioControl
+                ? Number(c.proteinLogRatioControl.toFixed(4))
+                : "NA",
+            },
+            {
+              value:
+                c.proteinLogRatioCase && c.proteinLogRatioControl
+                  ? Number(
+                      Math.abs(
+                        (
+                          c.proteinLogRatioControl.toFixed(4) -
+                          c.proteinLogRatioCase.toFixed(4)
+                        ).toFixed(4),
+                      ),
+                    )
+                  : "NA",
+            },
+            {
+              value: c.proteinLogRatioChange
+                ? Number(c.proteinLogRatioChange.toFixed(4))
+                : "NA",
+            },
+          ];
+        }),
+    },
+  ];
 
   const defaultLayout = {
     xaxis: {
@@ -410,6 +554,14 @@ export default function Results() {
 
         <div className="m-3">
           <Table columns={summaryColumns} data={averages} />
+
+          <ExcelFile element={<Button>Download Data</Button>}>
+            <ExcelSheet
+              dataSet={exportSummarySettings()}
+              name="Input Configuration"
+            />
+            <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+          </ExcelFile>
         </div>
       </Tab>
 
@@ -458,7 +610,7 @@ export default function Results() {
               }
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Control
+              Tumor vs Adjacent Normal
             </ToggleButton>
             <ToggleButton
               className={
@@ -466,7 +618,7 @@ export default function Results() {
               }
               id={"foldChange"}
               onClick={handleToggle}>
-              Log Fold Change
+              Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
@@ -477,7 +629,7 @@ export default function Results() {
                 data={boxPlotData}
                 layout={{
                   ...defaultLayout,
-                  title: "<b>Tumor vs Control</b>",
+                  title: "<b>Tumor vs Adjacent Normal</b>",
                   yaxis: {
                     title: "Log Protien Abundance",
                     zeroline: false,
@@ -554,6 +706,16 @@ export default function Results() {
                 };
               })}
           />
+          <ExcelFile element={<Button>Download Data</Button>}>
+            <ExcelSheet
+              dataSet={exportSummarySettings()}
+              name="Input Configuration"
+            />
+            <ExcelSheet
+              dataSet={exportAbundance}
+              name="Protein Abundance Data"
+            />
+          </ExcelFile>
         </div>
       </Tab>
     </Tabs>
