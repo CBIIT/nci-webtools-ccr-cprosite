@@ -49,10 +49,10 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_correlation_tumor_num">
-              Protein Tumor Value
+              Protein Tumor Abundance
             </Tooltip>
           }>
-          <b>Protein Tumor Value</b>
+          <b>Protein Tumor Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -76,9 +76,9 @@ export default function ProteinCorrelation() {
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_rna_tumor_num">RNA Tumor Value</Tooltip>
+            <Tooltip id="protein_rna_tumor_num">RNA Tumor Abundance</Tooltip>
           }>
-          <b>RNA Tumor Value</b>
+          <b>RNA Tumor Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -103,10 +103,10 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_correlation_control_num">
-              Protein Adjacent Normal Value
+              Protein Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>Protein Adjacent Normal Value</b>
+          <b>Protein Adjacent Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -132,10 +132,10 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_rna_contro_num">
-              RNA Adjacent Normal Value
+              RNA Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>RNA Adjacent Normal Value</b>
+          <b>RNA Adjacent Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -295,7 +295,7 @@ export default function ProteinCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-          <Form.Group className="col-xl-6 mb-3">
+          <Form.Group className="col-xl-6 mb-3 col-form-label">
             <Form.Check
               inline
               label={

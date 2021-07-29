@@ -42,8 +42,8 @@ export default function PhosResults() {
       accessor: "tumorValue",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="phos_tumor_val">Tumor Value</Tooltip>}>
-          <b>Tumor Value</b>
+          overlay={<Tooltip id="phos_tumor_val">Tumor Abundance</Tooltip>}>
+          <b>Tumor Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -52,9 +52,9 @@ export default function PhosResults() {
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="phos_control_val">Adjacent Normal Value</Tooltip>
+            <Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>
           }>
-          <b>Adjacent Normal Value</b>
+          <b>Adjacent Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -64,7 +64,7 @@ export default function PhosResults() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Difference between Tumor and Adjacent Normal values
+              Difference between Tumor and Adjacent Normal Abundance
             </Tooltip>
           }>
           <b>
