@@ -126,7 +126,7 @@ export default function Results() {
           overlay={
             <Tooltip id="protein_diff">
               Average Protein Abundance Difference (log<sub>2</sub> ratio
-              between Tumor vs Normal)
+              between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
           <b>Tumor vs Adjacent Normal</b>
