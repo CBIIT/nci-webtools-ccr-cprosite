@@ -5,7 +5,7 @@ const getLogger = require("./services/logger");
 const forkCluster = require("./services/cluster");
 const { logErrors } = require("./services/middleware");
 const production = process.env.NODE_ENV === "production";
-const logger = getLogger("scatlas-lc");
+const logger = getLogger("cprosite");
 
 if (forkCluster()) return;
 
