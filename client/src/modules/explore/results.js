@@ -276,7 +276,7 @@ export default function Results() {
       tumorAverage: !isNaN(tumorAverage) ? Number(tumorAverage) : "NA",
       proteinDiff:
         !isNaN(controlAverage) && !isNaN(tumorAverage)
-          ? Number(Math.abs(controlAverage - tumorAverage).toFixed(4))
+          ? Number((controlAverage - tumorAverage).toFixed(4))
           : "NA",
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
@@ -395,7 +395,7 @@ export default function Results() {
       {
         columns: [
           { title: "Tumor", width: { wpx: 160 } },
-          { title: "Protein Abundance", width: { wpx: 160 } },
+          { title: "Dataset", width: { wpx: 160 } },
           { title: "Analysis", width: { wpx: 160 } },
           { title: "Gene", width: { wpx: 160 } },
         ],
@@ -425,23 +425,24 @@ export default function Results() {
     },
   ];
 
-  /*
   const exportAbundanceSettings = [
     {
       columns: [
-        { title: 'Tumor', width: { wpx: 160 } },
-        { title: "Protein Abundance", width: { wpx: 160 } },
-        { title: 'Analysis', width: { wpx: 160 } },
-        { title: 'Gene', width: { wpx: 160 } },
+        { title: "Tumor", width: { wpx: 160 } },
+        { title: "Dataset", width: { wpx: 160 } },
+        { title: "Analysis", width: { wpx: 160 } },
+        { title: "Gene", width: { wpx: 160 } },
       ],
       data: [
-        { value: view },
-        { value: 'Protein Abundance' },
-        { value: 'Tumor vs Control' },
-        { value: form.gene.label }
-      ]
-    }
-  ]*/
+        [
+          { value: form.cancer.filter((e) => e.value === view)[0].label },
+          { value: "Protein Abundance" },
+          { value: "Tumor vs Control" },
+          { value: form.gene.label },
+        ],
+      ],
+    },
+  ];
 
   const exportAbundance = [
     {
@@ -462,19 +463,6 @@ export default function Results() {
               value: c.proteinLogRatioControl
                 ? Number(c.proteinLogRatioControl.toFixed(4))
                 : "NA",
-            },
-            {
-              value:
-                c.proteinLogRatioCase && c.proteinLogRatioControl
-                  ? Number(
-                      Math.abs(
-                        (
-                          c.proteinLogRatioControl.toFixed(4) -
-                          c.proteinLogRatioCase.toFixed(4)
-                        ).toFixed(4),
-                      ),
-                    )
-                  : "NA",
             },
             {
               value: c.proteinLogRatioChange
@@ -691,19 +679,17 @@ export default function Results() {
                     : "NA",
                   proteinDiff:
                     c.proteinLogRatioCase && c.proteinLogRatioControl
-                      ? Math.abs(
-                          (
-                            c.proteinLogRatioControl.toFixed(4) -
-                            c.proteinLogRatioCase.toFixed(4)
-                          ).toFixed(4),
-                        )
+                      ? (
+                          c.proteinLogRatioControl.toFixed(4) -
+                          c.proteinLogRatioCase.toFixed(4)
+                        ).toFixed(4)
                       : "NA",
                 };
               })}
           />
           <ExcelFile element={<Button>Download Data</Button>}>
             <ExcelSheet
-              dataSet={exportSummarySettings()}
+              dataSet={exportAbundanceSettings}
               name="Input Configuration"
             />
             <ExcelSheet
