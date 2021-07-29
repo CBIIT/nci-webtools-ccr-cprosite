@@ -28,7 +28,7 @@ export default function ProteinCorrelation() {
   const [numType, setNumType] = useState("log2");
 
   function handleToggle(e) {
-    setNumType(e.target.control.id);
+    setNumType(e.target.id);
   }
 
   const correlationColumns = [
@@ -103,10 +103,10 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_correlation_control_num">
-              Protein Control Value
+              Protein Adjacent Normal Value
             </Tooltip>
           }>
-          <b>Protein Control Value</b>
+          <b>Protein Adjacent Normal Value</b>
         </OverlayTrigger>
       ),
     },
@@ -117,11 +117,11 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_correlation_control_log2">
-              Protein Control Log<sub>2</sub>
+              Protein Adjacent Normal Log<sub>2</sub>
             </Tooltip>
           }>
           <b>
-            Protein Control Log<sub>2</sub>
+            Protein Adjacent Normal Log<sub>2</sub>
           </b>
         </OverlayTrigger>
       ),
@@ -131,9 +131,11 @@ export default function ProteinCorrelation() {
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_rna_contro_num">RNA Control Value</Tooltip>
+            <Tooltip id="protein_rna_contro_num">
+              RNA Adjacent Normal Value
+            </Tooltip>
           }>
-          <b>RNA Control Value</b>
+          <b>RNA Adjacent Normal Value</b>
         </OverlayTrigger>
       ),
     },
@@ -143,11 +145,11 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_rna_contro_log2">
-              RNA Control (Log<sub>2</sub>)
+              RNA Adjacent Normal (Log<sub>2</sub>)
             </Tooltip>
           }>
           <b>
-            RNA Control Log<sub>2</sub>
+            RNA Adjacent Normal Log<sub>2</sub>
           </b>
         </OverlayTrigger>
       ),
@@ -244,7 +246,7 @@ export default function ProteinCorrelation() {
       ),
       mode: "markers",
       type: "scatter",
-      name: "Control",
+      name: "Adjacent Normal",
       hovertemplate: "(%{x},%{y})<extra></extra>",
     },
   ];
@@ -273,8 +275,7 @@ export default function ProteinCorrelation() {
               ))}
             </Form.Select>
           </div>
-          <div className="col-xl-2 col-form-label">Gene: {form.gene.label}</div>
-          <ToggleButtonGroup
+          {/*<ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={numType}
@@ -293,16 +294,41 @@ export default function ProteinCorrelation() {
               onClick={handleToggle}>
               Numeric vs Numeric
             </ToggleButton>
-          </ToggleButtonGroup>
+            </ToggleButtonGroup>*/}
+          <Form.Group className="col-xl-6 mb-3">
+            <Form.Check
+              inline
+              label={
+                <span>
+                  Log<sub>2</sub> vs Log<sub>2</sub>
+                </span>
+              }
+              type="radio"
+              id="log2"
+              value="numType"
+              checked={numType === "log2"}
+              onChange={handleToggle}
+            />
+
+            <Form.Check
+              inline
+              label="Numeric vs Numeric"
+              type="radio"
+              id="numeric"
+              value="numType"
+              checked={numType === "numeric"}
+              onChange={handleToggle}
+            />
+          </Form.Group>
         </Form.Group>
 
-        <Row className="m-3">
+        <Row className="mx-3 mt-3">
           <Col xl={12}>
             <Plot
               data={proteinRNAScatter}
               layout={{
                 ...defaultLayout,
-                title: "<b>Protein and mRNA Correlation</b>",
+                title: `<b>Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
                 autosize: true,
               }}
               config={defaultConfig}
@@ -313,7 +339,7 @@ export default function ProteinCorrelation() {
           </Col>
         </Row>
 
-        <fieldset className="m-3 border">
+        <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
           <Row>
             <div className="col-xl-4 my-2 d-flex justify-content-center">
               Tumor Correlation:{" "}
