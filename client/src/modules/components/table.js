@@ -85,8 +85,7 @@ export default function Table({ columns, data, options }) {
                     style={{
                       whiteSpace: column.id === "pValue" ? "nowrap" : "normal",
                     }}>
-                    {column.render("Header")}
-
+                    {column.render("Header")}{" "}
                     {column.isSorted ? (
                       column.isSortedDesc ? (
                         <i className="bi bi-sort-down text-primary ml-1" />
