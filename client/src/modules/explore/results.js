@@ -4,7 +4,6 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
@@ -18,7 +17,6 @@ import React, { useState } from "react";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
-const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 export default function Results() {
   const cases = useRecoilValue(casesState);
@@ -534,15 +532,17 @@ export default function Results() {
         </Row>
 
         <div className="m-3">
-          <Table columns={summaryColumns} data={averages} />
+          <div className="d-flex" style={{ justifyContent: "right" }}>
+            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet
+                dataSet={exportSummarySettings()}
+                name="Input Configuration"
+              />
+              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+            </ExcelFile>
+          </div>
 
-          <ExcelFile element={<Button>Download Data</Button>}>
-            <ExcelSheet
-              dataSet={exportSummarySettings()}
-              name="Input Configuration"
-            />
-            <ExcelSheet dataSet={exportSummary} name="Summary Data" />
-          </ExcelFile>
+          <Table columns={summaryColumns} data={averages} />
         </div>
       </Tab>
 
@@ -661,43 +661,45 @@ export default function Results() {
         </fieldset>
 
         <div className="m-3">
-          <Table
-            columns={proteinAbundanceColumns}
-            data={cases
-              .filter((c) => view === c.cancerId)
-              .map((c) => {
-                return {
-                  ...c,
-                  proteinLogRatioCase: c.proteinLogRatioCase
-                    ? c.proteinLogRatioCase.toFixed(4)
-                    : "NA",
-                  proteinLogRatioControl: c.proteinLogRatioControl
-                    ? c.proteinLogRatioControl.toFixed(4)
-                    : "NA",
-                  proteinLogRatioChange: c.proteinLogRatioChange
-                    ? c.proteinLogRatioChange.toFixed(4)
-                    : "NA",
-                  proteinDiff:
-                    c.proteinLogRatioCase && c.proteinLogRatioControl
-                      ? (
-                          c.proteinLogRatioControl.toFixed(4) -
-                          c.proteinLogRatioCase.toFixed(4)
-                        ).toFixed(4)
-                      : "NA",
-                };
-              })}
-          />
-          <ExcelFile element={<Button>Download Data</Button>}>
-            <ExcelSheet
-              dataSet={exportAbundanceSettings}
-              name="Input Configuration"
-            />
-            <ExcelSheet
-              dataSet={exportAbundance}
-              name="Protein Abundance Data"
-            />
-          </ExcelFile>
+          <div className="d-flex" style={{ justifyContent: "right" }}>
+            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet
+                dataSet={exportAbundanceSettings}
+                name="Input Configuration"
+              />
+              <ExcelSheet
+                dataSet={exportAbundance}
+                name="Protein Abundance Data"
+              />
+            </ExcelFile>
+          </div>
         </div>
+        <Table
+          columns={proteinAbundanceColumns}
+          data={cases
+            .filter((c) => view === c.cancerId)
+            .map((c) => {
+              return {
+                ...c,
+                proteinLogRatioCase: c.proteinLogRatioCase
+                  ? c.proteinLogRatioCase.toFixed(4)
+                  : "NA",
+                proteinLogRatioControl: c.proteinLogRatioControl
+                  ? c.proteinLogRatioControl.toFixed(4)
+                  : "NA",
+                proteinLogRatioChange: c.proteinLogRatioChange
+                  ? c.proteinLogRatioChange.toFixed(4)
+                  : "NA",
+                proteinDiff:
+                  c.proteinLogRatioCase && c.proteinLogRatioControl
+                    ? (
+                        c.proteinLogRatioControl.toFixed(4) -
+                        c.proteinLogRatioCase.toFixed(4)
+                      ).toFixed(4)
+                    : "NA",
+              };
+            })}
+        />
       </Tab>
     </Tabs>
   );
