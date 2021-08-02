@@ -12,9 +12,13 @@ import { proteinState, rnaState, formState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
+import ReactExport from "react-data-export";
 
 import { useState } from "react";
 import _ from "lodash";
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function ProteinCorrelation() {
   const form = useRecoilValue(formState);
@@ -34,6 +38,7 @@ export default function ProteinCorrelation() {
   const correlationColumns = [
     {
       accessor: "name",
+      label: "Patient ID",
       Header: (
         <OverlayTrigger
           overlay={
@@ -45,6 +50,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "proteinTumorNum",
+      label: "Protein Tumor Abundance",
       Header: (
         <OverlayTrigger
           overlay={
@@ -58,6 +64,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "proteinTumor",
+      label: "Protein Tumor Log2",
       Header: (
         <OverlayTrigger
           overlay={
@@ -73,6 +80,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "rnaTumorNum",
+      label: "RNA Tumor Abundance",
       Header: (
         <OverlayTrigger
           overlay={
@@ -84,6 +92,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "rnaTumor",
+      label: "RNA Tumor Log2",
       Header: (
         <OverlayTrigger
           overlay={
@@ -99,6 +108,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "proteinControlNum",
+      label: "Protein Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger
           overlay={
@@ -113,6 +123,7 @@ export default function ProteinCorrelation() {
 
     {
       accessor: "proteinControl",
+      label: "Protein Adjacent Normal Log2",
       Header: (
         <OverlayTrigger
           overlay={
@@ -128,6 +139,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "rnaControlNum",
+      label: "RNA Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger
           overlay={
@@ -141,6 +153,7 @@ export default function ProteinCorrelation() {
     },
     {
       accessor: "rnaControl",
+      label: "RNA Adjacent Normal Log2",
       Header: (
         <OverlayTrigger
           overlay={
@@ -223,6 +236,48 @@ export default function ProteinCorrelation() {
       "hoverClosestCartesian",
     ],
   };
+
+  function exportSummarySettings() {
+    var settings = form.cancer.map((e) => {
+      return [{ value: e.label }];
+    });
+    settings[0].push({ value: "Protein Abundance" });
+    settings[0].push({ value: "Correlation" });
+    settings[0].push({ value: form.gene.label });
+
+    return [
+      {
+        columns: [
+          { title: "Tumor", width: { wpx: 160 } },
+          { title: "Dataset", width: { wpx: 160 } },
+          { title: "Analysis", width: { wpx: 160 } },
+          { title: "Gene", width: { wpx: 160 } },
+        ],
+        data: settings,
+      },
+    ];
+  }
+
+  const exportSummary = [
+    {
+      columns: correlationColumns.map((e) => {
+        return { title: e.label, width: { wpx: 160 } };
+      }),
+      data: proteinRNA.map((e) => {
+        return [
+          { value: e.name },
+          { value: e.proteinTumorNum },
+          { value: e.proteinTumor },
+          { value: e.rnaTumorNum },
+          { value: e.rnaTumor },
+          { value: e.proteinControlNum },
+          { value: e.proteinControl },
+          { value: e.rnaControlNum },
+          { value: e.rnaControl },
+        ];
+      }),
+    },
+  ];
 
   const proteinRNAScatter = [
     {
@@ -402,6 +457,15 @@ export default function ProteinCorrelation() {
         </fieldset>
 
         <div className="m-3">
+          <div className="d-flex" style={{ justifyContent: "right" }}>
+            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet
+                dataSet={exportSummarySettings()}
+                name="Input Configuration"
+              />
+              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+            </ExcelFile>
+          </div>
           <Table
             columns={correlationColumns}
             data={proteinRNA.map((c) => {
