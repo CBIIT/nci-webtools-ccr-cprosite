@@ -157,7 +157,7 @@ export default function Results() {
     },
     {
       accessor: "controlNum",
-      label: "Adjaceent Normal Count",
+      label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger
           overlay={
@@ -187,7 +187,7 @@ export default function Results() {
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_tcontrol_se">
+            <Tooltip id="protein_control_se">
               Adjacent Normal Stanadard Error
             </Tooltip>
           }>
