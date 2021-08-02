@@ -4,6 +4,7 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
@@ -11,9 +12,13 @@ import Plot from "react-plotly.js";
 import { formState, siteState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import ReactExport from "react-data-export";
 
 import { useState } from "react";
 import _ from "lodash";
+
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function PhosResults() {
   const form = useRecoilValue(formState);
@@ -31,6 +36,7 @@ export default function PhosResults() {
   const phosSiteColumns = [
     {
       accessor: "name",
+      label: "Patient ID",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_patient">Patient ID</Tooltip>}>
@@ -40,6 +46,7 @@ export default function PhosResults() {
     },
     {
       accessor: "tumorValue",
+      label: "Tumor Abundance",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_tumor_val">Tumor Abundance</Tooltip>}>
@@ -49,6 +56,7 @@ export default function PhosResults() {
     },
     {
       accessor: "controlValue",
+      label: "Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger
           overlay={
@@ -60,6 +68,7 @@ export default function PhosResults() {
     },
     {
       accessor: "proteinDiff",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
@@ -78,6 +87,7 @@ export default function PhosResults() {
   const summary = [
     {
       accessor: "link",
+      label: "Phosphorylation Site",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
@@ -87,6 +97,7 @@ export default function PhosResults() {
     },
     {
       accessor: "accession",
+      label: "Accession",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_accession">Accession</Tooltip>}>
@@ -96,6 +107,7 @@ export default function PhosResults() {
     },
     {
       accessor: "peptide",
+      label: "Peptide",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_peptide">Peptide</Tooltip>}>
           <b>Peptide</b>
@@ -104,6 +116,7 @@ export default function PhosResults() {
     },
     {
       accessor: "tumorAverage",
+      label: "Average Tumor",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_av_tumor">Average Tumor</Tooltip>}>
@@ -113,6 +126,7 @@ export default function PhosResults() {
     },
     {
       accessor: "controlAverage",
+      label: "Average Adjacent Normal",
       Header: (
         <OverlayTrigger
           overlay={
@@ -124,6 +138,7 @@ export default function PhosResults() {
     },
     {
       accessor: "proteinDiff",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
@@ -140,6 +155,7 @@ export default function PhosResults() {
     },
     {
       accessor: "tumorNum",
+      label: "Tumor Count",
       Header: (
         <OverlayTrigger
           overlay={
@@ -151,6 +167,7 @@ export default function PhosResults() {
     },
     {
       accessor: "controlNum",
+      label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger
           overlay={
@@ -164,6 +181,7 @@ export default function PhosResults() {
     },
     {
       accessor: "pValue",
+      label: "P Value",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_pValue">Mann-Whitney U Test</Tooltip>}>
@@ -173,6 +191,7 @@ export default function PhosResults() {
     },
     {
       accessor: "tumorError",
+      label: "Tumor SE",
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_tumor_se">Tumor Standard Error</Tooltip>}>
@@ -182,6 +201,7 @@ export default function PhosResults() {
     },
     {
       accessor: "controlError",
+      label: "Adjacent Normal Standard Error",
       Header: (
         <OverlayTrigger
           overlay={
@@ -353,6 +373,94 @@ export default function PhosResults() {
     ],
   };
 
+  function exportSummarySettings() {
+    var settings = form.cancer.map((e) => {
+      return [{ value: e.label }];
+    });
+    settings[0].push({ value: "Phosphorylation Site" });
+    settings[0].push({ value: "Tumor vs Control" });
+    settings[0].push({ value: form.gene.label });
+
+    return [
+      {
+        columns: [
+          { title: "Tumor", width: { wpx: 160 } },
+          { title: "Dataset", width: { wpx: 160 } },
+          { title: "Analysis", width: { wpx: 160 } },
+          { title: "Gene", width: { wpx: 160 } },
+        ],
+        data: settings,
+      },
+    ];
+  }
+
+  const exportSummary = [
+    {
+      columns: summary.map((e) => {
+        return { title: e.label, width: { wpx: 200 } };
+      }),
+      data: phosphorylationData.map((e) => {
+        return [
+          { value: e.name },
+          { value: e.accession },
+          { value: e.peptide },
+          { value: e.tumorAverage },
+          { value: e.controlAverage },
+          { value: e.proteinDiff },
+          { value: e.tumorNum },
+          { value: e.controlNum },
+          { value: e.pValue },
+          { value: e.tumorError },
+          { value: e.controlError },
+        ];
+      }),
+    },
+  ];
+
+  const exportSiteSettings = [
+    {
+      columns: [
+        { title: "Tumor", width: { wpx: 160 } },
+        { title: "Dataset", width: { wpx: 160 } },
+        { title: "Analysis", width: { wpx: 160 } },
+        { title: "Gene", width: { wpx: 160 } },
+      ],
+      data: [
+        [
+          { value: site.phosphorylationSite },
+          { value: "Phosphorylation Site" },
+          { value: "Tumor vs Control" },
+          { value: form.gene.label },
+        ],
+      ],
+    },
+  ];
+
+  const exportSite = [
+    {
+      columns: phosSiteColumns.map((e) => {
+        return { title: e.label, width: { wpx: 160 } };
+      }),
+      data: sites
+        .filter((c) => c[0] === phosView)[0][1]
+        .map((d) => {
+          return [
+            { value: d.name },
+            { value: d.tumorValue ? d.tumorValue.toFixed(4) : "NA" },
+            { value: d.normalValue ? d.normalValue.toFixed(4) : "NA" },
+            {
+              value:
+                d.tumorValue && d.normalValue
+                  ? (
+                      d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
+                    ).toFixed(4)
+                  : "NA",
+            },
+          ];
+        }),
+    },
+  ];
+
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Tumor View">
@@ -406,6 +514,15 @@ export default function PhosResults() {
         </Row>
 
         <div className="m-3">
+          <div className="d-flex" style={{ justifyContent: "right" }}>
+            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet
+                dataSet={exportSummarySettings()}
+                name="Input Configuration"
+              />
+              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+            </ExcelFile>
+          </div>
           <Table columns={summary} data={phosphorylationData} />
         </div>
       </Tab>
@@ -492,6 +609,15 @@ export default function PhosResults() {
         </fieldset>
 
         <Row className="m-3">
+          <div className="d-flex" style={{ justifyContent: "right" }}>
+            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet
+                dataSet={exportSiteSettings}
+                name="Input Configuration"
+              />
+              <ExcelSheet dataSet={exportSite} name="Phosphorylation Site" />
+            </ExcelFile>
+          </div>
           <Table
             columns={phosSiteColumns}
             data={sites
@@ -503,11 +629,9 @@ export default function PhosResults() {
                   controlValue: d.normalValue ? d.normalValue.toFixed(4) : "NA",
                   proteinDiff:
                     d.tumorValue && d.normalValue
-                      ? Math.abs(
-                          (
-                            d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
-                          ).toFixed(4),
-                        )
+                      ? (
+                          d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
+                        ).toFixed(4)
                       : "NA",
                 };
               })}
