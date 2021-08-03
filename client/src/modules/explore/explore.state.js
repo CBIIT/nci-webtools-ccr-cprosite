@@ -33,14 +33,14 @@ export const geneState = selector({
   get: ({ get }) => query("api/query", { table: "gene", limit: 10 }),
 });
 
-export const proteinDataState = selectorFamily({
+export const dataState = selectorFamily({
   key: "explore.proteinData",
   get:
-    ({ cancer, gene }) =>
+    ({ table, cancer, gene }) =>
     async (_) =>
-      cancer && gene
+      table && cancer && gene
         ? query("/api/query", {
-            "table": "proteinData",
+            "table": table,
             "_cancerId:in": cancer,
             "_geneId": gene,
           })

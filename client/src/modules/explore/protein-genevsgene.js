@@ -8,12 +8,7 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import {
-  proteinState,
-  rnaState,
-  formState,
-  proteinDataState,
-} from "./explore.state";
+import { proteinState, rnaState, formState, dataState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
@@ -31,10 +26,14 @@ export default function ProteinGeneCorrelation() {
   const firstGene = form.gene.label;
   const secondGene = form.correlatedGene.label;
   const firstGeneSet = useRecoilValue(
-    proteinDataState({ cancer: tumors, gene: form.gene.value }),
+    dataState({ table: "proteinData", cancer: tumors, gene: form.gene.value }),
   ).records;
   const secondGeneSet = useRecoilValue(
-    proteinDataState({ cancer: tumors, gene: form.correlatedGene.value }),
+    dataState({
+      table: "proteinData",
+      cancer: tumors,
+      gene: form.correlatedGene.value,
+    }),
   ).records;
 
   const [view, setView] = useState(form.cancer[0].value);
