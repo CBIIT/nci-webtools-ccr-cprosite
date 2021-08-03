@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom, selector, selectorFamily } from "recoil";
 import { query } from "../../services/query";
 
 export const fieldsState = selector({
@@ -24,6 +24,27 @@ export const proteinState = selector({
 export const rnaState = selector({
   key: "explore.rnaState",
   get: ({ get }) => query("data/rnaData.json"),
+});
+
+//Remove limits in final release
+
+export const geneState = selector({
+  key: "explore.geneState",
+  get: ({ get }) => query("api/query", { table: "gene", limit: 10 }),
+});
+
+export const proteinDataState = selectorFamily({
+  key: "explore.proteinData",
+  get:
+    ({ cancer, gene }) =>
+    async (_) =>
+      cancer && gene
+        ? query("/api/query", {
+            "table": "proteinData",
+            "_cancerId:in": cancer,
+            "_geneId": gene,
+          })
+        : [],
 });
 
 export const defaultFormState = {
