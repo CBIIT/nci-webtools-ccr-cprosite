@@ -8,7 +8,12 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { proteinState, rnaState, formState } from "./explore.state";
+import {
+  proteinState,
+  rnaState,
+  formState,
+  proteinDataState,
+} from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
@@ -97,7 +102,7 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_rna_tumor_log2">
-              RNA Tumor (Log<sub>2</sub>)
+              RNA Tumor Log<sub>2</sub>
             </Tooltip>
           }>
           <b>
@@ -158,7 +163,7 @@ export default function ProteinCorrelation() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_rna_contro_log2">
-              RNA Adjacent Normal (Log<sub>2</sub>)
+              RNA Adjacent Normal Log<sub>2</sub>
             </Tooltip>
           }>
           <b>
@@ -443,7 +448,9 @@ export default function ProteinCorrelation() {
                   ),
                 proteinRNA
                   .map((e) =>
-                    numType === "log2" ? e.rnaControl : e.rnaControl,
+                    numType === "log2"
+                      ? e.rnaControl
+                      : Math.pow(2, e.rnaControl),
                   )
                   .concat(
                     proteinRNA.map((e) =>
