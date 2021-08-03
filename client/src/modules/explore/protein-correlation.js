@@ -13,6 +13,7 @@ import {
   rnaState,
   formState,
   proteinDataState,
+  dataState,
 } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -27,10 +28,13 @@ const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function ProteinCorrelation() {
   const form = useRecoilValue(formState);
-  const proteinData = useRecoilValue(proteinState);
-  const rnaData = useRecoilValue(rnaState);
-  const compareGene = form.correlatedGene;
-  const type = form.correlation;
+  const tumors = form.cancer.map((e) => e.value);
+  const proteinData = useRecoilValue(
+    dataState({ table: "proteinData", cancer: tumors, gene: form.gene.value }),
+  ).records;
+  const rnaData = useRecoilValue(
+    dataState({ table: "rnaData", cancer: tumors, gene: form.gene.value }),
+  ).records;
 
   const [view, setView] = useState(form.cancer[0].value);
   const [tab, setTab] = useState("summary");
@@ -54,20 +58,6 @@ export default function ProteinCorrelation() {
       ),
     },
     {
-      accessor: "proteinTumorNum",
-      label: "Protein Tumor Abundance",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_correlation_tumor_num">
-              Protein Tumor Abundance
-            </Tooltip>
-          }>
-          <b>Protein Tumor Abundance</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
       accessor: "proteinTumor",
       label: "Protein Tumor Log2",
       Header: (
@@ -80,6 +70,20 @@ export default function ProteinCorrelation() {
           <b>
             Protein Tumor Log<sub>2</sub>
           </b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinTumorNum",
+      label: "Protein Tumor Abundance",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_tumor_num">
+              Protein Tumor Abundance
+            </Tooltip>
+          }>
+          <b>Protein Tumor Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -111,20 +115,6 @@ export default function ProteinCorrelation() {
         </OverlayTrigger>
       ),
     },
-    {
-      accessor: "proteinControlNum",
-      label: "Protein Adjacent Normal Abundance",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_correlation_control_num">
-              Protein Adjacent Normal Abundance
-            </Tooltip>
-          }>
-          <b>Protein Adjacent Normal Abundance</b>
-        </OverlayTrigger>
-      ),
-    },
 
     {
       accessor: "proteinControl",
@@ -142,6 +132,21 @@ export default function ProteinCorrelation() {
         </OverlayTrigger>
       ),
     },
+    {
+      accessor: "proteinControlNum",
+      label: "Protein Adjacent Normal Abundance",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_correlation_control_num">
+              Protein Adjacent Normal Abundance
+            </Tooltip>
+          }>
+          <b>Protein Adjacent Normal Abundance</b>
+        </OverlayTrigger>
+      ),
+    },
+
     {
       accessor: "rnaControlNum",
       label: "RNA Adjacent Normal Abundance",
@@ -177,30 +182,51 @@ export default function ProteinCorrelation() {
   //Organize datasets (unfiltered)
   const getData = proteinData.map((e) => {
     const rna = rnaData.find((d) => {
-      return e.name === d.name;
+      return e.participantId === d.participantId;
     });
 
-    return {
-      name: e.name,
-      proteinTumor: e.tumorValue,
-      proteinTumorNum: Number(Math.pow(2, e.tumorValue).toFixed(4)),
-      proteinControl: e.normalValue,
-      proteinControlNum: Number(Math.pow(2, e.normalValue).toFixed(4)),
-      //Converting rna value to log values, may not need to do this depending on values from actual dataset
-      rnaTumor: Number(Math.log2(rna.tumorValue).toFixed(4)),
-      rnaTumorNum: rna.tumorValue,
-      rnaControl: Number(Math.log2(rna.normalValue).toFixed(4)),
-      rnaControlNum: rna.normalValue,
-    };
+    if (rna) {
+      return {
+        name: e.participantId,
+        proteinTumor: e.tumorValue,
+        proteinTumorNum:
+          e.tumorValue !== null
+            ? Number(Math.pow(2, e.tumorValue).toFixed(4))
+            : null,
+        proteinControl: e.normalValue,
+        proteinControlNum:
+          e.normalValue !== null
+            ? Number(Math.pow(2, e.normalValue).toFixed(4))
+            : null,
+        //Converting rna value to log values
+        rnaTumor: rna.tumorValue
+          ? Number(Math.log2(rna.tumorValue).toFixed(4))
+          : null,
+        rnaTumorNum: rna.tumorValue,
+        rnaControl: rna.normalValue
+          ? Number(Math.log2(rna.normalValue).toFixed(4))
+          : null,
+        rnaControlNum: rna.normalValue,
+      };
+    } else {
+      return {
+        name: null,
+        proteinTumor: null,
+        proteinTumorNum: null,
+        proteinControl: null,
+        proteinControlNum: null,
+        //Converting rna value to log values
+        rnaTumor: null,
+        rnaTumorNum: null,
+        rnaControl: null,
+        rnaControlNum: null,
+      };
+    }
   });
 
   //Filter points with missing data points that would cause issues with correlation calculation
   const proteinRNA = getData.filter(
-    (e) =>
-      typeof e.proteinTumor === "number" &&
-      typeof e.rnaTumor === "number" &&
-      typeof e.proteinControl === "number" &&
-      typeof e.rnaControl === "number",
+    (e) => e.proteinTumor && e.rnaTumor && e.proteinControl && e.rnaControl,
   );
 
   const defaultLayout = {
