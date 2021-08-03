@@ -10,6 +10,7 @@ import { formState } from "./explore.state";
 import Results from "./results";
 import PhosResults from "./phosphorylation-results";
 import ProteinCorrelation from "./protein-correlation";
+import ProteinGeneCorrelation from "./protein-genevsgene";
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
@@ -31,8 +32,10 @@ export default function Explore() {
       case "protein-abundance":
         return form.analysis === "tumor-control" ? (
           <Results />
-        ) : (
+        ) : form.correlation === "proteinMRNA" ? (
           <ProteinCorrelation />
+        ) : (
+          <ProteinGeneCorrelation />
         );
       default:
         return "";
