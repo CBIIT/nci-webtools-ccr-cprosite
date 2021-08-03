@@ -4,13 +4,17 @@ import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import classNames from "classnames";
 import { useRecoilValue } from "recoil";
-import { fieldsState, defaultFormState } from "./explore.state";
+import { fieldsState, defaultFormState, geneState } from "./explore.state";
 import { useState } from "react";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const fields = useRecoilValue(fieldsState);
   const [form, setForm] = useState(defaultFormState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
+
+  const genes = useRecoilValue(geneState).records.map((e) => {
+    return { value: e.id, label: e.name };
+  });
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -38,7 +42,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   // avoid loading all genes as Select options
   function filterGenes(value, limit = 100) {
-    return fields.gene
+    return genes
       .filter((gene) => !value || gene.label.startsWith(value.toUpperCase()))
       .slice(0, limit);
   }
