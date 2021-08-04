@@ -518,7 +518,7 @@ export default function PhosResults() {
         </Row>
 
         <div className="m-3">
-          <div className="d-flex" style={{ justifyContent: "right" }}>
+          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
@@ -559,7 +559,7 @@ export default function PhosResults() {
             type="radio"
             name="plot-tab"
             value={plotTab}
-            className="col-xl-5">
+            className="col-xl-6">
             <ToggleButton
               className={
                 plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
@@ -618,7 +618,7 @@ export default function PhosResults() {
         </fieldset>
 
         <Row className="m-3">
-          <div className="d-flex" style={{ justifyContent: "right" }}>
+          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSiteSettings}

@@ -100,7 +100,7 @@ export default function Results() {
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="protein_av_tumor">Average Tumor</Tooltip>}>
-          <b>Average Tumor</b>
+          <b>Avg. Tumor</b>
         </OverlayTrigger>
       ),
     },
@@ -112,7 +112,7 @@ export default function Results() {
           overlay={
             <Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>
           }>
-          <b>Average Adjacent Normal</b>
+          <b>Avg. Adj. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -127,7 +127,7 @@ export default function Results() {
               between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Tumor vs Adjacent Normal</b>
+          <b>Tumor vs Adj. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -163,7 +163,7 @@ export default function Results() {
               Adjacent Normal Sample Number
             </Tooltip>
           }>
-          <b>Adjacent Normal Count</b>
+          <b>Adj. Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -189,7 +189,7 @@ export default function Results() {
               Adjacent Normal Stanadard Error
             </Tooltip>
           }>
-          <b>Adjacent Normal SE</b>
+          <b>Adj. Normal SE</b>
         </OverlayTrigger>
       ),
     },
@@ -538,7 +538,7 @@ export default function Results() {
         </Row>
 
         <div className="m-3">
-          <div className="d-flex" style={{ justifyContent: "right" }}>
+          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
@@ -585,7 +585,7 @@ export default function Results() {
             type="radio"
             name="plot-tab"
             value={plotTab}
-            className="col-xl-5">
+            className="col-xl-6">
             <ToggleButton
               className={
                 plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
@@ -663,7 +663,7 @@ export default function Results() {
           )}
         </Row>
 
-        <fieldset className="mx-5 border">
+        <fieldset className="mx-5 mb-5 border">
           <div
             className="col-xl-12 d-flex justify-content-center"
             style={{ color: "grey" }}>
@@ -672,7 +672,7 @@ export default function Results() {
         </fieldset>
 
         <div className="m-3">
-          <div className="d-flex" style={{ justifyContent: "right" }}>
+          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportAbundanceSettings}

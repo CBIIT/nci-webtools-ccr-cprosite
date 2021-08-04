@@ -487,7 +487,7 @@ export default function ProteinGeneCorrelation() {
             </fieldset>
 
             <div className="m-3">
-              <div className="d-flex" style={{ justifyContent: "right" }}>
+              <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet
