@@ -401,6 +401,11 @@ export default function ProteinGeneCorrelation() {
                 ...defaultLayout,
                 title: `<b>${firstGene} and ${secondGene} Correlation</b>`,
                 autosize: true,
+                legend: {
+                  orientation: "h",
+                  y: -0.1,
+                  x: 0.37,
+                },
               }}
               config={defaultConfig}
               useResizeHandler

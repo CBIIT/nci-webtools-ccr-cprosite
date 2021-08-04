@@ -416,6 +416,11 @@ export default function ProteinCorrelation() {
                 ...defaultLayout,
                 title: `<b>Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
                 autosize: true,
+                legend: {
+                  orientation: "h",
+                  y: -0.1,
+                  x: 0.37,
+                },
               }}
               config={defaultConfig}
               useResizeHandler

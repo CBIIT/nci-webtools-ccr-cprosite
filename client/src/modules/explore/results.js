@@ -490,6 +490,7 @@ export default function Results() {
       font: { color: "#000" },
       bordercolor: "#D3D3D3",
     },
+    legend: {},
   };
 
   const defaultConfig = {
@@ -522,6 +523,11 @@ export default function Results() {
                 title: `<b>Average Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 barmode: "group",
                 autosize: true,
+                legend: {
+                  orientation: "h",
+                  y: -0.25,
+                  x: 0.37,
+                },
               }}
               config={defaultConfig}
               useResizeHandler
@@ -613,6 +619,11 @@ export default function Results() {
                   boxgroupgap: 0.4,
                   boxgap: 0.4,
                   autosize: true,
+                  legend: {
+                    orientation: "h",
+                    y: -0.1,
+                    x: 0.37,
+                  },
                 }}
                 config={defaultConfig}
                 useResizeHandler

@@ -503,6 +503,11 @@ export default function PhosResults() {
                 },
                 barmode: "group",
                 autosize: true,
+                legend: {
+                  orientation: "h",
+                  y: -0.25,
+                  x: 0.37,
+                },
               }}
               config={defaultConfig}
               useResizeHandler
@@ -585,6 +590,11 @@ export default function PhosResults() {
                 autosize: true,
                 boxgroupgap: 0.4,
                 boxgap: 0.4,
+                legend: {
+                  orientation: "h",
+                  y: -0.1,
+                  x: 0.37,
+                },
               }}
               config={defaultConfig}
               useResizeHandler
