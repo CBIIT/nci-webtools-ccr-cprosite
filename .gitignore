@@ -4,3 +4,4 @@ database/data
 *.db
 *.sqlite
 config.json
+server/logs
