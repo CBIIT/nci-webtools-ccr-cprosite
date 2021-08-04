@@ -183,29 +183,42 @@ export default function ProteinGeneCorrelation() {
       return first.participantId === d.participantId;
     });
 
-    return {
-      name: first.participantId,
-      firstTumor: first.tumorValue,
-      firstTumorNum:
-        first.tumorValue !== null
-          ? Number(Math.pow(2, first.tumorValue).toFixed(4))
-          : null,
-      firstControl: first.normalValue,
-      firstControlNum:
-        first.normalValue !== null
-          ? Number(Math.pow(2, first.normalValue).toFixed(4))
-          : null,
-      secondTumor: second.tumorValue,
-      secondTumorNum:
-        second.tumorValue !== null
-          ? Number(Math.pow(2, second.tumorValue).toFixed(4))
-          : null,
-      secondControl: second.normalValue,
-      secondControlNum:
-        second.normalValue !== null
-          ? Number(Math.pow(2, second.normalValue).toFixed(4))
-          : null,
-    };
+    if (second) {
+      return {
+        name: first.participantId,
+        firstTumor: first.tumorValue,
+        firstTumorNum:
+          first.tumorValue !== null
+            ? Number(Math.pow(2, first.tumorValue).toFixed(4))
+            : null,
+        firstControl: first.normalValue,
+        firstControlNum:
+          first.normalValue !== null
+            ? Number(Math.pow(2, first.normalValue).toFixed(4))
+            : null,
+        secondTumor: second.tumorValue,
+        secondTumorNum:
+          second.tumorValue !== null
+            ? Number(Math.pow(2, second.tumorValue).toFixed(4))
+            : null,
+        secondControl: second.normalValue,
+        secondControlNum:
+          second.normalValue !== null
+            ? Number(Math.pow(2, second.normalValue).toFixed(4))
+            : null,
+      };
+    } else {
+      return {
+        name: null,
+        firstTumor: null,
+        firstTumorNum: null,
+        firstControl: null,
+        firstControlNum: null,
+        secondTumor: null,
+        secondControl: null,
+        secondControlNum: null,
+      };
+    }
   });
 
   //Filter points with missing data points that would cause issues with correlation calculation
@@ -324,30 +337,32 @@ export default function ProteinGeneCorrelation() {
   ];
 
   return (
-    <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summary" title="Correlation">
-        <Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label
-            className="col-xl-1 col-xs-12 col-form-label"
-            style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-          <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(e) => {
-                setView(parseInt(e.target.value));
-              }}
-              value={view}
-              required>
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
-                </option>
-              ))}
-            </Form.Select>
-          </div>
-          {/*<ToggleButtonGroup
+    <div>
+      {firstGeneSet.length > 0 && secondGeneSet.length > 0 ? (
+        <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
+          <Tab eventKey="summary" title="Correlation">
+            <Form.Group className="row mx-3" controlId="tumorView">
+              <Form.Label
+                className="col-xl-1 col-xs-12 col-form-label"
+                style={{ minWidth: "120px" }}>
+                Tumor Type
+              </Form.Label>
+              <div className="col-xl-3">
+                <Form.Select
+                  name="caseView"
+                  onChange={(e) => {
+                    setView(parseInt(e.target.value));
+                  }}
+                  value={view}
+                  required>
+                  {form.cancer.map((o) => (
+                    <option value={o.value} key={`dataset-${o.value}`}>
+                      {o.label}
+                    </option>
+                  ))}
+                </Form.Select>
+              </div>
+              {/*<ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={numType}
@@ -367,136 +382,143 @@ export default function ProteinGeneCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-          <Form.Group className="col-xl-6 mb-3 col-form-label">
-            <Form.Check
-              inline
-              label={
-                <span>
-                  Log<sub>2</sub> vs Log<sub>2</sub>
-                </span>
-              }
-              type="radio"
-              id="log2"
-              value="numType"
-              checked={numType === "log2"}
-              onChange={handleToggle}
-            />
+              <Form.Group className="col-xl-6 mb-3 col-form-label">
+                <Form.Check
+                  inline
+                  label={
+                    <span>
+                      Log<sub>2</sub> vs Log<sub>2</sub>
+                    </span>
+                  }
+                  type="radio"
+                  id="log2"
+                  value="numType"
+                  checked={numType === "log2"}
+                  onChange={handleToggle}
+                />
 
-            <Form.Check
-              inline
-              label="Numeric vs Numeric"
-              type="radio"
-              id="numeric"
-              value="numType"
-              checked={numType === "numeric"}
-              onChange={handleToggle}
-            />
-          </Form.Group>
-        </Form.Group>
-        <Row className="mx-3 mt-3">
-          <Col xl={12}>
-            <Plot
-              data={geneScatter}
-              layout={{
-                ...defaultLayout,
-                title: `<b>${firstGene} and ${secondGene} Correlation</b>`,
-                autosize: true,
-                legend: {
-                  orientation: "h",
-                  y: -0.2,
-                  x: 0.37,
-                },
-              }}
-              config={defaultConfig}
-              useResizeHandler
-              className="flex-fill w-100"
-              style={{ height: "500px" }}
-            />
-          </Col>
-        </Row>
+                <Form.Check
+                  inline
+                  label="Numeric vs Numeric"
+                  type="radio"
+                  id="numeric"
+                  value="numType"
+                  checked={numType === "numeric"}
+                  onChange={handleToggle}
+                />
+              </Form.Group>
+            </Form.Group>
+            <Row className="mx-3 mt-3">
+              <Col xl={12}>
+                <Plot
+                  data={geneScatter}
+                  layout={{
+                    ...defaultLayout,
+                    title: `<b>${firstGene} and ${secondGene} Correlation</b>`,
+                    autosize: true,
+                    legend: {
+                      orientation: "h",
+                      y: -0.2,
+                      x: 0.37,
+                    },
+                  }}
+                  config={defaultConfig}
+                  useResizeHandler
+                  className="flex-fill w-100"
+                  style={{ height: "500px" }}
+                />
+              </Col>
+            </Row>
 
-        <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
-          <Row>
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Tumor Correlation:{" "}
-              {calculateCorrelation(
-                proteinGene.map((e) =>
-                  numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                ),
-                proteinGene.map((e) =>
-                  numType === "log2" ? e.secondTumor : e.secondTumorNum,
-                ),
-                { decimals: 4 },
-              )}
-            </div>
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Control Correlation:{" "}
-              {calculateCorrelation(
-                proteinGene.map((e) =>
-                  numType === "log2" ? e.firstControl : e.firstControlNum,
-                ),
-                proteinGene.map((e) =>
-                  numType === "log2" ? e.secondControl : e.secondControlNum,
-                ),
-                { decimals: 4 },
-              )}
-            </div>
-
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Total Correlation:{" "}
-              {calculateCorrelation(
-                proteinGene
-                  .map((e) =>
-                    numType === "log2" ? e.firstControl : e.firstControlNum,
-                  )
-                  .concat(
+            <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
+              <Row>
+                <div className="col-xl-4 my-2 d-flex justify-content-center">
+                  Tumor Correlation:{" "}
+                  {calculateCorrelation(
                     proteinGene.map((e) =>
                       numType === "log2" ? e.firstTumor : e.firstTumorNum,
                     ),
-                  ),
-                proteinGene
-                  .map((e) =>
-                    numType === "log2" ? e.secondControl : e.secondControlNum,
-                  )
-                  .concat(
                     proteinGene.map((e) =>
                       numType === "log2" ? e.secondTumor : e.secondTumorNum,
                     ),
-                  ),
-                { decimals: 4 },
-              )}
-            </div>
-          </Row>
-        </fieldset>
+                    { decimals: 4 },
+                  )}
+                </div>
+                <div className="col-xl-4 my-2 d-flex justify-content-center">
+                  Control Correlation:{" "}
+                  {calculateCorrelation(
+                    proteinGene.map((e) =>
+                      numType === "log2" ? e.firstControl : e.firstControlNum,
+                    ),
+                    proteinGene.map((e) =>
+                      numType === "log2" ? e.secondControl : e.secondControlNum,
+                    ),
+                    { decimals: 4 },
+                  )}
+                </div>
 
-        <div className="m-3">
-          <div className="d-flex" style={{ justifyContent: "right" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet
-                dataSet={exportSummarySettings()}
-                name="Input Configuration"
+                <div className="col-xl-4 my-2 d-flex justify-content-center">
+                  Total Correlation:{" "}
+                  {calculateCorrelation(
+                    proteinGene
+                      .map((e) =>
+                        numType === "log2" ? e.firstControl : e.firstControlNum,
+                      )
+                      .concat(
+                        proteinGene.map((e) =>
+                          numType === "log2" ? e.firstTumor : e.firstTumorNum,
+                        ),
+                      ),
+                    proteinGene
+                      .map((e) =>
+                        numType === "log2"
+                          ? e.secondControl
+                          : e.secondControlNum,
+                      )
+                      .concat(
+                        proteinGene.map((e) =>
+                          numType === "log2" ? e.secondTumor : e.secondTumorNum,
+                        ),
+                      ),
+                    { decimals: 4 },
+                  )}
+                </div>
+              </Row>
+            </fieldset>
+
+            <div className="m-3">
+              <div className="d-flex" style={{ justifyContent: "right" }}>
+                <ExcelFile
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportSummarySettings()}
+                    name="Input Configuration"
+                  />
+                  <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+                </ExcelFile>
+              </div>
+              <Table
+                columns={correlationColumns}
+                data={proteinGene.map((c) => {
+                  return {
+                    name: c.name,
+                    firstTumor: c.firstTumor,
+                    firstTumorNum: c.firstTumorNum,
+                    secondTumor: c.secondTumor,
+                    secondTumorNum: c.secondTumorNum,
+                    firstControl: c.firstControl,
+                    firstControlNum: c.firstControlNum,
+                    secondControl: c.secondControl,
+                    secondControlNum: c.secondControlNum,
+                  };
+                })}
               />
-              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
-            </ExcelFile>
-          </div>
-          <Table
-            columns={correlationColumns}
-            data={proteinGene.map((c) => {
-              return {
-                name: c.name,
-                firstTumor: c.firstTumor,
-                firstTumorNum: c.firstTumorNum,
-                secondTumor: c.secondTumor,
-                secondTumorNum: c.secondTumorNum,
-                firstControl: c.firstControl,
-                firstControlNum: c.firstControlNum,
-                secondControl: c.secondControl,
-                secondControlNum: c.secondControlNum,
-              };
-            })}
-          />
-        </div>
-      </Tab>
-    </Tabs>
+            </div>
+          </Tab>
+        </Tabs>
+      ) : (
+        <span>No data found for one or both genes</span>
+      )}
+    </div>
   );
 }
