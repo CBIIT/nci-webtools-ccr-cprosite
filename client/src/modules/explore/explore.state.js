@@ -39,7 +39,7 @@ export const dataState = selectorFamily({
     ({ table, cancer, gene }) =>
     async (_) =>
       table && cancer && gene
-        ? query("/api/query", {
+        ? query("api/query", {
             "table": table,
             "_cancerId:in": cancer,
             "_geneId": gene,
