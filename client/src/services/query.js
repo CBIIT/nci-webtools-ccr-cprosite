@@ -25,7 +25,7 @@ export async function query(url, params, options) {
     fetchOptions.body = JSON.stringify(params);
   }
 
-  console.log(url);
   const response = await fetch(url, fetchOptions);
+  console.log(response);
   return await response.json();
 }
