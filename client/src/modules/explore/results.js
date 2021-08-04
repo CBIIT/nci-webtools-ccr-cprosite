@@ -612,7 +612,9 @@ export default function Results() {
                 data={boxPlotData}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>Tumor vs Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                  title: `<b>Tumor vs Adjacent Normal</b> (Gene: ${
+                    form.gene.label
+                  }/P-Value: ${averages.find((e) => e.id === view).pValue})`,
                   yaxis: {
                     title: "Log Protien Abundance",
                     zeroline: false,
@@ -640,7 +642,9 @@ export default function Results() {
                 config={defaultConfig}
                 layout={{
                   autosize: true,
-                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${form.gene.label})`,
+                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
+                    form.gene.label
+                  }/P-Value: ${averages.find((e) => e.id === view).pValue})`,
                   xaxis: {
                     title: "Log<sub>2</sub> Fold Change",
                     zeroline: false,
@@ -663,14 +667,6 @@ export default function Results() {
             </Col>
           )}
         </Row>
-
-        <fieldset className="mx-5 mb-5 border">
-          <div
-            className="col-xl-12 d-flex justify-content-center"
-            style={{ color: "grey" }}>
-            P Value: {averages.find((e) => e.id === view).pValue}
-          </div>
-        </fieldset>
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
