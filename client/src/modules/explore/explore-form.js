@@ -63,45 +63,46 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
       <Form.Group className="mb-3" controlId="dataset">
         <Form.Label className="required">Dataset</Form.Label>
-        <Form.Select
+        <Select
           name="dataset"
+          placeholder="No dataset selected"
           value={form.dataset}
-          onChange={handleChange}
-          required>
-          <option value="" hidden>
-            No dataset selected
-          </option>
-          <option value="protein-abundance">Protein Abundance</option>
-          <option value="phosphorylation-site">Phosphorylation Site</option>
-          <option value="phosphorylation-protein">
-            Phosphorylation/Protein
-          </option>
-          <option value="rna-level">RNA Level</option>
-        </Form.Select>
+          onChange={(e) => handleSelectChange("dataset", e)}
+          options={[
+            { value: "protein-abundance", label: "Protein Abundance" },
+            { value: "phosphorylation-site", label: "Phosphorylation Site" },
+            {
+              value: "phosphorylation-protein",
+              label: "Phosphorylation/Protein",
+            },
+            { value: "rna-level", label: "RNA Level" },
+          ]}
+          required
+        />
       </Form.Group>
 
       <Form.Group className="mb-3" controlId="analysis">
         <Form.Label className="required">Analysis</Form.Label>
-        <Form.Select
+        <Select
+          placeholder="No analysis selected"
           name="analysis"
           value={form.analysis}
+          options={[
+            { value: "tumor-control", label: "Tumor vs Adjacent Normal" },
+            { value: "correlation", label: "Correlation" },
+          ]}
           onChange={(e) => {
-            if (e.target.value === "tumor-control")
+            if (e.value === "tumor-control")
               mergeForm({
                 ["correlatedGene"]: "",
-                ["analysis"]: "tumor-control",
+                ["analysis"]: e,
               });
-            else handleChange(e);
+            else handleSelectChange("analysis", e);
           }}
-          required>
-          <option value="" hidden>
-            No analysis selected
-          </option>
-          <option value="tumor-control">Tumor vs Control</option>
-          <option value="correlation">Correlation</option>
-        </Form.Select>
+          required
+        />
       </Form.Group>
-
+      {console.log(form)}
       <Form.Group className="mb-3" controlId="gene">
         <Form.Label className="required">Gene</Form.Label>
         <AsyncSelect
@@ -117,9 +118,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
         />
       </Form.Group>
 
-      {form.analysis === "correlation" && (
+      {form.analysis.value === "correlation" && (
         <fieldset
-          disabled={form.analysis !== "correlation"}
+          disabled={form.analysis.value !== "correlation"}
           className="border px-3 mb-4">
           <legend className="legend">Correlation</legend>
 
@@ -132,7 +133,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               id="correlationToAnotherProtein"
               value="toAnotherProtein"
               checked={
-                form.analysis === "correlation" &&
+                form.analysis.value === "correlation" &&
                 form.correlation === "toAnotherProtein"
               }
               onChange={handleChange}
@@ -146,7 +147,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               id={`correlationMRNA`}
               value="proteinMRNA"
               checked={
-                form.analysis === "correlation" &&
+                form.analysis.value === "correlation" &&
                 form.correlation === "proteinMRNA"
               }
               onChange={handleChange}
@@ -158,7 +159,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               <Form.Label
                 className={classNames(
                   "required",
-                  (form.analysis !== "correlation" ||
+                  (form.analysis.value !== "correlation" ||
                     form.correlation !== "toAnotherProtein") &&
                     "text-muted",
                 )}>
@@ -181,7 +182,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       )}
 
       <div className="text-end">
-        <Button variant="outline-danger" className="me-1" type="reset">
+        <Button variant="outline-secondary" className="me-1" type="reset">
           Reset
         </Button>
 
