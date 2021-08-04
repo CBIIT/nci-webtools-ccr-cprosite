@@ -418,7 +418,7 @@ export default function ProteinCorrelation() {
                 autosize: true,
                 legend: {
                   orientation: "h",
-                  y: -0.1,
+                  y: -0.2,
                   x: 0.37,
                 },
               }}
