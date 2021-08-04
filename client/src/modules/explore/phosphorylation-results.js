@@ -90,7 +90,7 @@ export default function PhosResults() {
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
-          <b>Phosphorylation Site</b>
+          <b>Phosphorylation</b>
         </OverlayTrigger>
       ),
     },
@@ -119,7 +119,7 @@ export default function PhosResults() {
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_av_tumor">Average Tumor</Tooltip>}>
-          <b>Average Tumor</b>
+          <b>Avg. Tumor</b>
         </OverlayTrigger>
       ),
     },
@@ -131,7 +131,7 @@ export default function PhosResults() {
           overlay={
             <Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>
           }>
-          <b>Average Adjacent Normal</b>
+          <b>Avg. Adj. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -174,7 +174,7 @@ export default function PhosResults() {
               Adjacent Normal Sample Number
             </Tooltip>
           }>
-          <b>Adjacent Normal Count</b>
+          <b>Adj. Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -208,7 +208,7 @@ export default function PhosResults() {
               Adjacent Normal Standard Error
             </Tooltip>
           }>
-          <b>Adjacent Normal SE</b>
+          <b>Adj. Normal SE</b>
         </OverlayTrigger>
       ),
     },
@@ -486,6 +486,7 @@ export default function PhosResults() {
           </div>
         </Form.Group>
 
+        {console.log()}
         <Row className="m-3">
           <Col xl={12}>
             <Plot
@@ -586,7 +587,9 @@ export default function PhosResults() {
               data={phosBoxData}
               layout={{
                 ...defaultLayout,
-                title: `<b>Tumor vs Control</b> (Gene: ${form.gene.label})`,
+                title: `<b>${
+                  form.cancer.find((e) => e.value === view).label
+                } Tumor vs Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 yaxis: { title: "Phosphorylation Level", zeroline: false },
                 autosize: true,
                 boxgroupgap: 0.4,
