@@ -29,7 +29,7 @@ export default function PhosResults() {
 
   const [phosView, setPhosView] = useState(sites[0][0]);
   const [site, setSite] = useState(sites[0][1][0]);
-  const [tab, setTab] = useState("summary");
+  const [tab, setTab] = useState("tumorView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
   const phosSiteColumns = [
@@ -325,6 +325,8 @@ export default function PhosResults() {
       marker: {
         size: 8,
       },
+      hovertext: ["1", "2"],
+      hoverinfo: "x+y",
       hovertemplate: "%{y}<extra></extra>",
     },
   ];
@@ -462,7 +464,8 @@ export default function PhosResults() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summary" title="Tumor View">
+      <Tab eventKey="summary" title="Summary"></Tab>
+      <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label
             className="col-xl-1 col-xs-12 col-form-label"
