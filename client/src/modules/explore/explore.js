@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -11,12 +11,23 @@ import Results from "./results";
 import PhosResults from "./phosphorylation-results";
 import ProteinCorrelation from "./protein-correlation";
 import ProteinGeneCorrelation from "./protein-genevsgene";
+import {
+  SidebarContainer,
+  SidebarPanel,
+  MainPanel,
+} from "../components/sidebar-container";
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
+  const mergeForm = (obj) => setForm({ ...form, ...obj });
+  const [_openSidebar, _setOpenSidebar] = useState(true);
+
+  useEffect(() => {
+    _setOpenSidebar(form.openSidebar);
+  }, [form.openSidebar]);
 
   function handleSubmit(event) {
-    setForm(event);
+    setForm({ ...event, openSidebar: false });
     console.log("submit", event);
   }
 
@@ -44,8 +55,10 @@ export default function Explore() {
 
   return (
     <Container className="my-4">
-      <Row>
-        <Col md={4}>
+      <SidebarContainer
+        collapsed={!_openSidebar}
+        onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
+        <SidebarPanel classname="col-xl-4">
           <Card className="shadow">
             <Card.Body>
               <ErrorBoundary fallback="An unexpected error occured">
@@ -55,9 +68,8 @@ export default function Explore() {
               </ErrorBoundary>
             </Card.Body>
           </Card>
-        </Col>
-
-        <Col md={8}>
+        </SidebarPanel>
+        <MainPanel className="col-xl-8">
           <Card className="shadow">
             <Card.Body className="p-0">
               <ErrorBoundary fallback="An unexpected error occured">
@@ -73,8 +85,8 @@ export default function Explore() {
               </ErrorBoundary>
             </Card.Body>
           </Card>
-        </Col>
-      </Row>
+        </MainPanel>
+      </SidebarContainer>
     </Container>
   );
 }
