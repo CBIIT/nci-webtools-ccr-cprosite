@@ -102,7 +102,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
           required
         />
       </Form.Group>
-      {console.log(form)}
       <Form.Group className="mb-3" controlId="gene">
         <Form.Label className="required">Gene</Form.Label>
         <AsyncSelect

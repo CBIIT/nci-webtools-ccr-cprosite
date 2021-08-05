@@ -48,6 +48,7 @@ export const dataState = selectorFamily({
 });
 
 export const defaultFormState = {
+  openSidebar: true,
   cancer: [],
   gene: "",
   analysis: "",
