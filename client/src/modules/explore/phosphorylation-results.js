@@ -35,6 +35,7 @@ export default function PhosResults() {
   const phosSiteColumns = [
     {
       accessor: "name",
+      id: "name",
       label: "Patient ID",
       Header: (
         <OverlayTrigger
@@ -86,6 +87,7 @@ export default function PhosResults() {
   const summary = [
     {
       accessor: "link",
+      id: "link",
       label: "Phosphorylation Site",
       Header: (
         <OverlayTrigger
@@ -531,7 +533,11 @@ export default function PhosResults() {
               <ExcelSheet dataSet={exportSummary} name="Summary Data" />
             </ExcelFile>
           </div>
-          <Table columns={summary} data={phosphorylationData} />
+          <Table
+            columns={summary}
+            data={phosphorylationData}
+            defaultSort={[{ id: "link", asec: true }]}
+          />
         </div>
       </Tab>
 
@@ -636,6 +642,7 @@ export default function PhosResults() {
           </div>
           <Table
             columns={phosSiteColumns}
+            defaultSort={[{ id: "name", asec: true }]}
             data={sites
               .filter((c) => c[0] === phosView)[0][1]
               .map((d) => {

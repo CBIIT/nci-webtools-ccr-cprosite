@@ -47,6 +47,7 @@ export default function ProteinCorrelation() {
   const correlationColumns = [
     {
       accessor: "name",
+      id: "name",
       label: "Patient ID",
       Header: (
         <OverlayTrigger
@@ -513,6 +514,7 @@ export default function ProteinCorrelation() {
               </div>
               <Table
                 columns={correlationColumns}
+                defaultSort={[{ id: "name", asec: true }]}
                 data={proteinRNA.map((c) => {
                   return {
                     name: c.name,

@@ -47,6 +47,7 @@ export default function ProteinGeneCorrelation() {
   const correlationColumns = [
     {
       accessor: "name",
+      id: "name",
       label: "Patient ID",
       Header: (
         <OverlayTrigger
@@ -499,6 +500,7 @@ export default function ProteinGeneCorrelation() {
               </div>
               <Table
                 columns={correlationColumns}
+                defaultSort={[{ id: "name", asec: true }]}
                 data={proteinGene.map((c) => {
                   return {
                     name: c.name,

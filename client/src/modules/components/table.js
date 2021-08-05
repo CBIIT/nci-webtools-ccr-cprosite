@@ -44,7 +44,7 @@ export function RangeFilter({
   );
 }
 
-export default function Table({ columns, data, options }) {
+export default function Table({ columns, data, options, defaultSort }) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -65,6 +65,9 @@ export default function Table({ columns, data, options }) {
     {
       columns: useMemo((_) => columns, [columns]),
       data: useMemo((_) => data, [data]),
+      initialState: {
+        sortBy: defaultSort,
+      },
       ...options,
     },
     useFilters,
@@ -75,7 +78,7 @@ export default function Table({ columns, data, options }) {
   return (
     <>
       <div className="table-responsive">
-        <BootstrapTable {...getTableProps()} striped hover>
+        <BootstrapTable {...getTableProps()} options={options} striped hover>
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
