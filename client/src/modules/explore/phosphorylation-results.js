@@ -92,7 +92,7 @@ export default function PhosResults() {
       Header: (
         <OverlayTrigger
           overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
-          <b>Phosphorylation</b>
+          <b>Phsopho. Site</b>
         </OverlayTrigger>
       ),
     },
