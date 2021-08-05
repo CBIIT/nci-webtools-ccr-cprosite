@@ -127,7 +127,7 @@ export default function ProteinCorrelation() {
             </Tooltip>
           }>
           <b>
-            Protein Adjacent Normal Log<sub>2</sub>
+            Protein Adj. Normal Log<sub>2</sub>
           </b>
         </OverlayTrigger>
       ),
@@ -142,7 +142,7 @@ export default function ProteinCorrelation() {
               Protein Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>Protein Adjacent Normal Abundance</b>
+          <b>Protein Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -157,7 +157,7 @@ export default function ProteinCorrelation() {
               RNA Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>RNA Adjacent Normal Abundance</b>
+          <b>RNA Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -172,7 +172,7 @@ export default function ProteinCorrelation() {
             </Tooltip>
           }>
           <b>
-            RNA Adjacent Normal Log<sub>2</sub>
+            RNA Adj. Normal Log<sub>2</sub>
           </b>
         </OverlayTrigger>
       ),

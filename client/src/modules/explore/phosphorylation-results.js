@@ -61,7 +61,7 @@ export default function PhosResults() {
           overlay={
             <Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>
           }>
-          <b>Adjacent Normal Abundance</b>
+          <b>Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
