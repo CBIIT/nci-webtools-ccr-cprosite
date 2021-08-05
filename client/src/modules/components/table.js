@@ -78,7 +78,7 @@ export default function Table({ columns, data, options, defaultSort }) {
   return (
     <>
       <div className="table-responsive">
-        <BootstrapTable {...getTableProps()} options={options} striped hover>
+        <BootstrapTable {...getTableProps()} striped hover>
           <thead>
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
