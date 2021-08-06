@@ -8,7 +8,7 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { proteinState, rnaState, formState, dataState } from "./explore.state";
+import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
@@ -25,16 +25,21 @@ export default function ProteinGeneCorrelation() {
   const tumors = form.cancer.map((e) => e.value);
   const firstGene = form.gene.label;
   const secondGene = form.correlatedGene.label;
-  const firstGeneSet = useRecoilValue(
-    dataState({ table: "proteinData", cancer: tumors, gene: form.gene.value }),
-  ).records;
-  const secondGeneSet = useRecoilValue(
-    dataState({
-      table: "proteinData",
-      cancer: tumors,
-      gene: form.correlatedGene.value,
-    }),
-  ).records;
+  const results = useRecoilValue(resultsState);
+
+  var firstGeneSet = [];
+  results
+    .filter((e) => e.gene.value === form.gene.value)
+    .map((e) => {
+      firstGeneSet = firstGeneSet.concat(e.participants.records);
+    });
+
+  var secondGeneSet = [];
+  results
+    .filter((e) => e.gene.value === form.correlatedGene.value)
+    .map((e) => {
+      secondGeneSet = secondGeneSet.concat(e.participants.records);
+    });
 
   const [view, setView] = useState(form.cancer[0].value);
   const [tab, setTab] = useState("summary");
