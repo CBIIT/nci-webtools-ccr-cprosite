@@ -26,6 +26,52 @@ export const rnaState = selector({
   get: ({ get }) => query("data/rnaData.json"),
 });
 
+export async function getData(dataset, tumor, gene) {
+  const summary = await query("api/query", {
+    table: dataset + "Summary",
+    _cancerId: tumor,
+    _geneId: gene,
+  });
+
+  const participants = await query("api/query", {
+    table: dataset,
+    _cancerId: tumor,
+    _geneId: gene,
+  });
+
+  return { summary, participants };
+}
+
+export const resultsState = selector({
+  key: "results",
+  get: async ({ get }) => {
+    const params = get(formState);
+    if (!params) return null;
+
+    var results = [];
+    console.log(params);
+
+    for (const cancer of params.cancer) {
+      for (const gene of [params.gene, params.correlatedGene]) {
+        if (!gene) continue;
+
+        const { summary, participants } = await getData(
+          params.dataset.value,
+          cancer.value,
+          gene.value,
+        );
+        results.push({
+          cancer,
+          gene,
+          summary,
+          participants,
+        });
+      }
+    }
+    return results;
+  },
+});
+
 //Remove limits in final release
 
 export const geneState = selector({

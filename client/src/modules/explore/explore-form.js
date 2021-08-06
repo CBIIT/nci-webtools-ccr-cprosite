@@ -69,8 +69,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
           value={form.dataset}
           onChange={(e) => handleSelectChange("dataset", e)}
           options={[
-            { value: "protein-abundance", label: "Protein Abundance" },
-            { value: "phosphorylation-site", label: "Phosphorylation Site" },
+            { value: "proteinData", label: "Protein Abundance" },
+            { value: "phosphoproteinData", label: "Phosphorylation Site" },
             {
               value: "phosphorylation-protein",
               label: "Phosphorylation/Protein",
