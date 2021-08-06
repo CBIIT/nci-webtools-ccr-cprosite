@@ -95,6 +95,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             if (e.value === "tumor-control")
               mergeForm({
                 ["correlatedGene"]: "",
+                ["correlation"]: "toAnotherProtein",
                 ["analysis"]: e,
               });
             else handleSelectChange("analysis", e);
@@ -149,7 +150,12 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 form.analysis.value === "correlation" &&
                 form.correlation === "proteinMRNA"
               }
-              onChange={handleChange}
+              onChange={(e) => {
+                mergeForm({
+                  ["correlation"]: "proteinMRNA",
+                  ["correlatedGene"]: "",
+                });
+              }}
             />
           </Form.Group>
 
