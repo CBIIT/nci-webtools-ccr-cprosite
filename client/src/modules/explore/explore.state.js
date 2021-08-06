@@ -26,20 +26,34 @@ export const rnaState = selector({
   get: ({ get }) => query("data/rnaData.json"),
 });
 
-export async function getData(dataset, tumor, gene) {
+export async function getData(params, tumor, gene) {
   const summary = await query("api/query", {
-    table: dataset + "Summary",
+    table: params.dataset.value + "Summary",
     _cancerId: tumor,
     _geneId: gene,
   });
 
   const participants = await query("api/query", {
-    table: dataset,
+    table: params.dataset.value,
     _cancerId: tumor,
     _geneId: gene,
   });
 
-  return { summary, participants };
+  if (params.correlation === "proteinMRNA") {
+    const rna = await query("api/query", {
+      table: "rnaData",
+      _cancerId: tumor,
+      _geneId: gene,
+    });
+
+    const rnaSummary = await query("api/query", {
+      table: "rnaDataSummary",
+      _cancerId: tumor,
+      _geneId: gene,
+    });
+
+    return { summary, participants, rna, rnaSummary };
+  } else return { summary, participants };
 }
 
 export const resultsState = selector({
@@ -55,8 +69,8 @@ export const resultsState = selector({
       for (const gene of [params.gene, params.correlatedGene]) {
         if (!gene) continue;
 
-        const { summary, participants } = await getData(
-          params.dataset.value,
+        const { summary, participants, rna, rnaSummary } = await getData(
+          params,
           cancer.value,
           gene.value,
         );
@@ -65,6 +79,8 @@ export const resultsState = selector({
           gene,
           summary,
           participants,
+          rnaSummary,
+          rna,
         });
       }
     }
