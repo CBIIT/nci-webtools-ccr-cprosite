@@ -4,17 +4,9 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
-import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
-import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import {
-  proteinState,
-  rnaState,
-  formState,
-  proteinDataState,
-  dataState,
-} from "./explore.state";
+import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
@@ -28,13 +20,16 @@ const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function ProteinCorrelation() {
   const form = useRecoilValue(formState);
-  const tumors = form.cancer.map((e) => e.value);
-  const proteinData = useRecoilValue(
-    dataState({ table: "proteinData", cancer: tumors, gene: form.gene.value }),
-  ).records;
-  const rnaData = useRecoilValue(
-    dataState({ table: "rnaData", cancer: tumors, gene: form.gene.value }),
-  ).records;
+  const results = useRecoilValue(resultsState);
+
+  var proteinData = [];
+  var rnaData = [];
+  results
+    .filter((e) => e.gene.value === form.gene.value)
+    .map((e) => {
+      proteinData = proteinData.concat(e.participants.records);
+      rnaData = rnaData.concat(e.rna.records);
+    });
 
   const [view, setView] = useState(form.cancer[0].value);
   const [tab, setTab] = useState("summary");
