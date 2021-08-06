@@ -44,7 +44,7 @@ export function RangeFilter({
   );
 }
 
-export default function Table({ columns, data, options }) {
+export default function Table({ columns, data, options, defaultSort }) {
   const {
     getTableProps,
     getTableBodyProps,
@@ -65,6 +65,9 @@ export default function Table({ columns, data, options }) {
     {
       columns: useMemo((_) => columns, [columns]),
       data: useMemo((_) => data, [data]),
+      initialState: {
+        sortBy: defaultSort,
+      },
       ...options,
     },
     useFilters,

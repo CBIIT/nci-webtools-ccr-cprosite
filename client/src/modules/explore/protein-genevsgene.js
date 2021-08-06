@@ -52,6 +52,7 @@ export default function ProteinGeneCorrelation() {
   const correlationColumns = [
     {
       accessor: "name",
+      id: "name",
       label: "Patient ID",
       Header: (
         <OverlayTrigger
@@ -131,7 +132,7 @@ export default function ProteinGeneCorrelation() {
             </Tooltip>
           }>
           <b>
-            {firstGene} Adjacent Normal Log<sub>2</sub>
+            {firstGene} Adj. Normal Log<sub>2</sub>
           </b>
         </OverlayTrigger>
       ),
@@ -146,7 +147,7 @@ export default function ProteinGeneCorrelation() {
               {firstGene} Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>{firstGene} Adjacent Normal Abundance</b>
+          <b>{firstGene} Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -161,7 +162,7 @@ export default function ProteinGeneCorrelation() {
             </Tooltip>
           }>
           <b>
-            {secondGene} Adjacent Normal Log<sub>2</sub>
+            {secondGene} Adj. Normal Log<sub>2</sub>
           </b>
         </OverlayTrigger>
       ),
@@ -176,7 +177,7 @@ export default function ProteinGeneCorrelation() {
               {secondGene} Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>{secondGene} Normal Abundance</b>
+          <b>{secondGene} Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -504,6 +505,7 @@ export default function ProteinGeneCorrelation() {
               </div>
               <Table
                 columns={correlationColumns}
+                defaultSort={[{ id: "name", asec: true }]}
                 data={proteinGene.map((c) => {
                   return {
                     name: c.name,

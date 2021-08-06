@@ -33,6 +33,7 @@ export default function Results() {
   const proteinAbundanceColumns = [
     {
       accessor: "name",
+      id: "name",
       label: "Patient ID",
       Header: (
         <OverlayTrigger
@@ -59,7 +60,7 @@ export default function Results() {
           overlay={
             <Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>
           }>
-          <b>Adjacent Normal Abundance</b>
+          <b>Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -85,6 +86,7 @@ export default function Results() {
   const summaryColumns = [
     {
       accessor: "link",
+      id: "link",
       label: "Tumor Type",
       Header: (
         <OverlayTrigger
@@ -548,7 +550,11 @@ export default function Results() {
             </ExcelFile>
           </div>
 
-          <Table columns={summaryColumns} data={averages} />
+          <Table
+            columns={summaryColumns}
+            data={averages}
+            defaultSort={[{ id: "link", asec: true }]}
+          />
         </div>
       </Tab>
 
@@ -684,6 +690,7 @@ export default function Results() {
         </div>
         <Table
           columns={proteinAbundanceColumns}
+          defaultSort={[{ id: "name", asec: true }]}
           data={cases
             .filter((c) => view === c.cancerId)
             .map((c) => {
