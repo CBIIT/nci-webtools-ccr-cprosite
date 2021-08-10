@@ -39,7 +39,13 @@ export default function Explore() {
   function results() {
     switch (form.dataset.value) {
       case "phosphoproteinData":
-        return <PhosResults />;
+        return form.analysis.value === "tumor-control" ? (
+          <PhosResults />
+        ) : form.correlation === "proteinMRNA" ? (
+          <ProteinCorrelation />
+        ) : (
+          <ProteinGeneCorrelation />
+        );
       case "proteinData":
         return form.analysis.value === "tumor-control" ? (
           <Results />
