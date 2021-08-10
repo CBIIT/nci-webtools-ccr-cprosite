@@ -766,7 +766,7 @@ export default function PhosResults() {
             columns={phosSiteColumns}
             defaultSort={[{ id: "name", asec: true }]}
             data={
-              sortResults.length > 1
+              sortResults.length
                 ? sortResults
                     .find((e) => e[0] === phosView)[1]
                     .map((d) => {
