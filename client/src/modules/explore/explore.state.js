@@ -88,11 +88,9 @@ export const resultsState = selector({
   },
 });
 
-//Remove limits in final release
-
 export const geneState = selector({
   key: "explore.geneState",
-  get: ({ get }) => query("api/query", { table: "gene", limit: 10 }),
+  get: ({ get }) => query("api/query", { table: "gene" }),
 });
 
 export const dataState = selectorFamily({
