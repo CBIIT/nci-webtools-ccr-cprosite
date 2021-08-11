@@ -542,6 +542,8 @@ export default function PhosResults() {
     ];
   }
 
+  console.log(tumorViewData.length);
+
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="tumorView" title="Tumor View">
@@ -602,6 +604,17 @@ export default function PhosResults() {
                   y: -0.25,
                   x: 0.37,
                 },
+                annotations: [
+                  {
+                    text: tumorViewData.length === 0 ? "No data available" : "",
+                    xref: "paper",
+                    yref: "paper",
+                    showarrow: false,
+                    font: {
+                      size: 28,
+                    },
+                  },
+                ],
               }}
               config={defaultConfig}
               useResizeHandler
@@ -701,6 +714,22 @@ export default function PhosResults() {
                     y: -0.1,
                     x: 0.37,
                   },
+                  annotations: [
+                    {
+                      text:
+                        tumorViewData.length === 0 ||
+                        tumorViewData.find((e) => e.name === phosView).records
+                          .length === 0
+                          ? "No data available"
+                          : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                      },
+                    },
+                  ],
                 }}
                 config={defaultConfig}
                 useResizeHandler
@@ -726,6 +755,24 @@ export default function PhosResults() {
                   },
                   showlegend: false,
                   barmode: "stack",
+                  annotations: [
+                    {
+                      text:
+                        sortResults.length === 0 ||
+                        sortResults
+                          .find((c) => c[0] === phosView)[1]
+                          .filter((e) => e.tumorValue && e.normalValue)
+                          .length === 0
+                          ? "No data available"
+                          : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                      },
+                    },
+                  ],
                 }}
                 useResizeHandler
                 style={{

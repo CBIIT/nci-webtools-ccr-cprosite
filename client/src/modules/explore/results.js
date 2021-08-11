@@ -542,7 +542,7 @@ export default function Results() {
                 },
                 annotations: [
                   {
-                    text: noData(results) ? "No data found" : "",
+                    text: noData(results) ? "No data available" : "",
                     xref: "paper",
                     yref: "paper",
                     showarrow: false,
@@ -654,7 +654,7 @@ export default function Results() {
                       text: noData([
                         results.find((e) => e.cancer.value === view),
                       ])
-                        ? "No data found"
+                        ? "No data available"
                         : "",
                       xref: "paper",
                       yref: "paper",
@@ -700,7 +700,7 @@ export default function Results() {
                       text: noData([
                         results.find((e) => e.cancer.value === view),
                       ])
-                        ? "No data found"
+                        ? "No data available"
                         : "",
                       xref: "paper",
                       yref: "paper",
