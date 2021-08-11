@@ -209,8 +209,6 @@ export default function Results() {
     },
   ];
 
-  console.log(results.find((e) => e.cancer.value === view));
-
   const boxPlotData = [
     {
       y: results
@@ -240,6 +238,7 @@ export default function Results() {
     },
   ];
 
+  console.log(results);
   const averages = results.map((e) => {
     const summary = e.summary.records[0];
 
@@ -257,37 +256,43 @@ export default function Results() {
         </a>
       ),
       controlAverage:
-        summary.normalSampleMean !== null
+        summary && summary.normalSampleMean !== null
           ? Number(summary.normalSampleMean.toFixed(4))
           : "NA",
       tumorAverage:
-        summary.tumorSampleMean !== null
+        summary && summary.tumorSampleMean !== null
           ? Number(summary.tumorSampleMean.toFixed(4))
           : "NA",
       proteinDiff:
-        summary.normalSampleMean !== null && summary.tumorSampleMean !== null
+        summary &&
+        summary.normalSampleMean !== null &&
+        summary.tumorSampleMean !== null
           ? Number(
               (summary.tumorSampleMean - summary.normalSampleMean).toFixed(4),
             )
           : "NA",
       controlNum:
-        summary.normalSampleCount !== null ? summary.normalSampleCount : "NA",
+        summary && summary.normalSampleCount !== null
+          ? summary.normalSampleCount
+          : "NA",
       tumorNum:
-        summary.tumorSampleCount !== null ? summary.tumorSampleCount : "NA",
+        summary && summary.tumorSampleCount !== null
+          ? summary.tumorSampleCount
+          : "NA",
       pValuePaired:
-        summary.pValuePaired !== null
+        summary && summary.pValuePaired !== null
           ? Number(summary.pValuePaired.toFixed(4))
           : "NA",
       pValueUnpaired:
-        summary.pValueUnpaired !== null
+        summary && summary.pValueUnpaired !== null
           ? Number(summary.pValueUnpaired.toFixed(4))
           : "NA",
       controlError:
-        summary.normalSampleStandardError !== null
+        summary && summary.normalSampleStandardError !== null
           ? Number(summary.normalSampleStandardError.toFixed(4))
           : "NA",
       tumorError:
-        summary.tumorSampleStandardError !== null
+        summary && summary.tumorSampleStandardError !== null
           ? Number(summary.tumorSampleStandardError.toFixed(4))
           : "NA",
     };
@@ -395,27 +400,29 @@ export default function Results() {
     ];
   }
 
-  const exportSummary = [
-    {
-      columns: summaryColumns.map((e) => {
-        return { title: e.label, width: { wpx: 160 } };
-      }),
-      data: averages.map((e) => {
-        return [
-          { value: e.name },
-          { value: e.tumorAverage },
-          { value: e.controlAverage },
-          { value: e.proteinDiff },
-          { value: e.pValuePaired },
-          { value: e.pValueUnpaired },
-          { value: e.tumorNum },
-          { value: e.controlNum },
-          { value: e.tumorError },
-          { value: e.controlError },
-        ];
-      }),
-    },
-  ];
+  function exportSummary() {
+    return [
+      {
+        columns: summaryColumns.map((e) => {
+          return { title: e.label, width: { wpx: 160 } };
+        }),
+        data: averages.map((e) => {
+          return [
+            { value: e.name },
+            { value: e.tumorAverage },
+            { value: e.controlAverage },
+            { value: e.proteinDiff },
+            { value: e.pValuePaired },
+            { value: e.pValueUnpaired },
+            { value: e.tumorNum },
+            { value: e.controlNum },
+            { value: e.tumorError },
+            { value: e.controlError },
+          ];
+        }),
+      },
+    ];
+  }
 
   const exportAbundanceSettings = [
     {
@@ -505,6 +512,8 @@ export default function Results() {
     ],
   };
 
+  console.log(averages);
+
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -538,7 +547,7 @@ export default function Results() {
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
               />
-              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+              <ExcelSheet dataSet={exportSummary()} name="Summary Data" />
             </ExcelFile>
           </div>
 
