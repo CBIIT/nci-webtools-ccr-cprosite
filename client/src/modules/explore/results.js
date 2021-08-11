@@ -238,7 +238,6 @@ export default function Results() {
     },
   ];
 
-  console.log(results);
   const averages = results.map((e) => {
     const summary = e.summary.records[0];
 
@@ -424,6 +423,14 @@ export default function Results() {
     ];
   }
 
+  function noData(tumors) {
+    for (const tumor of tumors) {
+      if (tumor.participants.records.length > 0) return false;
+    }
+
+    return true;
+  }
+
   const exportAbundanceSettings = [
     {
       columns: [
@@ -472,6 +479,8 @@ export default function Results() {
         }),
     },
   ];
+
+  console.log(averages);
 
   const defaultLayout = {
     xaxis: {
@@ -531,6 +540,17 @@ export default function Results() {
                   y: -0.25,
                   x: 0.37,
                 },
+                annotations: [
+                  {
+                    text: noData(results) ? "No data found" : "",
+                    xref: "paper",
+                    yref: "paper",
+                    showarrow: false,
+                    font: {
+                      size: 28,
+                    },
+                  },
+                ],
               }}
               config={defaultConfig}
               useResizeHandler
@@ -629,6 +649,21 @@ export default function Results() {
                     y: -0.1,
                     x: 0.37,
                   },
+                  annotations: [
+                    {
+                      text: noData([
+                        results.find((e) => e.cancer.value === view),
+                      ])
+                        ? "No data found"
+                        : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                      },
+                    },
+                  ],
                 }}
                 config={defaultConfig}
                 useResizeHandler
@@ -660,6 +695,21 @@ export default function Results() {
                   },
                   showlegend: false,
                   barmode: "stack",
+                  annotations: [
+                    {
+                      text: noData([
+                        results.find((e) => e.cancer.value === view),
+                      ])
+                        ? "No data found"
+                        : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                      },
+                    },
+                  ],
                 }}
                 useResizeHandler
                 style={{
