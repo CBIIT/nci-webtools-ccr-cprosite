@@ -45,6 +45,9 @@ export default function ProteinGeneCorrelation() {
   const [tab, setTab] = useState("summary");
   const [numType, setNumType] = useState("log2");
 
+  console.log(firstGeneSet);
+  console.log(secondGeneSet);
+
   function handleToggle(e) {
     setNumType(e.target.id);
   }
@@ -427,6 +430,18 @@ export default function ProteinGeneCorrelation() {
                       y: -0.2,
                       x: 0.37,
                     },
+                    annotations: [
+                      {
+                        text:
+                          proteinGene.length === 0 ? "No data available" : "",
+                        xref: "paper",
+                        yref: "paper",
+                        showarrow: false,
+                        font: {
+                          size: 28,
+                        },
+                      },
+                    ],
                   }}
                   config={defaultConfig}
                   useResizeHandler
@@ -440,54 +455,70 @@ export default function ProteinGeneCorrelation() {
               <Row>
                 <div className="col-xl-4 my-2 d-flex justify-content-center">
                   Tumor Correlation:{" "}
-                  {calculateCorrelation(
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                    ),
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.secondTumor : e.secondTumorNum,
-                    ),
-                    { decimals: 4 },
-                  )}
+                  {proteinGene.length
+                    ? calculateCorrelation(
+                        proteinGene.map((e) =>
+                          numType === "log2" ? e.firstTumor : e.firstTumorNum,
+                        ),
+                        proteinGene.map((e) =>
+                          numType === "log2" ? e.secondTumor : e.secondTumorNum,
+                        ),
+                        { decimals: 4 },
+                      )
+                    : "NA"}
                 </div>
                 <div className="col-xl-4 my-2 d-flex justify-content-center">
                   Control Correlation:{" "}
-                  {calculateCorrelation(
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.firstControl : e.firstControlNum,
-                    ),
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.secondControl : e.secondControlNum,
-                    ),
-                    { decimals: 4 },
-                  )}
+                  {proteinGene.length
+                    ? calculateCorrelation(
+                        proteinGene.map((e) =>
+                          numType === "log2"
+                            ? e.firstControl
+                            : e.firstControlNum,
+                        ),
+                        proteinGene.map((e) =>
+                          numType === "log2"
+                            ? e.secondControl
+                            : e.secondControlNum,
+                        ),
+                        { decimals: 4 },
+                      )
+                    : "NA"}
                 </div>
 
                 <div className="col-xl-4 my-2 d-flex justify-content-center">
                   Total Correlation:{" "}
-                  {calculateCorrelation(
-                    proteinGene
-                      .map((e) =>
-                        numType === "log2" ? e.firstControl : e.firstControlNum,
+                  {proteinGene.length
+                    ? calculateCorrelation(
+                        proteinGene
+                          .map((e) =>
+                            numType === "log2"
+                              ? e.firstControl
+                              : e.firstControlNum,
+                          )
+                          .concat(
+                            proteinGene.map((e) =>
+                              numType === "log2"
+                                ? e.firstTumor
+                                : e.firstTumorNum,
+                            ),
+                          ),
+                        proteinGene
+                          .map((e) =>
+                            numType === "log2"
+                              ? e.secondControl
+                              : e.secondControlNum,
+                          )
+                          .concat(
+                            proteinGene.map((e) =>
+                              numType === "log2"
+                                ? e.secondTumor
+                                : e.secondTumorNum,
+                            ),
+                          ),
+                        { decimals: 4 },
                       )
-                      .concat(
-                        proteinGene.map((e) =>
-                          numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                        ),
-                      ),
-                    proteinGene
-                      .map((e) =>
-                        numType === "log2"
-                          ? e.secondControl
-                          : e.secondControlNum,
-                      )
-                      .concat(
-                        proteinGene.map((e) =>
-                          numType === "log2" ? e.secondTumor : e.secondTumorNum,
-                        ),
-                      ),
-                    { decimals: 4 },
-                  )}
+                    : "NA"}
                 </div>
               </Row>
             </fieldset>
