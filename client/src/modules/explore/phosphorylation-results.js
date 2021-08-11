@@ -43,14 +43,14 @@ export default function PhosResults() {
     return !isNaN(result) ? result.toFixed(4) : "NA";
   }
 
+  console.log(results);
+
   const sortResults = Object.entries(
     _.groupBy(
       results.find((e) => e.cancer.value === view).participants.records,
       "phosphorylationSite",
     ),
   ).filter((e) => e[0] !== "null");
-
-  console.log(sortResults);
 
   const tumorViewData = sortResults.map((e) => {
     const patients = e[1];
@@ -542,8 +542,6 @@ export default function PhosResults() {
     ];
   }
 
-  console.log(tumorViewData.length);
-
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="tumorView" title="Tumor View">
@@ -583,7 +581,7 @@ export default function PhosResults() {
         </Form.Group>
 
         <Row className="m-3">
-          <Col xl={12} style={{ overflowX: "scroll" }}>
+          <Col xl={12} style={{ overflowX: "auto" }}>
             <Plot
               data={multiPhosBarPlot}
               layout={{
@@ -621,7 +619,7 @@ export default function PhosResults() {
               className="flex-fill w-100"
               style={{
                 height: "500px",
-                width: `${tumorViewData.length * 500}px`,
+                width: `${tumorViewData.length * 50}px`,
                 minWidth: "100%",
               }}
             />
@@ -737,7 +735,7 @@ export default function PhosResults() {
               />
             </Col>
           ) : (
-            <Col xl={12} style={{ height: "800px", overflowY: "scroll" }}>
+            <Col xl={12} style={{ height: "800px", overflowY: "auto" }}>
               <Plot
                 data={foldData()}
                 config={defaultConfig}
