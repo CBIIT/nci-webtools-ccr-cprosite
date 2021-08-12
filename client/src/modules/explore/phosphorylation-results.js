@@ -518,6 +518,8 @@ export default function PhosResults() {
     },
   ];
 
+  console.log(exportSummarySettings());
+
   const exportSiteSettings = [
     {
       columns: [
@@ -546,7 +548,7 @@ export default function PhosResults() {
           return { title: e.label, width: { wpx: 160 } };
         }),
         data:
-          sortResults.length > 0
+          sortResults.length > 0 && sortResults.find((c) => c[0] === phosView)
             ? sortResults.find((c) => c[0] === phosView)[1]
             : [].map((d) => {
                 return [
@@ -655,9 +657,7 @@ export default function PhosResults() {
         {console.log(new Date().toLocaleDateString())}
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile
-              filename=""
-              element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
@@ -752,6 +752,7 @@ export default function PhosResults() {
                     {
                       text:
                         tumorViewData.length === 0 ||
+                        !tumorViewData.find((e) => e.name === phosView) ||
                         tumorViewData.find((e) => e.name === phosView).records
                           .length === 0
                           ? "No data available"
@@ -800,6 +801,7 @@ export default function PhosResults() {
                     {
                       text:
                         sortResults.length === 0 ||
+                        !sortResults.find((c) => c[0] === phosView) ||
                         sortResults
                           .find((c) => c[0] === phosView)[1]
                           .filter((e) => e.tumorValue && e.normalValue)
@@ -852,7 +854,7 @@ export default function PhosResults() {
             columns={phosSiteColumns}
             defaultSort={[{ id: "name", asec: true }]}
             data={
-              sortResults.length
+              sortResults.length && sortResults.find((e) => e[0] === phosView)
                 ? sortResults
                     .find((e) => e[0] === phosView)[1]
                     .map((d) => {
