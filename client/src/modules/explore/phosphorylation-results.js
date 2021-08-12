@@ -832,15 +832,11 @@ export default function PhosResults() {
         </Row>
 
         <fieldset className="mx-5 mb-5 border row" style={{ color: "grey" }}>
-          <div className="col-xl-3 my-2 d-flex justify-content-center">
-            P Value:{" "}
-            {/*phosphorylationData.find((e) => e.name === phosView).pValue*/}
-          </div>
-          <div className="col-xl-3 my-2 d-flex justify-content-center">
+          <div className="col-xl-6 my-2 d-flex justify-content-center">
             Accession: {site.accession}
           </div>
 
-          <div className="col-xl-5 my-2 d-flex justify-content-center">
+          <div className="col-xl-6 my-2 d-flex justify-content-center">
             Peptide: {site.phosphopeptide}
           </div>
         </fieldset>
