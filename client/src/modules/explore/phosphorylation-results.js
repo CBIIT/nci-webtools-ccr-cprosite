@@ -48,7 +48,7 @@ export default function PhosResults() {
 
       return {
         name: e.phosphorylationSite,
-        phosphopeptide: patients.filter((d) => d.phosphopeptide !== null)[0]
+        peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
           .phosphopeptide,
         accession: patients.filter((d) => d.accession != null)[0].accession,
         tumorAverage:
@@ -339,9 +339,6 @@ export default function PhosResults() {
   ];
 
   function phosBoxData() {
-    console.log(phosView);
-    console.log(tumorViewData);
-
     if (tumorViewData.find((e) => e.name === phosView)) {
       return [
         {
@@ -573,6 +570,7 @@ export default function PhosResults() {
     ];
   }
 
+  console.log(tumorViewData);
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="tumorView" title="Tumor View">
@@ -736,7 +734,14 @@ export default function PhosResults() {
                   ...defaultLayout,
                   title: `<b>${
                     form.cancer.find((e) => e.value === view).label
-                  } Tumor vs Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                  } Tumor vs Adjacent Normal</b> (Gene: ${
+                    form.gene.label
+                  }/Unpaired P-Value: ${
+                    tumorViewData.find((e) => e.name === phosView)
+                      ? tumorViewData.find((e) => e.name === phosView)
+                          .pValueUnpaired
+                      : "NA"
+                  })`,
                   yaxis: { title: "Phosphorylation Level", zeroline: false },
                   autosize: true,
                   boxgroupgap: 0.4,
@@ -775,7 +780,14 @@ export default function PhosResults() {
                 config={defaultConfig}
                 layout={{
                   autosize: true,
-                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${form.gene.label})`,
+                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
+                    form.gene.label
+                  }/Paired P-Value: ${
+                    tumorViewData.find((e) => e.name === phosView)
+                      ? tumorViewData.find((e) => e.name === phosView)
+                          .pValuePaired
+                      : "NA"
+                  })`,
                   xaxis: {
                     title: "Log<sub>2</sub> Fold Change",
                     zeroline: false,
