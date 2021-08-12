@@ -27,22 +27,6 @@ export default function PhosResults() {
   const [tab, setTab] = useState("tumorView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
-  const average = (values) =>
-    values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
-
-  function calcStandardError(values, average) {
-    var result = 0;
-
-    for (var i = 0; i < values.length; i++) {
-      result += Math.pow(values[0] - average, 2);
-    }
-
-    result = result / values.length;
-    result = Math.sqrt(result) / Math.sqrt(values.length);
-
-    return !isNaN(result) ? result.toFixed(4) : "NA";
-  }
-
   console.log(results);
 
   const sortResults = Object.entries(
@@ -52,53 +36,68 @@ export default function PhosResults() {
     ),
   ).filter((e) => e[0] !== "null");
 
-  const tumorViewData = sortResults.map((e) => {
-    const patients = e[1];
-    const tumorFilter = patients
-      .filter((d) => d.tumorValue !== null)
-      .map((f) => f.tumorValue);
-    const controlFilter = patients
-      .filter((d) => d.normalValue !== null)
-      .map((f) => f.normalValue);
-
-    const tumorAverage = !isNaN(tumorFilter[0])
-      ? average(tumorFilter).toFixed(4)
-      : "NA";
-    const controlAverage = !isNaN(controlFilter[0])
-      ? average(controlFilter).toFixed(4)
-      : "NA";
-
-    return {
-      name: e[0],
-      peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
-        .phosphopeptide,
-      accession: patients.filter((d) => d.accession != null)[0].accession,
-      tumorAverage: tumorAverage,
-      controlAverage: controlAverage,
-      proteinDiff:
-        !isNaN(controlAverage) && !isNaN(tumorAverage)
-          ? Number((tumorAverage - controlAverage).toFixed(4))
-          : "NA",
-      link: (
-        <a
-          onClick={() => {
-            setPhosView(e[0]);
-            setTab("phosView");
-          }}
-          href="javascript:void(0)">
-          {e[0]}
-        </a>
-      ),
-      tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
-      controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
-      tumorError: calcStandardError(tumorFilter, tumorAverage),
-      controlError: calcStandardError(controlFilter, controlAverage),
-      records: e[1],
-    };
-  });
-
   console.log(sortResults);
-  console.log(tumorViewData);
+
+  const tumorViewData = results
+    .find((e) => e.cancer.value === view)
+    .summary.records.map((e) => {
+      console.log(e);
+      const patients = sortResults.find(
+        (d) => d[0] === e.phosphorylationSite,
+      )[1];
+
+      return {
+        name: e.phosphorylationSite,
+        phosphopeptide: patients.filter((d) => d.phosphopeptide !== null)[0]
+          .phosphopeptide,
+        accession: patients.filter((d) => d.accession != null)[0].accession,
+        tumorAverage:
+          e.tumorSampleMean !== null
+            ? Number(e.tumorSampleMean.toFixed(4))
+            : "NA",
+        controlAverage:
+          e.normalSampleMean !== null
+            ? Number(e.normalSampleMean.toFixed(4))
+            : "NA",
+        proteinDiff:
+          e.tumorSampleMean !== null && e.normalSampleMean !== null
+            ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
+            : "NA",
+        link: (
+          <a
+            onClick={() => {
+              setPhosView(e.phosphorylationSite);
+              setTab("phosView");
+            }}
+            href="javascript:void(0)">
+            {e.phosphorylationSite}
+          </a>
+        ),
+        pValuePaired:
+          e.pValuePaired !== null ? Number(e.pValuePaired.toFixed(4)) : "NA",
+        pValueUnpaired:
+          e.pValueUnpaired !== null
+            ? Number(e.pValueUnpaired.toFixed(4))
+            : "NA",
+        tumorNum:
+          e.tumorSampleCount !== null
+            ? Number(e.tumorSampleCount.toFixed(4))
+            : "NA",
+        controlNum:
+          e.normalSampleCount !== null
+            ? Number(e.normalSampleCount.toFixed(4))
+            : "NA",
+        tumorError:
+          e.tumorSampleStandardError !== null
+            ? Number(e.tumorSampleStandardError.toFixed(4))
+            : "NA",
+        controlError:
+          e.normalSampleStandardError !== null
+            ? Number(e.normalSampleStandardError.toFixed(4))
+            : "NA",
+        records: patients,
+      };
+    });
 
   const [phosView, setPhosView] = useState(
     tumorViewData.length > 0 ? tumorViewData[0].name : "",
@@ -106,6 +105,9 @@ export default function PhosResults() {
   const [site, setSite] = useState(
     sortResults.length > 0 ? sortResults[0][1][0] : "",
   );
+
+  console.log(tumorViewData);
+  console.log(phosView);
 
   const phosSiteColumns = [
     {
@@ -230,6 +232,32 @@ export default function PhosResults() {
       ),
     },
     {
+      accessor: "pValuePaired",
+      label: "P Value (Paired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
+          }>
+          <b>P Value (Paired)</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValueUnpaired",
+      label: "P Value (Unpaired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">
+              Mann-Whitney U Test (Unpaired)
+            </Tooltip>
+          }>
+          <b>P Value (Unpaired)</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
       accessor: "tumorNum",
       label: "Tumor Count",
       Header: (
@@ -252,16 +280,6 @@ export default function PhosResults() {
             </Tooltip>
           }>
           <b>Adj. Normal Count</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "pValue",
-      label: "P Value",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="phos_pValue">Mann-Whitney U Test</Tooltip>}>
-          <b>P Value</b>
         </OverlayTrigger>
       ),
     },
@@ -324,41 +342,45 @@ export default function PhosResults() {
     console.log(phosView);
     console.log(tumorViewData);
 
-    return [
-      {
-        y: tumorViewData.length
-          ? tumorViewData
-              .find((e) => e.name === phosView)
-              .records.map((d) => d.tumorValue)
-          : [],
-        type: "box",
-        boxpoints: "all",
-        name: "Tumor",
-        jitter: 0.6,
-        marker: {
-          size: 8,
+    if (tumorViewData.find((e) => e.name === phosView)) {
+      return [
+        {
+          y: tumorViewData.length
+            ? tumorViewData
+                .find((e) => e.name === phosView)
+                .records.map((d) => d.tumorValue)
+            : [],
+          type: "box",
+          boxpoints: "all",
+          name: "Tumor",
+          jitter: 0.6,
+          marker: {
+            size: 8,
+          },
+          hovertemplate: "%{y}<extra></extra>",
         },
-        hovertemplate: "%{y}<extra></extra>",
-      },
-      {
-        y: tumorViewData.length
-          ? tumorViewData
-              .find((e) => e.name === phosView)
-              .records.map((d) => d.normalValue)
-          : [],
-        type: "box",
-        boxpoints: "all",
-        name: "Adjacent Normal",
-        jitter: 0.6,
-        jitter: 0.6,
-        marker: {
-          size: 8,
+        {
+          y: tumorViewData.length
+            ? tumorViewData
+                .find((e) => e.name === phosView)
+                .records.map((d) => d.normalValue)
+            : [],
+          type: "box",
+          boxpoints: "all",
+          name: "Adjacent Normal",
+          jitter: 0.6,
+          jitter: 0.6,
+          marker: {
+            size: 8,
+          },
+          hovertext: ["1", "2"],
+          hoverinfo: "x+y",
+          hovertemplate: "%{y}<extra></extra>",
         },
-        hovertext: ["1", "2"],
-        hoverinfo: "x+y",
-        hovertemplate: "%{y}<extra></extra>",
-      },
-    ];
+      ];
+    }
+
+    return [];
   }
 
   function handleToggle(e) {
@@ -366,50 +388,58 @@ export default function PhosResults() {
   }
 
   function foldData() {
-    var caseList = sortResults
-      .find((c) => c[0] === phosView)[1]
-      .filter((e) => e.tumorValue && e.normalValue)
-      .sort((a, b) => {
-        const aFoldChange = a.tumorValue - a.normalValue;
-        const bFoldChange = b.tumorValue - b.normalValue;
+    console.log(sortResults);
+    console.log(phosView);
 
-        return aFoldChange > bFoldChange ? 1 : -1;
-      });
+    if (sortResults.find((c) => c[0] === phosView)) {
+      var caseList = sortResults
+        .find((c) => c[0] === phosView)[1]
+        .filter((e) => e.tumorValue && e.normalValue)
+        .sort((a, b) => {
+          const aFoldChange = a.tumorValue - a.normalValue;
+          const bFoldChange = b.tumorValue - b.normalValue;
 
-    const values = caseList.map((c) =>
-      Number(
-        (
-          Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
-        ).toFixed(4),
-      ),
-    );
+          return aFoldChange > bFoldChange ? 1 : -1;
+        });
 
-    return [
-      {
-        type: "bar",
-        x: values,
-        y: caseList.map((c) => c.participantId),
-        marker: {
-          color: values.map((c) =>
-            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-          ),
+      const values = caseList.map((c) =>
+        Number(
+          (
+            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
+          ).toFixed(4),
+        ),
+      );
+
+      return [
+        {
+          type: "bar",
+          x: values,
+          y: caseList.map((c) => c.participantId),
+          marker: {
+            color: values.map((c) =>
+              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+            ),
+          },
+          orientation: "h",
         },
-        orientation: "h",
-      },
-      {
-        type: "bar",
-        x: values,
-        y: caseList.map((c) => c.participantId),
-        marker: {
-          color: values.map((c) =>
-            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-          ),
+        {
+          type: "bar",
+          x: values,
+          y: caseList.map((c) => c.participantId),
+          marker: {
+            color: values.map((c) =>
+              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+            ),
+          },
+          xaxis: "x2",
+          orientation: "h",
         },
-        xaxis: "x2",
-        orientation: "h",
-      },
-    ];
+      ];
+    } else {
+      return [];
+    }
   }
+
   const defaultLayout = {
     xaxis: {
       zeroline: false,
@@ -483,9 +513,10 @@ export default function PhosResults() {
           { value: e.tumorAverage },
           { value: e.controlAverage },
           { value: e.proteinDiff },
+          { value: e.pValuePaired },
+          { value: e.pValueUnpaired },
           { value: e.tumorNum },
           { value: e.controlNum },
-          //]]{ value: e.pValue },
           { value: e.tumorError },
           { value: e.controlError },
         ];
@@ -626,9 +657,12 @@ export default function PhosResults() {
           </Col>
         </Row>
 
+        {console.log(new Date().toLocaleDateString())}
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename=""
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
@@ -775,7 +809,9 @@ export default function PhosResults() {
                 useResizeHandler
                 style={{
                   minWidth: "100%",
-                  height: `${foldData()[0].x.length * 20}px`,
+                  height: `${
+                    foldData().length ? foldData()[0].x.length * 20 : "400"
+                  }px`,
                   minHeight: "400px",
                 }}
               />
