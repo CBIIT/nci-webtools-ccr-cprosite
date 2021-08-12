@@ -41,7 +41,7 @@ export default function PhosResults() {
   const tumorViewData = results
     .find((e) => e.cancer.value === view)
     .summary.records.map((e) => {
-      console.log(e);
+      console.log(e.phosphorylationSite);
       const patients = sortResults.find(
         (d) => d[0] === e.phosphorylationSite,
       )[1];
@@ -105,9 +105,6 @@ export default function PhosResults() {
   const [site, setSite] = useState(
     sortResults.length > 0 ? sortResults[0][1][0] : "",
   );
-
-  console.log(tumorViewData);
-  console.log(phosView);
 
   const phosSiteColumns = [
     {
