@@ -595,7 +595,6 @@ export default function PhosResults() {
               name="caseView"
               onChange={(c) => {
                 setView(parseInt(c.target.value));
-                console.log(results);
                 const phos = Object.entries(
                   _.groupBy(
                     results.find(
@@ -604,7 +603,6 @@ export default function PhosResults() {
                     "phosphorylationSite",
                   ),
                 ).filter((e) => e[0] !== "null");
-                console.log(phos);
                 setPhosView(phos.length ? phos[0][0] : "");
                 setSite(phos.length ? phos[0][1][0] : "");
               }}
@@ -866,7 +864,7 @@ export default function PhosResults() {
           </div>
           <Table
             columns={phosSiteColumns}
-            defaultSort={[{ id: "name", asec: true }]}
+            defaultSort={[{ id: "participantId", asec: true }]}
             data={
               sortResults.length && sortResults.find((e) => e[0] === phosView)
                 ? sortResults
