@@ -26,22 +26,30 @@ export default function ProteinGeneCorrelation() {
   const firstGene = form.gene.label;
   const secondGene = form.correlatedGene.label;
   const results = useRecoilValue(resultsState);
+  const [view, setView] = useState(form.cancer.map((e) => e.value));
+  const [label, setLabel] = useState("");
 
+  console.log(results);
   var firstGeneSet = [];
   results
-    .filter((e) => e.gene.value === form.gene.value)
+    .filter(
+      (e) => e.gene.value === form.gene.value && view.includes(e.cancer.value),
+    )
     .map((e) => {
       firstGeneSet = firstGeneSet.concat(e.participants.records);
     });
 
   var secondGeneSet = [];
   results
-    .filter((e) => e.gene.value === form.correlatedGene.value)
+    .filter(
+      (e) =>
+        e.gene.value === form.correlatedGene.value &&
+        view.includes(e.cancer.value),
+    )
     .map((e) => {
       secondGeneSet = secondGeneSet.concat(e.participants.records);
     });
 
-  const [view, setView] = useState(form.cancer[0].value);
   const [tab, setTab] = useState("summary");
   const [numType, setNumType] = useState("log2");
 
@@ -369,10 +377,22 @@ export default function ProteinGeneCorrelation() {
           <Form.Select
             name="caseView"
             onChange={(e) => {
-              setView(parseInt(e.target.value));
+              if (e.target.value === "all") {
+                setView(form.cancer.map((e) => e.value));
+                setLabel("");
+              } else {
+                setView([parseInt(e.target.value)]);
+                setLabel(
+                  form.cancer.find((d) => d.value === parseInt(e.target.value))
+                    .label,
+                );
+              }
             }}
             value={view}
             required>
+            <option value="all" key={`dataset-all`}>
+              All Tumor Types
+            </option>
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
@@ -432,7 +452,7 @@ export default function ProteinGeneCorrelation() {
             data={geneScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>${firstGene} and ${secondGene} Correlation</b>`,
+              title: `<b>${label} ${firstGene} and ${secondGene} Correlation</b>`,
               autosize: true,
               legend: {
                 orientation: "h",

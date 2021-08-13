@@ -1,8 +1,6 @@
 import { useRecoilValue } from "recoil";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Tabs from "react-bootstrap/Tabs";
-import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
@@ -13,7 +11,6 @@ import calculateCorrelation from "calculate-correlation";
 import ReactExport from "react-data-export";
 
 import { useState } from "react";
-import _ from "lodash";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
@@ -21,18 +18,19 @@ const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 export default function ProteinCorrelation() {
   const form = useRecoilValue(formState);
   const results = useRecoilValue(resultsState);
+  const [view, setView] = useState(form.cancer.map((e) => e.value));
+  const [label, setLabel] = useState("");
 
   var proteinData = [];
   var rnaData = [];
+
   results
-    .filter((e) => e.gene.value === form.gene.value)
+    .filter((e) => view.includes(e.cancer.value))
     .map((e) => {
       proteinData = proteinData.concat(e.participants.records);
       rnaData = rnaData.concat(e.rna.records);
     });
 
-  const [view, setView] = useState(form.cancer[0].value);
-  const [tab, setTab] = useState("summary");
   const [numType, setNumType] = useState("log2");
 
   function handleToggle(e) {
@@ -357,10 +355,22 @@ export default function ProteinCorrelation() {
           <Form.Select
             name="caseView"
             onChange={(e) => {
-              setView(parseInt(e.target.value));
+              if (e.target.value === "all") {
+                setView(form.cancer.map((e) => e.value));
+                setLabel("");
+              } else {
+                setView([parseInt(e.target.value)]);
+                setLabel(
+                  form.cancer.find((d) => d.value === parseInt(e.target.value))
+                    .label,
+                );
+              }
             }}
             value={view}
             required>
+            <option value="all" key={`dataset-all`}>
+              All Tumor Types
+            </option>
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
@@ -421,7 +431,7 @@ export default function ProteinCorrelation() {
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
+              title: `<b>${label} Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
               autosize: true,
               legend: {
                 orientation: "h",
@@ -430,7 +440,7 @@ export default function ProteinCorrelation() {
               },
               annotations: [
                 {
-                  text: getData.length === 0 ? "No data available" : "",
+                  text: proteinRNA.length === 0 ? "No data available" : "",
                   xref: "paper",
                   yref: "paper",
                   showarrow: false,
@@ -452,7 +462,7 @@ export default function ProteinCorrelation() {
         <Row>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Tumor Correlation:{" "}
-            {getData.length
+            {proteinRNA.length
               ? calculateCorrelation(
                   proteinRNA.map((e) =>
                     numType === "log2"
@@ -468,7 +478,7 @@ export default function ProteinCorrelation() {
           </div>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Control Correlation:{" "}
-            {getData.length
+            {proteinRNA.length
               ? calculateCorrelation(
                   proteinRNA.map((e) =>
                     numType === "log2"
@@ -487,7 +497,7 @@ export default function ProteinCorrelation() {
 
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Total Correlation:{" "}
-            {getData.length
+            {proteinRNA.length
               ? calculateCorrelation(
                   proteinRNA
                     .map((e) =>
