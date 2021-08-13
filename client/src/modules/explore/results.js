@@ -747,33 +747,34 @@ export default function Results() {
               />
             </ExcelFile>
           </div>
-        </div>
-        <Table
-          columns={proteinAbundanceColumns}
-          defaultSort={[{ id: "name", asec: true }]}
-          data={results
-            .find((e) => e.cancer.value === view)
-            .participants.records.map((c) => {
-              return {
-                name: c.participantId,
-                tumorValue: c.tumorValue
-                  ? Number(c.tumorValue.toFixed(4))
-                  : "NA",
-                normalValue: c.normalValue
-                  ? Number(c.normalValue.toFixed(4))
-                  : "NA",
-                proteinDiff:
-                  c.tumorValue && c.normalValue
-                    ? Number(
-                        (
-                          Number(c.tumorValue.toFixed(4)) -
-                          Number(c.normalValue.toFixed(4))
-                        ).toFixed(4),
-                      )
+
+          <Table
+            columns={proteinAbundanceColumns}
+            defaultSort={[{ id: "name", asec: true }]}
+            data={results
+              .find((e) => e.cancer.value === view)
+              .participants.records.map((c) => {
+                return {
+                  name: c.participantId,
+                  tumorValue: c.tumorValue
+                    ? Number(c.tumorValue.toFixed(4))
                     : "NA",
-              };
-            })}
-        />
+                  normalValue: c.normalValue
+                    ? Number(c.normalValue.toFixed(4))
+                    : "NA",
+                  proteinDiff:
+                    c.tumorValue && c.normalValue
+                      ? Number(
+                          (
+                            Number(c.tumorValue.toFixed(4)) -
+                            Number(c.normalValue.toFixed(4))
+                          ).toFixed(4),
+                        )
+                      : "NA",
+                };
+              })}
+          />
+        </div>
       </Tab>
     </Tabs>
   );

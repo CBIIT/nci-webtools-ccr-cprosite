@@ -347,7 +347,7 @@ export default function ProteinCorrelation() {
 
   return (
     <div>
-      <Form.Group className="row mx-3" controlId="tumorView">
+      <Form.Group className="row m-3" controlId="tumorView">
         <Form.Label
           className="col-xl-1 col-xs-12 col-form-label"
           style={{ minWidth: "120px" }}>
