@@ -306,6 +306,18 @@ export default function ProteinCorrelation() {
     },
   ];
 
+  function getTimestamp() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return year + month + day + minutes + seconds;
+  }
+
   const proteinRNAScatter = [
     {
       x: proteinRNA.map((e) =>
@@ -334,30 +346,29 @@ export default function ProteinCorrelation() {
   ];
 
   return (
-    <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summary" title="Correlation">
-        <Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label
-            className="col-xl-1 col-xs-12 col-form-label"
-            style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-          <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(e) => {
-                setView(parseInt(e.target.value));
-              }}
-              value={view}
-              required>
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
-                </option>
-              ))}
-            </Form.Select>
-          </div>
-          {/*<ToggleButtonGroup
+    <div>
+      <Form.Group className="row mx-3" controlId="tumorView">
+        <Form.Label
+          className="col-xl-1 col-xs-12 col-form-label"
+          style={{ minWidth: "120px" }}>
+          Tumor Type
+        </Form.Label>
+        <div className="col-xl-3">
+          <Form.Select
+            name="caseView"
+            onChange={(e) => {
+              setView(parseInt(e.target.value));
+            }}
+            value={view}
+            required>
+            {form.cancer.map((o) => (
+              <option value={o.value} key={`dataset-${o.value}`}>
+                {o.label}
+              </option>
+            ))}
+          </Form.Select>
+        </div>
+        {/*<ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={numType}
@@ -377,169 +388,174 @@ export default function ProteinCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-          <Form.Group className="col-xl-6 mb-3 col-form-label">
-            <Form.Check
-              inline
-              label={
-                <span>
-                  Log<sub>2</sub> vs Log<sub>2</sub>
-                </span>
-              }
-              type="radio"
-              id="log2"
-              value="numType"
-              checked={numType === "log2"}
-              onChange={handleToggle}
-            />
+        <Form.Group className="col-xl-6 mb-3 col-form-label">
+          <Form.Check
+            inline
+            label={
+              <span>
+                Log<sub>2</sub> vs Log<sub>2</sub>
+              </span>
+            }
+            type="radio"
+            id="log2"
+            value="numType"
+            checked={numType === "log2"}
+            onChange={handleToggle}
+          />
 
-            <Form.Check
-              inline
-              label="Numeric vs Numeric"
-              type="radio"
-              id="numeric"
-              value="numType"
-              checked={numType === "numeric"}
-              onChange={handleToggle}
-            />
-          </Form.Group>
+          <Form.Check
+            inline
+            label="Numeric vs Numeric"
+            type="radio"
+            id="numeric"
+            value="numType"
+            checked={numType === "numeric"}
+            onChange={handleToggle}
+          />
         </Form.Group>
+      </Form.Group>
 
-        <Row className="mx-3 mt-3">
-          <Col xl={12}>
-            <Plot
-              data={proteinRNAScatter}
-              layout={{
-                ...defaultLayout,
-                title: `<b>Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
-                autosize: true,
-                legend: {
-                  orientation: "h",
-                  y: -0.2,
-                  x: 0.37,
-                },
-                annotations: [
-                  {
-                    text: getData.length === 0 ? "No data available" : "",
-                    xref: "paper",
-                    yref: "paper",
-                    showarrow: false,
-                    font: {
-                      size: 28,
-                    },
+      <Row className="mx-3 mt-3">
+        <Col xl={12}>
+          <Plot
+            data={proteinRNAScatter}
+            layout={{
+              ...defaultLayout,
+              title: `<b>Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
+              autosize: true,
+              legend: {
+                orientation: "h",
+                y: -0.2,
+                x: 0.37,
+              },
+              annotations: [
+                {
+                  text: getData.length === 0 ? "No data available" : "",
+                  xref: "paper",
+                  yref: "paper",
+                  showarrow: false,
+                  font: {
+                    size: 28,
                   },
-                ],
-              }}
-              config={defaultConfig}
-              useResizeHandler
-              className="flex-fill w-100"
-              style={{ height: "500px" }}
-            />
-          </Col>
-        </Row>
+                },
+              ],
+            }}
+            config={defaultConfig}
+            useResizeHandler
+            className="flex-fill w-100"
+            style={{ height: "500px" }}
+          />
+        </Col>
+      </Row>
 
-        <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
-          <Row>
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Tumor Correlation:{" "}
-              {getData.length
-                ? calculateCorrelation(
-                    proteinRNA.map((e) =>
-                      numType === "log2"
-                        ? e.proteinTumor
-                        : Math.pow(2, e.proteinTumor),
-                    ),
-                    proteinRNA.map((e) =>
-                      numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
-                    ),
-                    { decimals: 4 },
-                  )
-                : "NA"}
-            </div>
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Control Correlation:{" "}
-              {getData.length
-                ? calculateCorrelation(
-                    proteinRNA.map((e) =>
+      <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
+        <Row>
+          <div className="col-xl-4 my-2 d-flex justify-content-center">
+            Tumor Correlation:{" "}
+            {getData.length
+              ? calculateCorrelation(
+                  proteinRNA.map((e) =>
+                    numType === "log2"
+                      ? e.proteinTumor
+                      : Math.pow(2, e.proteinTumor),
+                  ),
+                  proteinRNA.map((e) =>
+                    numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
+                  ),
+                  { decimals: 4 },
+                )
+              : "NA"}
+          </div>
+          <div className="col-xl-4 my-2 d-flex justify-content-center">
+            Control Correlation:{" "}
+            {getData.length
+              ? calculateCorrelation(
+                  proteinRNA.map((e) =>
+                    numType === "log2"
+                      ? e.proteinControl
+                      : Math.pow(2, e.proteinControl),
+                  ),
+                  proteinRNA.map((e) =>
+                    numType === "log2"
+                      ? e.rnaControl
+                      : Math.pow(2, e.rnaControl),
+                  ),
+                  { decimals: 4 },
+                )
+              : "NA"}
+          </div>
+
+          <div className="col-xl-4 my-2 d-flex justify-content-center">
+            Total Correlation:{" "}
+            {getData.length
+              ? calculateCorrelation(
+                  proteinRNA
+                    .map((e) =>
                       numType === "log2"
                         ? e.proteinControl
                         : Math.pow(2, e.proteinControl),
+                    )
+                    .concat(
+                      proteinRNA.map((e) =>
+                        numType === "log2"
+                          ? e.proteinTumor
+                          : Math.pow(2, e.proteinTumor),
+                      ),
                     ),
-                    proteinRNA.map((e) =>
+                  proteinRNA
+                    .map((e) =>
                       numType === "log2"
                         ? e.rnaControl
                         : Math.pow(2, e.rnaControl),
+                    )
+                    .concat(
+                      proteinRNA.map((e) =>
+                        numType === "log2"
+                          ? e.rnaTumor
+                          : Math.pow(2, e.rnaTumor),
+                      ),
                     ),
-                    { decimals: 4 },
-                  )
-                : "NA"}
-            </div>
-
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Total Correlation:{" "}
-              {getData.length
-                ? calculateCorrelation(
-                    proteinRNA
-                      .map((e) =>
-                        numType === "log2"
-                          ? e.proteinControl
-                          : Math.pow(2, e.proteinControl),
-                      )
-                      .concat(
-                        proteinRNA.map((e) =>
-                          numType === "log2"
-                            ? e.proteinTumor
-                            : Math.pow(2, e.proteinTumor),
-                        ),
-                      ),
-                    proteinRNA
-                      .map((e) =>
-                        numType === "log2"
-                          ? e.rnaControl
-                          : Math.pow(2, e.rnaControl),
-                      )
-                      .concat(
-                        proteinRNA.map((e) =>
-                          numType === "log2"
-                            ? e.rnaTumor
-                            : Math.pow(2, e.rnaTumor),
-                        ),
-                      ),
-                    { decimals: 4 },
-                  )
-                : "NA"}
-            </div>
-          </Row>
-        </fieldset>
-
-        <div className="m-3">
-          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet
-                dataSet={exportSummarySettings()}
-                name="Input Configuration"
-              />
-              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
-            </ExcelFile>
+                  { decimals: 4 },
+                )
+              : "NA"}
           </div>
-          <Table
-            columns={correlationColumns}
-            defaultSort={[{ id: "name", asec: true }]}
-            data={proteinRNA.map((c) => {
-              return {
-                name: c.name,
-                proteinTumor: c.proteinTumor,
-                proteinTumorNum: c.proteinTumorNum,
-                proteinControl: c.proteinControl,
-                proteinControlNum: c.proteinControlNum,
-                rnaTumor: c.rnaTumor,
-                rnaTumorNum: c.rnaTumorNum,
-                rnaControl: c.rnaControl,
-                rnaControlNum: c.rnaControlNum,
-              };
-            })}
-          />
+        </Row>
+      </fieldset>
+
+      <div className="m-3">
+        <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+          <ExcelFile
+            filename={`CPROSITE-${
+              form.dataset.value === "proteinData"
+                ? "ProteinAbundance"
+                : "Phosphorylation"
+            }-Correlation-${getTimestamp()}`}
+            element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelSheet
+              dataSet={exportSummarySettings()}
+              name="Input Configuration"
+            />
+            <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+          </ExcelFile>
         </div>
-      </Tab>
-    </Tabs>
+        <Table
+          columns={correlationColumns}
+          defaultSort={[{ id: "name", asec: true }]}
+          data={proteinRNA.map((c) => {
+            return {
+              name: c.name,
+              proteinTumor: c.proteinTumor,
+              proteinTumorNum: c.proteinTumorNum,
+              proteinControl: c.proteinControl,
+              proteinControlNum: c.proteinControlNum,
+              rnaTumor: c.rnaTumor,
+              rnaTumorNum: c.rnaTumorNum,
+              rnaControl: c.rnaControl,
+              rnaControlNum: c.rnaControlNum,
+            };
+          })}
+        />
+      </div>
+    </div>
   );
 }

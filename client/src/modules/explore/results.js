@@ -480,7 +480,17 @@ export default function Results() {
     },
   ];
 
-  console.log(averages);
+  function getTimestamp() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return year + month + day + minutes + seconds;
+  }
 
   const defaultLayout = {
     xaxis: {
@@ -521,8 +531,6 @@ export default function Results() {
     ],
   };
 
-  console.log(averages);
-
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -562,7 +570,9 @@ export default function Results() {
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Summary-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
@@ -724,7 +734,9 @@ export default function Results() {
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Tumor-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportAbundanceSettings}
                 name="Input Configuration"

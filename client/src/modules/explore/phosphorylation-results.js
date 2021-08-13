@@ -518,8 +518,6 @@ export default function PhosResults() {
     },
   ];
 
-  console.log(exportSummarySettings());
-
   const exportSiteSettings = [
     {
       columns: [
@@ -549,27 +547,40 @@ export default function PhosResults() {
         }),
         data:
           sortResults.length > 0 && sortResults.find((c) => c[0] === phosView)
-            ? sortResults.find((c) => c[0] === phosView)[1]
-            : [].map((d) => {
-                return [
-                  { value: d.participantId },
-                  { value: d.tumorValue ? d.tumorValue.toFixed(4) : "NA" },
-                  { value: d.normalValue ? d.normalValue.toFixed(4) : "NA" },
-                  {
-                    value:
-                      d.tumorValue && d.normalValue
-                        ? (
-                            d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
-                          ).toFixed(4)
-                        : "NA",
-                  },
-                ];
-              }),
+            ? sortResults
+                .find((c) => c[0] === phosView)[1]
+                .map((d) => {
+                  return [
+                    { value: d.participantId },
+                    { value: d.tumorValue ? d.tumorValue.toFixed(4) : "NA" },
+                    { value: d.normalValue ? d.normalValue.toFixed(4) : "NA" },
+                    {
+                      value:
+                        d.tumorValue && d.normalValue
+                          ? (
+                              d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
+                            ).toFixed(4)
+                          : "NA",
+                    },
+                  ];
+                })
+            : [],
       },
     ];
   }
 
-  console.log(tumorViewData);
+  function getTimestamp() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return year + month + day + minutes + seconds;
+  }
+
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="tumorView" title="Tumor View">
@@ -654,10 +665,11 @@ export default function PhosResults() {
           </Col>
         </Row>
 
-        {console.log(new Date().toLocaleDateString())}
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-Phosphorylation-TumorVsNormal-Tumor-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
@@ -842,7 +854,9 @@ export default function PhosResults() {
 
         <Row className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-Phosphorylation-TumorVsNormal-Site-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSiteSettings}
                 name="Input Configuration"
