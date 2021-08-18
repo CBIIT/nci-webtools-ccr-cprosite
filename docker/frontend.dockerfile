@@ -13,9 +13,6 @@ RUN dnf -y update \
     nodejs \
  && dnf clean all
 
-# Add custom httpd configuration
-COPY docker/cprosite.conf /etc/httpd/conf.d/cprosite.conf
-
 RUN mkdir /client
 
 WORKDIR /client
@@ -30,6 +27,9 @@ RUN npm run build \
  && mv /client/build /var/www/html/cprosite
 
 WORKDIR /var/www/html
+
+# Add custom httpd configuration
+COPY docker/httpd-cprosite.conf /etc/httpd/conf.d/httpd-cprosite.conf
 
 EXPOSE 80
 EXPOSE 443
