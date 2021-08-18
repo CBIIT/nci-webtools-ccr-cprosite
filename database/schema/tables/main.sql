@@ -34,6 +34,18 @@ create table "phosphoproteinData" (
     "phosphopeptide" text
 );
 
+create table "phosphoproteinRatioData" (
+    "id" integer primary key,
+    "cancerId" integer references "cancer"("id"),
+    "geneId" integer references "gene"("id"),
+    "participantId" text,
+    "normalValue" real,
+    "tumorValue" real,
+    "accession" text,
+    "phosphorylationSite" text,
+    "phosphopeptide" text
+);
+
 create table "rnaData" (
     "id" integer primary key,
     "cancerId" integer references "cancer"("id"),
@@ -74,6 +86,24 @@ create table "phosphoproteinDataSummary" (
     "id" integer primary key,
     "cancerId" integer references "cancer"("id"),
     "geneId" integer references "gene"("id"),
+    "phosphorylationSite" text default('all'),
+    "normalSampleCount" integer,
+    "normalSampleMean" real,
+    "normalSampleMedian" real,
+    "normalSampleStandardError" real,
+    "tumorSampleCount" integer,
+    "tumorSampleMean" real,
+    "tumorSampleMedian" real,
+    "tumorSampleStandardError" real,
+    "pValuePaired" real,
+    "pValueUnpaired" real
+);
+
+create table "phosphoproteinRatioDataSummary" (
+    "id" integer primary key,
+    "cancerId" integer references "cancer"("id"),
+    "geneId" integer references "gene"("id"),
+    "phosphorylationSite" text default('all'),
     "normalSampleCount" integer,
     "normalSampleMean" real,
     "normalSampleMedian" real,
