@@ -56,7 +56,13 @@ export default function Explore() {
           <ProteinGeneCorrelation />
         );
       case "phosphoproteinRatioData":
-        return <ProteinPhosResults />;
+        return form.analysis.value === "tumor-control" ? (
+          <ProteinPhosResults />
+        ) : form.correlation === "proteinMRNA" ? (
+          <ProteinCorrelation />
+        ) : (
+          <ProteinGeneCorrelation />
+        );
       default:
         return "";
     }

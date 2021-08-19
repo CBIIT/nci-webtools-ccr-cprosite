@@ -126,9 +126,11 @@ export default function ProteinGeneCorrelation() {
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="second_tumor_num">RNA Tumor Abundance</Tooltip>
+            <Tooltip id="second_tumor_num">
+              {secondGene} Tumor Abundance
+            </Tooltip>
           }>
-          <b>RNA Tumor Abundance</b>
+          <b>{secondGene} Tumor Abundance</b>
         </OverlayTrigger>
       ),
     },
@@ -203,22 +205,34 @@ export default function ProteinGeneCorrelation() {
     if (second) {
       return {
         name: first.participantId,
-        firstTumor: first.tumorValue,
+        firstTumor:
+          first.tumorValue !== null
+            ? Number(first.tumorValue.toFixed(4))
+            : null,
         firstTumorNum:
           first.tumorValue !== null
             ? Number(Math.pow(2, first.tumorValue).toFixed(4))
             : null,
-        firstControl: first.normalValue,
+        firstControl:
+          first.normalValue !== null
+            ? Number(first.normalValue.toFixed(4))
+            : null,
         firstControlNum:
           first.normalValue !== null
             ? Number(Math.pow(2, first.normalValue).toFixed(4))
             : null,
-        secondTumor: second.tumorValue,
+        secondTumor:
+          second.tumorValue !== null
+            ? Number(second.tumorValue.toFixed(4))
+            : null,
         secondTumorNum:
           second.tumorValue !== null
             ? Number(Math.pow(2, second.tumorValue).toFixed(4))
             : null,
-        secondControl: second.normalValue,
+        secondControl:
+          second.normalValue !== null
+            ? Number(second.normalValue.toFixed(4))
+            : null,
         secondControlNum:
           second.normalValue !== null
             ? Number(Math.pow(2, second.normalValue).toFixed(4))
