@@ -182,12 +182,14 @@ export default function ProteinCorrelation() {
     if (rna) {
       return {
         name: e.participantId,
-        proteinTumor: e.tumorValue,
+        proteinTumor:
+          e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : null,
         proteinTumorNum:
           e.tumorValue !== null
             ? Number(Math.pow(2, e.tumorValue).toFixed(4))
             : null,
-        proteinControl: e.normalValue,
+        proteinControl:
+          e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : null,
         proteinControlNum:
           e.normalValue !== null
             ? Number(Math.pow(2, e.normalValue).toFixed(4))
