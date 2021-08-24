@@ -21,10 +21,11 @@ const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function PhosResults() {
   const form = useRecoilValue(formState);
+  const tumors = form.cancer;
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer[0].value);
 
-  const [tab, setTab] = useState("tumorView");
+  const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
   console.log(results);
@@ -36,12 +37,83 @@ export default function PhosResults() {
     ),
   ).filter((e) => e[0] !== "null");
 
-  console.log(sortResults);
+  var sortSummary = [];
+  results.map((e) => {
+    sortSummary = sortSummary.concat(e.summary.records);
+  });
+
+  sortSummary = Object.entries(
+    _.groupBy(sortSummary, "phosphorylationSite"),
+  ).filter((e) => e[0] !== "null");
+
+  const heatmap = sortSummary.map((e) => {
+    var toAdd = Array(10).fill(null);
+    e[1].map((f) => {
+      if (f.tumorSampleMean !== null && f.normalSampleMean !== null) {
+        const logFoldChange = Number(
+          (f.tumorSampleMean - f.normalSampleMean).toFixed(4),
+        );
+        toAdd[tumors.map((e) => e.value).indexOf(f.cancerId)] = logFoldChange;
+      }
+    });
+    return toAdd;
+  });
+
+  const heatMapData = [
+    {
+      z: heatmap,
+      x: tumors.map((e) => e.label),
+      y: sortSummary.map((e) => e[0]),
+      type: "heatmap",
+      hoverongaps: false,
+    },
+  ];
+
+  function summaryViewData() {
+    var rows = [];
+
+    sortSummary.map((c) => {
+      c[1].map((e) => {
+        const currentTumor = tumors.find((f) => f.value === e.cancerId);
+        rows = rows.concat({
+          tumor: (
+            <a
+              key={"summary-" + currentTumor.label}
+              onClick={() => {
+                setView(currentTumor.value);
+                setTab("tumorView");
+              }}
+              href="javascript:void(0)">
+              {currentTumor.label}
+            </a>
+          ),
+          phosphorylationSite: (
+            <a
+              key={"summary-" + e.phosphorylationSite}
+              onClick={() => {
+                setView(currentTumor.value);
+                setPhosView(e.phosphorylationSite);
+                setTab("phosView");
+              }}
+              href="javascript:void(0)">
+              {e.phosphorylationSite}
+            </a>
+          ),
+          proteinDiff:
+            e.tumorSampleMean !== null && e.normalSampleMean !== null
+              ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
+              : "NA",
+          tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
+          controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
+        });
+      });
+    });
+    return rows;
+  }
 
   const tumorViewData = results
     .find((e) => e.cancer.value === view)
     .summary.records.map((e) => {
-      console.log(e.phosphorylationSite);
       const patients = sortResults.find(
         (d) => d[0] === e.phosphorylationSite,
       )[1];
@@ -65,6 +137,7 @@ export default function PhosResults() {
             : "NA",
         link: (
           <a
+            key={"tumor-" + e.phosphorylationSite}
             onClick={() => {
               setPhosView(e.phosphorylationSite);
               setTab("phosView");
@@ -158,7 +231,77 @@ export default function PhosResults() {
     },
   ];
 
-  const summary = [
+  const summaryColumns = [
+    {
+      accessor: "tumor",
+      id: "tumor",
+      label: "Tumor Type",
+      Header: (
+        <OverlayTrigger overlay={<Tooltip id="tumor_type">Tumor Type</Tooltip>}>
+          <b>Tumor Type</b>
+        </OverlayTrigger>
+      ),
+      sort: true,
+      sortType: (a, b) =>
+        a.original.tumor.key > b.original.tumor.key ? 1 : -1,
+    },
+    {
+      accessor: "phosphorylationSite",
+      label: "Phosphorylation Site",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="tumor_type">Phosphorylation Site</Tooltip>}>
+          <b>Phospho Site.</b>
+        </OverlayTrigger>
+      ),
+      sort: true,
+      sortType: (a, b) =>
+        a.original.phosphorylationSite.key > b.original.phosphorylationSite.key
+          ? 1
+          : -1,
+    },
+    {
+      accessor: "proteinDiff",
+      label: "Log2 Fold Change",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="tumor_type">
+              Average Protein Phosphorylation Level Difference (log<sub>2</sub>{" "}
+              ratio between Tumor vs Adjacent Normal)
+            </Tooltip>
+          }>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "tumorNum",
+      label: "Tumor Count",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="tumor_type">Tumor Sample Number</Tooltip>}>
+          <b>Tumor Count</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "controlNum",
+      label: "Adjacent Normal Count",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>
+          }>
+          <b>Adj. Normal Count</b>
+        </OverlayTrigger>
+      ),
+    },
+  ];
+
+  const tumorColumns = [
     {
       accessor: "link",
       id: "link",
@@ -169,6 +312,8 @@ export default function PhosResults() {
           <b>Phsopho. Site</b>
         </OverlayTrigger>
       ),
+      sort: true,
+      sortType: (a, b) => (a.original.link.key > b.original.link.key ? 1 : -1),
     },
     {
       accessor: "accession",
@@ -473,7 +618,7 @@ export default function PhosResults() {
     ],
   };
 
-  function exportSummarySettings() {
+  function exportTumorSettings() {
     var settings = form.cancer.map((e) => {
       return [{ value: e.label }];
     });
@@ -494,9 +639,9 @@ export default function PhosResults() {
     ];
   }
 
-  const exportSummary = [
+  const exportTumor = [
     {
-      columns: summary.map((e) => {
+      columns: tumorColumns.map((e) => {
         return { title: e.label, width: { wpx: 200 } };
       }),
       data: tumorViewData.map((e) => {
@@ -585,6 +730,38 @@ export default function PhosResults() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
+      <Tab eventKey="summaryView" title="Summary View">
+        <div className="m-3">
+          <Plot
+            data={heatMapData}
+            layout={{
+              ...defaultLayout,
+              title: "<b>Phosphorylation Summary View</b>",
+              xaxis: {
+                title: "Phosphorylation Site",
+              },
+              yaxis: {
+                title: "Tumors",
+              },
+              autosize: true,
+            }}
+            useResizeHandler
+            config={defaultConfig}
+            style={{
+              height: "800px",
+              width: `100%`,
+              minWidth: "100%",
+            }}
+          />
+        </div>
+        <div className="m-3">
+          <Table
+            columns={summaryColumns}
+            defaultSort={[{ id: "tumor", asec: true }]}
+            data={summaryViewData()}
+          />
+        </div>
+      </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label
@@ -671,14 +848,14 @@ export default function PhosResults() {
               filename={`CPROSITE-Phosphorylation-TumorVsNormal-Tumor-${getTimestamp()}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
-                dataSet={exportSummarySettings()}
+                dataSet={exportTumorSettings()}
                 name="Input Configuration"
               />
-              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+              <ExcelSheet dataSet={exportTumor} name="Tumor View Data" />
             </ExcelFile>
           </div>
           <Table
-            columns={summary}
+            columns={tumorColumns}
             data={tumorViewData}
             defaultSort={[{ id: "link", asec: true }]}
           />
