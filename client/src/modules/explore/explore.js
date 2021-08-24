@@ -11,6 +11,7 @@ import Results from "./results";
 import PhosResults from "./phosphorylation-results";
 import ProteinCorrelation from "./protein-correlation";
 import ProteinGeneCorrelation from "./protein-genevsgene";
+import ProteinPhosResults from "./proteinPhos-results";
 import {
   SidebarContainer,
   SidebarPanel,
@@ -39,10 +40,24 @@ export default function Explore() {
   function results() {
     switch (form.dataset.value) {
       case "phosphoproteinData":
-        return <PhosResults />;
+        return form.analysis.value === "tumor-control" ? (
+          <PhosResults />
+        ) : form.correlation === "proteinMRNA" ? (
+          <ProteinCorrelation />
+        ) : (
+          <ProteinGeneCorrelation />
+        );
       case "proteinData":
         return form.analysis.value === "tumor-control" ? (
           <Results />
+        ) : form.correlation === "proteinMRNA" ? (
+          <ProteinCorrelation />
+        ) : (
+          <ProteinGeneCorrelation />
+        );
+      case "phosphoproteinRatioData":
+        return form.analysis.value === "tumor-control" ? (
+          <ProteinPhosResults />
         ) : form.correlation === "proteinMRNA" ? (
           <ProteinCorrelation />
         ) : (

@@ -82,6 +82,34 @@ const timestamp = getTimestamp(
     console.log(`[${timestamp()}] finished importing ${table}`);
   }
 
+  // generate ratios table
+  database.exec(
+    `insert into phosphoproteinRatioData
+    (
+        cancerId,
+        geneId,
+        participantId,
+        normalValue,
+        tumorValue,
+        accession,
+        phosphorylationSite,
+        phosphopeptide
+    ) select
+        pd.cancerId,
+        pd.geneId,
+        pd.participantId,
+        ppd.normalValue - pd.normalValue as normalValue,
+        ppd.tumorValue - pd.tumorValue as tumorValue,
+        ppd.accession,
+        ppd.phosphorylationSite,
+        ppd.phosphopeptide
+    from proteinData pd
+        inner join phosphoproteinData ppd on
+            pd.cancerId = ppd.cancerId and
+            pd.geneId = ppd.geneId and
+            pd.participantId = ppd.participantId`,
+  );
+
   // create indexes
   console.log(`[${timestamp()}] started generating indexes`);
   database.exec(mainIndexesSql);
@@ -90,98 +118,200 @@ const timestamp = getTimestamp(
   for (const [dataTable, dataSummaryTable] of [
     ["proteinData", "proteinDataSummary"],
     ["phosphoproteinData", "phosphoproteinDataSummary"],
+    ["phosphoproteinRatioData", "phosphoproteinRatioDataSummary"],
     ["rnaData", "rnaDataSummary"],
     ["tcgaRnaData", "tcgaRnaDataSummary"],
   ]) {
-    // insert normal values
-    console.log(
-      `[${timestamp()}] started generating normal sample statistics: ${dataSummaryTable}`,
-    );
-    database.exec(
-      `insert into "${dataSummaryTable}" (
-          geneId,
-          cancerId,
-          normalSampleCount,
-          normalSampleMean,
-          normalSampleMedian,
-          normalSampleStandardError
-      )
-      select
-          geneId,
-          cancerId,
-          count(normalValue) as normalSampleCount,
-          avg(normalValue) as normalSampleMean,
-          median(normalValue) as normalSampleMedian,
-          stdev(normalValue) / sqrt(count(normalValue))
-      from "${dataTable}"
-      where normalValue is not null
-      group by cancerId, geneId
-      on conflict("cancerId", "geneId") do update set
-          "normalSampleCount" = excluded."normalSampleCount",
-          "normalSampleMean" = excluded."normalSampleMean",
-          "normalSampleMedian" = excluded."normalSampleMedian",
-          "normalSampleStandardError" = excluded."normalSampleStandardError"`,
-    );
-    console.log(
-      `[${timestamp()}] finished generating normal sample statistics: ${dataSummaryTable}`,
-    );
+    // import phosphorylation site-specific summaries
+    if (["phosphoproteinData", "phosphoproteinRatioData"].includes(dataTable)) {
+      console.log(
+        `[${timestamp()}] started generating normal sample statistics for phosphorylation sites: ${dataSummaryTable}`,
+      );
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            geneId,
+            cancerId,
+            phosphorylationSite,
+            normalSampleCount,
+            normalSampleMean,
+            normalSampleMedian,
+            normalSampleStandardError
+        )
+        select
+            geneId,
+            cancerId,
+            phosphorylationSite,
+            count(normalValue) as normalSampleCount,
+            avg(normalValue) as normalSampleMean,
+            median(normalValue) as normalSampleMedian,
+            stdev(normalValue) / sqrt(count(normalValue))
+        from "${dataTable}"
+        where normalValue is not null and phosphorylationSite is not null
+        group by cancerId, geneId, phosphorylationSite
+        on conflict do update set
+            "normalSampleCount" = excluded."normalSampleCount",
+            "normalSampleMean" = excluded."normalSampleMean",
+            "normalSampleMedian" = excluded."normalSampleMedian",
+            "normalSampleStandardError" = excluded."normalSampleStandardError"`,
+      );
+      console.log(
+        `[${timestamp()}] finished generating normal sample statistics for phosphorylation sites: ${dataSummaryTable}`,
+      );
 
-    console.log(
-      `[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`,
-    );
-    database.exec(
-      `insert into "${dataSummaryTable}" (
-          cancerId,
-          geneId,
-          tumorSampleCount,
-          tumorSampleMean,
-          tumorSampleMedian,
-          tumorSampleStandardError
-      )
-      select
-          cancerId,
-          geneId,
-          count(tumorValue) as tumorSampleCount,
-          avg(tumorValue) as tumorSampleMean,
-          median(tumorValue) as tumorSampleMedian,
-          stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
-      from "${dataTable}"
-      where tumorValue is not null
-      group by cancerId, geneId
-      on conflict("cancerId", "geneId") do update set
-          "tumorSampleCount" = excluded."tumorSampleCount",
-          "tumorSampleMean" = excluded."tumorSampleMean",
-          "tumorSampleMedian" = excluded."tumorSampleMedian",
-          "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
-    );
-    console.log(
-      `[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`,
-    );
+      console.log(
+        `[${timestamp()}] finished generating tumor sample statistics for phosphorylation sites: ${dataSummaryTable}`,
+      );
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            cancerId,
+            geneId,
+            phosphorylationSite,
+            tumorSampleCount,
+            tumorSampleMean,
+            tumorSampleMedian,
+            tumorSampleStandardError
+        )
+        select
+            cancerId,
+            geneId,
+            phosphorylationSite,
+            count(tumorValue) as tumorSampleCount,
+            avg(tumorValue) as tumorSampleMean,
+            median(tumorValue) as tumorSampleMedian,
+            stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
+        from "${dataTable}"
+        where tumorValue is not null and phosphorylationSite is not null
+        group by cancerId, geneId, phosphorylationSite
+        on conflict do update set
+            "tumorSampleCount" = excluded."tumorSampleCount",
+            "tumorSampleMean" = excluded."tumorSampleMean",
+            "tumorSampleMedian" = excluded."tumorSampleMedian",
+            "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
+      );
+      console.log(
+        `[${timestamp()}] finished generating tumor sample statistics for phosphorylation sites: ${dataSummaryTable}`,
+      );
 
-    console.log(
-      `[${timestamp()}] started generating p-values: ${dataSummaryTable}`,
-    );
-    database.exec(
-      `insert into "${dataSummaryTable}" (
-        cancerId,
-        geneId,
-        pValuePaired,
-        pValueUnpaired
-      )
-      select
+      console.log(
+        `[${timestamp()}] started generating p-values for phosphorylation sites: ${dataSummaryTable}`,
+      );
+      database.exec(
+        `insert into "${dataSummaryTable}" (
           cancerId,
           geneId,
-          wilcoxon(normalValue, tumorValue) as pValuePaired,
-          ttest2(normalValue, tumorValue) as pValueUnpaired
-      from "${dataTable}"
-      group by cancerId, geneId
-      on conflict("cancerId", "geneId") do update set
-        "pValuePaired" = excluded."pValuePaired",
-        "pValueUnpaired" = excluded."pValueUnpaired"`,
-    );
-    console.log(
-      `[${timestamp()}] finished generating p-values: ${dataSummaryTable}`,
-    );
+          phosphorylationSite,
+          pValuePaired,
+          pValueUnpaired
+        )
+        select
+            cancerId,
+            geneId,
+            phosphorylationSite,
+            wilcoxon(normalValue, tumorValue) as pValuePaired,
+            ttest2(normalValue, tumorValue) as pValueUnpaired
+        from "${dataTable}" 
+        where phosphorylationSite is not null
+        group by cancerId, geneId, phosphorylationSite
+        on conflict do update set
+          "pValuePaired" = excluded."pValuePaired",
+          "pValueUnpaired" = excluded."pValueUnpaired"`,
+      );
+
+      console.log(
+        `[${timestamp()}] finished generating p-values for phosphorylation sites: ${dataSummaryTable}`,
+      );
+    } else {
+      // insert normal values
+      console.log(
+        `[${timestamp()}] started generating normal sample statistics: ${dataSummaryTable}`,
+      );
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            geneId,
+            cancerId,
+            normalSampleCount,
+            normalSampleMean,
+            normalSampleMedian,
+            normalSampleStandardError
+        )
+        select
+            geneId,
+            cancerId,
+            count(normalValue) as normalSampleCount,
+            avg(normalValue) as normalSampleMean,
+            median(normalValue) as normalSampleMedian,
+            stdev(normalValue) / sqrt(count(normalValue))
+        from "${dataTable}"
+        where normalValue is not null
+        group by cancerId, geneId
+        on conflict do update set
+            "normalSampleCount" = excluded."normalSampleCount",
+            "normalSampleMean" = excluded."normalSampleMean",
+            "normalSampleMedian" = excluded."normalSampleMedian",
+            "normalSampleStandardError" = excluded."normalSampleStandardError"`,
+      );
+      console.log(
+        `[${timestamp()}] finished generating normal sample statistics: ${dataSummaryTable}`,
+      );
+
+      console.log(
+        `[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`,
+      );
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            cancerId,
+            geneId,
+            tumorSampleCount,
+            tumorSampleMean,
+            tumorSampleMedian,
+            tumorSampleStandardError
+        )
+        select
+            cancerId,
+            geneId,
+            count(tumorValue) as tumorSampleCount,
+            avg(tumorValue) as tumorSampleMean,
+            median(tumorValue) as tumorSampleMedian,
+            stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
+        from "${dataTable}"
+        where tumorValue is not null
+        group by cancerId, geneId
+        on conflict do update set
+            "tumorSampleCount" = excluded."tumorSampleCount",
+            "tumorSampleMean" = excluded."tumorSampleMean",
+            "tumorSampleMedian" = excluded."tumorSampleMedian",
+            "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
+      );
+      console.log(
+        `[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`,
+      );
+
+      console.log(
+        `[${timestamp()}] started generating p-values: ${dataSummaryTable}`,
+      );
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+          cancerId,
+          geneId,
+          pValuePaired,
+          pValueUnpaired
+        )
+        select
+            cancerId,
+            geneId,
+            wilcoxon(normalValue, tumorValue) as pValuePaired,
+            ttest2(normalValue, tumorValue) as pValueUnpaired
+        from "${dataTable}"
+        group by cancerId, geneId
+        on conflict do update set
+          "pValuePaired" = excluded."pValuePaired",
+          "pValueUnpaired" = excluded."pValueUnpaired"`,
+      );
+
+      console.log(
+        `[${timestamp()}] finished generating p-values: ${dataSummaryTable}`,
+      );
+    }
   }
 
   database.close();

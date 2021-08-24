@@ -8,10 +8,9 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { casesState, formState, proteinDataState } from "./explore.state";
+import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import { query } from "../../services/query";
 import ReactExport from "react-data-export";
 import React, { useState } from "react";
 import _ from "lodash";
@@ -20,16 +19,12 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function Results() {
-  const cases = useRecoilValue(casesState);
   const form = useRecoilValue(formState);
   const getResults = useRecoilValue(resultsState);
   const tumors = form.cancer.map((c) => c.value);
 
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
-  const [foldSize, setFoldSize] = useState(
-    `${cases.filter((c) => tumors[0] === c.cancerId).length.toString() * 20}px`,
-  );
 
   const results = Object.entries(
     _.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId"),
@@ -51,7 +46,7 @@ export default function Results() {
       ),
     },
     {
-      accessor: "proteinLogRatioCase",
+      accessor: "tumorValue",
       label: "Tumor Abundance",
       Header: (
         <OverlayTrigger
@@ -61,8 +56,8 @@ export default function Results() {
       ),
     },
     {
-      accessor: "proteinLogRatioControl",
-      label: "Adjacent Normal Value",
+      accessor: "normalValue",
+      label: "Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger
           overlay={
@@ -73,8 +68,8 @@ export default function Results() {
       ),
     },
     {
-      accessor: "proteinLogRatioChange",
-      label: "Log2 Fold Change Value",
+      accessor: "proteinDiff",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
@@ -84,7 +79,7 @@ export default function Results() {
             </Tooltip>
           }>
           <b>
-            Log<sub>2</sub> Fold Change Value
+            Log<sub>2</sub> Fold Change
           </b>
         </OverlayTrigger>
       ),
@@ -142,12 +137,28 @@ export default function Results() {
       ),
     },
     {
-      accessor: "pValue",
-      label: "P Value",
+      accessor: "pValuePaired",
+      label: "P Value (Paired)",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_pvalue">Mann-Whitney U Test</Tooltip>}>
-          <b>P Value</b>
+          overlay={
+            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
+          }>
+          <b>P Value (Paired)</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValueUnpaired",
+      label: "P Value (Unpaired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">
+              Mann-Whitney U Test (Unpaired)
+            </Tooltip>
+          }>
+          <b>P Value (Unpaired)</b>
         </OverlayTrigger>
       ),
     },
@@ -280,37 +291,10 @@ export default function Results() {
         e.tumorSampleStandardError !== null
           ? Number(e.tumorSampleStandardError.toFixed(4))
           : "NA",
-      controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
-      tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
-      pValue: Number((Math.random() * Math.pow(1, -8)).toFixed(4)),
-      tumorError: !isNaN(tumorAverage)
-        ? Number(
-            calcStandardError(
-              cases
-                .filter(
-                  (d) =>
-                    c.value === d.cancerId && d.proteinLogRatioCase !== null,
-                )
-                .map((e) => e.proteinLogRatioCase),
-              tumorAverage,
-            ),
-          )
-        : "NA",
-      controlError: !isNaN(controlAverage)
-        ? Number(
-            calcStandardError(
-              cases
-                .filter(
-                  (d) =>
-                    c.value === d.cancerId && d.proteinLogRatioControl !== null,
-                )
-                .map((e) => e.proteinLogRatioControl),
-              controlAverage,
-            ),
-          )
-        : "NA",
     };
   });
+
+  console.log(averages);
 
   function multiBarPlotData() {
     return [
@@ -418,26 +402,29 @@ export default function Results() {
     ];
   }
 
-  const exportSummary = [
-    {
-      columns: summaryColumns.map((e) => {
-        return { title: e.label, width: { wpx: 160 } };
-      }),
-      data: averages.map((e) => {
-        return [
-          { value: e.name },
-          { value: e.tumorAverage },
-          { value: e.controlAverage },
-          { value: e.proteinDiff },
-          { value: e.pValue },
-          { value: e.tumorNum },
-          { value: e.controlNum },
-          { value: e.tumorError },
-          { value: e.controlError },
-        ];
-      }),
-    },
-  ];
+  function exportSummary() {
+    return [
+      {
+        columns: summaryColumns.map((e) => {
+          return { title: e.label, width: { wpx: 160 } };
+        }),
+        data: averages.map((e) => {
+          return [
+            { value: e.name },
+            { value: e.tumorAverage },
+            { value: e.controlAverage },
+            { value: e.proteinDiff },
+            { value: e.pValuePaired },
+            { value: e.pValueUnpaired },
+            { value: e.tumorNum },
+            { value: e.controlNum },
+            { value: e.tumorError },
+            { value: e.controlError },
+          ];
+        }),
+      },
+    ];
+  }
 
   const exportAbundanceSettings = [
     {
@@ -449,7 +436,11 @@ export default function Results() {
       ],
       data: [
         [
-          { value: form.cancer.filter((e) => e.value === view)[0].label },
+          {
+            value: form.cancer.find((e) => e.value === view)
+              ? form.cancer.find((e) => e.value === view).label
+              : "NA",
+          },
           { value: "Protein Abundance" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
@@ -490,6 +481,18 @@ export default function Results() {
           }),
     },
   ];
+
+  function getTimestamp() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return year + month + day + minutes + seconds;
+  }
 
   const defaultLayout = {
     xaxis: {
@@ -569,12 +572,14 @@ export default function Results() {
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Summary-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
               />
-              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+              <ExcelSheet dataSet={exportSummary()} name="Summary Data" />
             </ExcelFile>
           </div>
 
@@ -598,13 +603,6 @@ export default function Results() {
               name="caseView"
               onChange={(e) => {
                 setView(parseInt(e.target.value));
-                setFoldSize(
-                  `${
-                    cases
-                      .filter((c) => parseInt(e.target.value) === c.cancerId)
-                      .length.toString() * 20
-                  }px`,
-                );
               }}
               value={view}
               required>
@@ -744,7 +742,9 @@ export default function Results() {
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Tumor-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportAbundanceSettings}
                 name="Input Configuration"
@@ -760,7 +760,7 @@ export default function Results() {
             columns={proteinAbundanceColumns}
             defaultSort={[{ id: "name", asec: true }]}
             data={
-              results.length && results.find((e) => Number(e[0]) === view)
+              results.find((e) => Number(e[0]) === view)
                 ? results
                     .find((e) => Number(e[0]) === view)[1]
                     .map((c) => {
@@ -787,33 +787,6 @@ export default function Results() {
             }
           />
         </div>
-        <Table
-          columns={proteinAbundanceColumns}
-          defaultSort={[{ id: "name", asec: true }]}
-          data={cases
-            .filter((c) => view === c.cancerId)
-            .map((c) => {
-              return {
-                ...c,
-                proteinLogRatioCase: c.proteinLogRatioCase
-                  ? c.proteinLogRatioCase.toFixed(4)
-                  : "NA",
-                proteinLogRatioControl: c.proteinLogRatioControl
-                  ? c.proteinLogRatioControl.toFixed(4)
-                  : "NA",
-                proteinLogRatioChange: c.proteinLogRatioChange
-                  ? c.proteinLogRatioChange.toFixed(4)
-                  : "NA",
-                proteinDiff:
-                  c.proteinLogRatioCase && c.proteinLogRatioControl
-                    ? (
-                        c.proteinLogRatioControl.toFixed(4) -
-                        c.proteinLogRatioCase.toFixed(4)
-                      ).toFixed(4)
-                    : "NA",
-              };
-            })}
-        />
       </Tab>
     </Tabs>
   );
