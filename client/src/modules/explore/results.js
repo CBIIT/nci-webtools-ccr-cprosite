@@ -14,6 +14,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 import { query } from "../../services/query";
 import ReactExport from "react-data-export";
 import React, { useState } from "react";
+import _ from "lodash";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
@@ -21,14 +22,21 @@ const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 export default function Results() {
   const cases = useRecoilValue(casesState);
   const form = useRecoilValue(formState);
+  const getResults = useRecoilValue(resultsState);
   const tumors = form.cancer.map((c) => c.value);
 
-  const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
   const [foldSize, setFoldSize] = useState(
     `${cases.filter((c) => tumors[0] === c.cancerId).length.toString() * 20}px`,
   );
+
+  const results = Object.entries(
+    _.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId"),
+  ).filter((e) => e[0] !== "null");
+
+  console.log(results);
+  const [view, setView] = useState(results.length ? Number(results[0][0]) : 0);
 
   const proteinAbundanceColumns = [
     {
@@ -199,9 +207,12 @@ export default function Results() {
 
   const boxPlotData = [
     {
-      y: cases
-        .filter((c) => c.cancerId === view)
-        .map((c) => c.proteinLogRatioCase),
+      y:
+        results.length && results.find((e) => Number(e[0]) === view)
+          ? results
+              .find((e) => Number(e[0]) === view)[1]
+              .map((e) => e.tumorValue)
+          : [],
       type: "box",
       boxpoints: "all",
       name: "Tumor",
@@ -212,9 +223,12 @@ export default function Results() {
       hovertemplate: "%{y}<extra></extra>",
     },
     {
-      y: cases
-        .filter((c) => c.cancerId === view)
-        .map((c) => c.proteinLogRatioControl),
+      y:
+        results.length && results.find((e) => Number(e[0]) === view)
+          ? results
+              .find((e) => Number(e[0]) === view)[1]
+              .map((e) => e.normalValue)
+          : [],
       type: "box",
       boxpoints: "all",
       name: "Adjacent Normal",
@@ -226,57 +240,45 @@ export default function Results() {
     },
   ];
 
-  const average = (values) =>
-    values.filter((v) => v !== null).reduce((a, b) => a + b) / values.length;
-
-  function calcStandardError(values, average) {
-    var result = 0;
-
-    for (var i = 0; i < values.length; i++) {
-      result += Math.pow(values[0] - average, 2);
-    }
-
-    result = result / values.length;
-    result = Math.sqrt(result) / Math.sqrt(values.length);
-
-    return !isNaN(result) ? result.toFixed(4) : "NA";
-  }
-
-  const averages = form.cancer.map((c) => {
-    const tumorFilter = cases
-      .filter((d) => c.value === d.cancerId && d.proteinLogRatioCase !== null)
-      .map((e) => Math.pow(2, e.proteinLogRatioCase));
-    const controlFilter = cases
-      .filter(
-        (d) => c.value === d.cancerId && d.proteinLogRatioControl !== null,
-      )
-      .map((e) => Math.pow(2, e.proteinLogRatioControl));
-
-    const controlAverage = !isNaN(controlFilter[0])
-      ? average(controlFilter).toFixed(4)
-      : "NA";
-    const tumorAverage = !isNaN(tumorFilter[0])
-      ? average(tumorFilter).toFixed(4)
-      : "NA";
-
+  const averages = getResults[0].summary.records.map((e) => {
     return {
-      id: c.value,
-      name: c.label,
+      id: e.cancerId,
+      name: form.cancer.find((f) => f.value === e.cancerId).label,
       link: (
         <a
           onClick={() => {
-            setView(c.value);
+            setView(e.cancerId);
             setTab("tumorView");
           }}
           href="javascript:void(0)">
-          {c.label}
+          {form.cancer.find((f) => f.value === e.cancerId).label}
         </a>
       ),
-      controlAverage: !isNaN(controlAverage) ? Number(controlAverage) : "NA",
-      tumorAverage: !isNaN(tumorAverage) ? Number(tumorAverage) : "NA",
+      controlAverage:
+        e.normalSampleMean !== null
+          ? Number(e.normalSampleMean.toFixed(4))
+          : "NA",
+      tumorAverage:
+        e.tumorSampleMean !== null
+          ? Number(e.tumorSampleMean.toFixed(4))
+          : "NA",
       proteinDiff:
-        !isNaN(controlAverage) && !isNaN(tumorAverage)
-          ? Number((controlAverage - tumorAverage).toFixed(4))
+        e.normalSampleMean !== null && e.tumorSampleMean !== null
+          ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
+          : "NA",
+      controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
+      tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
+      pValuePaired:
+        e.pValuePaired !== null ? Number(e.pValuePaired.toFixed(4)) : "NA",
+      pValueUnpaired:
+        e.pValueUnpaired !== null ? Number(e.pValueUnpaired.toFixed(4)) : "NA",
+      controlError:
+        e.normalSampleStandardError !== null
+          ? Number(e.normalSampleStandardError.toFixed(4))
+          : "NA",
+      tumorError:
+        e.tumorSampleStandardError !== null
+          ? Number(e.tumorSampleStandardError.toFixed(4))
           : "NA",
       controlNum: !isNaN(controlFilter[0]) ? controlFilter.length : 0,
       tumorNum: !isNaN(tumorFilter[0]) ? tumorFilter.length : 0,
@@ -342,41 +344,53 @@ export default function Results() {
   }
 
   function foldData() {
-    var caseList = cases
-      .filter((c) => view === c.cancerId)
-      .sort((a, b) =>
-        a.proteinLogRatioChange > b.proteinLogRatioChange ? 1 : -1,
+    if (results.length !== 0) {
+      var caseList = results
+        .find((e) => Number(e[0]) === view)[1]
+        .filter((e) => e.tumorValue && e.normalValue)
+        .sort((a, b) => {
+          const aFoldChange = a.tumorValue - a.normalValue;
+          const bFoldChange = b.tumorValue - b.normalValue;
+
+          return aFoldChange > bFoldChange ? 1 : -1;
+        });
+
+      const values = caseList.map((c) =>
+        Number(
+          (
+            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
+          ).toFixed(4),
+        ),
       );
 
-    const values = caseList.map((c) =>
-      c.proteinLogRatioChange ? c.proteinLogRatioChange.toFixed(4) : null,
-    );
+      return [
+        {
+          type: "bar",
+          x: values,
+          y: caseList.map((c) => c.participantId),
+          marker: {
+            color: values.map((c) =>
+              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+            ),
+          },
+          orientation: "h",
+        },
+        {
+          type: "bar",
+          x: values,
+          y: caseList.map((c) => c.participantId),
+          marker: {
+            color: values.map((c) =>
+              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+            ),
+          },
+          xaxis: "x2",
+          orientation: "h",
+        },
+      ];
+    }
 
-    return [
-      {
-        type: "bar",
-        x: values,
-        y: caseList.map((c) => (c.proteinLogRatioChange ? c.name : null)),
-        marker: {
-          color: values.map((c) =>
-            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-          ),
-        },
-        orientation: "h",
-      },
-      {
-        type: "bar",
-        x: values,
-        y: caseList.map((c) => (c.proteinLogRatioChange ? c.name : null)),
-        marker: {
-          color: values.map((c) =>
-            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-          ),
-        },
-        xaxis: "x2",
-        orientation: "h",
-      },
-    ];
+    return [];
   }
 
   function handleToggle(e) {
@@ -449,28 +463,31 @@ export default function Results() {
       columns: proteinAbundanceColumns.map((e) => {
         return { title: e.label, width: { wpx: 160 } };
       }),
-      data: cases
-        .filter((c) => view === c.cancerId)
-        .map((c) => {
-          return [
-            { value: c.name },
-            {
-              value: c.proteinLogRatioCase
-                ? Number(c.proteinLogRatioCase.toFixed(4))
-                : "NA",
-            },
-            {
-              value: c.proteinLogRatioControl
-                ? Number(c.proteinLogRatioControl.toFixed(4))
-                : "NA",
-            },
-            {
-              value: c.proteinLogRatioChange
-                ? Number(c.proteinLogRatioChange.toFixed(4))
-                : "NA",
-            },
-          ];
-        }),
+      data:
+        results.length &&
+        results.find((e) => Number(e[0]) === view) &&
+        results
+          .find((e) => Number(e[0]) === view)[1]
+          .map((c) => {
+            return [
+              { value: c.participantId },
+              {
+                value: c.tumorValue ? Number(c.tumorValue.toFixed(4)) : "NA",
+              },
+              {
+                value: c.normalValue ? Number(c.normalValue.toFixed(4)) : "NA",
+              },
+              {
+                value:
+                  c.tumorValue && c.normalValue
+                    ? Number(
+                        Number(c.tumorValue.toFixed(4)) -
+                          Number(c.normalValue.toFixed(4)).toFixed(4),
+                      )
+                    : "NA",
+              },
+            ];
+          }),
     },
   ];
 
@@ -530,6 +547,17 @@ export default function Results() {
                   y: -0.25,
                   x: 0.37,
                 },
+                annotations: [
+                  {
+                    text: results.length === 0 ? "No data available" : "",
+                    xref: "paper",
+                    yref: "paper",
+                    showarrow: false,
+                    font: {
+                      size: 28,
+                    },
+                  },
+                ],
               }}
               config={defaultConfig}
               useResizeHandler
@@ -580,9 +608,9 @@ export default function Results() {
               }}
               value={view}
               required>
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
+              {results.map((o) => (
+                <option value={Number(o[0])} key={`dataset-${o[0]}`}>
+                  {form.cancer.find((f) => f.value === Number(o[0])).label}
                 </option>
               ))}
             </Form.Select>
@@ -620,7 +648,11 @@ export default function Results() {
                   ...defaultLayout,
                   title: `<b>Tumor vs Adjacent Normal</b> (Gene: ${
                     form.gene.label
-                  }/P-Value: ${averages.find((e) => e.id === view).pValue})`,
+                  }/P-Value: ${
+                    averages.length && averages.find((e) => e.id === view)
+                      ? averages.find((e) => e.id === view).pValuePaired
+                      : "NA"
+                  })`,
                   yaxis: {
                     title: "Log Protien Abundance",
                     zeroline: false,
@@ -633,6 +665,21 @@ export default function Results() {
                     y: -0.1,
                     x: 0.37,
                   },
+                  annotations: [
+                    {
+                      text:
+                        results.filter((f) => Number(f[0]) === view).length ===
+                        0
+                          ? "No data available"
+                          : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                      },
+                    },
+                  ],
                 }}
                 config={defaultConfig}
                 useResizeHandler
@@ -650,7 +697,11 @@ export default function Results() {
                   autosize: true,
                   title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
                     form.gene.label
-                  }/P-Value: ${averages.find((e) => e.id === view).pValue})`,
+                  }/P-Value: ${
+                    averages.length && averages.find((e) => e.id === view)
+                      ? averages.find((e) => e.id === view).pValuePaired
+                      : "NA"
+                  })`,
                   xaxis: {
                     title: "Log<sub>2</sub> Fold Change",
                     zeroline: false,
@@ -662,12 +713,29 @@ export default function Results() {
                   },
                   showlegend: false,
                   barmode: "stack",
+                  annotations: [
+                    {
+                      text:
+                        results.filter((f) => Number(f[0]) === view).length ===
+                        0
+                          ? "No data available"
+                          : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                      },
+                    },
+                  ],
                 }}
                 useResizeHandler
                 style={{
                   minWidth: "100%",
-                  height: foldSize,
-                  minHeight: "400px",
+                  height: foldData().length
+                    ? `${foldData()[0].x.length * 20}px`
+                    : "500px",
+                  minHeight: "500px",
                 }}
               />
             </Col>
@@ -687,6 +755,37 @@ export default function Results() {
               />
             </ExcelFile>
           </div>
+
+          <Table
+            columns={proteinAbundanceColumns}
+            defaultSort={[{ id: "name", asec: true }]}
+            data={
+              results.length && results.find((e) => Number(e[0]) === view)
+                ? results
+                    .find((e) => Number(e[0]) === view)[1]
+                    .map((c) => {
+                      return {
+                        name: c.participantId,
+                        tumorValue: c.tumorValue
+                          ? Number(c.tumorValue.toFixed(4))
+                          : "NA",
+                        normalValue: c.normalValue
+                          ? Number(c.normalValue.toFixed(4))
+                          : "NA",
+                        proteinDiff:
+                          c.tumorValue && c.normalValue
+                            ? Number(
+                                (
+                                  Number(c.tumorValue.toFixed(4)) -
+                                  Number(c.normalValue.toFixed(4))
+                                ).toFixed(4),
+                              )
+                            : "NA",
+                      };
+                    })
+                : []
+            }
+          />
         </div>
         <Table
           columns={proteinAbundanceColumns}
