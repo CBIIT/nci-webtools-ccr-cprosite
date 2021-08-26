@@ -558,6 +558,7 @@ export default function Results() {
                     showarrow: false,
                     font: {
                       size: 28,
+                      color: "grey",
                     },
                   },
                 ],
@@ -675,6 +676,7 @@ export default function Results() {
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],
@@ -723,6 +725,7 @@ export default function Results() {
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],

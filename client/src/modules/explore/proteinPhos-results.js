@@ -689,6 +689,7 @@ export default function ProteinPhosResults() {
                     showarrow: false,
                     font: {
                       size: 28,
+                      color: "grey",
                     },
                   },
                 ],
@@ -815,6 +816,7 @@ export default function ProteinPhosResults() {
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],
@@ -866,6 +868,7 @@ export default function ProteinPhosResults() {
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],

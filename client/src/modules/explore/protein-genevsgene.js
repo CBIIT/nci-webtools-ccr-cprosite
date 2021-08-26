@@ -470,6 +470,7 @@ export default function ProteinGeneCorrelation() {
                   showarrow: false,
                   font: {
                     size: 28,
+                    color: "grey",
                   },
                 },
               ],

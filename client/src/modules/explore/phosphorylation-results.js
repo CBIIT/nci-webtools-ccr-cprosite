@@ -819,6 +819,7 @@ export default function PhosResults() {
                     showarrow: false,
                     font: {
                       size: 28,
+                      color: "grey",
                     },
                   },
                 ],
@@ -944,6 +945,7 @@ export default function PhosResults() {
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],
@@ -994,6 +996,7 @@ export default function PhosResults() {
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],
