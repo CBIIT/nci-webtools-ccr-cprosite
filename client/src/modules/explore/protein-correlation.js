@@ -21,15 +21,12 @@ export default function ProteinCorrelation() {
   const [view, setView] = useState(form.cancer.map((e) => e.value));
   const [label, setLabel] = useState("");
 
-  var proteinData = [];
-  var rnaData = [];
-
-  results
-    .filter((e) => view.includes(e.cancer.value))
-    .map((e) => {
-      proteinData = proteinData.concat(e.participants.records);
-      rnaData = rnaData.concat(e.rna.records);
-    });
+  const proteinData = results[0].participants.records.filter((e) =>
+    view.includes(e.cancerId),
+  );
+  const rnaData = results[0].rna.records.filter((e) =>
+    view.includes(e.cancerId),
+  );
 
   const [numType, setNumType] = useState("log2");
 
@@ -265,9 +262,11 @@ export default function ProteinCorrelation() {
   };
 
   function exportSummarySettings() {
-    var settings = form.cancer.map((e) => {
-      return [{ value: e.label }];
-    });
+    var settings = form.cancer
+      .filter((f) => view.find((c) => c === f.value))
+      .map((e) => {
+        return [{ value: e.label }];
+      });
     settings[0].push({ value: "Protein Abundance" });
     settings[0].push({ value: "Correlation" });
     settings[0].push({ value: form.gene.label });

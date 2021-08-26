@@ -104,7 +104,7 @@ export default function ProteinPhosResults() {
       ),
     },
     {
-      accessor: "peptide",
+      accessor: "phosphopeptide",
       label: "Peptide",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_peptide">Peptide</Tooltip>}>
@@ -230,22 +230,21 @@ export default function ProteinPhosResults() {
   ];
 
   const sortPhospho = Object.entries(
-    _.groupBy(
-      results.find((e) => e.cancer.value === view).participants.records,
-      "phosphorylationSite",
-    ),
+    _.groupBy(results[0].participants.records, "cancerId"),
   ).filter((e) => e[0] !== "null");
 
-  const tumorViewData = results
-    .find((e) => e.cancer.value === view)
-    .summary.records.map((e) => {
-      const patients = sortPhospho.find(
-        (d) => d[0] === e.phosphorylationSite,
-      )[1];
+  console.log(sortPhospho);
+
+  const tumorViewData = results[0].summary.records
+    .filter((f) => f.cancerId === view)
+    .map((e) => {
+      const patients = sortPhospho
+        .find((f) => Number(f[0]) === view)[1]
+        .filter((d) => d.phosphorylationSite === e.phosphorylationSite);
 
       return {
         name: e.phosphorylationSite,
-        peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
+        phosphopeptide: patients.filter((d) => d.phosphopeptide !== null)[0]
           .phosphopeptide,
         accession: patients.filter((d) => d.accession != null)[0].accession,
         tumorAverage:
@@ -265,6 +264,7 @@ export default function ProteinPhosResults() {
             onClick={() => {
               setPhosView(e.phosphorylationSite);
               setTab("phosView");
+              setSite(patients.filter((d) => d.phosphopeptide !== null)[0]);
             }}
             href="javascript:void(0)">
             {e.phosphorylationSite}
@@ -295,14 +295,15 @@ export default function ProteinPhosResults() {
         records: patients,
       };
     });
-
+  console.log(tumorViewData);
   const [phosView, setPhosView] = useState(
     tumorViewData.length > 0 ? tumorViewData[0].name : "",
   );
   const [site, setSite] = useState(
-    sortPhospho.length > 0 ? sortPhospho[0][1][0] : "",
+    tumorViewData.length > 0 ? tumorViewData[0] : "",
   );
-
+  console.log(site);
+  /*
   const siteTableData =
     tumorViewData.length && tumorViewData.find((e) => e.name === phosView)
       ? tumorViewData
@@ -335,7 +336,7 @@ export default function ProteinPhosResults() {
             } else return null;
           })
           .filter((e) => e !== null)
-      : [];
+      : [];*/
 
   const multiPhosBarPlot = [
     {
@@ -498,13 +499,6 @@ export default function ProteinPhosResults() {
   };
 
   function exportSummarySettings() {
-    var settings = form.cancer.map((e) => {
-      return [{ value: e.label }];
-    });
-    settings[0].push({ value: "Phosphorylation/Protein" });
-    settings[0].push({ value: "Tumor vs Control" });
-    settings[0].push({ value: form.gene.label });
-
     return [
       {
         columns: [
@@ -513,7 +507,14 @@ export default function ProteinPhosResults() {
           { title: "Analysis", width: { wpx: 160 } },
           { title: "Gene", width: { wpx: 160 } },
         ],
-        data: settings,
+        data: [
+          [
+            { value: form.cancer.find((f) => f.value === view).label },
+            { value: "Phosphorylation/Protein" },
+            { value: "Tumor vs Control" },
+            { value: form.gene.label },
+          ],
+        ],
       },
     ];
   }
@@ -527,7 +528,7 @@ export default function ProteinPhosResults() {
         return [
           { value: e.name },
           { value: e.accession },
-          { value: e.peptide },
+          { value: e.phosphopeptide },
           { value: e.tumorAverage },
           { value: e.controlAverage },
           { value: e.proteinDiff },
@@ -554,7 +555,7 @@ export default function ProteinPhosResults() {
       data: [
         [
           { value: form.cancer.find((e) => e.value === view).label },
-          { value: site.phosphorylationSite },
+          { value: site.name },
           { value: "Phosphorylation/Protein" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
@@ -632,14 +633,18 @@ export default function ProteinPhosResults() {
               name="caseView"
               onChange={(c) => {
                 setView(parseInt(c.target.value));
-                const phos = Object.entries(
-                  _.groupBy(
-                    results.find(
-                      (e) => e.cancer.value === parseInt(c.target.value),
-                    ).participants.records,
-                    "phosphorylationSite",
-                  ),
-                ).filter((e) => e[0] !== "null");
+                const phos = sortPhospho.find(
+                  (e) => Number(e[0]) === parseInt(c.target.value),
+                )
+                  ? Object.entries(
+                      _.groupBy(
+                        sortPhospho.find(
+                          (e) => Number(e[0]) === parseInt(c.target.value),
+                        )[1],
+                        "phosphorylationSite",
+                      ),
+                    ).filter((e) => e[0] !== "null")
+                  : [];
                 setPhosView(phos.length ? phos[0][0] : "");
                 setSite(phos.length ? phos[0][1][0] : "");
               }}
@@ -730,13 +735,13 @@ export default function ProteinPhosResults() {
               name="phosView"
               onChange={(e) => {
                 setPhosView(e.target.value);
-                setSite(sortPhospho.find((c) => c[0] === e.target.value)[1][0]);
+                setSite(tumorViewData.find((c) => c.name === e.target.value));
               }}
               value={phosView}
               required>
-              {sortPhospho.map((c) => (
-                <option value={c[0]} key={`dataset-${c[0]}`}>
-                  {c[0]}
+              {tumorViewData.map((c) => (
+                <option value={c.name} key={`dataset-${c.name}`}>
+                  {c.name}
                 </option>
               ))}
             </Form.Select>

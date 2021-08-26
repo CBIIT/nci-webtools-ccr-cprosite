@@ -28,22 +28,12 @@ export default function PhosResults() {
   const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
-  console.log(results);
-
   const sortResults = Object.entries(
-    _.groupBy(
-      results.find((e) => e.cancer.value === view).participants.records,
-      "phosphorylationSite",
-    ),
+    _.groupBy(results[0].participants.records, "cancerId"),
   ).filter((e) => e[0] !== "null");
 
-  var sortSummary = [];
-  results.map((e) => {
-    sortSummary = sortSummary.concat(e.summary.records);
-  });
-
-  sortSummary = Object.entries(
-    _.groupBy(sortSummary, "phosphorylationSite"),
+  var sortSummary = Object.entries(
+    _.groupBy(results[0].summary.records, "phosphorylationSite"),
   ).filter((e) => e[0] !== "null");
 
   const heatmap = sortSummary.map((e) => {
@@ -71,7 +61,7 @@ export default function PhosResults() {
 
   function summaryViewData() {
     var rows = [];
-
+    console.log(results);
     sortSummary.map((c) => {
       c[1].map((e) => {
         const currentTumor = tumors.find((f) => f.value === e.cancerId);
@@ -111,16 +101,16 @@ export default function PhosResults() {
     return rows;
   }
 
-  const tumorViewData = results
-    .find((e) => e.cancer.value === view)
-    .summary.records.map((e) => {
-      const patients = sortResults.find(
-        (d) => d[0] === e.phosphorylationSite,
-      )[1];
+  const tumorViewData = results[0].summary.records
+    .filter((f) => f.cancerId === view)
+    .map((e) => {
+      const patients = sortResults
+        .find((f) => Number(f[0]) === view)[1]
+        .filter((d) => d.phosphorylationSite === e.phosphorylationSite);
 
       return {
         name: e.phosphorylationSite,
-        peptide: patients.filter((d) => d.phosphopeptide !== null)[0]
+        phosphopeptide: patients.filter((d) => d.phosphopeptide !== null)[0]
           .phosphopeptide,
         accession: patients.filter((d) => d.accession != null)[0].accession,
         tumorAverage:
@@ -141,6 +131,7 @@ export default function PhosResults() {
             onClick={() => {
               setPhosView(e.phosphorylationSite);
               setTab("phosView");
+              setSite(patients.filter((d) => d.phosphopeptide !== null)[0]);
             }}
             href="javascript:void(0)">
             {e.phosphorylationSite}
@@ -326,7 +317,7 @@ export default function PhosResults() {
       ),
     },
     {
-      accessor: "peptide",
+      accessor: "phosphopeptide",
       label: "Peptide",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_peptide">Peptide</Tooltip>}>
@@ -527,13 +518,10 @@ export default function PhosResults() {
   }
 
   function foldData() {
-    console.log(sortResults);
-    console.log(phosView);
-
-    if (sortResults.find((c) => c[0] === phosView)) {
-      var caseList = sortResults
-        .find((c) => c[0] === phosView)[1]
-        .filter((e) => e.tumorValue && e.normalValue)
+    if (tumorViewData.find((c) => c.name === phosView)) {
+      var caseList = tumorViewData
+        .find((c) => c.name === phosView)
+        .records.filter((e) => e.tumorValue && e.normalValue)
         .sort((a, b) => {
           const aFoldChange = a.tumorValue - a.normalValue;
           const bFoldChange = b.tumorValue - b.normalValue;
@@ -619,13 +607,6 @@ export default function PhosResults() {
   };
 
   function exportTumorSettings() {
-    var settings = form.cancer.map((e) => {
-      return [{ value: e.label }];
-    });
-    settings[0].push({ value: "Phosphorylation Site" });
-    settings[0].push({ value: "Tumor vs Control" });
-    settings[0].push({ value: form.gene.label });
-
     return [
       {
         columns: [
@@ -634,7 +615,15 @@ export default function PhosResults() {
           { title: "Analysis", width: { wpx: 160 } },
           { title: "Gene", width: { wpx: 160 } },
         ],
-        data: settings,
+        data: [
+          [
+            { value: form.cancer.find((e) => e.value === view).label },
+            { value: site.name },
+            { value: "Phosphorylation Site" },
+            { value: "Tumor vs Control" },
+            { value: form.gene.label },
+          ],
+        ],
       },
     ];
   }
@@ -648,7 +637,7 @@ export default function PhosResults() {
         return [
           { value: e.name },
           { value: e.accession },
-          { value: e.peptide },
+          { value: e.phosphopeptide },
           { value: e.tumorAverage },
           { value: e.controlAverage },
           { value: e.proteinDiff },
@@ -675,7 +664,7 @@ export default function PhosResults() {
       data: [
         [
           { value: form.cancer.find((e) => e.value === view).label },
-          { value: site.phosphorylationSite },
+          { value: site.name },
           { value: "Phosphorylation Site" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
@@ -691,10 +680,10 @@ export default function PhosResults() {
           return { title: e.label, width: { wpx: 160 } };
         }),
         data:
-          sortResults.length > 0 && sortResults.find((c) => c[0] === phosView)
-            ? sortResults
-                .find((c) => c[0] === phosView)[1]
-                .map((d) => {
+          tumorViewData.length && tumorViewData.find((e) => e.name === phosView)
+            ? tumorViewData
+                .find((e) => e.name === phosView)
+                .records.map((d) => {
                   return [
                     { value: d.participantId },
                     { value: d.tumorValue ? d.tumorValue.toFixed(4) : "NA" },
@@ -714,7 +703,7 @@ export default function PhosResults() {
     ];
   }
 
-  console.log(exportSite());
+  console.log(sortResults);
 
   function getTimestamp() {
     const date = new Date();
@@ -774,14 +763,18 @@ export default function PhosResults() {
               name="caseView"
               onChange={(c) => {
                 setView(parseInt(c.target.value));
-                const phos = Object.entries(
-                  _.groupBy(
-                    results.find(
-                      (e) => e.cancer.value === parseInt(c.target.value),
-                    ).participants.records,
-                    "phosphorylationSite",
-                  ),
-                ).filter((e) => e[0] !== "null");
+                const phos = sortResults.find(
+                  (e) => Number(e[0]) === parseInt(c.target.value),
+                )
+                  ? Object.entries(
+                      _.groupBy(
+                        sortResults.find(
+                          (e) => Number(e[0]) === parseInt(c.target.value),
+                        )[1],
+                        "phosphorylationSite",
+                      ),
+                    ).filter((e) => e[0] !== "null")
+                  : [];
                 setPhosView(phos.length ? phos[0][0] : "");
                 setSite(phos.length ? phos[0][1][0] : "");
               }}
@@ -874,13 +867,13 @@ export default function PhosResults() {
               name="phosView"
               onChange={(e) => {
                 setPhosView(e.target.value);
-                setSite(sortResults.find((c) => c[0] === e.target.value)[1][0]);
+                setSite(tumorViewData.find((f) => f.name === e.target.value));
               }}
               value={phosView}
               required>
-              {sortResults.map((c) => (
-                <option value={c[0]} key={`dataset-${c[0]}`}>
-                  {c[0]}
+              {tumorViewData.map((c) => (
+                <option value={c.name} key={`dataset-${c.name}`}>
+                  {c.name}
                 </option>
               ))}
             </Form.Select>
@@ -989,11 +982,10 @@ export default function PhosResults() {
                   annotations: [
                     {
                       text:
-                        sortResults.length === 0 ||
-                        !sortResults.find((c) => c[0] === phosView) ||
-                        sortResults
-                          .find((c) => c[0] === phosView)[1]
-                          .filter((e) => e.tumorValue && e.normalValue)
+                        !tumorViewData.find((c) => c.name === phosView) ||
+                        tumorViewData
+                          .find((c) => c.name === phosView)
+                          .records.filter((e) => e.tumorValue && e.normalValue)
                           .length === 0
                           ? "No data available"
                           : "",
@@ -1045,10 +1037,11 @@ export default function PhosResults() {
             columns={phosSiteColumns}
             defaultSort={[{ id: "participantId", asec: true }]}
             data={
-              sortResults.length && sortResults.find((e) => e[0] === phosView)
-                ? sortResults
-                    .find((e) => e[0] === phosView)[1]
-                    .map((d) => {
+              tumorViewData.length &&
+              tumorViewData.find((e) => e.name === phosView)
+                ? tumorViewData
+                    .find((e) => e.name === phosView)
+                    .records.map((d) => {
                       return {
                         participantId: d.participantId,
                         tumorValue: d.tumorValue

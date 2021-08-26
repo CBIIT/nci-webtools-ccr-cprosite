@@ -30,27 +30,14 @@ export default function ProteinGeneCorrelation() {
   const [label, setLabel] = useState("");
 
   console.log(results);
-  var firstGeneSet = [];
-  results
-    .filter(
-      (e) => e.gene.value === form.gene.value && view.includes(e.cancer.value),
-    )
-    .map((e) => {
-      firstGeneSet = firstGeneSet.concat(e.participants.records);
-    });
+  var firstGeneSet = results[0].participants.records.filter((e) =>
+    view.includes(e.cancerId),
+  );
 
-  var secondGeneSet = [];
-  results
-    .filter(
-      (e) =>
-        e.gene.value === form.correlatedGene.value &&
-        view.includes(e.cancer.value),
-    )
-    .map((e) => {
-      secondGeneSet = secondGeneSet.concat(e.participants.records);
-    });
+  var secondGeneSet = results[1].participants.records.filter((e) =>
+    view.includes(e.cancerId),
+  );
 
-  const [tab, setTab] = useState("summary");
   const [numType, setNumType] = useState("log2");
 
   console.log(firstGeneSet);
@@ -324,9 +311,11 @@ export default function ProteinGeneCorrelation() {
   ];
 
   function exportSummarySettings() {
-    var settings = form.cancer.map((e) => {
-      return [{ value: e.label }];
-    });
+    var settings = form.cancer
+      .filter((f) => view.find((c) => c === f.value))
+      .map((e) => {
+        return [{ value: e.label }];
+      });
     settings[0].push({ value: "Protein Abundance" });
     settings[0].push({ value: "Correlation" });
     settings[0].push({ value: form.gene.label });
