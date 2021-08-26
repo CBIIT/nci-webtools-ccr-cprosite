@@ -665,7 +665,7 @@ export default function ProteinPhosResults() {
               data={multiPhosBarPlot}
               layout={{
                 ...defaultLayout,
-                title: `<b>Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                title: `<b>Phosphorylation/Protein Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 xaxis: {
                   title: "Phosphorylation Site",
                   zeroline: false,
