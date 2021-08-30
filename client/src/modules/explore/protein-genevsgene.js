@@ -246,11 +246,11 @@ export default function ProteinGeneCorrelation() {
 
   const defaultLayout = {
     xaxis: {
-      title: firstGene,
+      title: `<b>${firstGene}</b>`,
       zeroline: false,
     },
     yaxis: {
-      title: secondGene,
+      title: `<b>${secondGene}</b>`,
       zeroline: false,
     },
     legend: {
@@ -460,7 +460,7 @@ export default function ProteinGeneCorrelation() {
               legend: {
                 orientation: "h",
                 y: -0.2,
-                x: 0.37,
+                x: 0.42,
               },
               annotations: [
                 {

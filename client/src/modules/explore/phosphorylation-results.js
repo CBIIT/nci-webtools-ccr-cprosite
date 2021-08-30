@@ -56,6 +56,11 @@ export default function PhosResults() {
       y: sortSummary.map((e) => e[0]),
       type: "heatmap",
       hoverongaps: false,
+      colorbar: {
+        title: {
+          text: "Log Fold Change",
+        },
+      },
     },
   ];
 
@@ -167,7 +172,9 @@ export default function PhosResults() {
     tumorViewData.length > 0 ? tumorViewData[0].name : "",
   );
   const [site, setSite] = useState(
-    sortResults.length > 0 ? sortResults[0][1][0] : "",
+    sortResults.length > 0
+      ? sortResults[0][1].filter((f) => f.accession && f.phosphopeptide)[0]
+      : "",
   );
 
   const phosSiteColumns = [
@@ -482,7 +489,7 @@ export default function PhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "Tumor",
+          name: "<b>Tumor</b>",
           jitter: 0.6,
           marker: {
             size: 8,
@@ -497,7 +504,7 @@ export default function PhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "Adjacent Normal",
+          name: "<b>Adjacent Normal</b>",
           jitter: 0.6,
           jitter: 0.6,
           marker: {
@@ -572,7 +579,7 @@ export default function PhosResults() {
       zeroline: false,
     },
     yaxis: {
-      title: "Protein Abundance",
+      title: "<b>Protein Abundance<b>",
       zeroline: false,
     },
     legend: {
@@ -727,12 +734,16 @@ export default function PhosResults() {
               ...defaultLayout,
               title: "<b>Phosphorylation Summary View</b>",
               xaxis: {
-                title: "Phosphorylation Site",
+                title: "<b>Tumor Types</b>",
               },
               yaxis: {
-                title: "Tumors",
+                title: "<b>Phosphorylation Site</b>",
+                automargin: true,
               },
               autosize: true,
+              colorbar: {
+                title: "hi",
+              },
             }}
             useResizeHandler
             config={defaultConfig}
@@ -797,11 +808,11 @@ export default function PhosResults() {
                 ...defaultLayout,
                 title: `<b>Phosphorylation Site Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 xaxis: {
-                  title: "Phosphorylation Site",
+                  title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
                 },
                 yaxis: {
-                  title: "Phosphorylation Level",
+                  title: "<b>Phosphorylation Level</b>",
                   zeroline: false,
                 },
                 barmode: "group",
@@ -922,7 +933,10 @@ export default function PhosResults() {
                           .pValueUnpaired
                       : "NA"
                   })`,
-                  yaxis: { title: "Phosphorylation Level", zeroline: false },
+                  yaxis: {
+                    title: "<b>Phosphorylation Level</b>",
+                    zeroline: false,
+                  },
                   autosize: true,
                   boxgroupgap: 0.4,
                   boxgap: 0.4,

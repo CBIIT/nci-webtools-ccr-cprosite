@@ -295,14 +295,14 @@ export default function ProteinPhosResults() {
         records: patients,
       };
     });
-  console.log(tumorViewData);
+
   const [phosView, setPhosView] = useState(
     tumorViewData.length > 0 ? tumorViewData[0].name : "",
   );
   const [site, setSite] = useState(
     tumorViewData.length > 0 ? tumorViewData[0] : "",
   );
-  console.log(site);
+
   /*
   const siteTableData =
     tumorViewData.length && tumorViewData.find((e) => e.name === phosView)
@@ -378,7 +378,7 @@ export default function ProteinPhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "Tumor",
+          name: "<b>Tumor</b>",
           jitter: 0.6,
           marker: {
             size: 8,
@@ -393,7 +393,7 @@ export default function ProteinPhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "Adjacent Normal",
+          name: "<b>Adjacent Normal</b>",
           jitter: 0.6,
           jitter: 0.6,
           marker: {
@@ -605,8 +605,6 @@ export default function ProteinPhosResults() {
     ];
   }
 
-  console.log(exportSite());
-
   function getTimestamp() {
     const date = new Date();
 
@@ -667,11 +665,11 @@ export default function ProteinPhosResults() {
                 ...defaultLayout,
                 title: `<b>Phosphorylation/Protein Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 xaxis: {
-                  title: "Phosphorylation Site",
+                  title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
                 },
                 yaxis: {
-                  title: "Phosphorylation/Protein Level",
+                  title: "<b>Phosphorylation/Protein Level</b>",
                   zeroline: false,
                 },
                 barmode: "group",
@@ -679,7 +677,7 @@ export default function ProteinPhosResults() {
                 legend: {
                   orientation: "h",
                   y: -0.25,
-                  x: 0.37,
+                  x: 0.42,
                 },
                 annotations: [
                   {
@@ -791,7 +789,7 @@ export default function ProteinPhosResults() {
                       : "NA"
                   })`,
                   yaxis: {
-                    title: "Phosphorylation/Protein Level",
+                    title: "<b>Phosphorylation/Protein Level</b>",
                     zeroline: false,
                   },
                   autosize: true,
@@ -800,7 +798,7 @@ export default function ProteinPhosResults() {
                   legend: {
                     orientation: "h",
                     y: -0.1,
-                    x: 0.37,
+                    x: 0.42,
                   },
                   annotations: [
                     {

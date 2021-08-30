@@ -496,10 +496,11 @@ export default function Results() {
 
   const defaultLayout = {
     xaxis: {
+      title: "<b>Tumor Type </b>",
       zeroline: false,
     },
     yaxis: {
-      title: "Protein Abundance",
+      title: "<b>Protein Abundance</b>",
       zeroline: false,
     },
     legend: {
@@ -548,7 +549,7 @@ export default function Results() {
                 legend: {
                   orientation: "h",
                   y: -0.25,
-                  x: 0.37,
+                  x: 0.42,
                 },
                 annotations: [
                   {
@@ -653,7 +654,7 @@ export default function Results() {
                       : "NA"
                   })`,
                   yaxis: {
-                    title: "Log Protien Abundance",
+                    title: "<b>Log Protien Abundance</b>",
                     zeroline: false,
                   },
                   boxgroupgap: 0.4,
@@ -662,7 +663,7 @@ export default function Results() {
                   legend: {
                     orientation: "h",
                     y: -0.1,
-                    x: 0.37,
+                    x: 0.42,
                   },
                   annotations: [
                     {

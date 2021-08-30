@@ -224,11 +224,11 @@ export default function ProteinCorrelation() {
 
   const defaultLayout = {
     xaxis: {
-      title: "Protein",
+      title: "<b>Protein</b>",
       zeroline: false,
     },
     yaxis: {
-      title: "mRNA",
+      title: "<b>mRNA</b>",
       zeroline: false,
     },
     legend: {
@@ -437,7 +437,7 @@ export default function ProteinCorrelation() {
               legend: {
                 orientation: "h",
                 y: -0.2,
-                x: 0.37,
+                x: 0.42,
               },
               annotations: [
                 {
