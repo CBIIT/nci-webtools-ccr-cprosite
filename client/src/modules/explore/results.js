@@ -704,7 +704,7 @@ export default function Results() {
                       : "NA"
                   })`,
                   xaxis: {
-                    title: "Log<sub>2</sub> Fold Change",
+                    title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
                   },
                   xaxis2: {
