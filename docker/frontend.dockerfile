@@ -24,7 +24,7 @@ RUN npm install
 COPY client /client/
 
 RUN npm run build \
- && mv /client/build /var/www/html/cprosite
+ && cp -r /client/build/* /var/www/html
 
 WORKDIR /var/www/html
 
