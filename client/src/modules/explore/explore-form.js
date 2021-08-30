@@ -75,7 +75,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
               value: "phosphoproteinRatioData",
               label: "Phosphorylation/Protein",
             },
-            { value: "rna-level", label: "RNA Level" },
           ]}
           required
         />
