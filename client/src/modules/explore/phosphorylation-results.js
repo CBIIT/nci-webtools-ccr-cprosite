@@ -61,6 +61,7 @@ export default function PhosResults() {
           text: "Log Fold Change",
         },
       },
+      hovertemplate: "%{x}<br>%{y}<br>%{z}<extra></extra>",
     },
   ];
 
