@@ -70,6 +70,7 @@ export default function PhosResults() {
     sortSummary.map((c) => {
       c[1].map((e) => {
         const currentTumor = tumors.find((f) => f.value === e.cancerId);
+        console.log(e);
         rows = rows.concat({
           tumor: (
             <a
@@ -82,6 +83,7 @@ export default function PhosResults() {
               {currentTumor.label}
             </a>
           ),
+          accession: e.accession ? e.accession : "NA",
           phosphorylationSite: (
             <a
               key={"summary-" + e.phosphorylationSite}
@@ -259,6 +261,16 @@ export default function PhosResults() {
           : -1,
     },
     {
+      accessor: "accession",
+      label: "Accession",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_accession">Accession</Tooltip>}>
+          <b>Accession</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
       accessor: "proteinDiff",
       label: "Log2 Fold Change",
       Header: (
@@ -312,16 +324,6 @@ export default function PhosResults() {
       ),
       sort: true,
       sortType: (a, b) => (a.original.link.key > b.original.link.key ? 1 : -1),
-    },
-    {
-      accessor: "accession",
-      label: "Accession",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="phos_accession">Accession</Tooltip>}>
-          <b>Accession</b>
-        </OverlayTrigger>
-      ),
     },
     {
       accessor: "phosphopeptide",
@@ -613,6 +615,46 @@ export default function PhosResults() {
     ],
   };
 
+  function exportSummarySettings() {
+    var settings = form.cancer.map((e) => {
+      return [{ value: e.label }];
+    });
+
+    settings[0].push({ value: "Phosphorylation Site" });
+    settings[0].push({ value: "Tumor vs Control" });
+    settings[0].push({ value: form.gene.label });
+
+    return [
+      {
+        columns: [
+          { title: "Tumors", width: { wpx: 160 } },
+          { title: "Dataset", width: { wpx: 160 } },
+          { title: "Analysis", width: { wpx: 160 } },
+          { title: "Gene", width: { wpx: 160 } },
+        ],
+        data: settings,
+      },
+    ];
+  }
+
+  const exportSummary = [
+    {
+      columns: summaryColumns.map((e) => {
+        return { title: e.label, width: { wpx: 200 } };
+      }),
+      data: summaryViewData().map((e) => {
+        return [
+          { value: e.tumor.props.children },
+          { value: e.phosphorylationSite.props.children },
+          { value: e.accession },
+          { value: e.proteinDiff },
+          { value: e.tumorNum },
+          { value: e.controlNum },
+        ];
+      }),
+    },
+  ];
+
   function exportTumorSettings() {
     return [
       {
@@ -754,7 +796,20 @@ export default function PhosResults() {
             }}
           />
         </div>
+
         <div className="m-3">
+          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+            <ExcelFile
+              filename={`CPROSITE-PhosphorylationSite-TumorVsNormal-Summary-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
+              <ExcelSheet
+                dataSet={exportSummarySettings()}
+                name="Input Configuration"
+              />
+              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+            </ExcelFile>
+          </div>
+
           <Table
             columns={summaryColumns}
             defaultSort={[{ id: "tumor", asec: true }]}
