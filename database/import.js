@@ -132,6 +132,7 @@ const timestamp = getTimestamp(
             geneId,
             cancerId,
             phosphorylationSite,
+            accession,
             normalSampleCount,
             normalSampleMean,
             normalSampleMedian,
@@ -141,13 +142,14 @@ const timestamp = getTimestamp(
             geneId,
             cancerId,
             phosphorylationSite,
+            accession,
             count(normalValue) as normalSampleCount,
             avg(normalValue) as normalSampleMean,
             median(normalValue) as normalSampleMedian,
             stdev(normalValue) / sqrt(count(normalValue))
         from "${dataTable}"
         where normalValue is not null and phosphorylationSite is not null
-        group by cancerId, geneId, phosphorylationSite
+        group by cancerId, geneId, phosphorylationSite, accession
         on conflict do update set
             "normalSampleCount" = excluded."normalSampleCount",
             "normalSampleMean" = excluded."normalSampleMean",
@@ -166,6 +168,7 @@ const timestamp = getTimestamp(
             cancerId,
             geneId,
             phosphorylationSite,
+            accession,
             tumorSampleCount,
             tumorSampleMean,
             tumorSampleMedian,
@@ -175,13 +178,14 @@ const timestamp = getTimestamp(
             cancerId,
             geneId,
             phosphorylationSite,
+            accession,
             count(tumorValue) as tumorSampleCount,
             avg(tumorValue) as tumorSampleMean,
             median(tumorValue) as tumorSampleMedian,
             stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
         from "${dataTable}"
         where tumorValue is not null and phosphorylationSite is not null
-        group by cancerId, geneId, phosphorylationSite
+        group by cancerId, geneId, phosphorylationSite, accession
         on conflict do update set
             "tumorSampleCount" = excluded."tumorSampleCount",
             "tumorSampleMean" = excluded."tumorSampleMean",
@@ -200,6 +204,7 @@ const timestamp = getTimestamp(
           cancerId,
           geneId,
           phosphorylationSite,
+          accession,
           pValuePaired,
           pValueUnpaired
         )
@@ -207,11 +212,12 @@ const timestamp = getTimestamp(
             cancerId,
             geneId,
             phosphorylationSite,
+            accession,
             wilcoxon(normalValue, tumorValue) as pValuePaired,
             ttest2(normalValue, tumorValue) as pValueUnpaired
         from "${dataTable}" 
         where phosphorylationSite is not null
-        group by cancerId, geneId, phosphorylationSite
+        group by cancerId, geneId, phosphorylationSite, accession
         on conflict do update set
           "pValuePaired" = excluded."pValuePaired",
           "pValueUnpaired" = excluded."pValueUnpaired"`,
