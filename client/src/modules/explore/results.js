@@ -229,7 +229,7 @@ export default function Results() {
       name: "Tumor",
       jitter: 0.6,
       marker: {
-        size: 8,
+        size: 10,
       },
       hovertemplate: "%{y}<extra></extra>",
     },
@@ -245,7 +245,7 @@ export default function Results() {
       name: "Adjacent Normal",
       jitter: 0.6,
       marker: {
-        size: 8,
+        size: 10,
       },
       hovertemplate: "%{y}<extra></extra>",
     },

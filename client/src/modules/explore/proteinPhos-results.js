@@ -381,7 +381,7 @@ export default function ProteinPhosResults() {
           name: "<b>Tumor</b>",
           jitter: 0.6,
           marker: {
-            size: 8,
+            size: 10,
           },
           hovertemplate: "%{y}<extra></extra>",
         },
@@ -397,7 +397,7 @@ export default function ProteinPhosResults() {
           jitter: 0.6,
           jitter: 0.6,
           marker: {
-            size: 8,
+            size: 10,
           },
           hovertext: ["1", "2"],
           hoverinfo: "x+y",

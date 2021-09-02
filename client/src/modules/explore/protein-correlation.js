@@ -325,6 +325,9 @@ export default function ProteinCorrelation() {
       y: proteinRNA.map((e) =>
         numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
       ),
+      marker: {
+        size: 8,
+      },
       mode: "markers",
       type: "scatter",
       name: "Tumor",
@@ -337,6 +340,9 @@ export default function ProteinCorrelation() {
       y: proteinRNA.map((e) =>
         numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl),
       ),
+      marker: {
+        size: 8,
+      },
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",

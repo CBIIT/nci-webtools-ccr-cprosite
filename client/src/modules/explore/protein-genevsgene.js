@@ -291,6 +291,9 @@ export default function ProteinGeneCorrelation() {
       y: proteinGene.map((e) =>
         numType === "log2" ? e.secondTumor : e.secondTumorNum,
       ),
+      marker: {
+        size: 8,
+      },
       mode: "markers",
       type: "scatter",
       name: "Tumor",
@@ -303,6 +306,9 @@ export default function ProteinGeneCorrelation() {
       y: proteinGene.map((e) =>
         numType === "log2" ? e.secondControl : e.secondControlNum,
       ),
+      marker: {
+        size: 8,
+      },
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
