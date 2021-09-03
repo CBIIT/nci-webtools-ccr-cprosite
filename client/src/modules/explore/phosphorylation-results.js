@@ -775,7 +775,7 @@ export default function PhosResults() {
             data={heatMapData}
             layout={{
               ...defaultLayout,
-              title: "<b>Phosphorylation Summary View</b>",
+              title: `<b>Phosphorylation Summary View</b> (Gene: ${form.gene.label})`,
               xaxis: {
                 title: "<b>Tumor Types</b>",
               },
@@ -784,9 +784,6 @@ export default function PhosResults() {
                 automargin: true,
               },
               autosize: true,
-              colorbar: {
-                title: "hi",
-              },
             }}
             useResizeHandler
             config={defaultConfig}
