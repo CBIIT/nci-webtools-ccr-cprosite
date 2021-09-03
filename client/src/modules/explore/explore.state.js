@@ -109,8 +109,8 @@ export const defaultFormState = {
   openSidebar: true,
   cancer: [],
   gene: "",
-  analysis: "",
-  dataset: "",
+  analysis: { value: "tumor-control", label: "Tumor vs Adjacent Normal" },
+  dataset: { value: "proteinData", label: "Protein Abundance" },
   correlation: "toAnotherProtein",
   correlatedGene: "",
 };
