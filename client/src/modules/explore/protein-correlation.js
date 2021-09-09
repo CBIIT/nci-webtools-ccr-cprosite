@@ -467,7 +467,7 @@ export default function ProteinCorrelation() {
             config={defaultConfig}
             useResizeHandler
             className="flex-fill w-100"
-            style={{ height: "500px" }}
+            style={{ height: "800px" }}
           />
         </Col>
       </Row>
