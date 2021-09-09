@@ -13,18 +13,25 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import ReactExport from "react-data-export";
 import React, { useState } from "react";
+import _ from "lodash";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function Results() {
   const form = useRecoilValue(formState);
+  const getResults = useRecoilValue(resultsState);
   const tumors = form.cancer.map((c) => c.value);
-  const results = useRecoilValue(resultsState);
 
-  const [view, setView] = useState(tumors[0]);
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
+
+  const results = Object.entries(
+    _.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId"),
+  ).filter((e) => e[0] !== "null");
+
+  console.log(results);
+  const [view, setView] = useState(results.length ? Number(results[0][0]) : 0);
 
   const proteinAbundanceColumns = [
     {
@@ -211,91 +218,83 @@ export default function Results() {
 
   const boxPlotData = [
     {
-      y: results
-        .find((e) => e.cancer.value === view)
-        .participants.records.map((e) => e.tumorValue),
+      y:
+        results.length && results.find((e) => Number(e[0]) === view)
+          ? results
+              .find((e) => Number(e[0]) === view)[1]
+              .map((e) => e.tumorValue)
+          : [],
       type: "box",
       boxpoints: "all",
       name: "Tumor",
       jitter: 0.6,
       marker: {
-        size: 8,
+        size: 10,
       },
       hovertemplate: "%{y}<extra></extra>",
     },
     {
-      y: results
-        .find((e) => e.cancer.value === view)
-        .participants.records.map((e) => e.normalValue),
+      y:
+        results.length && results.find((e) => Number(e[0]) === view)
+          ? results
+              .find((e) => Number(e[0]) === view)[1]
+              .map((e) => e.normalValue)
+          : [],
       type: "box",
       boxpoints: "all",
       name: "Adjacent Normal",
       jitter: 0.6,
       marker: {
-        size: 8,
+        size: 10,
       },
       hovertemplate: "%{y}<extra></extra>",
     },
   ];
 
-  const averages = results.map((e) => {
-    const summary = e.summary.records[0];
-
+  const averages = getResults[0].summary.records.map((e) => {
     return {
-      id: e.cancer.value,
-      name: e.cancer.label,
+      id: e.cancerId,
+      name: form.cancer.find((f) => f.value === e.cancerId).label,
       link: (
         <a
           onClick={() => {
-            setView(e.cancer.value);
+            setView(e.cancerId);
             setTab("tumorView");
           }}
           href="javascript:void(0)">
-          {e.cancer.label}
+          {form.cancer.find((f) => f.value === e.cancerId).label}
         </a>
       ),
       controlAverage:
-        summary && summary.normalSampleMean !== null
-          ? Number(summary.normalSampleMean.toFixed(4))
+        e.normalSampleMean !== null
+          ? Number(e.normalSampleMean.toFixed(4))
           : "NA",
       tumorAverage:
-        summary && summary.tumorSampleMean !== null
-          ? Number(summary.tumorSampleMean.toFixed(4))
+        e.tumorSampleMean !== null
+          ? Number(e.tumorSampleMean.toFixed(4))
           : "NA",
       proteinDiff:
-        summary &&
-        summary.normalSampleMean !== null &&
-        summary.tumorSampleMean !== null
-          ? Number(
-              (summary.tumorSampleMean - summary.normalSampleMean).toFixed(4),
-            )
+        e.normalSampleMean !== null && e.tumorSampleMean !== null
+          ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
           : "NA",
-      controlNum:
-        summary && summary.normalSampleCount !== null
-          ? summary.normalSampleCount
-          : "NA",
-      tumorNum:
-        summary && summary.tumorSampleCount !== null
-          ? summary.tumorSampleCount
-          : "NA",
+      controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
+      tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
       pValuePaired:
-        summary && summary.pValuePaired !== null
-          ? Number(summary.pValuePaired.toFixed(4))
-          : "NA",
+        e.pValuePaired !== null ? Number(e.pValuePaired.toFixed(4)) : "NA",
       pValueUnpaired:
-        summary && summary.pValueUnpaired !== null
-          ? Number(summary.pValueUnpaired.toFixed(4))
-          : "NA",
+        e.pValueUnpaired !== null ? Number(e.pValueUnpaired.toFixed(4)) : "NA",
       controlError:
-        summary && summary.normalSampleStandardError !== null
-          ? Number(summary.normalSampleStandardError.toFixed(4))
+        e.normalSampleStandardError !== null
+          ? Number(e.normalSampleStandardError.toFixed(4))
           : "NA",
       tumorError:
-        summary && summary.tumorSampleStandardError !== null
-          ? Number(summary.tumorSampleStandardError.toFixed(4))
+        e.tumorSampleStandardError !== null
+          ? Number(e.tumorSampleStandardError.toFixed(4))
           : "NA",
     };
   });
+
+  console.log(averages);
 
   function multiBarPlotData() {
     return [
@@ -329,49 +328,53 @@ export default function Results() {
   }
 
   function foldData() {
-    var caseList = results
-      .find((e) => e.cancer.value === view)
-      .participants.records.filter((e) => e.tumorValue && e.normalValue)
-      .sort((a, b) => {
-        const aFoldChange = a.tumorValue - a.normalValue;
-        const bFoldChange = b.tumorValue - b.normalValue;
+    if (results.length !== 0) {
+      var caseList = results
+        .find((e) => Number(e[0]) === view)[1]
+        .filter((e) => e.tumorValue && e.normalValue)
+        .sort((a, b) => {
+          const aFoldChange = a.tumorValue - a.normalValue;
+          const bFoldChange = b.tumorValue - b.normalValue;
 
-        return aFoldChange > bFoldChange ? 1 : -1;
-      });
+          return aFoldChange > bFoldChange ? 1 : -1;
+        });
 
-    const values = caseList.map((c) =>
-      Number(
-        (
-          Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
-        ).toFixed(4),
-      ),
-    );
+      const values = caseList.map((c) =>
+        Number(
+          (
+            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
+          ).toFixed(4),
+        ),
+      );
 
-    return [
-      {
-        type: "bar",
-        x: values,
-        y: caseList.map((c) => c.participantId),
-        marker: {
-          color: values.map((c) =>
-            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-          ),
+      return [
+        {
+          type: "bar",
+          x: values,
+          y: caseList.map((c) => c.participantId),
+          marker: {
+            color: values.map((c) =>
+              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+            ),
+          },
+          orientation: "h",
         },
-        orientation: "h",
-      },
-      {
-        type: "bar",
-        x: values,
-        y: caseList.map((c) => c.participantId),
-        marker: {
-          color: values.map((c) =>
-            c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-          ),
+        {
+          type: "bar",
+          x: values,
+          y: caseList.map((c) => c.participantId),
+          marker: {
+            color: values.map((c) =>
+              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
+            ),
+          },
+          xaxis: "x2",
+          orientation: "h",
         },
-        xaxis: "x2",
-        orientation: "h",
-      },
-    ];
+      ];
+    }
+
+    return [];
   }
 
   function handleToggle(e) {
@@ -423,14 +426,6 @@ export default function Results() {
     ];
   }
 
-  function noData(tumors) {
-    for (const tumor of tumors) {
-      if (tumor.participants.records.length > 0) return false;
-    }
-
-    return true;
-  }
-
   const exportAbundanceSettings = [
     {
       columns: [
@@ -441,7 +436,11 @@ export default function Results() {
       ],
       data: [
         [
-          { value: form.cancer.filter((e) => e.value === view)[0].label },
+          {
+            value: form.cancer.find((e) => e.value === view)
+              ? form.cancer.find((e) => e.value === view).label
+              : "NA",
+          },
           { value: "Protein Abundance" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
@@ -455,40 +454,60 @@ export default function Results() {
       columns: proteinAbundanceColumns.map((e) => {
         return { title: e.label, width: { wpx: 160 } };
       }),
-      data: results
-        .find((e) => e.cancer.value === view)
-        .participants.records.map((c) => {
-          return [
-            { value: c.participantId },
-            {
-              value: c.tumorValue ? Number(c.tumorValue.toFixed(4)) : "NA",
-            },
-            {
-              value: c.normalValue ? Number(c.normalValue.toFixed(4)) : "NA",
-            },
-            {
-              value:
-                c.tumorValue && c.normalValue
-                  ? Number(
-                      Number(c.tumorValue.toFixed(4)) -
-                        Number(c.normalValue.toFixed(4)).toFixed(4),
-                    )
-                  : "NA",
-            },
-          ];
-        }),
+      data:
+        results.length &&
+        results.find((e) => Number(e[0]) === view) &&
+        results
+          .find((e) => Number(e[0]) === view)[1]
+          .map((c) => {
+            return [
+              { value: c.participantId },
+              {
+                value: c.tumorValue ? Number(c.tumorValue.toFixed(4)) : "NA",
+              },
+              {
+                value: c.normalValue ? Number(c.normalValue.toFixed(4)) : "NA",
+              },
+              {
+                value:
+                  c.tumorValue && c.normalValue
+                    ? Number(
+                        Number(c.tumorValue.toFixed(4)) -
+                          Number(c.normalValue.toFixed(4)).toFixed(4),
+                      )
+                    : "NA",
+              },
+            ];
+          }),
     },
   ];
 
-  console.log(averages);
+  function getTimestamp() {
+    const date = new Date();
+
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    const minutes = date.getMinutes();
+    const seconds = date.getSeconds();
+
+    return year + month + day + minutes + seconds;
+  }
 
   const defaultLayout = {
     xaxis: {
+      title: "<b>Tumor Type </b>",
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     yaxis: {
-      title: "Protein Abundance",
+      title: "<b>Protein Abundance</b>",
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     legend: {
       itemsizing: "constant",
@@ -521,8 +540,6 @@ export default function Results() {
     ],
   };
 
-  console.log(averages);
-
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -532,22 +549,23 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: `<b>Average Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                title: `<b>Protein Abundance Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 barmode: "group",
                 autosize: true,
                 legend: {
                   orientation: "h",
                   y: -0.25,
-                  x: 0.37,
+                  x: 0.42,
                 },
                 annotations: [
                   {
-                    text: noData(results) ? "No data available" : "",
+                    text: results.length === 0 ? "No data available" : "",
                     xref: "paper",
                     yref: "paper",
                     showarrow: false,
                     font: {
                       size: 28,
+                      color: "grey",
                     },
                   },
                 ],
@@ -562,7 +580,9 @@ export default function Results() {
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Summary-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
                 name="Input Configuration"
@@ -594,9 +614,9 @@ export default function Results() {
               }}
               value={view}
               required>
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
+              {results.map((o) => (
+                <option value={Number(o[0])} key={`dataset-${o[0]}`}>
+                  {form.cancer.find((f) => f.value === Number(o[0])).label}
                 </option>
               ))}
             </Form.Select>
@@ -635,11 +655,16 @@ export default function Results() {
                   title: `<b>Tumor vs Adjacent Normal</b> (Gene: ${
                     form.gene.label
                   }/P-Value: ${
-                    averages.find((e) => e.id === view).pValuePaired
+                    averages.length && averages.find((e) => e.id === view)
+                      ? averages.find((e) => e.id === view).pValuePaired
+                      : "NA"
                   })`,
                   yaxis: {
-                    title: "Log Protien Abundance",
+                    title: "<b>Log Protien Abundance</b>",
                     zeroline: false,
+                    titlefont: {
+                      size: 15,
+                    },
                   },
                   boxgroupgap: 0.4,
                   boxgap: 0.4,
@@ -647,20 +672,21 @@ export default function Results() {
                   legend: {
                     orientation: "h",
                     y: -0.1,
-                    x: 0.37,
+                    x: 0.42,
                   },
                   annotations: [
                     {
-                      text: noData([
-                        results.find((e) => e.cancer.value === view),
-                      ])
-                        ? "No data available"
-                        : "",
+                      text:
+                        results.filter((f) => Number(f[0]) === view).length ===
+                        0
+                          ? "No data available"
+                          : "",
                       xref: "paper",
                       yref: "paper",
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],
@@ -682,11 +708,16 @@ export default function Results() {
                   title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
                     form.gene.label
                   }/P-Value: ${
-                    averages.find((e) => e.id === view).pValuePaired
+                    averages.length && averages.find((e) => e.id === view)
+                      ? averages.find((e) => e.id === view).pValuePaired
+                      : "NA"
                   })`,
                   xaxis: {
-                    title: "Log<sub>2</sub> Fold Change",
+                    title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
+                    titlefont: {
+                      size: 15,
+                    },
                   },
                   xaxis2: {
                     zeroline: false,
@@ -697,16 +728,17 @@ export default function Results() {
                   barmode: "stack",
                   annotations: [
                     {
-                      text: noData([
-                        results.find((e) => e.cancer.value === view),
-                      ])
-                        ? "No data available"
-                        : "",
+                      text:
+                        results.filter((f) => Number(f[0]) === view).length ===
+                        0
+                          ? "No data available"
+                          : "",
                       xref: "paper",
                       yref: "paper",
                       showarrow: false,
                       font: {
                         size: 28,
+                        color: "grey",
                       },
                     },
                   ],
@@ -714,7 +746,9 @@ export default function Results() {
                 useResizeHandler
                 style={{
                   minWidth: "100%",
-                  height: `${foldData()[0].x.length * 20}px`,
+                  height: foldData().length
+                    ? `${foldData()[0].x.length * 20}px`
+                    : "500px",
                   minHeight: "500px",
                 }}
               />
@@ -724,7 +758,9 @@ export default function Results() {
 
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile element={<a href="javascript:void(0)">Export Data</a>}>
+            <ExcelFile
+              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Tumor-${getTimestamp()}`}
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportAbundanceSettings}
                 name="Input Configuration"
@@ -735,33 +771,38 @@ export default function Results() {
               />
             </ExcelFile>
           </div>
+
+          <Table
+            columns={proteinAbundanceColumns}
+            defaultSort={[{ id: "name", asec: true }]}
+            data={
+              results.find((e) => Number(e[0]) === view)
+                ? results
+                    .find((e) => Number(e[0]) === view)[1]
+                    .map((c) => {
+                      return {
+                        name: c.participantId,
+                        tumorValue: c.tumorValue
+                          ? Number(c.tumorValue.toFixed(4))
+                          : "NA",
+                        normalValue: c.normalValue
+                          ? Number(c.normalValue.toFixed(4))
+                          : "NA",
+                        proteinDiff:
+                          c.tumorValue && c.normalValue
+                            ? Number(
+                                (
+                                  Number(c.tumorValue.toFixed(4)) -
+                                  Number(c.normalValue.toFixed(4))
+                                ).toFixed(4),
+                              )
+                            : "NA",
+                      };
+                    })
+                : []
+            }
+          />
         </div>
-        <Table
-          columns={proteinAbundanceColumns}
-          defaultSort={[{ id: "name", asec: true }]}
-          data={results
-            .find((e) => e.cancer.value === view)
-            .participants.records.map((c) => {
-              return {
-                name: c.participantId,
-                tumorValue: c.tumorValue
-                  ? Number(c.tumorValue.toFixed(4))
-                  : "NA",
-                normalValue: c.normalValue
-                  ? Number(c.normalValue.toFixed(4))
-                  : "NA",
-                proteinDiff:
-                  c.tumorValue && c.normalValue
-                    ? Number(
-                        (
-                          Number(c.tumorValue.toFixed(4)) -
-                          Number(c.normalValue.toFixed(4))
-                        ).toFixed(4),
-                      )
-                    : "NA",
-              };
-            })}
-        />
       </Tab>
     </Tabs>
   );

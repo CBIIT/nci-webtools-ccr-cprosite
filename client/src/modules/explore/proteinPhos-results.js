@@ -19,22 +19,22 @@ import _ from "lodash";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
-export default function PhosResults() {
+export default function ProteinPhosResults() {
   const form = useRecoilValue(formState);
   const tumors = form.cancer;
-  const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer[0].value);
 
   const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
-  const sortResults = Object.entries(
-    _.groupBy(results[0].participants.records, "cancerId"),
-  ).filter((e) => e[0] !== "null");
+  const results = useRecoilValue(resultsState);
+  console.log(results);
 
   var sortSummary = Object.entries(
     _.groupBy(results[0].summary.records, "phosphorylationSite"),
   ).filter((e) => e[0] !== "null");
+
+  console.log(sortSummary);
 
   const heatmap = sortSummary.map((e) => {
     var toAdd = Array(10).fill(null);
@@ -48,22 +48,6 @@ export default function PhosResults() {
     });
     return toAdd;
   });
-
-  const heatMapData = [
-    {
-      z: heatmap,
-      x: tumors.map((e) => e.label),
-      y: sortSummary.map((e) => e[0]),
-      type: "heatmap",
-      hoverongaps: false,
-      colorbar: {
-        title: {
-          text: "Log Fold Change",
-        },
-      },
-      hovertemplate: "%{x}<br>%{y}<br>%{z}<extra></extra>",
-    },
-  ];
 
   function summaryViewData() {
     var rows = [];
@@ -109,126 +93,19 @@ export default function PhosResults() {
     return rows;
   }
 
-  const tumorViewData = results[0].summary.records
-    .filter((f) => f.cancerId === view)
-    .map((e) => {
-      const patients = sortResults
-        .find((f) => Number(f[0]) === view)[1]
-        .filter((d) => d.phosphorylationSite === e.phosphorylationSite);
-
-      return {
-        name: e.phosphorylationSite,
-        phosphopeptide: patients.filter((d) => d.phosphopeptide !== null)[0]
-          .phosphopeptide,
-        accession: patients.filter((d) => d.accession != null)[0].accession,
-        tumorAverage:
-          e.tumorSampleMean !== null
-            ? Number(e.tumorSampleMean.toFixed(4))
-            : "NA",
-        controlAverage:
-          e.normalSampleMean !== null
-            ? Number(e.normalSampleMean.toFixed(4))
-            : "NA",
-        proteinDiff:
-          e.tumorSampleMean !== null && e.normalSampleMean !== null
-            ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
-            : "NA",
-        link: (
-          <a
-            key={"tumor-" + e.phosphorylationSite}
-            onClick={() => {
-              setPhosView(e.phosphorylationSite);
-              setTab("phosView");
-              setSite(patients.filter((d) => d.phosphopeptide !== null)[0]);
-            }}
-            href="javascript:void(0)">
-            {e.phosphorylationSite}
-          </a>
-        ),
-        pValuePaired:
-          e.pValuePaired !== null ? Number(e.pValuePaired.toFixed(4)) : "NA",
-        pValueUnpaired:
-          e.pValueUnpaired !== null
-            ? Number(e.pValueUnpaired.toFixed(4))
-            : "NA",
-        tumorNum:
-          e.tumorSampleCount !== null
-            ? Number(e.tumorSampleCount.toFixed(4))
-            : "NA",
-        controlNum:
-          e.normalSampleCount !== null
-            ? Number(e.normalSampleCount.toFixed(4))
-            : "NA",
-        tumorError:
-          e.tumorSampleStandardError !== null
-            ? Number(e.tumorSampleStandardError.toFixed(4))
-            : "NA",
-        controlError:
-          e.normalSampleStandardError !== null
-            ? Number(e.normalSampleStandardError.toFixed(4))
-            : "NA",
-        records: patients,
-      };
-    });
-
-  const [phosView, setPhosView] = useState(
-    tumorViewData.length > 0 ? tumorViewData[0].name : "",
-  );
-  const [site, setSite] = useState(
-    sortResults.length > 0
-      ? sortResults[0][1].filter((f) => f.accession && f.phosphopeptide)[0]
-      : "",
-  );
-
-  const phosSiteColumns = [
+  const heatMapData = [
     {
-      accessor: "participantId",
-      id: "participantId",
-      label: "Patient ID",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="phos_patient">Patient ID</Tooltip>}>
-          <b>Patient ID</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "tumorValue",
-      label: "Tumor Abundance",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="phos_tumor_val">Tumor Abundance</Tooltip>}>
-          <b>Tumor Abundance</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "controlValue",
-      label: "Adjacent Normal Abundance",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>
-          }>
-          <b>Adj. Normal Abundance</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "proteinDiff",
-      label: "Log2 Fold Change",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_diff">
-              Difference between Tumor and Adjacent Normal Abundance
-            </Tooltip>
-          }>
-          <b>
-            Log<sub>2</sub> Fold Change
-          </b>
-        </OverlayTrigger>
-      ),
+      z: heatmap,
+      x: tumors.map((e) => e.label),
+      y: sortSummary.map((e) => e[0]),
+      type: "heatmap",
+      hoverongaps: false,
+      colorbar: {
+        title: {
+          text: "Log Fold Change",
+        },
+      },
+      hovertemplate: "%{x}<br>%{y}<br>%{z}<extra></extra>",
     },
   ];
 
@@ -312,7 +189,59 @@ export default function PhosResults() {
     },
   ];
 
-  const tumorColumns = [
+  const phosSiteColumns = [
+    {
+      accessor: "participantId",
+      id: "participantId",
+      label: "Patient ID",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_patient">Patient ID</Tooltip>}>
+          <b>Patient ID</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "tumorValue",
+      label: "Tumor Abundance",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_tumor_val">Tumor Abundance</Tooltip>}>
+          <b>Tumor Abundance</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "controlValue",
+      label: "Adjacent Normal Abundance",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>
+          }>
+          <b>Adj. Normal Abundance</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "proteinDiff",
+      label: "Log2 Fold Change",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_diff">
+              Difference between Tumor and Adjacent Normal Abundance
+            </Tooltip>
+          }>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
+        </OverlayTrigger>
+      ),
+    },
+  ];
+
+  const summary = [
     {
       accessor: "link",
       id: "link",
@@ -323,8 +252,16 @@ export default function PhosResults() {
           <b>Phsopho. Site</b>
         </OverlayTrigger>
       ),
-      sort: true,
-      sortType: (a, b) => (a.original.link.key > b.original.link.key ? 1 : -1),
+    },
+    {
+      accessor: "accession",
+      label: "Accession",
+      Header: (
+        <OverlayTrigger
+          overlay={<Tooltip id="phos_accession">Accession</Tooltip>}>
+          <b>Accession</b>
+        </OverlayTrigger>
+      ),
     },
     {
       accessor: "phosphopeptide",
@@ -452,6 +389,115 @@ export default function PhosResults() {
     },
   ];
 
+  const sortPhospho = Object.entries(
+    _.groupBy(results[0].participants.records, "cancerId"),
+  ).filter((e) => e[0] !== "null");
+
+  console.log(sortPhospho);
+
+  const tumorViewData = results[0].summary.records
+    .filter((f) => f.cancerId === view)
+    .map((e) => {
+      const patients = sortPhospho
+        .find((f) => Number(f[0]) === view)[1]
+        .filter((d) => d.phosphorylationSite === e.phosphorylationSite);
+
+      return {
+        name: e.phosphorylationSite,
+        phosphopeptide: patients.filter((d) => d.phosphopeptide !== null)[0]
+          .phosphopeptide,
+        accession: patients.filter((d) => d.accession != null)[0].accession,
+        tumorAverage:
+          e.tumorSampleMean !== null
+            ? Number(e.tumorSampleMean.toFixed(4))
+            : "NA",
+        controlAverage:
+          e.normalSampleMean !== null
+            ? Number(e.normalSampleMean.toFixed(4))
+            : "NA",
+        proteinDiff:
+          e.tumorSampleMean !== null && e.normalSampleMean !== null
+            ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
+            : "NA",
+        link: (
+          <a
+            onClick={() => {
+              setPhosView(e.phosphorylationSite);
+              setTab("phosView");
+              setSite(patients.filter((d) => d.phosphopeptide !== null)[0]);
+            }}
+            href="javascript:void(0)">
+            {e.phosphorylationSite}
+          </a>
+        ),
+        pValuePaired:
+          e.pValuePaired !== null ? Number(e.pValuePaired.toFixed(4)) : "NA",
+        pValueUnpaired:
+          e.pValueUnpaired !== null
+            ? Number(e.pValueUnpaired.toFixed(4))
+            : "NA",
+        tumorNum:
+          e.tumorSampleCount !== null
+            ? Number(e.tumorSampleCount.toFixed(4))
+            : "NA",
+        controlNum:
+          e.normalSampleCount !== null
+            ? Number(e.normalSampleCount.toFixed(4))
+            : "NA",
+        tumorError:
+          e.tumorSampleStandardError !== null
+            ? Number(e.tumorSampleStandardError.toFixed(4))
+            : "NA",
+        controlError:
+          e.normalSampleStandardError !== null
+            ? Number(e.normalSampleStandardError.toFixed(4))
+            : "NA",
+        records: patients,
+      };
+    });
+
+  const [phosView, setPhosView] = useState(
+    tumorViewData.length > 0 ? tumorViewData[0].name : "",
+  );
+  const [site, setSite] = useState(
+    tumorViewData.length > 0 ? tumorViewData[0] : "",
+  );
+
+  /*
+  const siteTableData =
+    tumorViewData.length && tumorViewData.find((e) => e.name === phosView)
+      ? tumorViewData
+          .find((e) => e.name === phosView)
+          .records.map((e) => {
+            const proteinValues = results
+              .find((d) => d.cancer.value === e.cancerId)
+              .participants.records.find(
+                (f) => f.participantId === e.participantId,
+              );
+
+            if (
+              proteinValues &&
+              proteinValues.tumorValue !== null &&
+              proteinValues.normalValue !== null
+            ) {
+              const tumorValue = Number(
+                (e.tumorValue - proteinValues.tumorValue).toFixed(4),
+              );
+              const normalValue = Number(
+                (e.normalValue - proteinValues.normalValue).toFixed(4),
+              );
+
+              return {
+                participantId: e.participantId,
+                tumorValue: tumorValue,
+                normalValue: normalValue,
+                proteinDiff: Number((tumorValue - normalValue).toFixed(4)),
+              };
+            } else return null;
+          })
+          .filter((e) => e !== null)
+      : [];*/
+
   const multiPhosBarPlot = [
     {
       x: tumorViewData.map((c) => c.name),
@@ -519,8 +565,6 @@ export default function PhosResults() {
         },
       ];
     }
-
-    return [];
   }
 
   function handleToggle(e) {
@@ -572,9 +616,7 @@ export default function PhosResults() {
           orientation: "h",
         },
       ];
-    } else {
-      return [];
-    }
+    } else return [];
   }
 
   const defaultLayout = {
@@ -582,7 +624,7 @@ export default function PhosResults() {
       zeroline: false,
     },
     yaxis: {
-      title: "<b>Protein Abundance<b>",
+      title: "Protein Abundance",
       zeroline: false,
     },
     legend: {
@@ -621,7 +663,7 @@ export default function PhosResults() {
       return [{ value: e.label }];
     });
 
-    settings[0].push({ value: "Phosphorylation Site" });
+    settings[0].push({ value: "Phosphorylation/Protein" });
     settings[0].push({ value: "Tumor vs Control" });
     settings[0].push({ value: form.gene.label });
 
@@ -667,9 +709,8 @@ export default function PhosResults() {
         ],
         data: [
           [
-            { value: form.cancer.find((e) => e.value === view).label },
-            { value: site.name },
-            { value: "Phosphorylation Site" },
+            { value: form.cancer.find((f) => f.value === view).label },
+            { value: "Phosphorylation/Protein" },
             { value: "Tumor vs Control" },
             { value: form.gene.label },
           ],
@@ -680,7 +721,7 @@ export default function PhosResults() {
 
   const exportTumor = [
     {
-      columns: tumorColumns.map((e) => {
+      columns: summary.map((e) => {
         return { title: e.label, width: { wpx: 200 } };
       }),
       data: tumorViewData.map((e) => {
@@ -715,7 +756,7 @@ export default function PhosResults() {
         [
           { value: form.cancer.find((e) => e.value === view).label },
           { value: site.name },
-          { value: "Phosphorylation Site" },
+          { value: "Phosphorylation/Protein" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
         ],
@@ -736,14 +777,25 @@ export default function PhosResults() {
                 .records.map((d) => {
                   return [
                     { value: d.participantId },
-                    { value: d.tumorValue ? d.tumorValue.toFixed(4) : "NA" },
-                    { value: d.normalValue ? d.normalValue.toFixed(4) : "NA" },
+                    {
+                      value: d.tumorValue
+                        ? Number(d.tumorValue.toFixed(4))
+                        : "NA",
+                    },
+                    {
+                      value: d.normalValue
+                        ? Number(d.normalValue.toFixed(4))
+                        : "NA",
+                    },
                     {
                       value:
                         d.tumorValue && d.normalValue
-                          ? (
-                              d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
-                            ).toFixed(4)
+                          ? Number(
+                              (
+                                Number(d.tumorValue.toFixed(4)) -
+                                Number(d.normalValue.toFixed(4))
+                              ).toFixed(4),
+                            )
                           : "NA",
                     },
                   ];
@@ -752,8 +804,6 @@ export default function PhosResults() {
       },
     ];
   }
-
-  console.log(sortResults);
 
   function getTimestamp() {
     const date = new Date();
@@ -775,7 +825,7 @@ export default function PhosResults() {
             data={heatMapData}
             layout={{
               ...defaultLayout,
-              title: `<b>Phosphorylation Summary View</b> (Gene: ${form.gene.label})`,
+              title: `<b>Phosphorylation/Protein Summary View</b> (Gene: ${form.gene.label})`,
               xaxis: {
                 title: "<b>Tumor Types</b>",
                 titlefont: {
@@ -804,7 +854,7 @@ export default function PhosResults() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-PhosphorylationSite-TumorVsNormal-Summary-${getTimestamp()}`}
+              filename={`CPROSITE-PhosphorylationProtein-TumorVsNormal-Summary-${getTimestamp()}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
@@ -833,12 +883,12 @@ export default function PhosResults() {
               name="caseView"
               onChange={(c) => {
                 setView(parseInt(c.target.value));
-                const phos = sortResults.find(
+                const phos = sortPhospho.find(
                   (e) => Number(e[0]) === parseInt(c.target.value),
                 )
                   ? Object.entries(
                       _.groupBy(
-                        sortResults.find(
+                        sortPhospho.find(
                           (e) => Number(e[0]) === parseInt(c.target.value),
                         )[1],
                         "phosphorylationSite",
@@ -865,7 +915,7 @@ export default function PhosResults() {
               data={multiPhosBarPlot}
               layout={{
                 ...defaultLayout,
-                title: `<b>Phosphorylation Site Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                title: `<b>Phosphorylation/Protein Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
                 xaxis: {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
@@ -874,7 +924,7 @@ export default function PhosResults() {
                   },
                 },
                 yaxis: {
-                  title: "<b>Phosphorylation Level</b>",
+                  title: "<b>Phosphorylation/Protein Level</b>",
                   zeroline: false,
                   titlefont: {
                     size: 15,
@@ -885,7 +935,7 @@ export default function PhosResults() {
                 legend: {
                   orientation: "h",
                   y: -0.25,
-                  x: 0.37,
+                  x: 0.42,
                 },
                 annotations: [
                   {
@@ -911,11 +961,10 @@ export default function PhosResults() {
             />
           </Col>
         </Row>
-
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-Phosphorylation-TumorVsNormal-Tumor-${getTimestamp()}`}
+              filename={`CPROSITE-PhosphorylationProtein-TumorVsNormal-Tumor-${getTimestamp()}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportTumorSettings()}
@@ -925,13 +974,12 @@ export default function PhosResults() {
             </ExcelFile>
           </div>
           <Table
-            columns={tumorColumns}
+            columns={summary}
             data={tumorViewData}
             defaultSort={[{ id: "link", asec: true }]}
           />
         </div>
       </Tab>
-
       <Tab eventKey="phosView" title="Phosphorylation Site">
         <Form.Group className="row mx-3" controlId="phosView">
           <Form.Label
@@ -944,7 +992,7 @@ export default function PhosResults() {
               name="phosView"
               onChange={(e) => {
                 setPhosView(e.target.value);
-                setSite(tumorViewData.find((f) => f.name === e.target.value));
+                setSite(tumorViewData.find((c) => c.name === e.target.value));
               }}
               value={phosView}
               required>
@@ -999,7 +1047,7 @@ export default function PhosResults() {
                       : "NA"
                   })`,
                   yaxis: {
-                    title: "<b>Phosphorylation Level</b>",
+                    title: "<b>Phosphorylation/Protein Level</b>",
                     zeroline: false,
                     titlefont: {
                       size: 15,
@@ -1011,7 +1059,7 @@ export default function PhosResults() {
                   legend: {
                     orientation: "h",
                     y: -0.1,
-                    x: 0.37,
+                    x: 0.42,
                   },
                   annotations: [
                     {
@@ -1069,7 +1117,8 @@ export default function PhosResults() {
                   annotations: [
                     {
                       text:
-                        !tumorViewData.find((c) => c.name === phosView) ||
+                        tumorViewData.length === 0 ||
+                        !tumorViewData.find((e) => e.name === phosView) ||
                         tumorViewData
                           .find((c) => c.name === phosView)
                           .records.filter((e) => e.tumorValue && e.normalValue)
@@ -1098,7 +1147,6 @@ export default function PhosResults() {
             </Col>
           )}
         </Row>
-
         <fieldset className="mx-5 mb-5 border row" style={{ color: "grey" }}>
           <div className="col-xl-6 my-2 d-flex justify-content-center">
             Accession: {site.accession}
@@ -1112,13 +1160,16 @@ export default function PhosResults() {
         <Row className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-Phosphorylation-TumorVsNormal-Site-${getTimestamp()}`}
+              filename={`CPROSITE-PhosphorylationProtein-TumorVsNormal-Site-${getTimestamp()}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSiteSettings}
                 name="Input Configuration"
               />
-              <ExcelSheet dataSet={exportSite()} name="Phosphorylation Site" />
+              <ExcelSheet
+                dataSet={exportSite()}
+                name="Phosphorylation/Protein Site"
+              />
             </ExcelFile>
           </div>
           <Table
@@ -1133,17 +1184,19 @@ export default function PhosResults() {
                       return {
                         participantId: d.participantId,
                         tumorValue: d.tumorValue
-                          ? d.tumorValue.toFixed(4)
+                          ? Number(d.tumorValue.toFixed(4))
                           : "NA",
                         controlValue: d.normalValue
-                          ? d.normalValue.toFixed(4)
+                          ? Number(d.normalValue.toFixed(4))
                           : "NA",
                         proteinDiff:
                           d.tumorValue && d.normalValue
-                            ? (
-                                d.normalValue.toFixed(4) -
-                                d.tumorValue.toFixed(4)
-                              ).toFixed(4)
+                            ? Number(
+                                (
+                                  Number(d.tumorValue.toFixed(4)) -
+                                  Number(d.normalValue.toFixed(4))
+                                ).toFixed(4),
+                              )
                             : "NA",
                       };
                     })
@@ -1151,6 +1204,7 @@ export default function PhosResults() {
             }
           />
         </Row>
+        {console.log(tumorViewData)}
       </Tab>
     </Tabs>
   );
