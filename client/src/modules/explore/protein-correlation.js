@@ -226,10 +226,16 @@ export default function ProteinCorrelation() {
     xaxis: {
       title: "<b>Protein</b>",
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     yaxis: {
       title: "<b>mRNA</b>",
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     legend: {
       itemsizing: "constant",

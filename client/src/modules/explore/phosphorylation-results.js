@@ -778,10 +778,16 @@ export default function PhosResults() {
               title: `<b>Phosphorylation Summary View</b> (Gene: ${form.gene.label})`,
               xaxis: {
                 title: "<b>Tumor Types</b>",
+                titlefont: {
+                  size: 15,
+                },
               },
               yaxis: {
                 title: "<b>Phosphorylation Site</b>",
                 automargin: true,
+                titlefont: {
+                  size: 15,
+                },
               },
               autosize: true,
             }}
@@ -863,10 +869,16 @@ export default function PhosResults() {
                 xaxis: {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
+                  titlefont: {
+                    size: 15,
+                  },
                 },
                 yaxis: {
                   title: "<b>Phosphorylation Level</b>",
                   zeroline: false,
+                  titlefont: {
+                    size: 15,
+                  },
                 },
                 barmode: "group",
                 autosize: true,
@@ -989,6 +1001,9 @@ export default function PhosResults() {
                   yaxis: {
                     title: "<b>Phosphorylation Level</b>",
                     zeroline: false,
+                    titlefont: {
+                      size: 15,
+                    },
                   },
                   autosize: true,
                   boxgroupgap: 0.4,
@@ -1040,6 +1055,9 @@ export default function PhosResults() {
                   xaxis: {
                     title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
+                    titlefont: {
+                      size: 15,
+                    },
                   },
                   xaxis2: {
                     zeroline: false,

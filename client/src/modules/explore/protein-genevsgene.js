@@ -248,10 +248,16 @@ export default function ProteinGeneCorrelation() {
     xaxis: {
       title: `<b>${firstGene}</b>`,
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     yaxis: {
       title: `<b>${secondGene}</b>`,
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     legend: {
       itemsizing: "constant",

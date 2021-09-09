@@ -498,10 +498,16 @@ export default function Results() {
     xaxis: {
       title: "<b>Tumor Type </b>",
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     yaxis: {
       title: "<b>Protein Abundance</b>",
       zeroline: false,
+      titlefont: {
+        size: 15,
+      },
     },
     legend: {
       itemsizing: "constant",
@@ -656,6 +662,9 @@ export default function Results() {
                   yaxis: {
                     title: "<b>Log Protien Abundance</b>",
                     zeroline: false,
+                    titlefont: {
+                      size: 15,
+                    },
                   },
                   boxgroupgap: 0.4,
                   boxgap: 0.4,
@@ -706,6 +715,9 @@ export default function Results() {
                   xaxis: {
                     title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
+                    titlefont: {
+                      size: 15,
+                    },
                   },
                   xaxis2: {
                     zeroline: false,
