@@ -24,7 +24,7 @@ export default function ProteinPhosResults() {
   const tumors = form.cancer;
   const [view, setView] = useState(form.cancer[0].value);
 
-  const [tab, setTab] = useState("tumorView");
+  const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
   const results = useRecoilValue(resultsState);
