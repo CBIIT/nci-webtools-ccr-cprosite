@@ -6,7 +6,7 @@ export default function About() {
     <Container className="my-4">
       <Card className="shadow">
         <Card.Body>
-          <h1>About CPTAC Search</h1>
+          <h1>About cProSite</h1>
 
           <hr />
 
