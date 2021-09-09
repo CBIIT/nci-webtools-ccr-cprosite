@@ -11,36 +11,46 @@ export default function About() {
           <hr />
 
           <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis
-            imperdiet ligula lacinia, blandit dui sed, porta nulla. Mauris
-            efficitur at eros sed pretium. Pellentesque mattis tellus massa, sed
-            elementum sem suscipit quis. Quisque vehicula viverra suscipit.
-            Donec luctus mollis congue. Nunc eget porttitor lorem. Suspendisse
-            lobortis urna sapien, eget ornare purus hendrerit eget. Vestibulum
-            ante ipsum primis in faucibus orci luctus et ultrices posuere
-            cubilia curae; Vivamus venenatis viverra pellentesque. Nullam a
-            ipsum semper augue dictum placerat. Vestibulum elementum turpis
-            enim, et auctor orci imperdiet et. Praesent purus lacus, maximus
-            feugiat lacinia blandit, pellentesque ac justo. Aliquam aliquam
-            pharetra neque, vel aliquam urna aliquam ut. Aenean molestie est
-            eros, ac dapibus est aliquam et.
+            The Cancer Proteogenomic Data Analysis Site (cProSite) is a
+            web-based interactive platform that provides on-line proteomic and
+            phosphoproteomic analysis for the data of the National Cancer
+            Institute’s Clinical Proteomic Tumor Analysis Consortium (CPTAC,
+            https://proteomics.cancer.gov). The platform has advantages compared
+            to regular analytical methods: 1) Faster on-line analysis; 2) More
+            user-friendly environment; and 3) Less need for bioinformatics
+            expertise to perform the analysis. cProSite currently includes 10
+            tumor types (breast cancer, colon cancer, head and neck cancer,
+            liver cancer, lung adenocarcinoma (Lung AD), lung squamous carcinoma
+            (Lung SC), ovarian cancer, stomach cancer and uterine cancer). The
+            cProSite Dataset will be updated with the new CPTAC release.
           </p>
 
           <p>
-            Suspendisse pulvinar consequat felis eget rutrum. Vivamus
-            ullamcorper tortor quis eros lobortis dignissim. Donec tincidunt
-            quam sit amet diam malesuada egestas. Aliquam sit amet imperdiet
-            nunc. Integer dictum ante quis risus euismod tempor. Donec interdum
-            lorem eget leo maximus, posuere commodo mauris rhoncus. Nulla
-            volutpat libero mi, vel consequat magna dictum ut. Aliquam massa
-            ante, imperdiet et cursus in, tincidunt iaculis mi. Donec sodales
-            nisl vel vestibulum maximus. Nulla sed egestas nunc. Nunc sit amet
-            cursus eros, sed ornare enim. Sed in mauris iaculis, vulputate augue
-            eu, porta enim. Pellentesque suscipit odio ligula, sed cursus nisi
-            convallis nec. Aenean accumsan mattis sapien, id rhoncus turpis
-            porttitor vitae. Ut ornare eros aliquet orci ornare, sit amet
-            suscipit tellus viverra. Vivamus ut sollicitudin turpis, ut
-            tincidunt mauris.
+            Features of cProSite include: 1) Comparing selected protein
+            abundance between tumors and normal adjacent tissues and show
+            protein abundance fold-changes between paired tumor and control
+            cases; 2) Comparing selected levels of individual phosphorylation
+            sites or levels of phosphorylation site per protein abundance and
+            show fold-changes between tumors and normal adjacent tissues; 3)
+            Correlating protein abundance, phosphorylation site levels, or
+            phosphorylation site level per protein abundance between two
+            selected proteins; 4) Correlating selected protein abundance with
+            its mRNA expression level if the data are available. cProSite allows
+            users to download the analyzed data through its export feature.
+          </p>
+
+          <p>
+            The data from cProSite are derived from the Proteomic Data Commons
+            (PDC, https://proteomic.datacommons.cancer.gov/pdc/) and the CPTAC
+            portal (https://proteomics.cancer.gov/data-portal). Because of the
+            limitations of mass spectrometry and the analytic algorithms, not
+            all proteins and all phosohorylation sites are detected for
+            individual samples.
+          </p>
+
+          <p>
+            Please submit comments and questions regarding cProSite analysis to
+            the cProSite team (XXXX).
           </p>
         </Card.Body>
       </Card>
