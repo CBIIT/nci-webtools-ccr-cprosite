@@ -20,12 +20,12 @@ create table phosphoproteinData (
   participantId varchar(100),
   normalValue float,
   tumorValue float,
-  accession text,
-  phosphorylationSite varchar(100),
-  phosphopeptide varchar(1000)
+  accession varchar(50),
+  phosphorylationSite varchar(50),
+  phosphopeptide varchar(500)
 );
 
-create unique index phosphoproteinData_unique_index on phosphoproteinData(cancerId, geneId, participantId);
+create unique index phosphoproteinData_unique_index on phosphoproteinData(cancerId, geneId, participantId, accession, phosphorylationSite, phosphopeptide);
 
 drop table if exists rnaData;
 create table rnaData (
@@ -75,6 +75,7 @@ select * from (
     value as normalValue
   from breastcptac2prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -88,6 +89,7 @@ select * from (
     value as tumorValue
   from breastcptac2prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -120,6 +122,7 @@ select * from (
     phosphopeptide
   from breastcptac2phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -127,18 +130,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     1 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from breastcptac2phosphodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -249,6 +260,7 @@ select * from (
     value as normalValue
   from coloncptac2prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -262,6 +274,7 @@ select * from (
     value as tumorValue
   from coloncptac2prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -294,6 +307,7 @@ select * from (
     phosphopeptide
   from coloncptac2phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -301,18 +315,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     2 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from coloncptac2phosphodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -423,6 +445,7 @@ select * from (
     value as normalValue
   from hncptac3prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -436,6 +459,7 @@ select * from (
     value as tumorValue
   from hncptac3prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -468,6 +492,7 @@ select * from (
     phosphopeptide
   from hncptac3phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -475,18 +500,66 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     3 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from hncptac3phosphodata_temp
+  where isTumor = 1
+  and value between -3 and 3
+) as new
+on duplicate key update
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
+
+
+
+-- create temporary table for rna levels
+drop table if exists hncptac3rnadata_temp;
+create table hncptac3rnadata_temp as
+select distinct
+  g.id as geneId,
+  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  avg(c.value) as value,
+  c.paid like '%-Tu' as isTumor
+from hncptac3rnadata c
+inner join geneMap g on g.name = c.gene
+group by geneId, participantId, isTumor;
+
+insert into rnaData(cancerId, geneId, participantId, normalValue)
+select * from (
+  select 
+    3 as cancerId,
+    geneId, 
+    participantId, 
+    value as normalValue
+  from hncptac3rnadata_temp
+  where isTumor = 0
+) as new
+on duplicate key update
+  normalValue = new.normalValue;
+
+insert into rnaData(cancerId, geneId, participantId, tumorValue)
+select * from (
+  select 
+    3 as cancerId,
+    geneId, 
+    participantId, 
+    value as tumorValue 
+  from hncptac3rnadata_temp
   where isTumor = 1
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue;
 
 
 
@@ -557,6 +630,7 @@ select * from (
     value as normalValue
   from ccrcccptac3prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -570,6 +644,7 @@ select * from (
     value as tumorValue
   from ccrcccptac3prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -602,6 +677,7 @@ select * from (
     phosphopeptide
   from ccrcccptac3phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -609,18 +685,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     4 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from ccrcccptac3phosphodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -684,6 +768,7 @@ select * from (
     value as normalValue
   from liverhcccptacprodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -697,8 +782,49 @@ select * from (
     value as tumorValue
   from liverhcccptacprodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
+
+
+
+-- create temporary table for rna levels
+drop table if exists liverhcccptacrnadata_temp;
+create table liverhcccptacrnadata_temp as
+select distinct
+  g.id as geneId,
+  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  avg(c.value) as value,
+  c.paid like '%-Tu' as isTumor
+from liverhcccptacrnadata c
+inner join geneMap g on g.name = c.gene
+group by geneId, participantId, isTumor;
+
+insert into rnaData(cancerId, geneId, participantId, normalValue)
+select * from (
+  select 
+    5 as cancerId,
+    geneId, 
+    participantId, 
+    value as normalValue
+  from liverhcccptacrnadata_temp
+  where isTumor = 0
+) as new
+on duplicate key update
+  normalValue = new.normalValue;
+
+insert into rnaData(cancerId, geneId, participantId, tumorValue)
+select * from (
+  select 
+    5 as cancerId,
+    geneId, 
+    participantId, 
+    value as tumorValue 
+  from liverhcccptacrnadata_temp
+  where isTumor = 1
+) as new
+on duplicate key update
+  tumorValue = new.tumorValue;
 
 
 
@@ -769,6 +895,7 @@ select * from (
     value as normalValue
   from lungadcptac3prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -782,6 +909,7 @@ select * from (
     value as tumorValue
   from lungadcptac3prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -814,6 +942,7 @@ select * from (
     phosphopeptide
   from lungadcptac3phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -821,18 +950,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     6 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from lungadcptac3phosphodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -943,6 +1080,7 @@ select * from (
     value as normalValue
   from lungsqcptac3prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -956,6 +1094,7 @@ select * from (
     value as tumorValue
   from lungsqcptac3prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -988,6 +1127,7 @@ select * from (
     phosphopeptide
   from lungsqcptac3phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -995,18 +1135,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     7 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from lungsqcptac3phosphodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -1117,6 +1265,7 @@ select * from (
     value as normalValue
   from ovcptac2prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1130,6 +1279,7 @@ select * from (
     value as tumorValue
   from ovcptac2prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -1162,6 +1312,7 @@ select * from (
     phosphopeptide
   from ovcptac2phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -1169,18 +1320,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     8 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from ovcptac2phosphodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -1291,6 +1450,7 @@ select * from (
     value as normalValue
   from pdaccptac3prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1304,6 +1464,7 @@ select * from (
     value as tumorValue
   from pdaccptac3prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -1336,6 +1497,7 @@ select * from (
     phosphopeptide
   from pdaccptac3phosphodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -1343,18 +1505,66 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     9 as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from pdaccptac3phosphodata_temp
+  where isTumor = 1
+  and value between -3 and 3
+) as new
+on duplicate key update
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
+
+
+
+-- create temporary table for rna levels
+drop table if exists pdaccptac3rnadata_temp;
+create table pdaccptac3rnadata_temp as
+select distinct
+  g.id as geneId,
+  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  avg(c.value) as value,
+  c.paid like '%-Tu' as isTumor
+from pdaccptac3rnadata c
+inner join geneMap g on g.name = c.gene
+group by geneId, participantId, isTumor;
+
+insert into rnaData(cancerId, geneId, participantId, normalValue)
+select * from (
+  select 
+    9 as cancerId,
+    geneId, 
+    participantId, 
+    value as normalValue
+  from pdaccptac3rnadata_temp
+  where isTumor = 0
+) as new
+on duplicate key update
+  normalValue = new.normalValue;
+
+insert into rnaData(cancerId, geneId, participantId, tumorValue)
+select * from (
+  select 
+    9 as cancerId,
+    geneId, 
+    participantId, 
+    value as tumorValue 
+  from pdaccptac3rnadata_temp
   where isTumor = 1
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue;
 
 
 
@@ -1424,6 +1634,7 @@ select * from (
     1 as normalValue, 
     value as tumorValue
   from stomachcptac3prodata_temp
+  where value between -3 and 3
 ) as new
 on duplicate key update 
   normalValue = new.normalValue,
@@ -1457,6 +1668,7 @@ select * from (
     phosphorylationSite, 
     phosphopeptide
   from stomachcptac3phosphodata_temp
+  where value between -3 and 3
 ) as new
 on duplicate key update
     normalValue = new.normalValue,
@@ -1534,6 +1746,7 @@ select * from (
     value as normalValue
   from uterinecptac3prodata_temp
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1547,6 +1760,7 @@ select * from (
     value as tumorValue
   from uterinecptac3prodata_temp
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
