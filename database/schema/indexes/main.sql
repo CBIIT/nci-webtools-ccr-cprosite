@@ -1,10 +1,10 @@
 create unique index "proteinDataUniqueIndex" on "proteinData"("cancerId", "geneId", "participantId");
-create unique index "phosphoproteinDataUniqueIndex" on "phosphoproteinData"("cancerId", "geneId", "participantId");
-create unique index "phosphoproteinRatioDataUniqueIndex" on "phosphoproteinRatioData"("cancerId", "geneId", "participantId");
+create unique index "phosphoproteinDataUniqueIndex" on "phosphoproteinData"("cancerId", "geneId", "participantId", "accession", "phosphorylationSite", "phosphopeptide");
+create unique index "phosphoproteinRatioDataUniqueIndex" on "phosphoproteinRatioData"("cancerId", "geneId", "participantId", "accession", "phosphorylationSite", "phosphopeptide");
 create unique index "rnaDataUniqueIndex" on "rnaData"("cancerId", "geneId", "participantId");
 create unique index "tcgaRnaDataUniqueIndex" on "tcgaRnaData"("cancerId", "geneId", "participantId");
-create unique index "proteinDataSummaryUniqueIndex" on "proteinDataSummary"("geneId", "cancerId");
-create unique index "phosphoproteinDataSummaryUniqueIndex" on "phosphoproteinDataSummary"("geneId", "cancerId", "phosphorylationSite");
-create unique index "phosphoproteinRatioDataSummaryUniqueIndex" on "phosphoproteinRatioDataSummary"("geneId", "cancerId", "phosphorylationSite");
-create unique index "rnaDataSummaryUniqueIndex" on "rnaDataSummary"("geneId", "cancerId");
-create unique index "tcgaRnaDataSummaryUniqueIndex" on "tcgaRnaDataSummary"("geneId", "cancerId");
+create unique index "proteinDataSummaryUniqueIndex" on "proteinDataSummary"("cancerId", "geneId");
+create unique index "phosphoproteinDataSummaryUniqueIndex" on "phosphoproteinDataSummary"("cancerId", "geneId", "accession", "phosphorylationSite", "phosphopeptide");
+create unique index "phosphoproteinRatioDataSummaryUniqueIndex" on "phosphoproteinRatioDataSummary"("cancerId", "geneId", "accession", "phosphorylationSite", "phosphopeptide");
+create unique index "rnaDataSummaryUniqueIndex" on "rnaDataSummary"("cancerId", "geneId");
+create unique index "tcgaRnaDataSummaryUniqueIndex" on "tcgaRnaDataSummary"("cancerId", "geneId");
