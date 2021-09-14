@@ -13,7 +13,7 @@ const timestamp = getTimestamp(
 );
 
 (async function main() {
-  const databaseFilePath = args.db || "data.db";
+  const databaseFilePath = args.db || "cprosite.db";
 
   const mainTablesSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
   const mainIndexesSql = await fsp.readFile("schema/indexes/main.sql", "utf-8");
@@ -129,27 +129,29 @@ const timestamp = getTimestamp(
       );
       database.exec(
         `insert into "${dataSummaryTable}" (
-            geneId,
             cancerId,
-            phosphorylationSite,
+            geneId,
             accession,
+            phosphorylationSite,
+            phosphopeptide,
             normalSampleCount,
             normalSampleMean,
             normalSampleMedian,
             normalSampleStandardError
         )
         select
-            geneId,
             cancerId,
-            phosphorylationSite,
+            geneId,
             accession,
+            phosphorylationSite,
+            phosphopeptide,
             count(normalValue) as normalSampleCount,
             avg(normalValue) as normalSampleMean,
             median(normalValue) as normalSampleMedian,
             stdev(normalValue) / sqrt(count(normalValue))
         from "${dataTable}"
         where normalValue is not null and phosphorylationSite is not null
-        group by cancerId, geneId, phosphorylationSite, accession
+        group by cancerId, geneId, accession, phosphorylationSite, phosphopeptide
         on conflict do update set
             "normalSampleCount" = excluded."normalSampleCount",
             "normalSampleMean" = excluded."normalSampleMean",
@@ -167,8 +169,9 @@ const timestamp = getTimestamp(
         `insert into "${dataSummaryTable}" (
             cancerId,
             geneId,
-            phosphorylationSite,
             accession,
+            phosphorylationSite,
+            phosphopeptide,
             tumorSampleCount,
             tumorSampleMean,
             tumorSampleMedian,
@@ -177,15 +180,16 @@ const timestamp = getTimestamp(
         select
             cancerId,
             geneId,
-            phosphorylationSite,
             accession,
+            phosphorylationSite,
+            phosphopeptide,
             count(tumorValue) as tumorSampleCount,
             avg(tumorValue) as tumorSampleMean,
             median(tumorValue) as tumorSampleMedian,
             stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
         from "${dataTable}"
         where tumorValue is not null and phosphorylationSite is not null
-        group by cancerId, geneId, phosphorylationSite, accession
+        group by cancerId, geneId, accession, phosphorylationSite, phosphopeptide
         on conflict do update set
             "tumorSampleCount" = excluded."tumorSampleCount",
             "tumorSampleMean" = excluded."tumorSampleMean",
@@ -203,21 +207,23 @@ const timestamp = getTimestamp(
         `insert into "${dataSummaryTable}" (
           cancerId,
           geneId,
-          phosphorylationSite,
           accession,
+          phosphorylationSite,
+          phosphopeptide,
           pValuePaired,
           pValueUnpaired
         )
         select
             cancerId,
             geneId,
-            phosphorylationSite,
             accession,
+            phosphorylationSite,
+            phosphopeptide,
             wilcoxon(normalValue, tumorValue) as pValuePaired,
             ttest2(normalValue, tumorValue) as pValueUnpaired
         from "${dataTable}" 
         where phosphorylationSite is not null
-        group by cancerId, geneId, phosphorylationSite, accession
+        group by cancerId, geneId, accession, phosphorylationSite, phosphopeptide
         on conflict do update set
           "pValuePaired" = excluded."pValuePaired",
           "pValueUnpaired" = excluded."pValueUnpaired"`,
