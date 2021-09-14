@@ -22,6 +22,7 @@ const config = [
     cancer: "cancer_head_and_neck",
     proteinTable: "hncptac3prodata",
     phosphoproteinTable: "hncptac3phosphodata",
+    rnaTable: "hncptac3rnadata",
     tcgaRnaTable: "hndata",
   },
   {
@@ -34,6 +35,7 @@ const config = [
   {
     cancer: "cancer_liver",
     proteinTable: "liverhcccptacprodata",
+    rnaTable: "liverhcccptacrnadata",
     tcgaRnaTable: "liverhccdata",
   },
 
@@ -65,6 +67,7 @@ const config = [
     cancer: "cancer_pancreas",
     proteinTable: "pdaccptac3prodata",
     phosphoproteinTable: "pdaccptac3phosphodata",
+    rnaTable: "pdaccptac3rnadata",
     tcgaRnaTable: "pancreasdata",
   },
 
@@ -105,12 +108,12 @@ create table phosphoproteinData (
   participantId varchar(100),
   normalValue float,
   tumorValue float,
-  accession text,
-  phosphorylationSite varchar(100),
-  phosphopeptide varchar(1000)
+  accession varchar(50),
+  phosphorylationSite varchar(50),
+  phosphopeptide varchar(500)
 );
 
-create unique index phosphoproteinData_unique_index on phosphoproteinData(cancerId, geneId, participantId);
+create unique index phosphoproteinData_unique_index on phosphoproteinData(cancerId, geneId, participantId, accession, phosphorylationSite, phosphopeptide);
 
 drop table if exists rnaData;
 create table rnaData (
@@ -162,6 +165,7 @@ select * from (
     value as normalValue
   from <%= tempTable %>
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -175,6 +179,7 @@ select * from (
     value as tumorValue
   from <%= tempTable %>
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 `);
@@ -201,6 +206,7 @@ select * from (
     1 as normalValue, 
     value as tumorValue
   from <%= tempTable %>
+  where value between -3 and 3
 ) as new
 on duplicate key update 
   normalValue = new.normalValue,
@@ -235,6 +241,7 @@ select * from (
     phosphopeptide
   from <%= tempTable %>
   where isTumor = 0
+  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -242,18 +249,26 @@ on duplicate key update
   phosphorylationSite = new.phosphorylationSite,
   phosphopeptide = new.phosphopeptide;
 
-insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue)
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
     <%= cancerId %> as cancerId,
     geneId, 
     participantId, 
-    value as tumorValue
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
   from <%= tempTable %>
   where isTumor = 1
+  and value between -3 and 3
 ) as new
 on duplicate key update
-    tumorValue = new.tumorValue;
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 `);
 
 const phosphoproteinSinglePoolImportTemplate = _.template(`
@@ -283,6 +298,7 @@ select * from (
     phosphorylationSite, 
     phosphopeptide
   from <%= tempTable %>
+  where value between -3 and 3
 ) as new
 on duplicate key update
     normalValue = new.normalValue,
