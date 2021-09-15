@@ -241,7 +241,7 @@ export default function ProteinPhosResults() {
     },
   ];
 
-  const summary = [
+  const tumorColumns = [
     {
       accessor: "link",
       id: "link",
@@ -250,16 +250,6 @@ export default function ProteinPhosResults() {
         <OverlayTrigger
           overlay={<Tooltip id="phos_site">Phosphorylation Site</Tooltip>}>
           <b>Phsopho. Site</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "accession",
-      label: "Accession",
-      Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="phos_accession">Accession</Tooltip>}>
-          <b>Accession</b>
         </OverlayTrigger>
       ),
     },
@@ -721,13 +711,12 @@ export default function ProteinPhosResults() {
 
   const exportTumor = [
     {
-      columns: summary.map((e) => {
+      columns: tumorColumns.map((e) => {
         return { title: e.label, width: { wpx: 200 } };
       }),
       data: tumorViewData.map((e) => {
         return [
           { value: e.name },
-          { value: e.accession },
           { value: e.phosphopeptide },
           { value: e.tumorAverage },
           { value: e.controlAverage },
@@ -755,7 +744,7 @@ export default function ProteinPhosResults() {
       data: [
         [
           { value: form.cancer.find((e) => e.value === view).label },
-          { value: site.name },
+          { value: phosView },
           { value: "Phosphorylation/Protein" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
@@ -974,7 +963,7 @@ export default function ProteinPhosResults() {
             </ExcelFile>
           </div>
           <Table
-            columns={summary}
+            columns={tumorColumns}
             data={tumorViewData}
             defaultSort={[{ id: "link", asec: true }]}
           />

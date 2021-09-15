@@ -668,7 +668,6 @@ export default function PhosResults() {
         data: [
           [
             { value: form.cancer.find((e) => e.value === view).label },
-            { value: site.name },
             { value: "Phosphorylation Site" },
             { value: "Tumor vs Control" },
             { value: form.gene.label },
@@ -686,7 +685,6 @@ export default function PhosResults() {
       data: tumorViewData.map((e) => {
         return [
           { value: e.name },
-          { value: e.accession },
           { value: e.phosphopeptide },
           { value: e.tumorAverage },
           { value: e.controlAverage },
@@ -714,7 +712,7 @@ export default function PhosResults() {
       data: [
         [
           { value: form.cancer.find((e) => e.value === view).label },
-          { value: site.name },
+          { value: phosView },
           { value: "Phosphorylation Site" },
           { value: "Tumor vs Control" },
           { value: form.gene.label },
