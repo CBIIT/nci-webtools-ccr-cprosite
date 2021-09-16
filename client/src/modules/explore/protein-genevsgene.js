@@ -1016,7 +1016,7 @@ export default function ProteinGeneCorrelation() {
               <b
                 className="col mx-3"
                 style={{ textDecorationLine: "underline" }}>
-                {firstSite}
+                {form.gene.label}
               </b>
               <div
                 className="col d-flex"
@@ -1068,7 +1068,7 @@ export default function ProteinGeneCorrelation() {
               <b
                 className="col mx-3"
                 style={{ textDecorationLine: "underline" }}>
-                {secondSite}
+                {form.correlatedGene.label}
               </b>
               <div
                 className="col d-flex"
