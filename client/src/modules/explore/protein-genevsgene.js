@@ -28,7 +28,10 @@ export default function ProteinGeneCorrelation() {
   const secondGene = form.correlatedGene.label;
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer.map((e) => e.value));
-  const [siteTumor, setSiteTumor] = useState(tumors[0]);
+  const [siteTumor, setSiteTumor] = useState({
+    value: form.cancer[0].value,
+    label: form.cancer[0].label,
+  });
   const [label, setLabel] = useState("");
   const [tab, setTab] = useState("summaryView");
 
@@ -46,11 +49,21 @@ export default function ProteinGeneCorrelation() {
   const [firstSite, setFirstSite] = useState("");
   const [secondSite, setSecondSite] = useState("");
   var firstSites = Object.entries(
-    _.groupBy(results[0].participants.records, "phosphorylationSite"),
+    _.groupBy(
+      results[0].participants.records.filter(
+        (f) => f.cancerId === siteTumor.value,
+      ),
+      "phosphorylationSite",
+    ),
   ).filter((e) => e[0] !== "null");
 
   var secondSites = Object.entries(
-    _.groupBy(results[1].participants.records, "phosphorylationSite"),
+    _.groupBy(
+      results[1].participants.records.filter(
+        (f) => f.cancerId === siteTumor.value,
+      ),
+      "phosphorylationSite",
+    ),
   ).filter((e) => e[0] !== "null");
 
   function handleToggle(e) {
@@ -329,10 +342,12 @@ export default function ProteinGeneCorrelation() {
 
   function getSite() {
     const firstFiltered = firstGeneSet.filter(
-      (f) => f.cancerId === siteTumor && f.phosphorylationSite === firstSite,
+      (f) =>
+        f.cancerId === siteTumor.value && f.phosphorylationSite === firstSite,
     );
     const secondFiltered = secondGeneSet.filter(
-      (f) => f.cancerId === siteTumor && f.phosphorylationSite === secondSite,
+      (f) =>
+        f.cancerId === siteTumor.value && f.phosphorylationSite === secondSite,
     );
 
     return firstFiltered.map((first) => {
@@ -579,7 +594,7 @@ export default function ProteinGeneCorrelation() {
           { title: "Gene", width: { wpx: 160 } },
         ],
         data: [
-          { value: form.cancer.find((f) => f.value === siteTumor).label },
+          { value: form.cancer.find((f) => f.value === siteTumor.value).label },
           { value: form.dataset.label },
           { value: "Correlation" },
           { value: gene },
@@ -844,14 +859,13 @@ export default function ProteinGeneCorrelation() {
               <Form.Label className="required">Tumor Type</Form.Label>
               <Select
                 name="firstSite"
-                value={siteTumor.value}
+                value={siteTumor}
                 options={form.cancer}
                 onChange={(e) => {
-                  setSiteTumor(e.value);
+                  setSiteTumor(e);
                 }}
               />
             </Form.Group>
-
             <Form.Group className="col-md-2" controlId="site1">
               <Form.Label className="required">{firstGene} Site</Form.Label>
               <Select
@@ -879,7 +893,7 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-            <Form.Group className="col-md-3 mt-2 col-form-label ">
+            <Form.Group className="col-md-4 mt-2 col-form-label ">
               <br />
               <Form.Check
                 inline
@@ -1035,7 +1049,7 @@ export default function ProteinGeneCorrelation() {
                   <ExcelSheet
                     dataSet={exportSite(
                       results[0].summary.records.filter(
-                        (f) => f.cancerId === siteTumor,
+                        (f) => f.cancerId === siteTumor.value,
                       ),
                     )}
                     name="Site Data"
@@ -1047,7 +1061,7 @@ export default function ProteinGeneCorrelation() {
               columns={siteColumns}
               defaultSort={[{ id: "phosphorylationSite", asec: true }]}
               data={results[0].summary.records
-                .filter((f) => f.cancerId === siteTumor)
+                .filter((f) => f.cancerId === siteTumor.value)
                 .map((c) => {
                   return {
                     phosphorylationSite: c.phosphorylationSite,
@@ -1087,7 +1101,7 @@ export default function ProteinGeneCorrelation() {
                   <ExcelSheet
                     dataSet={exportSite(
                       results[1].summary.records.filter(
-                        (f) => f.cancerId === siteTumor,
+                        (f) => f.cancerId === siteTumor.value,
                       ),
                     )}
                     name="Site Data"
@@ -1099,7 +1113,7 @@ export default function ProteinGeneCorrelation() {
               columns={siteColumns}
               defaultSort={[{ id: "phosphorylationSite", asec: true }]}
               data={results[1].summary.records
-                .filter((f) => f.cancerId === siteTumor)
+                .filter((f) => f.cancerId === siteTumor.value)
                 .map((c) => {
                   return {
                     phosphorylationSite: c.phosphorylationSite,
