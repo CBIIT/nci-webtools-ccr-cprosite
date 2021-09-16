@@ -79,7 +79,18 @@ export default function Explore() {
         <SidebarPanel classname="col-xl-4">
           <Card className="shadow">
             <Card.Body>
-              <ErrorBoundary fallback="An unexpected error occured">
+              <ErrorBoundary
+                fallback={
+                  <div style={{ color: "red" }}>
+                    The server encountered an internal error or
+                    misconfiguration. Please contact{" "}
+                    <a href="mailto:CPTACSearchWebAdmin@mail.nih.gov">
+                      CPTACSearchWebAdmin@mail.nih.gov
+                    </a>{" "}
+                    and inform them your configuration settings and the time
+                    that the error occured.{" "}
+                  </div>
+                }>
                 <Suspense fallback="Loading...">
                   <ExploreForm onSubmit={handleSubmit} onReset={handleReset} />
                 </Suspense>
