@@ -20,6 +20,7 @@ import {
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
+  const [submitted, setSubmitted] = useState(false);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
 
@@ -29,11 +30,13 @@ export default function Explore() {
 
   function handleSubmit(event) {
     setForm({ ...event, openSidebar: false });
+    setSubmitted(true);
     console.log("submit", event);
   }
 
   function handleReset(event) {
     setForm(event);
+    setSubmitted(false);
     console.log("reset", event);
   }
 
@@ -87,9 +90,20 @@ export default function Explore() {
         <MainPanel className="col-xl-8">
           <Card className="shadow h-100">
             <Card.Body className="p-0">
-              <ErrorBoundary fallback="An unexpected error occured">
+              <ErrorBoundary
+                fallback={
+                  <div style={{ color: "red" }}>
+                    The server encountered an internal error or
+                    misconfiguration. Please contact{" "}
+                    <a href="mailto:CPTACSearchWebAdmin@mail.nih.gov">
+                      CPTACSearchWebAdmin@mail.nih.gov
+                    </a>{" "}
+                    and inform them your configuration settings and the time
+                    that the error occured.{" "}
+                  </div>
+                }>
                 <Suspense fallback="Loading...">
-                  {![null, undefined, ""].includes(form.gene) ? (
+                  {submitted ? (
                     results()
                   ) : (
                     <div className="m-2">
