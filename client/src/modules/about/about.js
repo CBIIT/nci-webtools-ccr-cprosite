@@ -24,8 +24,8 @@ export default function About() {
             (CPTAC). The platform has advantages compared to regular analytical
             methods:
             <ul style={{ listStyle: "none" }}>
-              <li>1) Faster on-line analysis</li>
-              <li>2) More user-friendly environment</li>
+              <li>1) Faster on-line analysis.</li>
+              <li>2) More user-friendly environment.</li>
               <li>
                 3) Less need for bioinformatics expertise to perform the
                 analysis. cProSite currently includes 10 tumor types (breast
@@ -43,17 +43,17 @@ export default function About() {
               <li>
                 1) Comparing selected protein abundance between tumors and
                 normal adjacent tissues and show protein abundance fold-changes
-                between paired tumor and control cases
+                between paired tumor and control cases.
               </li>
               <li>
                 2) Comparing selected levels of individual phosphorylation sites
                 or levels of phosphorylation site per protein abundance and show
-                fold-changes between tumors and normal adjacent tissues
+                fold-changes between tumors and normal adjacent tissues.
               </li>
               <li>
                 3) Correlating protein abundance, phosphorylation site levels,
                 or phosphorylation site level per protein abundance between two
-                selected proteins
+                selected proteins.
               </li>
               <li>
                 4) Correlating selected protein abundance with its mRNA
