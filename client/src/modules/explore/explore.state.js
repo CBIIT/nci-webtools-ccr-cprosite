@@ -1,9 +1,9 @@
 import { atom, selector, selectorFamily } from "recoil";
 import { query } from "../../services/query";
 
-export const fieldsState = selector({
-  key: "explore.fieldsState",
-  get: ({ get }) => query("fields.json"),
+export const cancerState = selector({
+  key: "explore.fieldState",
+  get: ({ get }) => query("api/query", { table: "cancer" }),
 });
 
 export const casesState = selector({
@@ -107,8 +107,8 @@ export const dataState = selectorFamily({
 
 export const defaultFormState = {
   openSidebar: true,
-  cancer: [],
-  gene: "",
+  cancer: [{ value: 1, label: "Breast Cancer" }],
+  gene: { value: 1722, label: "CDK1" },
   analysis: { value: "tumor-control", label: "Tumor vs Adjacent Normal" },
   dataset: { value: "proteinData", label: "Protein Abundance" },
   correlation: "toAnotherProtein",

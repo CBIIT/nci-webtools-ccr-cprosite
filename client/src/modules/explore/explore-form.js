@@ -4,17 +4,22 @@ import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import classNames from "classnames";
 import { useRecoilValue } from "recoil";
-import { fieldsState, defaultFormState, geneState } from "./explore.state";
+import { cancerState, defaultFormState, geneState } from "./explore.state";
 import { useState } from "react";
 
 export default function ExploreForm({ onSubmit, onReset }) {
-  const fields = useRecoilValue(fieldsState);
+  const cancer = useRecoilValue(cancerState);
   const [form, setForm] = useState(defaultFormState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
-
   const genes = useRecoilValue(geneState).records.map((e) => {
     return { value: e.id, label: e.name };
   });
+
+  const tumors = [{ value: 0, label: "All Tumor Types" }].concat(
+    cancer.records.map((e) => {
+      return { value: e.id, label: e.name };
+    }),
+  );
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -36,7 +41,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   function handleSelectChange(name, selection = []) {
     // Add all cancer types if "All Tumor Types" is selected
     if (name === "cancer" && selection.find((option) => option.value === 0))
-      selection = fields.cancer.slice(1);
+      selection = tumors.slice(1);
     mergeForm({ [name]: selection });
   }
 
@@ -57,7 +62,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           isMulti="true"
           value={form.cancer}
           onChange={(ev) => handleSelectChange("cancer", ev)}
-          options={fields.cancer}
+          options={tumors}
         />
       </Form.Group>
 
