@@ -52,6 +52,17 @@ export default function ExploreForm({ onSubmit, onReset }) {
       .slice(0, limit);
   }
 
+  function isValid() {
+    if (
+      form.analysis.value === "correlation" &&
+      form.correlation === "toAnotherProtein" &&
+      !form.correlatedGene
+    )
+      return false;
+
+    return form.cancer.length && form.dataset && form.analysis && form.gene;
+  }
+
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="cancer">
@@ -195,7 +206,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           Reset
         </Button>
 
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" disabled={!isValid()}>
           Submit
         </Button>
       </div>
