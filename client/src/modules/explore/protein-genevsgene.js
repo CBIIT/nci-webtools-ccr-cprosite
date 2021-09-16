@@ -853,7 +853,7 @@ export default function ProteinGeneCorrelation() {
 
       {(form.dataset.value === "phosphoproteinData" ||
         form.dataset.value === "phosphoproteinRatioData") && (
-        <Tab eventKey="siteView" title="Site View">
+        <Tab eventKey="siteView" title="Phosphorylation Site">
           <Row className="m-3">
             <Form.Group className="col-md-2" controlId="siteTumor">
               <Form.Label className="required">Tumor Type</Form.Label>
@@ -867,7 +867,9 @@ export default function ProteinGeneCorrelation() {
               />
             </Form.Group>
             <Form.Group className="col-md-2" controlId="site1">
-              <Form.Label className="required">{firstGene} Site</Form.Label>
+              <Form.Label className="required">
+                {firstGene} Phosphorylation Site
+              </Form.Label>
               <Select
                 name="firstSite"
                 value={firstSite.value}
@@ -881,7 +883,9 @@ export default function ProteinGeneCorrelation() {
             </Form.Group>
 
             <Form.Group className="col-md-2" controlId="site2">
-              <Form.Label className="required">{secondGene} Site</Form.Label>
+              <Form.Label className="required">
+                {secondGene} Phosphorylation Site
+              </Form.Label>
               <Select
                 name="firstSite"
                 value={secondSite.value}
@@ -929,7 +933,7 @@ export default function ProteinGeneCorrelation() {
                   ...defaultLayout,
                   title:
                     siteTumor && firstSite && secondSite
-                      ? `<b>${label} ${firstSite} and ${secondSite} Correlation</b>`
+                      ? `<b>${label} ${form.gene.label}/${firstSite} and ${form.correlatedGene.label}/${secondSite} Correlation</b>`
                       : "",
                   autosize: true,
                   legend: {

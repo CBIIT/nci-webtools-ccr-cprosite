@@ -775,7 +775,7 @@ export default function PhosResults() {
               ...defaultLayout,
               title: `<b>Phosphorylation Summary View</b> (Gene: ${form.gene.label})`,
               xaxis: {
-                title: "<b>Tumor Types</b>",
+                title: "<b>Tumor Type</b>",
                 automargin: true,
                 titlefont: {
                   size: 15,
