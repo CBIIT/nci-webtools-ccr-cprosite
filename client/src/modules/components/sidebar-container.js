@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -17,9 +19,19 @@ export const CollapseButton = ({ collapsed, toggleCollapse }) => (
     }}>
     <span className="sr-only">Show or hide input sidebar</span>
     {collapsed ? (
-      <FontAwesomeIcon icon={faCaretRight} />
+      <FontAwesomeIcon
+        icon={faCaretRight}
+        style={{ fontSize: "20px" }}
+        data-toggle="tooltip"
+        title="Show Configuration Panel"
+      />
     ) : (
-      <FontAwesomeIcon icon={faCaretLeft} />
+      <FontAwesomeIcon
+        icon={faCaretLeft}
+        style={{ fontSize: "20px" }}
+        data-toggle="tooltip"
+        title="Hide Configuration Panel"
+      />
     )}
   </button>
 );
