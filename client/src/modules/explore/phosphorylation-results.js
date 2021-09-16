@@ -776,6 +776,7 @@ export default function PhosResults() {
               title: `<b>Phosphorylation Summary View</b> (Gene: ${form.gene.label})`,
               xaxis: {
                 title: "<b>Tumor Types</b>",
+                automargin: true,
                 titlefont: {
                   size: 15,
                 },
@@ -883,7 +884,7 @@ export default function PhosResults() {
                 legend: {
                   orientation: "h",
                   y: -0.25,
-                  x: 0.37,
+                  x: 0.42,
                 },
                 annotations: [
                   {

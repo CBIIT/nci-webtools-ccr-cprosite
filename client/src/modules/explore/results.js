@@ -554,9 +554,10 @@ export default function Results() {
                 autosize: true,
                 legend: {
                   orientation: "h",
-                  y: -0.25,
+                  y: -0.5,
                   x: 0.42,
                 },
+
                 annotations: [
                   {
                     text: results.length === 0 ? "No data available" : "",

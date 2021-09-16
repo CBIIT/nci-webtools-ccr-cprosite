@@ -74,7 +74,7 @@ export default function Explore() {
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
         <SidebarPanel classname="col-xl-4">
-          <Card className="shadow h-100">
+          <Card className="shadow">
             <Card.Body>
               <ErrorBoundary fallback="An unexpected error occured">
                 <Suspense fallback="Loading...">
