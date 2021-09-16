@@ -576,6 +576,10 @@ export default function Results() {
               style={{ height: "500px" }}
             />
           </Col>
+          <div className="mx-3" style={{ color: "grey" }}>
+            Note: Protein abundance of the same protein in different tumor types
+            cannot be compared
+          </div>
         </Row>
 
         <div className="m-3">
