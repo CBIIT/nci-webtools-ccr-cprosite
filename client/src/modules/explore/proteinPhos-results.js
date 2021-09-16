@@ -950,6 +950,10 @@ export default function ProteinPhosResults() {
               }}
             />
           </Col>
+          <div className="mx-3" style={{ color: "grey" }}>
+            Note: Phosphorylation/protein level of different phosphorylation
+            sites in the same tumor type cannot be compared
+          </div>
         </Row>
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
