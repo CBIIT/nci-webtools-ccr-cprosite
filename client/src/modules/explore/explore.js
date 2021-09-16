@@ -74,7 +74,7 @@ export default function Explore() {
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
         <SidebarPanel classname="col-xl-4">
-          <Card className="shadow">
+          <Card className="shadow h-100">
             <Card.Body>
               <ErrorBoundary fallback="An unexpected error occured">
                 <Suspense fallback="Loading...">
@@ -85,16 +85,17 @@ export default function Explore() {
           </Card>
         </SidebarPanel>
         <MainPanel className="col-xl-8">
-          <Card className="shadow">
+          <Card className="shadow h-100">
             <Card.Body className="p-0">
               <ErrorBoundary fallback="An unexpected error occured">
                 <Suspense fallback="Loading...">
                   {![null, undefined, ""].includes(form.gene) ? (
                     results()
                   ) : (
-                    <h2 className="p-5 h5 d-flex align-items-center justify-content-center">
-                      Please Provide Search Parameters
-                    </h2>
+                    <div className="m-2">
+                      Please provide configuration settings for your analysis on
+                      the left panel and click Submit.
+                    </div>
                   )}
                 </Suspense>
               </ErrorBoundary>
