@@ -559,6 +559,56 @@ export default function ProteinGeneCorrelation() {
     },
   ];
 
+  function exportSiteSettings(gene) {
+    var settings = form.cancer
+      .filter((f) => view.find((c) => c === f.value))
+      .map((e) => {
+        return [{ value: e.label }];
+      });
+    settings[0].push({ value: form.dataset.label });
+    settings[0].push({ value: "Correlation" });
+    settings[0].push({ value: form.gene.label });
+    settings[0].push({ value: form.correlatedGene.label });
+
+    return [
+      {
+        columns: [
+          { title: "Tumor", width: { wpx: 160 } },
+          { title: "Dataset", width: { wpx: 160 } },
+          { title: "Analysis", width: { wpx: 160 } },
+          { title: "Gene", width: { wpx: 160 } },
+        ],
+        data: [
+          { value: form.cancer.find((f) => f.value === siteTumor).label },
+          { value: form.dataset.label },
+          { value: "Correlation" },
+          { value: gene },
+        ],
+      },
+    ];
+  }
+
+  function exportSite(data) {
+    return {
+      columns: siteColumns.map((e) => {
+        return { title: e.label, width: { wpx: 200 } };
+      }),
+      data: data.map((c) => {
+        return [
+          { value: c.phosphorylationSite },
+          { value: c.accession },
+          { value: c.phosphopeptide },
+          {
+            value: c.tumorSampleCount ? c.tumorSampleCount : "NA",
+          },
+          {
+            value: c.normalSampleCount ? c.normalSampleCount : "NA",
+          },
+        ];
+      }),
+    };
+  }
+
   function getTimestamp() {
     const date = new Date();
 
@@ -863,7 +913,10 @@ export default function ProteinGeneCorrelation() {
                 data={siteScatter}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${label} ${firstSite} and ${secondSite} Correlation</b>`,
+                  title:
+                    siteTumor && firstSite && secondSite
+                      ? `<b>${label} ${firstSite} and ${secondSite} Correlation</b>`
+                      : "",
                   autosize: true,
                   legend: {
                     orientation: "h",
@@ -959,6 +1012,37 @@ export default function ProteinGeneCorrelation() {
             </Row>
           </fieldset>
           <div className="m-3">
+            <div className="row">
+              <b
+                className="col mx-3"
+                style={{ textDecorationLine: "underline" }}>
+                {firstSite}
+              </b>
+              <div
+                className="col d-flex"
+                style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={`CPROSITE-${
+                    form.dataset.value === "proteinData"
+                      ? "ProteinAbundance"
+                      : "Phosphorylation"
+                  }-${firstSite}-Correlation-${getTimestamp()}`}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportSiteSettings(form.gene.label)}
+                    name="Input Configuration"
+                  />
+                  <ExcelSheet
+                    dataSet={exportSite(
+                      results[0].summary.records.filter(
+                        (f) => f.cancerId === siteTumor,
+                      ),
+                    )}
+                    name="Site Data"
+                  />
+                </ExcelFile>
+              </div>
+            </div>
             <Table
               columns={siteColumns}
               defaultSort={[{ id: "phosphorylationSite", asec: true }]}
@@ -980,6 +1064,37 @@ export default function ProteinGeneCorrelation() {
             />
           </div>
           <div className="m-3">
+            <div className="row">
+              <b
+                className="col mx-3"
+                style={{ textDecorationLine: "underline" }}>
+                {secondSite}
+              </b>
+              <div
+                className="col d-flex"
+                style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={`CPROSITE-${
+                    form.dataset.value === "proteinData"
+                      ? "ProteinAbundance"
+                      : "Phosphorylation"
+                  }-${secondSite}-Correlation-${getTimestamp()}`}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportSiteSettings(form.correlatedGene.label)}
+                    name="Input Configuration"
+                  />
+                  <ExcelSheet
+                    dataSet={exportSite(
+                      results[1].summary.records.filter(
+                        (f) => f.cancerId === siteTumor,
+                      ),
+                    )}
+                    name="Site Data"
+                  />
+                </ExcelFile>
+              </div>
+            </div>
             <Table
               columns={siteColumns}
               defaultSort={[{ id: "phosphorylationSite", asec: true }]}
