@@ -69,7 +69,7 @@ export default function ProteinGeneCorrelation() {
   function handleToggle(e) {
     setNumType(e.target.id);
   }
-  console.log(firstSites);
+
   const correlationColumns = [
     {
       accessor: "name",
