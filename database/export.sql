@@ -58,9 +58,9 @@ drop table if exists breastcptac2prodata_temp;
 create table breastcptac2prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from breastcptac2prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -100,9 +100,9 @@ drop table if exists breastcptac2phosphodata_temp;
 create table breastcptac2phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -158,9 +158,9 @@ drop table if exists breastcptac2rnadata_temp;
 create table breastcptac2rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from breastcptac2rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -243,9 +243,9 @@ drop table if exists coloncptac2prodata_temp;
 create table coloncptac2prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from coloncptac2prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -285,9 +285,9 @@ drop table if exists coloncptac2phosphodata_temp;
 create table coloncptac2phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -343,9 +343,9 @@ drop table if exists coloncptac2rnadata_temp;
 create table coloncptac2rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from coloncptac2rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -428,9 +428,9 @@ drop table if exists hncptac3prodata_temp;
 create table hncptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from hncptac3prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -470,9 +470,9 @@ drop table if exists hncptac3phosphodata_temp;
 create table hncptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -528,9 +528,9 @@ drop table if exists hncptac3rnadata_temp;
 create table hncptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from hncptac3rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -613,9 +613,9 @@ drop table if exists ccrcccptac3prodata_temp;
 create table ccrcccptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from ccrcccptac3prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -655,9 +655,9 @@ drop table if exists ccrcccptac3phosphodata_temp;
 create table ccrcccptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -713,9 +713,9 @@ drop table if exists ccrcccptac3rnadata_temp;
 create table ccrcccptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from ccrcccptac3rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -751,9 +751,9 @@ drop table if exists liverhcccptacprodata_temp;
 create table liverhcccptacprodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from liverhcccptacprodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -793,9 +793,9 @@ drop table if exists liverhcccptacrnadata_temp;
 create table liverhcccptacrnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from liverhcccptacrnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -878,9 +878,9 @@ drop table if exists lungadcptac3prodata_temp;
 create table lungadcptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from lungadcptac3prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -920,9 +920,9 @@ drop table if exists lungadcptac3phosphodata_temp;
 create table lungadcptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -978,9 +978,9 @@ drop table if exists lungadcptac3rnadata_temp;
 create table lungadcptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from lungadcptac3rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -1063,9 +1063,9 @@ drop table if exists lungsqcptac3prodata_temp;
 create table lungsqcptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from lungsqcptac3prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -1105,9 +1105,9 @@ drop table if exists lungsqcptac3phosphodata_temp;
 create table lungsqcptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -1163,9 +1163,9 @@ drop table if exists lungsqcptac3rnadata_temp;
 create table lungsqcptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from lungsqcptac3rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -1248,9 +1248,9 @@ drop table if exists ovcptac2prodata_temp;
 create table ovcptac2prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from ovcptac2prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -1290,9 +1290,9 @@ drop table if exists ovcptac2phosphodata_temp;
 create table ovcptac2phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -1348,9 +1348,9 @@ drop table if exists ovcptac2rnadata_temp;
 create table ovcptac2rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from ovcptac2rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -1433,9 +1433,9 @@ drop table if exists pdaccptac3prodata_temp;
 create table pdaccptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from pdaccptac3prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -1475,9 +1475,9 @@ drop table if exists pdaccptac3phosphodata_temp;
 create table pdaccptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -1533,9 +1533,9 @@ drop table if exists pdaccptac3rnadata_temp;
 create table pdaccptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from pdaccptac3rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
@@ -1729,9 +1729,9 @@ drop table if exists uterinecptac3prodata_temp;
 create table uterinecptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from uterinecptac3prodata c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -1771,9 +1771,9 @@ drop table if exists uterinecptac3rnadata_temp;
 create table uterinecptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from uterinecptac3rnadata c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;

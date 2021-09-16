@@ -148,9 +148,9 @@ drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.CCid, '[_\-][A-Za-z]{2}$', '') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%-Tu' as isTumor
+  c.CCid like '%Tu' as isTumor
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.CCgene
 group by geneId, participantId, isTumor;
@@ -219,9 +219,9 @@ drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.ppid, '[_\-][A-Za-z]{2}$', '') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%-Tu' as isTumor,
+  c.ppid like '%Tu' as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
@@ -314,9 +314,9 @@ drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '-[A-Za-z]{2}$', '') as participantId,
+  regexp_replace(c.paid, '[_\-][A-Za-z]{2}$', '') as participantId,
   avg(c.value) as value,
-  c.paid like '%-Tu' as isTumor
+  c.paid like '%Tu' as isTumor
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.gene
 group by geneId, participantId, isTumor;
