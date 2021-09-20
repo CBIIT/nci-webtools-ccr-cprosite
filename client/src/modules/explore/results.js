@@ -231,7 +231,7 @@ export default function Results() {
       marker: {
         size: 10,
       },
-      hovertemplate: "%{y}<extra></extra>",
+      hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
     },
     {
       y:
@@ -247,7 +247,7 @@ export default function Results() {
       marker: {
         size: 10,
       },
-      hovertemplate: "%{y}<extra></extra>",
+      hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
     },
   ];
 
@@ -358,6 +358,7 @@ export default function Results() {
             ),
           },
           orientation: "h",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -370,6 +371,7 @@ export default function Results() {
           },
           xaxis: "x2",
           orientation: "h",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
       ];
     }

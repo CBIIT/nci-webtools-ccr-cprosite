@@ -61,7 +61,8 @@ export default function PhosResults() {
           text: "Log Fold Change",
         },
       },
-      hovertemplate: "%{x}<br>%{y}<br>%{z}<extra></extra>",
+      hovertemplate:
+        "Tumor: %{x}<br>Phospho Site: %{y}<br>Log Fold Change: %{z}<extra></extra>",
     },
   ];
 
@@ -497,7 +498,7 @@ export default function PhosResults() {
           marker: {
             size: 10,
           },
-          hovertemplate: "%{y}<extra></extra>",
+          hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
         },
         {
           y: tumorViewData.length
@@ -515,7 +516,7 @@ export default function PhosResults() {
           },
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "%{y}<extra></extra>",
+          hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
@@ -558,6 +559,7 @@ export default function PhosResults() {
             ),
           },
           orientation: "h",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -570,6 +572,7 @@ export default function PhosResults() {
           },
           xaxis: "x2",
           orientation: "h",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
       ];
     } else {

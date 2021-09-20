@@ -476,7 +476,13 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
-      hovertemplate: "(%{x},%{y})<extra></extra>",
+      hovertemplate:
+        `${firstGene} Tumor ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{x}<br>` +
+        `${secondGene} Tumor ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{y})<extra></extra>`,
     },
     {
       x: proteinGene.map((e) =>
@@ -491,7 +497,13 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
-      hovertemplate: "(%{x},%{y})<extra></extra>",
+      hovertemplate:
+        `${firstGene} Control ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{x}<br>` +
+        `${secondGene} Control ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{y}<extra></extra>`,
     },
   ];
 
@@ -509,7 +521,13 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
-      hovertemplate: "(%{x},%{y})<extra></extra>",
+      hovertemplate:
+        `${firstGene} Tumor ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{x}<br>` +
+        `${secondGene} Tumor ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{y}<extra></extra>`,
     },
     {
       x: siteData.map((e) =>
@@ -524,7 +542,13 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
-      hovertemplate: "(%{x},%{y})<extra></extra>",
+      hovertemplate:
+        `${firstGene} Control ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{x}<br>` +
+        `${secondGene} Control ${
+          numType === "log2" ? "Log2" : "Abundance"
+        }: %{y}<extra></extra>`,
     },
   ];
 
