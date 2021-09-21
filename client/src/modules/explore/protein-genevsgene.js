@@ -65,6 +65,7 @@ export default function ProteinGeneCorrelation() {
       "phosphorylationSite",
     ),
   ).filter((e) => e[0] !== "null");
+  secondSites = [[form.correlatedGene.label]].concat(secondSites);
 
   function handleToggle(e) {
     setNumType(e.target.id);
@@ -960,7 +961,13 @@ export default function ProteinGeneCorrelation() {
                   ...defaultLayout,
                   title:
                     siteTumor && firstSite && secondSite
-                      ? `<b>${label} ${form.gene.label}/${firstSite} and ${form.correlatedGene.label}/${secondSite} Correlation</b>`
+                      ? `<b>${label} ${form.gene.label}/${firstSite} and ${
+                          form.correlatedGene.label
+                        }/${
+                          secondSite === form.correlatedGene.label
+                            ? "Protein"
+                            : secondSite
+                        } Correlation</b>`
                       : "",
                   autosize: true,
                   legend: {
