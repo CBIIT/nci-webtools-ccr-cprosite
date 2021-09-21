@@ -279,10 +279,16 @@ export default function ProteinGeneCorrelation() {
     },
   ];
 
+  console.log(firstGeneSet);
+  console.log(secondGeneSet);
+
   //Organize datasets (unfiltered)
   const getData = firstGeneSet.map((first) => {
     const second = secondGeneSet.find((d) => {
-      return first.participantId === d.participantId;
+      return (
+        first.participantId === d.participantId &&
+        first.phosphorylationSite === d.phosphorylationSite
+      );
     });
 
     if (second) {
