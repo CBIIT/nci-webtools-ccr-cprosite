@@ -279,9 +279,6 @@ export default function ProteinGeneCorrelation() {
     },
   ];
 
-  console.log(firstGeneSet);
-  console.log(secondGeneSet);
-
   //Organize datasets (unfiltered)
   const getData = firstGeneSet.map((first) => {
     const second = secondGeneSet.find((d) => {
