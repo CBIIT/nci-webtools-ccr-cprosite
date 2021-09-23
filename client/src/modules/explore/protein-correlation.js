@@ -424,7 +424,7 @@ export default function ProteinCorrelation() {
             inline
             label={
               <span>
-                Log<sub>2</sub> vs Log<sub>2</sub>
+                Using Log<sub>2</sub> values
               </span>
             }
             type="radio"
@@ -436,7 +436,11 @@ export default function ProteinCorrelation() {
 
           <Form.Check
             inline
-            label="Numeric vs Numeric"
+            label={
+              <span>
+                Using normal values converted by log<sub>2</sub> values
+              </span>
+            }
             type="radio"
             id="numeric"
             value="numType"
