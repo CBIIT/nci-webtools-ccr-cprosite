@@ -377,8 +377,6 @@ export default function ProteinGeneCorrelation() {
           f.phosphorylationSite === secondSite.value,
       );
     }
-    console.log(firstFiltered);
-    console.log(secondFiltered);
     var dataPoints = [];
 
     firstFiltered.map((first) => {
@@ -390,6 +388,8 @@ export default function ProteinGeneCorrelation() {
         second.map((e) => {
           return {
             name: first.participantId,
+            firstPhospho: first.phosphorylationSite,
+            secondPhospho: e.phosphorylationSite,
             firstTumor:
               first.tumorValue !== null
                 ? Number(first.tumorValue.toFixed(4))
@@ -434,8 +434,6 @@ export default function ProteinGeneCorrelation() {
             e.firstTumor && e.firstControl && e.secondTumor && e.secondControl,
         )
       : [];
-
-  console.log(siteData);
 
   const defaultLayout = {
     xaxis: {
@@ -619,16 +617,6 @@ export default function ProteinGeneCorrelation() {
   ];
 
   function exportSiteSettings(gene) {
-    var settings = form.cancer
-      .filter((f) => view.find((c) => c === f.value))
-      .map((e) => {
-        return [{ value: e.label }];
-      });
-    settings[0].push({ value: form.dataset.label });
-    settings[0].push({ value: "Correlation" });
-    settings[0].push({ value: form.gene.label });
-    settings[0].push({ value: form.correlatedGene.label });
-
     return [
       {
         columns: [
@@ -638,36 +626,102 @@ export default function ProteinGeneCorrelation() {
           { title: "Gene", width: { wpx: 160 } },
         ],
         data: [
-          { value: form.cancer.find((f) => f.value === siteTumor.value).label },
-          { value: form.dataset.label },
-          { value: "Correlation" },
-          { value: gene },
+          [
+            {
+              value: form.cancer.find((f) => f.value === siteTumor.value).label,
+            },
+            { value: form.dataset.label },
+            { value: "Correlation" },
+            { value: gene },
+          ],
         ],
       },
     ];
   }
 
-  function exportSite(data) {
-    return {
-      columns: siteColumns.map((e) => {
-        return { title: e.label, width: { wpx: 200 } };
-      }),
-      data: data.map((c) => {
-        return [
-          { value: c.phosphorylationSite },
-          { value: c.accession },
-          { value: c.phosphopeptide },
-          {
-            value: c.tumorSampleCount ? c.tumorSampleCount : "NA",
-          },
-          {
-            value: c.normalSampleCount ? c.normalSampleCount : "NA",
-          },
-        ];
-      }),
-    };
+  function exportSiteData() {
+    const columns = [
+      ...correlationColumns.slice(0, 1),
+      {
+        accessor: "firstPhospho",
+        label: form.gene.label + " Phosphorylation Site",
+        Header: (
+          <OverlayTrigger
+            overlay={
+              <Tooltip id="site_correlation_phospho1">
+                {form.gene.label} Phosphorylation Site
+              </Tooltip>
+            }>
+            <b>{form.gene.label} Phospho. Site</b>
+          </OverlayTrigger>
+        ),
+      },
+      {
+        accessor: "secondPhospho",
+        label: form.correlatedGene.label + " Phosphorylation Site",
+        Header: (
+          <OverlayTrigger
+            overlay={
+              <Tooltip id="site_correlation_phospho2">
+                {form.correlatedGene.label} Phosphorylation Site
+              </Tooltip>
+            }>
+            <b>{form.correlatedGene.label} Phospho. Site</b>
+          </OverlayTrigger>
+        ),
+      },
+      ...correlationColumns.slice(1),
+    ];
+
+    return [
+      {
+        columns: columns.map((e) => {
+          return { title: e.label, width: { wpx: 200 } };
+        }),
+        data: siteData.map((c) => {
+          return [
+            { value: c.name },
+            { value: c.firstPhospho },
+            { value: c.secondPhospho },
+            { value: c.firstTumor },
+            { value: c.firstTumorNum },
+            { value: c.secondTumor },
+            { value: c.secondTumorNum },
+            { value: c.firstControl },
+            { value: c.firstControlNum },
+            { value: c.secondControl },
+            { value: c.secondControlNum },
+          ];
+        }),
+      },
+    ];
   }
 
+  function exportSite(data) {
+    return [
+      {
+        columns: siteColumns.map((e) => {
+          return { title: e.label, width: { wpx: 200 } };
+        }),
+        data: data.map((c) => {
+          return [
+            { value: c.phosphorylationSite },
+            { value: c.accession },
+            { value: c.phosphopeptide },
+            {
+              value: c.tumorSampleCount ? c.tumorSampleCount : "NA",
+            },
+            {
+              value: c.normalSampleCount ? c.normalSampleCount : "NA",
+            },
+          ];
+        }),
+      },
+    ];
+  }
+
+  console.log(exportSiteSettings(form.gene.label));
+  console.log(exportSiteData());
   function getTimestamp() {
     const date = new Date();
 
@@ -742,7 +796,7 @@ export default function ProteinGeneCorrelation() {
               inline
               label={
                 <span>
-                  Log<sub>2</sub> vs Log<sub>2</sub>
+                  Using Log<sub>2</sub> values
                 </span>
               }
               type="radio"
@@ -754,7 +808,11 @@ export default function ProteinGeneCorrelation() {
 
             <Form.Check
               inline
-              label="Numeric vs Numeric"
+              label={
+                <span>
+                  Using normal values converted by log<sub>2</sub> values
+                </span>
+              }
               type="radio"
               id="numeric"
               value="numType"
@@ -875,6 +933,7 @@ export default function ProteinGeneCorrelation() {
               <ExcelSheet dataSet={exportSummary} name="Summary Data" />
             </ExcelFile>
           </div>
+
           <Table
             columns={correlationColumns}
             defaultSort={[{ id: "name", asec: true }]}
@@ -1099,6 +1158,78 @@ export default function ProteinGeneCorrelation() {
           </fieldset>
           <div className="m-3">
             <div className="row">
+              <div
+                className="col d-flex"
+                style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={`CPROSITE-${
+                    form.dataset.value === "proteinData"
+                      ? "ProteinAbundance"
+                      : "Phosphorylation"
+                  }-SiteCorrelation-${getTimestamp()}`}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportSummarySettings()}
+                    name="Input Configuration"
+                  />
+                  <ExcelSheet dataSet={exportSiteData()} name="Site Data" />
+                </ExcelFile>
+              </div>
+            </div>
+
+            <Table
+              columns={[
+                ...correlationColumns.slice(0, 1),
+                {
+                  accessor: "firstPhospho",
+                  label: form.gene.label + "Phosphorylation Site",
+                  Header: (
+                    <OverlayTrigger
+                      overlay={
+                        <Tooltip id="site_correlation_phospho1">
+                          {form.gene.label} Phosphorylation Site
+                        </Tooltip>
+                      }>
+                      <b>{form.gene.label} Phospho. Site</b>
+                    </OverlayTrigger>
+                  ),
+                },
+                {
+                  accessor: "secondPhospho",
+                  label: form.correlatedGene.label + "Phosphorylation Site",
+                  Header: (
+                    <OverlayTrigger
+                      overlay={
+                        <Tooltip id="site_correlation_phospho2">
+                          {form.correlatedGene.label} Phosphorylation Site
+                        </Tooltip>
+                      }>
+                      <b>{form.correlatedGene.label} Phospho. Site</b>
+                    </OverlayTrigger>
+                  ),
+                },
+                ...correlationColumns.slice(1),
+              ]}
+              defaultSort={[{ id: "name", asec: true }]}
+              data={siteData.map((c) => {
+                return {
+                  name: c.name,
+                  firstPhospho: c.firstPhospho,
+                  secondPhospho: c.secondPhospho,
+                  firstTumor: c.firstTumor,
+                  firstTumorNum: c.firstTumorNum,
+                  secondTumor: c.secondTumor,
+                  secondTumorNum: c.secondTumorNum,
+                  firstControl: c.firstControl,
+                  firstControlNum: c.firstControlNum,
+                  secondControl: c.secondControl,
+                  secondControlNum: c.secondControlNum,
+                };
+              })}
+            />
+          </div>
+          <div className="m-3">
+            <div className="row">
               <b
                 className="col mx-3"
                 style={{ textDecorationLine: "underline" }}>
@@ -1149,6 +1280,7 @@ export default function ProteinGeneCorrelation() {
                 })}
             />
           </div>
+
           <div className="m-3">
             <div className="row">
               <b
