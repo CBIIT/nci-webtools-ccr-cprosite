@@ -32,7 +32,7 @@ export default function ProteinPhosResults() {
 
   var sortSummary = Object.entries(
     _.groupBy(results[0].summary.records, "phosphorylationSite"),
-  ).filter((e) => e[0] !== "null");
+  ).filter((e) => e[0] !== "null" && e[0] !== "all");
 
   console.log(sortSummary);
 
@@ -55,7 +55,6 @@ export default function ProteinPhosResults() {
     sortSummary.map((c) => {
       c[1].map((e) => {
         const currentTumor = tumors.find((f) => f.value === e.cancerId);
-        console.log(e);
         rows = rows.concat({
           tumor: (
             <a
@@ -382,10 +381,8 @@ export default function ProteinPhosResults() {
     _.groupBy(results[0].participants.records, "cancerId"),
   ).filter((e) => e[0] !== "null");
 
-  console.log(sortPhospho);
-
   const tumorViewData = results[0].summary.records
-    .filter((f) => f.cancerId === view)
+    .filter((f) => f.cancerId === view && f.phosphorylationSite !== "all")
     .map((e) => {
       const patients = sortPhospho
         .find((f) => Number(f[0]) === view)[1]
