@@ -53,7 +53,20 @@ export async function getData(params, tumor, gene) {
     });
 
     return { summary, participants, rna, rnaSummary };
-  } else return { summary, participants };
+  } else if (
+    params.correlation === "toAnotherProtein" &&
+    params.dataset.value !== "proteinData"
+  ) {
+    const protein = await query("api/query", {
+      "table": "proteinData",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
+
+    return { summary, participants, protein };
+  }
+
+  return { summary, participants };
 }
 
 export const resultsState = selector({
@@ -68,7 +81,7 @@ export const resultsState = selector({
     for (const gene of [params.gene, params.correlatedGene]) {
       if (!gene) continue;
 
-      const { summary, participants, rna, rnaSummary } = await getData(
+      const { summary, participants, rna, rnaSummary, protein } = await getData(
         params,
         params.cancer.map((e) => e.value),
         gene.value,
@@ -79,6 +92,7 @@ export const resultsState = selector({
         participants,
         rnaSummary,
         rna,
+        protein,
       });
     }
     console.log(results);

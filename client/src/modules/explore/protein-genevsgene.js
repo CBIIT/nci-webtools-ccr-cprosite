@@ -367,7 +367,7 @@ export default function ProteinGeneCorrelation() {
 
     var secondFiltered;
     if (secondSite.value === form.correlatedGene.label) {
-      secondFiltered = secondGeneSet.filter(
+      secondFiltered = results[1].protein.records.filter(
         (f) => f.cancerId === siteTumor.value,
       );
     } else {
@@ -389,35 +389,35 @@ export default function ProteinGeneCorrelation() {
           return {
             name: first.participantId,
             firstPhospho: first.phosphorylationSite,
-            secondPhospho: e.phosphorylationSite,
+            secondPhospho: e.phosphorylationSite ? e.phosphorylationSite : "NA",
             firstTumor:
               first.tumorValue !== null
                 ? Number(first.tumorValue.toFixed(4))
-                : null,
+                : 0,
             firstTumorNum:
               first.tumorValue !== null
                 ? Number(Math.pow(2, first.tumorValue).toFixed(4))
-                : null,
+                : 0,
             firstControl:
               first.normalValue !== null
                 ? Number(first.normalValue.toFixed(4))
-                : null,
+                : 0,
             firstControlNum:
               first.normalValue !== null
                 ? Number(Math.pow(2, first.normalValue).toFixed(4))
-                : null,
+                : 0,
             secondTumor:
-              e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : null,
+              e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : 0,
             secondTumorNum:
               e.tumorValue !== null
                 ? Number(Math.pow(2, e.tumorValue).toFixed(4))
-                : null,
+                : 0,
             secondControl:
-              e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : null,
+              e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : 0,
             secondControlNum:
               e.normalValue !== null
                 ? Number(Math.pow(2, e.normalValue).toFixed(4))
-                : null,
+                : 0,
           };
         }),
       );
@@ -434,6 +434,8 @@ export default function ProteinGeneCorrelation() {
             e.firstTumor && e.firstControl && e.secondTumor && e.secondControl,
         )
       : [];
+
+  console.log(siteData);
 
   const defaultLayout = {
     xaxis: {
@@ -720,8 +722,6 @@ export default function ProteinGeneCorrelation() {
     ];
   }
 
-  console.log(exportSiteSettings(form.gene.label));
-  console.log(exportSiteData());
   function getTimestamp() {
     const date = new Date();
 
@@ -736,42 +736,43 @@ export default function ProteinGeneCorrelation() {
 
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
-      <Tab eventKey="summaryView" title="Summary">
-        <Form.Group className="row m-3" controlId="tumorView">
-          <Form.Label
-            className="col-xl-1 col-xs-12 col-form-label"
-            style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-          <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(e) => {
-                if (e.target.value === "all") {
-                  setView(form.cancer.map((e) => e.value));
-                  setLabel("");
-                } else {
-                  setView([parseInt(e.target.value)]);
-                  setLabel(
-                    form.cancer.find(
-                      (d) => d.value === parseInt(e.target.value),
-                    ).label,
-                  );
-                }
-              }}
-              value={view}
-              required>
-              <option value="all" key={`dataset-all`}>
-                All Tumor Types
-              </option>
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
+      {form.dataset.value === "proteinData" && (
+        <Tab eventKey="summaryView" title="Summary">
+          <Form.Group className="row m-3" controlId="tumorView">
+            <Form.Label
+              className="col-xl-1 col-xs-12 col-form-label"
+              style={{ minWidth: "120px" }}>
+              Tumor Type
+            </Form.Label>
+            <div className="col-xl-3">
+              <Form.Select
+                name="caseView"
+                onChange={(e) => {
+                  if (e.target.value === "all") {
+                    setView(form.cancer.map((e) => e.value));
+                    setLabel("");
+                  } else {
+                    setView([parseInt(e.target.value)]);
+                    setLabel(
+                      form.cancer.find(
+                        (d) => d.value === parseInt(e.target.value),
+                      ).label,
+                    );
+                  }
+                }}
+                value={view}
+                required>
+                <option value="all" key={`dataset-all`}>
+                  All Tumor Types
                 </option>
-              ))}
-            </Form.Select>
-          </div>
-          {/*<ToggleButtonGroup
+                {form.cancer.map((o) => (
+                  <option value={o.value} key={`dataset-${o.value}`}>
+                    {o.label}
+                  </option>
+                ))}
+              </Form.Select>
+            </div>
+            {/*<ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={numType}
@@ -791,185 +792,302 @@ export default function ProteinGeneCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-          <Form.Group className="col-xl-6 mb-3 col-form-label">
-            <Form.Check
-              inline
-              label={
-                <span>
-                  Using Log<sub>2</sub> values
-                </span>
-              }
-              type="radio"
-              id="log2"
-              value="numType"
-              checked={numType === "log2"}
-              onChange={handleToggle}
-            />
+            <Form.Group className="col-xl-6 mb-3 col-form-label">
+              <Form.Check
+                inline
+                label={
+                  <span>
+                    Using Log<sub>2</sub> values
+                  </span>
+                }
+                type="radio"
+                id="log2"
+                value="numType"
+                checked={numType === "log2"}
+                onChange={handleToggle}
+              />
 
-            <Form.Check
-              inline
-              label={
-                <span>
-                  Using normal values converted by log<sub>2</sub> values
-                </span>
-              }
-              type="radio"
-              id="numeric"
-              value="numType"
-              checked={numType === "numeric"}
-              onChange={handleToggle}
-            />
+              <Form.Check
+                inline
+                label={
+                  <span>
+                    Using normal values converted by log<sub>2</sub> values
+                  </span>
+                }
+                type="radio"
+                id="numeric"
+                value="numType"
+                checked={numType === "numeric"}
+                onChange={handleToggle}
+              />
+            </Form.Group>
           </Form.Group>
-        </Form.Group>
-        <Row className="mx-3 mt-3">
-          <Col xl={12}>
-            <Plot
-              data={geneScatter}
-              layout={{
-                ...defaultLayout,
-                title: `<b>${label} ${firstGene} and ${secondGene} Correlation</b>`,
-                autosize: true,
-                legend: {
-                  orientation: "h",
-                  y: -0.2,
-                  x: 0.42,
-                },
-                annotations: [
-                  {
-                    text: proteinGene.length === 0 ? "No data available" : "",
-                    xref: "paper",
-                    yref: "paper",
-                    showarrow: false,
-                    font: {
-                      size: 28,
-                      color: "grey",
-                    },
+          <Row className="mx-3 mt-3">
+            <Col xl={12}>
+              <Plot
+                data={geneScatter}
+                layout={{
+                  ...defaultLayout,
+                  title: `<b>${label} ${firstGene} and ${secondGene} Correlation</b>`,
+                  autosize: true,
+                  legend: {
+                    orientation: "h",
+                    y: -0.2,
+                    x: 0.42,
                   },
-                ],
-              }}
-              config={defaultConfig}
-              useResizeHandler
-              className="flex-fill w-100"
-              style={{ height: "800px" }}
-            />
-          </Col>
-        </Row>
+                  annotations: [
+                    {
+                      text: proteinGene.length === 0 ? "No data available" : "",
+                      xref: "paper",
+                      yref: "paper",
+                      showarrow: false,
+                      font: {
+                        size: 28,
+                        color: "grey",
+                      },
+                    },
+                  ],
+                }}
+                config={defaultConfig}
+                useResizeHandler
+                className="flex-fill w-100"
+                style={{ height: "800px" }}
+              />
+            </Col>
+          </Row>
 
-        <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
-          <Row>
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Tumor Correlation:{" "}
-              {proteinGene.length
-                ? calculateCorrelation(
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                    ),
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.secondTumor : e.secondTumorNum,
-                    ),
-                    { decimals: 4 },
-                  )
-                : "NA"}
-            </div>
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Control Correlation:{" "}
-              {proteinGene.length
-                ? calculateCorrelation(
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.firstControl : e.firstControlNum,
-                    ),
-                    proteinGene.map((e) =>
-                      numType === "log2" ? e.secondControl : e.secondControlNum,
-                    ),
-                    { decimals: 4 },
-                  )
-                : "NA"}
-            </div>
-
-            <div className="col-xl-4 my-2 d-flex justify-content-center">
-              Total Correlation:{" "}
-              {proteinGene.length
-                ? calculateCorrelation(
-                    proteinGene
-                      .map((e) =>
-                        numType === "log2" ? e.firstControl : e.firstControlNum,
-                      )
-                      .concat(
-                        proteinGene.map((e) =>
-                          numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                        ),
+          <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
+            <Row>
+              <div className="col-xl-4 my-2 d-flex justify-content-center">
+                Tumor Correlation:{" "}
+                {proteinGene.length
+                  ? calculateCorrelation(
+                      proteinGene.map((e) =>
+                        numType === "log2" ? e.firstTumor : e.firstTumorNum,
                       ),
-                    proteinGene
-                      .map((e) =>
+                      proteinGene.map((e) =>
+                        numType === "log2" ? e.secondTumor : e.secondTumorNum,
+                      ),
+                      { decimals: 4 },
+                    )
+                  : "NA"}
+              </div>
+              <div className="col-xl-4 my-2 d-flex justify-content-center">
+                Control Correlation:{" "}
+                {proteinGene.length
+                  ? calculateCorrelation(
+                      proteinGene.map((e) =>
+                        numType === "log2" ? e.firstControl : e.firstControlNum,
+                      ),
+                      proteinGene.map((e) =>
                         numType === "log2"
                           ? e.secondControl
                           : e.secondControlNum,
-                      )
-                      .concat(
-                        proteinGene.map((e) =>
-                          numType === "log2" ? e.secondTumor : e.secondTumorNum,
-                        ),
                       ),
-                    { decimals: 4 },
-                  )
-                : "NA"}
-            </div>
-          </Row>
-        </fieldset>
+                      { decimals: 4 },
+                    )
+                  : "NA"}
+              </div>
 
-        <div className="m-3">
-          <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-            <ExcelFile
-              filename={`CPROSITE-${
-                form.dataset.value === "proteinData"
-                  ? "ProteinAbundance"
-                  : "Phosphorylation"
-              }-Correlation-${getTimestamp()}`}
-              element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet
-                dataSet={exportSummarySettings()}
-                name="Input Configuration"
-              />
-              <ExcelSheet dataSet={exportSummary} name="Summary Data" />
-            </ExcelFile>
+              <div className="col-xl-4 my-2 d-flex justify-content-center">
+                Total Correlation:{" "}
+                {proteinGene.length
+                  ? calculateCorrelation(
+                      proteinGene
+                        .map((e) =>
+                          numType === "log2"
+                            ? e.firstControl
+                            : e.firstControlNum,
+                        )
+                        .concat(
+                          proteinGene.map((e) =>
+                            numType === "log2" ? e.firstTumor : e.firstTumorNum,
+                          ),
+                        ),
+                      proteinGene
+                        .map((e) =>
+                          numType === "log2"
+                            ? e.secondControl
+                            : e.secondControlNum,
+                        )
+                        .concat(
+                          proteinGene.map((e) =>
+                            numType === "log2"
+                              ? e.secondTumor
+                              : e.secondTumorNum,
+                          ),
+                        ),
+                      { decimals: 4 },
+                    )
+                  : "NA"}
+              </div>
+            </Row>
+          </fieldset>
+
+          <div className="m-3">
+            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+              <ExcelFile
+                filename={`CPROSITE-${
+                  form.dataset.value === "proteinData"
+                    ? "ProteinAbundance"
+                    : "Phosphorylation"
+                }-Correlation-${getTimestamp()}`}
+                element={<a href="javascript:void(0)">Export Data</a>}>
+                <ExcelSheet
+                  dataSet={exportSummarySettings()}
+                  name="Input Configuration"
+                />
+                <ExcelSheet dataSet={exportSummary} name="Summary Data" />
+              </ExcelFile>
+            </div>
+
+            <Table
+              columns={correlationColumns}
+              defaultSort={[{ id: "name", asec: true }]}
+              data={proteinGene.map((c) => {
+                return {
+                  name: c.name,
+                  firstTumor: c.firstTumor,
+                  firstTumorNum: c.firstTumorNum,
+                  secondTumor: c.secondTumor,
+                  secondTumorNum: c.secondTumorNum,
+                  firstControl: c.firstControl,
+                  firstControlNum: c.firstControlNum,
+                  secondControl: c.secondControl,
+                  secondControlNum: c.secondControlNum,
+                };
+              })}
+            />
+          </div>
+        </Tab>
+      )}
+
+      {form.dataset.value !== "proteinData" && (
+        <Tab eventKey="summaryView" title="Summary">
+          <Form.Group className="m-3 col-md-2" controlId="siteTumor">
+            <Form.Label className="required">Tumor Type</Form.Label>
+            <Select
+              name="siteTumor"
+              value={siteTumor}
+              options={form.cancer}
+              onChange={(e) => {
+                console.log(e);
+                setSiteTumor(e);
+              }}
+            />
+          </Form.Group>
+          <div className="m-3">
+            <div className="row">
+              <b
+                className="col mx-3"
+                style={{ textDecorationLine: "underline" }}>
+                {form.gene.label}
+              </b>
+              <div
+                className="col d-flex"
+                style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={`CPROSITE-${
+                    form.dataset.value === "proteinData"
+                      ? "ProteinAbundance"
+                      : "Phosphorylation"
+                  }-${firstSite.value}-Correlation-${getTimestamp()}`}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportSiteSettings(form.gene.label)}
+                    name="Input Configuration"
+                  />
+                  <ExcelSheet
+                    dataSet={exportSite(
+                      results[0].summary.records.filter(
+                        (f) => f.cancerId === siteTumor.value,
+                      ),
+                    )}
+                    name="Site Data"
+                  />
+                </ExcelFile>
+              </div>
+            </div>
+            <Table
+              columns={siteColumns}
+              defaultSort={[{ id: "phosphorylationSite", asec: true }]}
+              data={results[0].summary.records
+                .filter((f) => f.cancerId === siteTumor.value)
+                .map((c) => {
+                  return {
+                    phosphorylationSite: c.phosphorylationSite,
+                    accession: c.accession,
+                    phosphopeptide: c.phosphopeptide,
+                    tumorSampleCount: c.tumorSampleCount
+                      ? c.tumorSampleCount
+                      : "NA",
+                    normalSampleCount: c.normalSampleCount
+                      ? c.normalSampleCount
+                      : "NA",
+                  };
+                })}
+            />
           </div>
 
-          <Table
-            columns={correlationColumns}
-            defaultSort={[{ id: "name", asec: true }]}
-            data={proteinGene.map((c) => {
-              return {
-                name: c.name,
-                firstTumor: c.firstTumor,
-                firstTumorNum: c.firstTumorNum,
-                secondTumor: c.secondTumor,
-                secondTumorNum: c.secondTumorNum,
-                firstControl: c.firstControl,
-                firstControlNum: c.firstControlNum,
-                secondControl: c.secondControl,
-                secondControlNum: c.secondControlNum,
-              };
-            })}
-          />
-        </div>
-      </Tab>
+          <div className="m-3">
+            <div className="row">
+              <b
+                className="col mx-3"
+                style={{ textDecorationLine: "underline" }}>
+                {form.correlatedGene.label}
+              </b>
+              <div
+                className="col d-flex"
+                style={{ justifyContent: "flex-end" }}>
+                <ExcelFile
+                  filename={`CPROSITE-${
+                    form.dataset.value === "proteinData"
+                      ? "ProteinAbundance"
+                      : "Phosphorylation"
+                  }-${secondSite.value}-Correlation-${getTimestamp()}`}
+                  element={<a href="javascript:void(0)">Export Data</a>}>
+                  <ExcelSheet
+                    dataSet={exportSiteSettings(form.correlatedGene.label)}
+                    name="Input Configuration"
+                  />
+                  <ExcelSheet
+                    dataSet={exportSite(
+                      results[1].summary.records.filter(
+                        (f) => f.cancerId === siteTumor.value,
+                      ),
+                    )}
+                    name="Site Data"
+                  />
+                </ExcelFile>
+              </div>
+            </div>
+            <Table
+              columns={siteColumns}
+              defaultSort={[{ id: "phosphorylationSite", asec: true }]}
+              data={results[1].summary.records
+                .filter((f) => f.cancerId === siteTumor.value)
+                .map((c) => {
+                  return {
+                    phosphorylationSite: c.phosphorylationSite,
+                    accession: c.accession,
+                    phosphopeptide: c.phosphopeptide,
+                    tumorSampleCount: c.tumorSampleCount
+                      ? c.tumorSampleCount
+                      : "NA",
+                    normalSampleCount: c.normalSampleCount
+                      ? c.normalSampleCount
+                      : "NA",
+                  };
+                })}
+            />
+          </div>
+        </Tab>
+      )}
 
       {(form.dataset.value === "phosphoproteinData" ||
         form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
           <Row className="m-3">
-            <Form.Group className="col-md-2" controlId="siteTumor">
-              <Form.Label className="required">Tumor Type</Form.Label>
-              <Select
-                name="siteTumor"
-                value={siteTumor}
-                options={form.cancer}
-                onChange={(e) => {
-                  console.log(e);
-                  setSiteTumor(e);
-                }}
-              />
-            </Form.Group>
             <Form.Group className="col-md-2" controlId="site1">
               <Form.Label className="required">
                 {firstGene} Phosphorylation Site
@@ -1230,111 +1348,6 @@ export default function ProteinGeneCorrelation() {
                   secondControlNum: c.secondControlNum,
                 };
               })}
-            />
-          </div>
-          <div className="m-3">
-            <div className="row">
-              <b
-                className="col mx-3"
-                style={{ textDecorationLine: "underline" }}>
-                {form.gene.label}
-              </b>
-              <div
-                className="col d-flex"
-                style={{ justifyContent: "flex-end" }}>
-                <ExcelFile
-                  filename={`CPROSITE-${
-                    form.dataset.value === "proteinData"
-                      ? "ProteinAbundance"
-                      : "Phosphorylation"
-                  }-${firstSite.value}-Correlation-${getTimestamp()}`}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportSiteSettings(form.gene.label)}
-                    name="Input Configuration"
-                  />
-                  <ExcelSheet
-                    dataSet={exportSite(
-                      results[0].summary.records.filter(
-                        (f) => f.cancerId === siteTumor.value,
-                      ),
-                    )}
-                    name="Site Data"
-                  />
-                </ExcelFile>
-              </div>
-            </div>
-            <Table
-              columns={siteColumns}
-              defaultSort={[{ id: "phosphorylationSite", asec: true }]}
-              data={results[0].summary.records
-                .filter((f) => f.cancerId === siteTumor.value)
-                .map((c) => {
-                  return {
-                    phosphorylationSite: c.phosphorylationSite,
-                    accession: c.accession,
-                    phosphopeptide: c.phosphopeptide,
-                    tumorSampleCount: c.tumorSampleCount
-                      ? c.tumorSampleCount
-                      : "NA",
-                    normalSampleCount: c.normalSampleCount
-                      ? c.normalSampleCount
-                      : "NA",
-                  };
-                })}
-            />
-          </div>
-
-          <div className="m-3">
-            <div className="row">
-              <b
-                className="col mx-3"
-                style={{ textDecorationLine: "underline" }}>
-                {form.correlatedGene.label}
-              </b>
-              <div
-                className="col d-flex"
-                style={{ justifyContent: "flex-end" }}>
-                <ExcelFile
-                  filename={`CPROSITE-${
-                    form.dataset.value === "proteinData"
-                      ? "ProteinAbundance"
-                      : "Phosphorylation"
-                  }-${secondSite.value}-Correlation-${getTimestamp()}`}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportSiteSettings(form.correlatedGene.label)}
-                    name="Input Configuration"
-                  />
-                  <ExcelSheet
-                    dataSet={exportSite(
-                      results[1].summary.records.filter(
-                        (f) => f.cancerId === siteTumor.value,
-                      ),
-                    )}
-                    name="Site Data"
-                  />
-                </ExcelFile>
-              </div>
-            </div>
-            <Table
-              columns={siteColumns}
-              defaultSort={[{ id: "phosphorylationSite", asec: true }]}
-              data={results[1].summary.records
-                .filter((f) => f.cancerId === siteTumor.value)
-                .map((c) => {
-                  return {
-                    phosphorylationSite: c.phosphorylationSite,
-                    accession: c.accession,
-                    phosphopeptide: c.phosphopeptide,
-                    tumorSampleCount: c.tumorSampleCount
-                      ? c.tumorSampleCount
-                      : "NA",
-                    normalSampleCount: c.normalSampleCount
-                      ? c.normalSampleCount
-                      : "NA",
-                  };
-                })}
             />
           </div>
         </Tab>
