@@ -492,6 +492,7 @@ export default function ProteinGeneCorrelation() {
       ),
       marker: {
         size: 8,
+        color: "rgb(255,0,0)",
       },
       mode: "markers",
       type: "scatter",
@@ -513,6 +514,7 @@ export default function ProteinGeneCorrelation() {
       ),
       marker: {
         size: 8,
+        color: "rgb(31,119,180)",
       },
       mode: "markers",
       type: "scatter",
@@ -537,6 +539,7 @@ export default function ProteinGeneCorrelation() {
       ),
       marker: {
         size: 8,
+        color: "rgb(255,0,0)",
       },
       mode: "markers",
       type: "scatter",
@@ -558,6 +561,7 @@ export default function ProteinGeneCorrelation() {
       ),
       marker: {
         size: 8,
+        color: "rgb(31,119,180)",
       },
       mode: "markers",
       type: "scatter",
@@ -983,30 +987,6 @@ export default function ProteinGeneCorrelation() {
                 style={{ textDecorationLine: "underline" }}>
                 {form.gene.label}
               </b>
-              <div
-                className="col d-flex"
-                style={{ justifyContent: "flex-end" }}>
-                <ExcelFile
-                  filename={`CPROSITE-${
-                    form.dataset.value === "proteinData"
-                      ? "ProteinAbundance"
-                      : "Phosphorylation"
-                  }-${firstSite.value}-Correlation-${getTimestamp()}`}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportSiteSettings(form.gene.label)}
-                    name="Input Configuration"
-                  />
-                  <ExcelSheet
-                    dataSet={exportSite(
-                      results[0].summary.records.filter(
-                        (f) => f.cancerId === siteTumor.value,
-                      ),
-                    )}
-                    name="Site Data"
-                  />
-                </ExcelFile>
-              </div>
             </div>
             <Table
               columns={siteColumns}
@@ -1036,30 +1016,6 @@ export default function ProteinGeneCorrelation() {
                 style={{ textDecorationLine: "underline" }}>
                 {form.correlatedGene.label}
               </b>
-              <div
-                className="col d-flex"
-                style={{ justifyContent: "flex-end" }}>
-                <ExcelFile
-                  filename={`CPROSITE-${
-                    form.dataset.value === "proteinData"
-                      ? "ProteinAbundance"
-                      : "Phosphorylation"
-                  }-${secondSite.value}-Correlation-${getTimestamp()}`}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportSiteSettings(form.correlatedGene.label)}
-                    name="Input Configuration"
-                  />
-                  <ExcelSheet
-                    dataSet={exportSite(
-                      results[1].summary.records.filter(
-                        (f) => f.cancerId === siteTumor.value,
-                      ),
-                    )}
-                    name="Site Data"
-                  />
-                </ExcelFile>
-              </div>
             </div>
             <Table
               columns={siteColumns}
@@ -1116,7 +1072,7 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-            <Form.Group className="col-md-4 mt-2 col-form-label ">
+            <Form.Group className="col-md-6 mt-2 col-form-label ">
               <br />
               <Form.Check
                 inline

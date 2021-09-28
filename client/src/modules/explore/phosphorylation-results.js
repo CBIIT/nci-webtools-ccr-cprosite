@@ -459,7 +459,10 @@ export default function PhosResults() {
         type: "data",
         array: tumorViewData.map((c) => c.tumorError),
         visible: true,
-        color: "rgb(31,119,180)",
+        color: "rgb(255,0,0)",
+      },
+      marker: {
+        color: "rgb(255,0,0)",
       },
       type: "bar",
       name: "Tumor",
@@ -472,7 +475,10 @@ export default function PhosResults() {
         type: "data",
         array: tumorViewData.map((c) => c.controlError),
         visible: true,
-        color: "rgb(255,127,14)",
+        color: "rgb(31,119,180)",
+      },
+      marker: {
+        color: "rgb(31,119,180)",
       },
       type: "bar",
       name: "Adjacent Normal",
@@ -495,6 +501,7 @@ export default function PhosResults() {
           jitter: 0.6,
           marker: {
             size: 10,
+            color: "rgb(255,0,0)",
           },
           hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
         },
@@ -511,6 +518,7 @@ export default function PhosResults() {
           jitter: 0.6,
           marker: {
             size: 10,
+            color: "rgb(31,119,180)",
           },
           hovertext: ["1", "2"],
           hoverinfo: "x+y",

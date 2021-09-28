@@ -333,6 +333,7 @@ export default function ProteinCorrelation() {
       ),
       marker: {
         size: 8,
+        color: "rgb(255,0,0)",
       },
       mode: "markers",
       type: "scatter",
@@ -352,6 +353,7 @@ export default function ProteinCorrelation() {
       ),
       marker: {
         size: 8,
+        color: "rgb(31,119,180)",
       },
       mode: "markers",
       type: "scatter",
