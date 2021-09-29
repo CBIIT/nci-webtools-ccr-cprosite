@@ -656,7 +656,7 @@ export default function Results() {
               }
               id={"foldChange"}
               onClick={handleToggle}>
-              Fold Change
+              Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
