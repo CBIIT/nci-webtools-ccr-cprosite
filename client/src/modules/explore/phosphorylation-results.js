@@ -824,6 +824,9 @@ export default function PhosResults() {
               minWidth: "100%",
             }}
           />
+          <div className="mx-3" style={{ color: "grey" }}>
+            Note: Fold Change may not be statistically significant.
+          </div>
         </div>
 
         <div className="m-3">
@@ -939,10 +942,6 @@ export default function PhosResults() {
               }}
             />
           </Col>
-          <div className="mx-3" style={{ color: "grey" }}>
-            Note: Phosphorylation level of different phosphorylation sites in
-            the same tumor type cannot be compared
-          </div>
         </Row>
 
         <div className="m-3">
@@ -1034,7 +1033,8 @@ export default function PhosResults() {
                       : "NA"
                   })`,
                   yaxis: {
-                    title: "<b>Phosphorylation Level</b>",
+                    title:
+                      "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
                     zeroline: false,
                     titlefont: {
                       size: 15,

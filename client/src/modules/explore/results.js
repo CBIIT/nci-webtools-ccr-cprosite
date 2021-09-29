@@ -603,10 +603,6 @@ export default function Results() {
               style={{ height: "500px" }}
             />
           </Col>
-          <div className="mx-3" style={{ color: "grey" }}>
-            Note: Protein abundance of the same protein in different tumor types
-            cannot be compared
-          </div>
         </Row>
 
         <div className="m-3">
@@ -691,7 +687,7 @@ export default function Results() {
                       : "NA"
                   })`,
                   yaxis: {
-                    title: "<b>Log Protien Abundance</b>",
+                    title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",
                     zeroline: false,
                     titlefont: {
                       size: 15,
