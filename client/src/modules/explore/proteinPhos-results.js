@@ -41,7 +41,7 @@ export default function ProteinPhosResults() {
     e[1].map((f) => {
       if (f.tumorSampleMean !== null && f.normalSampleMean !== null) {
         const logFoldChange = Number(
-          Math.pow(2, f.tumorSampleMean - f.normalSampleMean).toFixed(4),
+          (f.tumorSampleMean - f.normalSampleMean).toFixed(4),
         );
         toAdd[tumors.map((e) => e.value).indexOf(f.cancerId)] = logFoldChange;
       }
@@ -82,11 +82,7 @@ export default function ProteinPhosResults() {
           ),
           proteinDiff:
             e.tumorSampleMean !== null && e.normalSampleMean !== null
-              ? Number(
-                  Math.pow(2, e.tumorSampleMean - e.normalSampleMean).toFixed(
-                    4,
-                  ),
-                )
+              ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
               : "NA",
           tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
           controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
@@ -105,11 +101,11 @@ export default function ProteinPhosResults() {
       hoverongaps: false,
       colorbar: {
         title: {
-          text: "Fold Change",
+          text: "Log Fold Change",
         },
       },
       hovertemplate:
-        "Tumor: %{x}<br>Phospho Site: %{y}<br>Fold Change: %{z}<extra></extra>",
+        "Tumor: %{x}<br>Phospho Site: %{y}<br>Log Fold Change: %{z}<extra></extra>",
     },
   ];
 
@@ -154,16 +150,18 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "proteinDiff",
-      label: "Fold Change",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="tumor_type">
-              Average Protein Phosphorylation Level Difference ratio between
-              Tumor vs Adjacent Normal)
+              Average Protein Phosphorylation Level Difference (log<sub>2</sub>{" "}
+              ratio between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -235,7 +233,9 @@ export default function ProteinPhosResults() {
               Difference between Tumor and Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -286,16 +286,18 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "proteinDiff",
-      label: "Fold Change",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Average Protein Phosphorylation Level Difference ratio between
-              Tumor vs Adjacent Normal)
+              Average Protein Phosphorylation Level Difference (log<sub>2</sub>{" "}
+              ratio between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -403,9 +405,7 @@ export default function ProteinPhosResults() {
             : "NA",
         proteinDiff:
           e.tumorSampleMean !== null && e.normalSampleMean !== null
-            ? Number(
-                Math.pow(2, e.tumorSampleMean - e.normalSampleMean).toFixed(4),
-              )
+            ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
             : "NA",
         link: (
           <a
@@ -581,9 +581,8 @@ export default function ProteinPhosResults() {
 
       const values = caseList.map((c) =>
         Number(
-          Math.pow(
-            2,
-            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4)),
+          (
+            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
           ).toFixed(4),
         ),
       );
@@ -599,7 +598,7 @@ export default function ProteinPhosResults() {
             ),
           },
           orientation: "h",
-          hovertemplate: "%{y}Fold Change: %{x}<extra></extra>",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -612,7 +611,7 @@ export default function ProteinPhosResults() {
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate: "%{y}Fold Change: %{x}<extra></extra>",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
       ];
     } else return [];
@@ -789,10 +788,9 @@ export default function ProteinPhosResults() {
                       value:
                         d.tumorValue && d.normalValue
                           ? Number(
-                              Math.pow(
-                                2,
+                              (
                                 Number(d.tumorValue.toFixed(4)) -
-                                  Number(d.normalValue.toFixed(4)),
+                                Number(d.normalValue.toFixed(4))
                               ).toFixed(4),
                             )
                           : "NA",
@@ -1028,7 +1026,7 @@ export default function ProteinPhosResults() {
               }
               id={"foldChange"}
               onClick={handleToggle}>
-              Fold Change
+              Log Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
@@ -1196,10 +1194,9 @@ export default function ProteinPhosResults() {
                         proteinDiff:
                           d.tumorValue && d.normalValue
                             ? Number(
-                                Math.pow(
-                                  2,
+                                (
                                   Number(d.tumorValue.toFixed(4)) -
-                                    Number(d.normalValue.toFixed(4)),
+                                  Number(d.normalValue.toFixed(4))
                                 ).toFixed(4),
                               )
                             : "NA",
@@ -1209,6 +1206,7 @@ export default function ProteinPhosResults() {
             }
           />
         </Row>
+        {console.log(tumorViewData)}
       </Tab>
     </Tabs>
   );

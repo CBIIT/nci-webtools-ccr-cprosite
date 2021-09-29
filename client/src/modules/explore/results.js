@@ -69,16 +69,18 @@ export default function Results() {
     },
     {
       accessor: "proteinDiff",
-      label: "Fold Change",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="protein_fold">
-              Average Protein Abundance Difference ratio between Tumor vs
-              Adjacent Normal)
+            <Tooltip id="protein_log_fold">
+              Average Protein Abundance Difference (log<sub>2</sub> ratio
+              between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -347,9 +349,8 @@ export default function Results() {
 
       const values = caseList.map((c) =>
         Number(
-          Math.pow(
-            2,
-            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4)),
+          (
+            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
           ).toFixed(4),
         ),
       );
@@ -365,7 +366,7 @@ export default function Results() {
             ),
           },
           orientation: "h",
-          hovertemplate: "%{y}Fold Change: %{x}<extra></extra>",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -378,7 +379,7 @@ export default function Results() {
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate: "%{y}Fold Change: %{x}<extra></extra>",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
       ];
     }
@@ -480,12 +481,9 @@ export default function Results() {
               {
                 value:
                   c.tumorValue && c.normalValue
-                    ? Math.pow(
-                        2,
-                        Number(
-                          Number(c.tumorValue.toFixed(4)) -
-                            Number(c.normalValue.toFixed(4)).toFixed(4),
-                        ),
+                    ? Number(
+                        Number(c.tumorValue.toFixed(4)) -
+                          Number(c.normalValue.toFixed(4)).toFixed(4),
                       )
                     : "NA",
               },
@@ -722,13 +720,15 @@ export default function Results() {
                 config={defaultConfig}
                 layout={{
                   autosize: true,
-                  title: `Fold Change</b> (Gene: ${form.gene.label}/P-Value: ${
+                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
+                    form.gene.label
+                  }/P-Value: ${
                     averages.length && averages.find((e) => e.id === view)
                       ? averages.find((e) => e.id === view).pValuePaired
                       : "NA"
                   })`,
                   xaxis: {
-                    title: "Fold Change</b>",
+                    title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
                     titlefont: {
                       size: 15,
@@ -806,10 +806,9 @@ export default function Results() {
                         proteinDiff:
                           c.tumorValue && c.normalValue
                             ? Number(
-                                Math.pow(
-                                  2,
+                                (
                                   Number(c.tumorValue.toFixed(4)) -
-                                    Number(c.normalValue.toFixed(4)),
+                                  Number(c.normalValue.toFixed(4))
                                 ).toFixed(4),
                               )
                             : "NA",

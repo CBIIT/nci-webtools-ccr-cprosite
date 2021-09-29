@@ -41,7 +41,7 @@ export default function PhosResults() {
     e[1].map((f) => {
       if (f.tumorSampleMean !== null && f.normalSampleMean !== null) {
         const logFoldChange = Number(
-          Math.pow(2, f.tumorSampleMean - f.normalSampleMean).toFixed(4),
+          (f.tumorSampleMean - f.normalSampleMean).toFixed(4),
         );
         toAdd[tumors.map((e) => e.value).indexOf(f.cancerId)] = logFoldChange;
       }
@@ -58,11 +58,11 @@ export default function PhosResults() {
       hoverongaps: false,
       colorbar: {
         title: {
-          text: "Fold Change",
+          text: "Log Fold Change",
         },
       },
       hovertemplate:
-        "Tumor: %{x}<br>Phospho Site: %{y}<br>Fold Change: %{z}<extra></extra>",
+        "Tumor: %{x}<br>Phospho Site: %{y}<br>Log Fold Change: %{z}<extra></extra>",
     },
   ];
 
@@ -99,11 +99,7 @@ export default function PhosResults() {
           ),
           proteinDiff:
             e.tumorSampleMean !== null && e.normalSampleMean !== null
-              ? Number(
-                  Math.pow(2, e.tumorSampleMean - e.normalSampleMean).toFixed(
-                    4,
-                  ),
-                )
+              ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
               : "NA",
           tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
           controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
@@ -134,9 +130,7 @@ export default function PhosResults() {
             : "NA",
         proteinDiff:
           e.tumorSampleMean !== null && e.normalSampleMean !== null
-            ? Number(
-                Math.pow(2, e.tumorSampleMean - e.normalSampleMean).toFixed(4),
-              )
+            ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
             : "NA",
         link: (
           <a
@@ -221,7 +215,7 @@ export default function PhosResults() {
     },
     {
       accessor: "proteinDiff",
-      label: "Fold Change",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
@@ -229,7 +223,9 @@ export default function PhosResults() {
               Difference between Tumor and Adjacent Normal Abundance
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -276,16 +272,18 @@ export default function PhosResults() {
     },
     {
       accessor: "proteinDiff",
-      label: "Fold Change",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="tumor_type">
-              Average Protein Phosphorylation Level Difference ratio between
-              Tumor vs Adjacent Normal)
+              Average Protein Phosphorylation Level Difference (log<sub>2</sub>{" "}
+              ratio between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -360,7 +358,7 @@ export default function PhosResults() {
     },
     {
       accessor: "proteinDiff",
-      label: "Fold Change",
+      label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
           overlay={
@@ -369,7 +367,9 @@ export default function PhosResults() {
               ratio between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Fold Change</b>
+          <b>
+            Log<sub>2</sub> Fold Change
+          </b>
         </OverlayTrigger>
       ),
     },
@@ -548,9 +548,8 @@ export default function PhosResults() {
 
       const values = caseList.map((c) =>
         Number(
-          Math.pow(
-            2,
-            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4)),
+          (
+            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
           ).toFixed(4),
         ),
       );
@@ -566,7 +565,7 @@ export default function PhosResults() {
             ),
           },
           orientation: "h",
-          hovertemplate: "%{y} Fold Change: %{x}<extra></extra>",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -579,7 +578,7 @@ export default function PhosResults() {
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate: "%{y} Fold Change: %{x}<extra></extra>",
+          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
         },
       ];
     } else {
@@ -749,12 +748,8 @@ export default function PhosResults() {
                     {
                       value:
                         d.tumorValue && d.normalValue
-                          ? Number(
-                              Math.pow(
-                                2,
-                                Number(d.normalValue.toFixed(4)) -
-                                  Number(d.tumorValue.toFixed(4)),
-                              ),
+                          ? (
+                              d.normalValue.toFixed(4) - d.tumorValue.toFixed(4)
                             ).toFixed(4)
                           : "NA",
                     },
@@ -993,7 +988,7 @@ export default function PhosResults() {
               }
               id={"foldChange"}
               onClick={handleToggle}>
-              Fold Change
+              Log Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
@@ -1061,7 +1056,7 @@ export default function PhosResults() {
                 config={defaultConfig}
                 layout={{
                   autosize: true,
-                  title: `<b>Fold Change</b> (Gene: ${
+                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
                     form.gene.label
                   }/Paired P-Value: ${
                     tumorViewData.find((e) => e.name === phosView)
@@ -1070,7 +1065,7 @@ export default function PhosResults() {
                       : "NA"
                   })`,
                   xaxis: {
-                    title: "<b>Fold Change</b>",
+                    title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
                     titlefont: {
                       size: 15,
