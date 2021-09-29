@@ -431,7 +431,10 @@ export default function ProteinGeneCorrelation() {
     form.dataset.value === "phosphoproteinRatioData"
       ? getSite().filter(
           (e) =>
-            e.firstTumor && e.firstControl && e.secondTumor && e.secondControl,
+            e.firstTumor !== null &&
+            e.firstControl !== null &&
+            e.secondTumor !== null &&
+            e.secondControl !== null,
         )
       : [];
 
@@ -582,6 +585,7 @@ export default function ProteinGeneCorrelation() {
       .map((e) => {
         return [{ value: e.label }];
       });
+    console.log(settings);
     settings[0].push({ value: form.dataset.label });
     settings[0].push({ value: "Correlation" });
     settings[0].push({ value: form.gene.label });

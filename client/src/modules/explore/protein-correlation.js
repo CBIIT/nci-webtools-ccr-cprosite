@@ -180,26 +180,28 @@ export default function ProteinCorrelation() {
       return {
         name: e.participantId,
         proteinTumor:
-          e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : null,
+          e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : 0,
         proteinTumorNum:
           e.tumorValue !== null
             ? Number(Math.pow(2, e.tumorValue).toFixed(4))
-            : null,
+            : 0,
         proteinControl:
-          e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : null,
+          e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : 0,
         proteinControlNum:
           e.normalValue !== null
             ? Number(Math.pow(2, e.normalValue).toFixed(4))
-            : null,
+            : 0,
         //Converting rna value to log values
-        rnaTumor: rna.tumorValue
-          ? Number(Math.log2(rna.tumorValue).toFixed(4))
-          : null,
-        rnaTumorNum: rna.tumorValue,
-        rnaControl: rna.normalValue
-          ? Number(Math.log2(rna.normalValue).toFixed(4))
-          : null,
-        rnaControlNum: rna.normalValue,
+        rnaTumor:
+          rna.tumorValue !== null
+            ? Number(Math.log2(rna.tumorValue).toFixed(4))
+            : 0,
+        rnaTumorNum: rna.tumorValue !== null ? rna.tumorValue : 0,
+        rnaControl:
+          rna.normalValue !== null
+            ? Number(Math.log2(rna.normalValue).toFixed(4))
+            : 0,
+        rnaControlNum: rna.normalValue !== null ? rna.normalValue : 0,
       };
     } else {
       return {
@@ -219,7 +221,11 @@ export default function ProteinCorrelation() {
 
   //Filter points with missing data points that would cause issues with correlation calculation
   const proteinRNA = getData.filter(
-    (e) => e.proteinTumor && e.rnaTumor && e.proteinControl && e.rnaControl,
+    (e) =>
+      e.proteinTumor !== null &&
+      e.rnaTumor !== null &&
+      e.proteinControl !== null &&
+      e.rnaControl !== null,
   );
 
   const defaultLayout = {
