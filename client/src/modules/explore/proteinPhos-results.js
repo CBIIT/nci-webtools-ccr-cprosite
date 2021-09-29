@@ -41,7 +41,7 @@ export default function ProteinPhosResults() {
     e[1].map((f) => {
       if (f.tumorSampleMean !== null && f.normalSampleMean !== null) {
         const logFoldChange = Number(
-          (f.tumorSampleMean - f.normalSampleMean).toFixed(4),
+          (f.normalSampleMean - f.tumorSampleMean).toFixed(4),
         );
         toAdd[tumors.map((e) => e.value).indexOf(f.cancerId)] = logFoldChange;
       }
@@ -82,7 +82,7 @@ export default function ProteinPhosResults() {
           ),
           proteinDiff:
             e.tumorSampleMean !== null && e.normalSampleMean !== null
-              ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
+              ? Number((e.normalSampleMean - e.tumorSampleMean).toFixed(4))
               : "NA",
           tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
           controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
@@ -405,7 +405,7 @@ export default function ProteinPhosResults() {
             : "NA",
         proteinDiff:
           e.tumorSampleMean !== null && e.normalSampleMean !== null
-            ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
+            ? Number((e.normalSampleMean - e.tumorSampleMean).toFixed(4))
             : "NA",
         link: (
           <a
@@ -573,8 +573,8 @@ export default function ProteinPhosResults() {
         .find((c) => c.name === phosView)
         .records.filter((e) => e.tumorValue && e.normalValue)
         .sort((a, b) => {
-          const aFoldChange = a.tumorValue - a.normalValue;
-          const bFoldChange = b.tumorValue - b.normalValue;
+          const aFoldChange = a.normalValue - a.tumorValue;
+          const bFoldChange = b.normalValue - b.tumorValue;
 
           return aFoldChange > bFoldChange ? 1 : -1;
         });
@@ -582,7 +582,7 @@ export default function ProteinPhosResults() {
       const values = caseList.map((c) =>
         Number(
           (
-            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
+            Number(c.normalValue.toFixed(4)) - Number(c.tumorValue.toFixed(4))
           ).toFixed(4),
         ),
       );
@@ -789,8 +789,8 @@ export default function ProteinPhosResults() {
                         d.tumorValue && d.normalValue
                           ? Number(
                               (
-                                Number(d.tumorValue.toFixed(4)) -
-                                Number(d.normalValue.toFixed(4))
+                                Number(d.normalValue.toFixed(4)) -
+                                Number(d.tumorValue.toFixed(4))
                               ).toFixed(4),
                             )
                           : "NA",
@@ -1026,7 +1026,7 @@ export default function ProteinPhosResults() {
               }
               id={"foldChange"}
               onClick={handleToggle}>
-              Log Fold Change
+              Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
@@ -1195,8 +1195,8 @@ export default function ProteinPhosResults() {
                           d.tumorValue && d.normalValue
                             ? Number(
                                 (
-                                  Number(d.tumorValue.toFixed(4)) -
-                                  Number(d.normalValue.toFixed(4))
+                                  Number(d.normalValue.toFixed(4)) -
+                                  Number(d.tumorValue.toFixed(4))
                                 ).toFixed(4),
                               )
                             : "NA",
