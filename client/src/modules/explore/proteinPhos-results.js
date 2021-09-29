@@ -384,10 +384,19 @@ export default function ProteinPhosResults() {
   ).filter((e) => e[0] !== "null");
 
   const tumorViewData = results[0].summary.records
-    .filter((f) => f.cancerId === view && f.phosphorylationSite !== "all")
+    .filter(
+      (f) =>
+        f.cancerId ===
+          (form.cancer.find((e) => e.value === view)
+            ? view
+            : form.cancer[0].value) && f.phosphorylationSite !== "all",
+    )
     .map((e) => {
+      const currentView = form.cancer.find((e) => e.value === view)
+        ? view
+        : form.cancer[0].value;
       const patients = sortPhospho
-        .find((f) => Number(f[0]) === view)[1]
+        .find((f) => Number(f[0]) === currentView)[1]
         .filter((d) => d.phosphorylationSite === e.phosphorylationSite);
 
       return {
@@ -707,7 +716,11 @@ export default function ProteinPhosResults() {
         ],
         data: [
           [
-            { value: form.cancer.find((f) => f.value === view).label },
+            {
+              value: form.cancer.find((e) => e.value === view)
+                ? form.cancer.find((e) => e.value === view).label
+                : form.cancer[0].label,
+            },
             { value: "Phosphorylation/Protein" },
             { value: "Tumor vs Control" },
             { value: form.gene.label },
@@ -751,7 +764,11 @@ export default function ProteinPhosResults() {
       ],
       data: [
         [
-          { value: form.cancer.find((e) => e.value === view).label },
+          {
+            value: form.cancer.find((e) => e.value === view)
+              ? form.cancer.find((e) => e.value === view).label
+              : form.cancer[0].label,
+          },
           { value: phosView },
           { value: "Phosphorylation/Protein" },
           { value: "Tumor vs Control" },
@@ -1039,7 +1056,9 @@ export default function ProteinPhosResults() {
                 layout={{
                   ...defaultLayout,
                   title: `<b>${
-                    form.cancer.find((e) => e.value === view).label
+                    form.cancer.find((e) => e.value === view)
+                      ? form.cancer.find((e) => e.value === view).label
+                      : form.cancer[0].label
                   } Tumor vs Adjacent Normal</b> (Gene: ${
                     form.gene.label
                   }/Unpaired P-Value: ${

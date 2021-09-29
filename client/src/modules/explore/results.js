@@ -218,12 +218,17 @@ export default function Results() {
 
   const boxPlotData = [
     {
-      y:
-        results.length && results.find((e) => Number(e[0]) === view)
-          ? results
-              .find((e) => Number(e[0]) === view)[1]
-              .map((e) => e.tumorValue)
-          : [],
+      y: results.length
+        ? results
+            .find(
+              (e) =>
+                Number(e[0]) ===
+                (form.cancer.find((e) => e.value === view)
+                  ? view
+                  : form.cancer[0].value),
+            )[1]
+            .map((e) => e.tumorValue)
+        : [],
       type: "box",
       boxpoints: "all",
       name: "Tumor",
@@ -235,12 +240,17 @@ export default function Results() {
       hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
     },
     {
-      y:
-        results.length && results.find((e) => Number(e[0]) === view)
-          ? results
-              .find((e) => Number(e[0]) === view)[1]
-              .map((e) => e.normalValue)
-          : [],
+      y: results.length
+        ? results
+            .find(
+              (e) =>
+                Number(e[0]) ===
+                (form.cancer.find((e) => e.value === view)
+                  ? view
+                  : form.cancer[0].value),
+            )[1]
+            .map((e) => e.normalValue)
+        : [],
       type: "box",
       boxpoints: "all",
       name: "Adjacent Normal",
@@ -338,7 +348,13 @@ export default function Results() {
   function foldData() {
     if (results.length !== 0) {
       var caseList = results
-        .find((e) => Number(e[0]) === view)[1]
+        .find(
+          (e) =>
+            Number(e[0]) ===
+            (form.cancer.find((e) => e.value === view)
+              ? view
+              : form.cancer[0].value),
+        )[1]
         .filter((e) => e.tumorValue && e.normalValue)
         .sort((a, b) => {
           const aFoldChange = a.normalValue - a.tumorValue;
@@ -744,8 +760,12 @@ export default function Results() {
                   annotations: [
                     {
                       text:
-                        results.filter((f) => Number(f[0]) === view).length ===
-                        0
+                        results.filter((f) =>
+                          Number(f[0]) ===
+                          form.cancer.find((e) => e.value === view)
+                            ? view
+                            : form.cancer[0].value,
+                        ).length === 0
                           ? "No data available"
                           : "",
                       xref: "paper",
@@ -790,32 +810,34 @@ export default function Results() {
           <Table
             columns={proteinAbundanceColumns}
             defaultSort={[{ id: "name", asec: true }]}
-            data={
-              results.find((e) => Number(e[0]) === view)
-                ? results
-                    .find((e) => Number(e[0]) === view)[1]
-                    .map((c) => {
-                      return {
-                        name: c.participantId,
-                        tumorValue: c.tumorValue
-                          ? Number(c.tumorValue.toFixed(4))
-                          : "NA",
-                        normalValue: c.normalValue
-                          ? Number(c.normalValue.toFixed(4))
-                          : "NA",
-                        proteinDiff:
-                          c.tumorValue && c.normalValue
-                            ? Number(
-                                (
-                                  Number(c.normalValue.toFixed(4)) -
-                                  Number(c.tumorValue.toFixed(4))
-                                ).toFixed(4),
-                              )
-                            : "NA",
-                      };
-                    })
-                : []
-            }
+            data={results
+              .find(
+                (e) =>
+                  Number(e[0]) ===
+                  (form.cancer.find((e) => e.value === view)
+                    ? view
+                    : form.cancer[0].value),
+              )[1]
+              .map((c) => {
+                return {
+                  name: c.participantId,
+                  tumorValue: c.tumorValue
+                    ? Number(c.tumorValue.toFixed(4))
+                    : "NA",
+                  normalValue: c.normalValue
+                    ? Number(c.normalValue.toFixed(4))
+                    : "NA",
+                  proteinDiff:
+                    c.tumorValue && c.normalValue
+                      ? Number(
+                          (
+                            Number(c.normalValue.toFixed(4)) -
+                            Number(c.tumorValue.toFixed(4))
+                          ).toFixed(4),
+                        )
+                      : "NA",
+                };
+              })}
           />
         </div>
       </Tab>

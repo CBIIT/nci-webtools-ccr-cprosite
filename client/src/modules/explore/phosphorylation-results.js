@@ -8,7 +8,7 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
 import Plot from "react-plotly.js";
-import { formState, siteState, resultsState } from "./explore.state";
+import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import ReactExport from "react-data-export";
@@ -109,10 +109,19 @@ export default function PhosResults() {
     return rows;
   }
   const tumorViewData = results[0].summary.records
-    .filter((f) => f.cancerId === view && f.phosphorylationSite !== "all")
+    .filter(
+      (f) =>
+        f.cancerId ===
+          (form.cancer.find((e) => e.value === view)
+            ? view
+            : form.cancer[0].value) && f.phosphorylationSite !== "all",
+    )
     .map((e) => {
+      const currentView = form.cancer.find((e) => e.value === view)
+        ? view
+        : form.cancer[0].value;
       const patients = sortResults
-        .find((f) => Number(f[0]) === view)[1]
+        .find((f) => Number(f[0]) === currentView)[1]
         .filter((d) => d.phosphorylationSite === e.phosphorylationSite);
 
       return {
@@ -676,7 +685,11 @@ export default function PhosResults() {
         ],
         data: [
           [
-            { value: form.cancer.find((e) => e.value === view).label },
+            {
+              value: form.cancer.find((e) => e.value === view)
+                ? form.cancer.find((e) => e.value === view).label
+                : form.cancer[0].label,
+            },
             { value: "Phosphorylation Site" },
             { value: "Tumor vs Control" },
             { value: form.gene.label },
@@ -720,7 +733,11 @@ export default function PhosResults() {
       ],
       data: [
         [
-          { value: form.cancer.find((e) => e.value === view).label },
+          {
+            value: form.cancer.find((e) => e.value === view)
+              ? form.cancer.find((e) => e.value === view).label
+              : form.cancer[0].label,
+          },
           { value: phosView },
           { value: "Phosphorylation Site" },
           { value: "Tumor vs Control" },
@@ -856,7 +873,11 @@ export default function PhosResults() {
                 setPhosView(phos.length ? phos[0][0] : "");
                 setSite(phos.length ? phos[0][1][0] : "");
               }}
-              value={view}
+              value={
+                form.cancer.find((e) => e.value === view)
+                  ? view
+                  : form.cancer[0].value
+              }
               required>
               {form.cancer.map((o) => (
                 <option value={o.value} key={`dataset-${o.value}`}>
@@ -1001,7 +1022,9 @@ export default function PhosResults() {
                 layout={{
                   ...defaultLayout,
                   title: `<b>${
-                    form.cancer.find((e) => e.value === view).label
+                    form.cancer.find((e) => e.value === view)
+                      ? form.cancer.find((e) => e.value === view).label
+                      : form.cancer[0].label
                   } Tumor vs Adjacent Normal</b> (Gene: ${
                     form.gene.label
                   }/Unpaired P-Value: ${
