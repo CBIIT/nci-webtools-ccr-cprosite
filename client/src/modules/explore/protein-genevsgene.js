@@ -1018,7 +1018,7 @@ export default function ProteinGeneCorrelation() {
 
               <div
                 className="col-xl-1 d-flex"
-                style={{ justifyContent: "flex-end" }}>
+                style={{ justifyContent: "flex-end", whiteSpace: "nowrap" }}>
                 <ExcelFile
                   filename={`CPROSITE-${
                     form.dataset.value === "proteinData"
