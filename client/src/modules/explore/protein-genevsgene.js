@@ -850,7 +850,7 @@ export default function ProteinGeneCorrelation() {
                 data={geneScatter}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${label} ${firstGene} and ${secondGene} Correlation</b>`,
+                  title: `<b>Protein Abundance ${firstGene} and ${secondGene} Correlation</b>`,
                   autosize: true,
                   legend: {
                     orientation: "h",

@@ -32,6 +32,9 @@ export default function Results() {
 
   console.log(results);
   const [view, setView] = useState(results.length ? Number(results[0][0]) : 0);
+  const currentTumor = form.cancer.find((e) => e.value === view)
+    ? view
+    : form.cancer[0].value;
 
   const proteinAbundanceColumns = [
     {
@@ -565,7 +568,7 @@ export default function Results() {
       "hoverClosestCartesian",
     ],
   };
-
+  console.log(results);
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -575,7 +578,7 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: `<b>Protein Abundance Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                title: `<b>Protein Abundance Tumor vs Adjacent Normal</b> (${form.gene.label})`,
                 barmode: "group",
                 autosize: true,
                 legend: {
@@ -679,12 +682,10 @@ export default function Results() {
                 data={boxPlotData}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>Tumor vs Adjacent Normal</b> (Gene: ${
+                  title: `<b>${
+                    form.cancer.find((f) => f.value === currentTumor).label
+                  } Protein Abundance Tumor vs Adjacent Normal</b> (${
                     form.gene.label
-                  }/P-Value: ${
-                    averages.length && averages.find((e) => e.id === view)
-                      ? averages.find((e) => e.id === view).pValuePaired
-                      : "NA"
                   })`,
                   yaxis: {
                     title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",
@@ -704,8 +705,8 @@ export default function Results() {
                   annotations: [
                     {
                       text:
-                        results.filter((f) => Number(f[0]) === view).length ===
-                        0
+                        results.filter((f) => Number(f[0]) === currentTumor)
+                          .length === 0
                           ? "No data available"
                           : "",
                       xref: "paper",

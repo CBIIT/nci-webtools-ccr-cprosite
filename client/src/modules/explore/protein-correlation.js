@@ -464,7 +464,7 @@ export default function ProteinCorrelation() {
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>${label} Protein and mRNA Correlation</b> (Gene: ${form.gene.label})`,
+              title: `<b>${form.dataset.label} ${form.gene.label} and mRNA Correlation</b>`,
               autosize: true,
               legend: {
                 orientation: "h",

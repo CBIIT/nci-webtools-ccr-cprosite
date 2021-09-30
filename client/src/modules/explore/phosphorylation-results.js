@@ -27,6 +27,9 @@ export default function PhosResults() {
 
   const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
+  const currentTumor = form.cancer.find((e) => e.value === view)
+    ? view
+    : form.cancer[0].value;
 
   const sortResults = Object.entries(
     _.groupBy(results[0].participants.records, "cancerId"),
@@ -799,7 +802,7 @@ export default function PhosResults() {
             data={heatMapData}
             layout={{
               ...defaultLayout,
-              title: `<b>Phosphorylation Summary View</b> (Gene: ${form.gene.label})`,
+              title: `<b>Phosphorylation Site Tumor vs Adjacent Normal</b> (${form.gene.label})`,
               xaxis: {
                 title: "<b>Tumor Type</b>",
                 automargin: true,
@@ -897,7 +900,11 @@ export default function PhosResults() {
               data={multiPhosBarPlot}
               layout={{
                 ...defaultLayout,
-                title: `<b>Phosphorylation Site Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                title: `<b>${
+                  form.cancer.find((f) => f.value === currentTumor).label
+                } Phosphorylation Site Tumor vs Adjacent Normal</b> (${
+                  form.gene.label
+                })`,
                 xaxis: {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
@@ -1020,18 +1027,9 @@ export default function PhosResults() {
                 data={phosBoxData()}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${
-                    form.cancer.find((e) => e.value === view)
-                      ? form.cancer.find((e) => e.value === view).label
-                      : form.cancer[0].label
-                  } Tumor vs Adjacent Normal</b> (Gene: ${
-                    form.gene.label
-                  }/Unpaired P-Value: ${
-                    tumorViewData.find((e) => e.name === phosView)
-                      ? tumorViewData.find((e) => e.name === phosView)
-                          .pValueUnpaired
-                      : "NA"
-                  })`,
+                  title: `<b>${phosView} ${
+                    form.cancer.find((f) => f.value === currentTumor).label
+                  } Tumor vs Adjacent Normal</b> (${form.gene.label})`,
                   yaxis: {
                     title:
                       "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
