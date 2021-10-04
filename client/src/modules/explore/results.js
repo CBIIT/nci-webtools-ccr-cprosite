@@ -568,7 +568,13 @@ export default function Results() {
       "hoverClosestCartesian",
     ],
   };
-  console.log(results);
+  console.log({
+    ...defaultConfig,
+    toImageButtonOptions: {
+      ...defaultConfig.toImageButtonOptions,
+      filename: "test",
+    },
+  });
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -586,7 +592,6 @@ export default function Results() {
                   y: -0.5,
                   x: 0.42,
                 },
-
                 annotations: [
                   {
                     text: results.length === 0 ? "No data available" : "",
@@ -600,7 +605,13 @@ export default function Results() {
                   },
                 ],
               }}
-              config={defaultConfig}
+              config={{
+                ...defaultConfig,
+                toImageButtonOptions: {
+                  ...defaultConfig.toImageButtonOptions,
+                  filename: `Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                },
+              }}
               useResizeHandler
               className="flex-fill w-100"
               style={{ height: "500px" }}
@@ -611,7 +622,7 @@ export default function Results() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Summary-${getTimestamp()}`}
+              filename={`Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
@@ -719,7 +730,17 @@ export default function Results() {
                     },
                   ],
                 }}
-                config={defaultConfig}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: `${
+                      form.cancer.find((f) => f.value === currentTumor).label
+                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${
+                      form.gene.label
+                    }`,
+                  },
+                }}
                 useResizeHandler
                 style={{ height: "800px" }}
               />
@@ -730,7 +751,17 @@ export default function Results() {
             <Col xl={12} style={{ height: "800px", overflowY: "scroll" }}>
               <Plot
                 data={foldData()}
-                config={defaultConfig}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: `${
+                      form.cancer.find((f) => f.value === currentTumor).label
+                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal_Log_Fold_Change-${
+                      form.gene.label
+                    }`,
+                  },
+                }}
                 layout={{
                   autosize: true,
                   title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
@@ -791,7 +822,9 @@ export default function Results() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-ProteinAbundance-TumorVsNormal-Tumor-${getTimestamp()}`}
+              filename={`${
+                form.cancer.find((f) => f.value === currentTumor).label
+              }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportAbundanceSettings}

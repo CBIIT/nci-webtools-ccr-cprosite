@@ -35,6 +35,13 @@ export default function ProteinGeneCorrelation() {
   const [label, setLabel] = useState("");
   const [tab, setTab] = useState("summaryView");
 
+  const datasetName =
+    form.dataset.label === "Protein Abundance"
+      ? "Protein_Abundance"
+      : form.dataset.label === "Phosphorylation Site"
+      ? "Phosphorylation_Site"
+      : "Phosphorylation_Protein";
+
   const currentTumor = form.cancer.find((e) => e.value === view[0])
     ? view
     : form.cancer.map((e) => e.value);
@@ -896,7 +903,17 @@ export default function ProteinGeneCorrelation() {
                     },
                   ],
                 }}
-                config={defaultConfig}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: `${
+                      label ? label + "_" : ""
+                    }${datasetName}_Correlation-${form.gene.label}-${
+                      form.correlatedGene.label
+                    }`,
+                  },
+                }}
                 useResizeHandler
                 className="flex-fill w-100"
                 style={{ height: "800px" }}
@@ -975,11 +992,11 @@ export default function ProteinGeneCorrelation() {
           <div className="m-3">
             <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               <ExcelFile
-                filename={`CPROSITE-${
-                  form.dataset.value === "proteinData"
-                    ? "ProteinAbundance"
-                    : "Phosphorylation"
-                }-Correlation-${getTimestamp()}`}
+                filename={`${
+                  label ? label + "_" : ""
+                }${datasetName}_Correlation-${form.gene.label}-${
+                  form.correlatedGene.label
+                }`}
                 element={<a href="javascript:void(0)">Export Data</a>}>
                 <ExcelSheet
                   dataSet={exportSummarySettings()}
@@ -1046,11 +1063,7 @@ export default function ProteinGeneCorrelation() {
                 className="col-xl-1 d-flex"
                 style={{ justifyContent: "flex-end", whiteSpace: "nowrap" }}>
                 <ExcelFile
-                  filename={`CPROSITE-${
-                    form.dataset.value === "proteinData"
-                      ? "ProteinAbundance"
-                      : "Phosphorylation"
-                  }-${firstSite.value}-Correlation-${getTimestamp()}`}
+                  filename={`${label}_${datasetName}_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet
                     dataSet={exportSiteSettings(form.gene.label)}
@@ -1249,7 +1262,13 @@ export default function ProteinGeneCorrelation() {
                     },
                   ],
                 }}
-                config={defaultConfig}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: `${label}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`,
+                  },
+                }}
                 useResizeHandler
                 className="flex-fill w-100"
                 style={{ height: "800px" }}
@@ -1330,11 +1349,7 @@ export default function ProteinGeneCorrelation() {
                 className="col d-flex"
                 style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
-                  filename={`CPROSITE-${
-                    form.dataset.value === "proteinData"
-                      ? "ProteinAbundance"
-                      : "Phosphorylation"
-                  }-SiteCorrelation-${getTimestamp()}`}
+                  filename={`${label}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet
                     dataSet={exportSummarySettings()}

@@ -30,6 +30,13 @@ export default function ProteinCorrelation() {
   const rnaData = results[0].rna.records.filter((e) =>
     currentTumor.includes(e.cancerId),
   );
+  console.log(label);
+  const datasetName =
+    form.dataset.label === "Protein Abundance"
+      ? "Protein_Abundance"
+      : form.dataset.label === "Phosphorylation Site"
+      ? "Phosphorylation_Site"
+      : "Phosphorylation_Protein";
 
   const [numType, setNumType] = useState("log2");
 
@@ -475,7 +482,7 @@ export default function ProteinCorrelation() {
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>${form.dataset.label} ${form.gene.label} and mRNA Correlation</b>`,
+              title: `<b>${label} ${form.dataset.label} ${form.gene.label} and mRNA Correlation</b>`,
               autosize: true,
               legend: {
                 orientation: "h",
@@ -495,7 +502,15 @@ export default function ProteinCorrelation() {
                 },
               ],
             }}
-            config={defaultConfig}
+            config={{
+              ...defaultConfig,
+              toImageButtonOptions: {
+                ...defaultConfig.toImageButtonOptions,
+                filename: `${
+                  label ? label + "_" : ""
+                }${datasetName}_Correlation-${form.gene.label}`,
+              },
+            }}
             useResizeHandler
             className="flex-fill w-100"
             style={{ height: "800px" }}
@@ -580,11 +595,9 @@ export default function ProteinCorrelation() {
       <div className="m-3">
         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
           <ExcelFile
-            filename={`CPROSITE-${
-              form.dataset.value === "proteinData"
-                ? "ProteinAbundance"
-                : "Phosphorylation"
-            }-Correlation-${getTimestamp()}`}
+            filename={`${label ? label + "_" : ""}${datasetName}_Correlation-${
+              form.gene.label
+            }`}
             element={<a href="javascript:void(0)">Export Data</a>}>
             <ExcelSheet
               dataSet={exportSummarySettings()}
