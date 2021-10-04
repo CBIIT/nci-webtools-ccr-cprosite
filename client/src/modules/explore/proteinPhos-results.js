@@ -28,7 +28,9 @@ export default function ProteinPhosResults() {
   const [plotTab, setPlot] = useState("tumorVsControl");
 
   const results = useRecoilValue(resultsState);
-  console.log(results);
+  const currentTumor = form.cancer.find((e) => e.value === view)
+    ? view
+    : form.cancer[0].value;
 
   var sortSummary = Object.entries(
     _.groupBy(results[0].summary.records, "phosphorylationSite"),
@@ -54,17 +56,17 @@ export default function ProteinPhosResults() {
     console.log(results);
     sortSummary.map((c) => {
       c[1].map((e) => {
-        const currentTumor = tumors.find((f) => f.value === e.cancerId);
+        const tumor = tumors.find((f) => f.value === e.cancerId);
         rows = rows.concat({
           tumor: (
             <a
-              key={"summary-" + currentTumor.label}
+              key={"summary-" + tumor.label}
               onClick={() => {
-                setView(currentTumor.value);
+                setView(tumor.value);
                 setTab("tumorView");
               }}
               href="javascript:void(0)">
-              {currentTumor.label}
+              {tumor.label}
             </a>
           ),
           accession: e.accession ? e.accession : "NA",
@@ -72,7 +74,7 @@ export default function ProteinPhosResults() {
             <a
               key={"summary-" + e.phosphorylationSite}
               onClick={() => {
-                setView(currentTumor.value);
+                setView(tumor.value);
                 setPhosView(e.phosphorylationSite);
                 setTab("phosView");
               }}
@@ -857,7 +859,13 @@ export default function ProteinPhosResults() {
               autosize: true,
             }}
             useResizeHandler
-            config={defaultConfig}
+            config={{
+              ...defaultConfig,
+              toImageButtonOptions: {
+                ...defaultConfig.toImageButtonOptions,
+                filename: `Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+              },
+            }}
             style={{
               height: "800px",
               width: `100%`,
@@ -872,7 +880,7 @@ export default function ProteinPhosResults() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-PhosphorylationProtein-TumorVsNormal-Summary-${getTimestamp()}`}
+              filename={`Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSummarySettings()}
@@ -933,7 +941,11 @@ export default function ProteinPhosResults() {
               data={multiPhosBarPlot}
               layout={{
                 ...defaultLayout,
-                title: `<b>Phosphorylation/Protein Tumor and Adjacent Normal</b> (Gene: ${form.gene.label})`,
+                title: `<b>${
+                  form.cancer.find((f) => f.value === currentTumor).label
+                } Phosphorylation/Protein Tumor vs Adjacent Normal</b> (${
+                  form.gene.label
+                })`,
                 xaxis: {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
@@ -968,7 +980,17 @@ export default function ProteinPhosResults() {
                   },
                 ],
               }}
-              config={defaultConfig}
+              config={{
+                ...defaultConfig,
+                toImageButtonOptions: {
+                  ...defaultConfig.toImageButtonOptions,
+                  filename: `${
+                    form.cancer.find((f) => f.value === currentTumor).label
+                  }_Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${
+                    form.gene.label
+                  }`,
+                },
+              }}
               useResizeHandler
               className="flex-fill w-100"
               style={{
@@ -982,7 +1004,11 @@ export default function ProteinPhosResults() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-PhosphorylationProtein-TumorVsNormal-Tumor-${getTimestamp()}`}
+              filename={`${
+                form.cancer.find((f) => f.value === currentTumor).label
+              }_Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${
+                form.gene.label
+              }`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportTumorSettings()}
@@ -1054,18 +1080,9 @@ export default function ProteinPhosResults() {
                 data={phosBoxData()}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${
-                    form.cancer.find((e) => e.value === view)
-                      ? form.cancer.find((e) => e.value === view).label
-                      : form.cancer[0].label
-                  } Tumor vs Adjacent Normal</b> (Gene: ${
-                    form.gene.label
-                  }/Unpaired P-Value: ${
-                    tumorViewData.find((e) => e.name === phosView)
-                      ? tumorViewData.find((e) => e.name === phosView)
-                          .pValueUnpaired
-                      : "NA"
-                  })`,
+                  title: `<b>${phosView} ${
+                    form.cancer.find((f) => f.value === currentTumor).label
+                  } Tumor vs Adjacent Normal</b> (${form.gene.label})`,
                   yaxis: {
                     title: "<b>Phosphorylation/Protein Level</b>",
                     zeroline: false,
@@ -1100,7 +1117,17 @@ export default function ProteinPhosResults() {
                     },
                   ],
                 }}
-                config={defaultConfig}
+                config={{
+                  ...defaultConfig,
+                  toImageButtonOptions: {
+                    ...defaultConfig.toImageButtonOptions,
+                    filename: `${phosView}_${
+                      form.cancer.find((f) => f.value === currentTumor).label
+                    }_Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${
+                      form.gene.label
+                    }`,
+                  },
+                }}
                 useResizeHandler
                 style={{ height: "800px", minWidth: "100%" }}
               />
@@ -1180,7 +1207,11 @@ export default function ProteinPhosResults() {
         <Row className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`CPROSITE-PhosphorylationProtein-TumorVsNormal-Site-${getTimestamp()}`}
+              filename={`${phosView}_${
+                form.cancer.find((f) => f.value === currentTumor).label
+              }_Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${
+                form.gene.label
+              }`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet
                 dataSet={exportSiteSettings}

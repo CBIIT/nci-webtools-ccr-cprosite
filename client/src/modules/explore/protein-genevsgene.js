@@ -35,6 +35,9 @@ export default function ProteinGeneCorrelation() {
   const [label, setLabel] = useState("");
   const [tab, setTab] = useState("summaryView");
 
+  const currentTumor = form.cancer.find((e) => e.value === view[0])
+    ? view
+    : form.cancer.map((e) => e.value);
   console.log(view);
   const currentSiteTumor = form.cancer.find((e) => e.value === siteTumor.value)
     ? siteTumor.value
@@ -300,9 +303,16 @@ export default function ProteinGeneCorrelation() {
     },
   ];
 
+  const firstFilteredSet = firstGeneSet.filter((f) =>
+    currentTumor.includes(f.cancerId),
+  );
+  const secondFilteredSet = secondGeneSet.filter((f) =>
+    currentTumor.includes(f.cancerId),
+  );
+
   //Organize datasets (unfiltered)
-  const getData = firstGeneSet.map((first) => {
-    const second = secondGeneSet.find((d) => {
+  const getData = firstFilteredSet.map((first) => {
+    const second = secondFilteredSet.find((d) => {
       return (
         first.participantId === d.participantId &&
         first.phosphorylationSite === d.phosphorylationSite
@@ -315,35 +325,35 @@ export default function ProteinGeneCorrelation() {
         firstTumor:
           first.tumorValue !== null
             ? Number(first.tumorValue.toFixed(4))
-            : null,
+            : "NA",
         firstTumorNum:
           first.tumorValue !== null
             ? Number(Math.pow(2, first.tumorValue).toFixed(4))
-            : null,
+            : "NA",
         firstControl:
           first.normalValue !== null
             ? Number(first.normalValue.toFixed(4))
-            : null,
+            : "NA",
         firstControlNum:
           first.normalValue !== null
             ? Number(Math.pow(2, first.normalValue).toFixed(4))
-            : null,
+            : "NA",
         secondTumor:
           second.tumorValue !== null
             ? Number(second.tumorValue.toFixed(4))
-            : null,
+            : "NA",
         secondTumorNum:
           second.tumorValue !== null
             ? Number(Math.pow(2, second.tumorValue).toFixed(4))
-            : null,
+            : "NA",
         secondControl:
           second.normalValue !== null
             ? Number(second.normalValue.toFixed(4))
-            : null,
+            : "NA",
         secondControlNum:
           second.normalValue !== null
             ? Number(Math.pow(2, second.normalValue).toFixed(4))
-            : null,
+            : "NA",
       };
     } else {
       return {
@@ -361,7 +371,18 @@ export default function ProteinGeneCorrelation() {
 
   //Filter points with missing data points that would cause issues with correlation calculation
   const proteinGene = getData.filter(
-    (e) => e.firstTumor && e.firstControl && e.secondTumor && e.secondControl,
+    (e) =>
+      e.firstTumor !== null &&
+      e.firstControl !== null &&
+      e.secondTumor !== null &&
+      e.secondControl !== null,
+  );
+  const proteinGeneCorrelation = proteinGene.filter(
+    (e) =>
+      e.firstTumor !== "NA" &&
+      e.firstControl !== "NA" &&
+      e.secondTumor !== "NA" &&
+      e.secondControl !== "NA",
   );
 
   function getSite() {
@@ -399,35 +420,37 @@ export default function ProteinGeneCorrelation() {
           return {
             name: first.participantId,
             firstPhospho: first.phosphorylationSite,
-            secondPhospho: e.phosphorylationSite ? e.phosphorylationSite : "NA",
+            secondPhospho: e.phosphorylationSite
+              ? e.phosphorylationSite
+              : form.correlatedGene.label,
             firstTumor:
               first.tumorValue !== null
                 ? Number(first.tumorValue.toFixed(4))
-                : 0,
+                : "NA",
             firstTumorNum:
               first.tumorValue !== null
                 ? Number(Math.pow(2, first.tumorValue).toFixed(4))
-                : 0,
+                : "NA",
             firstControl:
               first.normalValue !== null
                 ? Number(first.normalValue.toFixed(4))
-                : 0,
+                : "NA",
             firstControlNum:
               first.normalValue !== null
                 ? Number(Math.pow(2, first.normalValue).toFixed(4))
-                : 0,
+                : "NA",
             secondTumor:
-              e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : 0,
+              e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : "NA",
             secondTumorNum:
               e.tumorValue !== null
                 ? Number(Math.pow(2, e.tumorValue).toFixed(4))
-                : 0,
+                : "NA",
             secondControl:
-              e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : 0,
+              e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : "NA",
             secondControlNum:
               e.normalValue !== null
                 ? Number(Math.pow(2, e.normalValue).toFixed(4))
-                : 0,
+                : "NA",
           };
         }),
       );
@@ -441,10 +464,10 @@ export default function ProteinGeneCorrelation() {
     form.dataset.value === "phosphoproteinRatioData"
       ? getSite().filter(
           (e) =>
-            e.firstTumor !== null &&
-            e.firstControl !== null &&
-            e.secondTumor !== null &&
-            e.secondControl !== null,
+            e.firstTumor !== "NA" &&
+            e.firstControl !== "NA" &&
+            e.secondTumor !== "NA" &&
+            e.secondControl !== "NA",
         )
       : [];
 
@@ -497,10 +520,10 @@ export default function ProteinGeneCorrelation() {
 
   const geneScatter = [
     {
-      x: proteinGene.map((e) =>
+      x: proteinGeneCorrelation.map((e) =>
         numType === "log2" ? e.firstTumor : e.firstTumorNum,
       ),
-      y: proteinGene.map((e) =>
+      y: proteinGeneCorrelation.map((e) =>
         numType === "log2" ? e.secondTumor : e.secondTumorNum,
       ),
       marker: {
@@ -519,10 +542,10 @@ export default function ProteinGeneCorrelation() {
         }: %{y})<extra></extra>`,
     },
     {
-      x: proteinGene.map((e) =>
+      x: proteinGeneCorrelation.map((e) =>
         numType === "log2" ? e.firstControl : e.firstControlNum,
       ),
-      y: proteinGene.map((e) =>
+      y: proteinGeneCorrelation.map((e) =>
         numType === "log2" ? e.secondControl : e.secondControlNum,
       ),
       marker: {
@@ -702,7 +725,7 @@ export default function ProteinGeneCorrelation() {
         columns: columns.map((e) => {
           return { title: e.label, width: { wpx: 200 } };
         }),
-        data: siteData.map((c) => {
+        data: getSite().map((c) => {
           return [
             { value: c.name },
             { value: c.firstPhospho },
@@ -859,7 +882,10 @@ export default function ProteinGeneCorrelation() {
                   },
                   annotations: [
                     {
-                      text: proteinGene.length === 0 ? "No data available" : "",
+                      text:
+                        proteinGeneCorrelation.length === 0
+                          ? "No data available"
+                          : "",
                       xref: "paper",
                       yref: "paper",
                       showarrow: false,
@@ -882,12 +908,12 @@ export default function ProteinGeneCorrelation() {
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Tumor Correlation:{" "}
-                {proteinGene.length
+                {proteinGeneCorrelation.length
                   ? calculateCorrelation(
-                      proteinGene.map((e) =>
+                      proteinGeneCorrelation.map((e) =>
                         numType === "log2" ? e.firstTumor : e.firstTumorNum,
                       ),
-                      proteinGene.map((e) =>
+                      proteinGeneCorrelation.map((e) =>
                         numType === "log2" ? e.secondTumor : e.secondTumorNum,
                       ),
                       { decimals: 4 },
@@ -896,12 +922,12 @@ export default function ProteinGeneCorrelation() {
               </div>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Control Correlation:{" "}
-                {proteinGene.length
+                {proteinGeneCorrelation.length
                   ? calculateCorrelation(
-                      proteinGene.map((e) =>
+                      proteinGeneCorrelation.map((e) =>
                         numType === "log2" ? e.firstControl : e.firstControlNum,
                       ),
-                      proteinGene.map((e) =>
+                      proteinGeneCorrelation.map((e) =>
                         numType === "log2"
                           ? e.secondControl
                           : e.secondControlNum,
@@ -913,27 +939,27 @@ export default function ProteinGeneCorrelation() {
 
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Total Correlation:{" "}
-                {proteinGene.length
+                {proteinGeneCorrelation.length
                   ? calculateCorrelation(
-                      proteinGene
+                      proteinGeneCorrelation
                         .map((e) =>
                           numType === "log2"
                             ? e.firstControl
                             : e.firstControlNum,
                         )
                         .concat(
-                          proteinGene.map((e) =>
+                          proteinGeneCorrelation.map((e) =>
                             numType === "log2" ? e.firstTumor : e.firstTumorNum,
                           ),
                         ),
-                      proteinGene
+                      proteinGeneCorrelation
                         .map((e) =>
                           numType === "log2"
                             ? e.secondControl
                             : e.secondControlNum,
                         )
                         .concat(
-                          proteinGene.map((e) =>
+                          proteinGeneCorrelation.map((e) =>
                             numType === "log2"
                               ? e.secondTumor
                               : e.secondTumorNum,
@@ -1353,7 +1379,7 @@ export default function ProteinGeneCorrelation() {
                 ...correlationColumns.slice(1),
               ]}
               defaultSort={[{ id: "name", asec: true }]}
-              data={siteData.map((c) => {
+              data={getSite().map((c) => {
                 return {
                   name: c.name,
                   firstPhospho: c.firstPhospho,
