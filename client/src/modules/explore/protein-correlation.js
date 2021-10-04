@@ -20,12 +20,15 @@ export default function ProteinCorrelation() {
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer.map((e) => e.value));
   const [label, setLabel] = useState("");
+  const currentTumor = form.cancer.find((e) => e.value === view[0])
+    ? view
+    : form.cancer.map((e) => e.value);
 
   const proteinData = results[0].participants.records.filter((e) =>
-    view.includes(e.cancerId),
+    currentTumor.includes(e.cancerId),
   );
   const rnaData = results[0].rna.records.filter((e) =>
-    view.includes(e.cancerId),
+    currentTumor.includes(e.cancerId),
   );
 
   const [numType, setNumType] = useState("log2");
@@ -180,28 +183,28 @@ export default function ProteinCorrelation() {
       return {
         name: e.participantId,
         proteinTumor:
-          e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : 0,
+          e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : "NA",
         proteinTumorNum:
           e.tumorValue !== null
             ? Number(Math.pow(2, e.tumorValue).toFixed(4))
-            : 0,
+            : "NA",
         proteinControl:
-          e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : 0,
+          e.normalValue !== null ? Number(e.normalValue.toFixed(4)) : "NA",
         proteinControlNum:
           e.normalValue !== null
             ? Number(Math.pow(2, e.normalValue).toFixed(4))
-            : 0,
+            : "NA",
         //Converting rna value to log values
         rnaTumor:
           rna.tumorValue !== null
             ? Number(Math.log2(rna.tumorValue).toFixed(4))
-            : 0,
-        rnaTumorNum: rna.tumorValue !== null ? rna.tumorValue : 0,
+            : "NA",
+        rnaTumorNum: rna.tumorValue !== null ? rna.tumorValue : "NA",
         rnaControl:
           rna.normalValue !== null
             ? Number(Math.log2(rna.normalValue).toFixed(4))
-            : 0,
-        rnaControlNum: rna.normalValue !== null ? rna.normalValue : 0,
+            : "NA",
+        rnaControlNum: rna.normalValue !== null ? rna.normalValue : "NA",
       };
     } else {
       return {
@@ -226,6 +229,14 @@ export default function ProteinCorrelation() {
       e.rnaTumor !== null &&
       e.proteinControl !== null &&
       e.rnaControl !== null,
+  );
+
+  const correlationData = proteinRNA.filter(
+    (e) =>
+      e.proteinTumor !== "NA" &&
+      e.rnaTumor !== "NA" &&
+      e.proteinControl !== "NA" &&
+      e.rnaControl !== "NA",
   );
 
   const defaultLayout = {
@@ -275,7 +286,7 @@ export default function ProteinCorrelation() {
 
   function exportSummarySettings() {
     var settings = form.cancer
-      .filter((f) => view.find((c) => c === f.value))
+      .filter((f) => currentTumor.find((c) => c === f.value))
       .map((e) => {
         return [{ value: e.label }];
       });
@@ -331,10 +342,10 @@ export default function ProteinCorrelation() {
 
   const proteinRNAScatter = [
     {
-      x: proteinRNA.map((e) =>
+      x: correlationData.map((e) =>
         numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor),
       ),
-      y: proteinRNA.map((e) =>
+      y: correlationData.map((e) =>
         numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
       ),
       marker: {
@@ -351,10 +362,10 @@ export default function ProteinCorrelation() {
       }: %{y})<extra></extra>`,
     },
     {
-      x: proteinRNA.map((e) =>
+      x: correlationData.map((e) =>
         numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl),
       ),
-      y: proteinRNA.map((e) =>
+      y: correlationData.map((e) =>
         numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl),
       ),
       marker: {
@@ -473,7 +484,7 @@ export default function ProteinCorrelation() {
               },
               annotations: [
                 {
-                  text: proteinRNA.length === 0 ? "No data available" : "",
+                  text: correlationData.length === 0 ? "No data available" : "",
                   xref: "paper",
                   yref: "paper",
                   showarrow: false,
@@ -496,14 +507,14 @@ export default function ProteinCorrelation() {
         <Row>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Tumor Correlation:{" "}
-            {proteinRNA.length
+            {correlationData.length
               ? calculateCorrelation(
-                  proteinRNA.map((e) =>
+                  correlationData.map((e) =>
                     numType === "log2"
                       ? e.proteinTumor
                       : Math.pow(2, e.proteinTumor),
                   ),
-                  proteinRNA.map((e) =>
+                  correlationData.map((e) =>
                     numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
                   ),
                   { decimals: 4 },
@@ -512,14 +523,14 @@ export default function ProteinCorrelation() {
           </div>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Control Correlation:{" "}
-            {proteinRNA.length
+            {correlationData.length
               ? calculateCorrelation(
-                  proteinRNA.map((e) =>
+                  correlationData.map((e) =>
                     numType === "log2"
                       ? e.proteinControl
                       : Math.pow(2, e.proteinControl),
                   ),
-                  proteinRNA.map((e) =>
+                  correlationData.map((e) =>
                     numType === "log2"
                       ? e.rnaControl
                       : Math.pow(2, e.rnaControl),
@@ -531,29 +542,29 @@ export default function ProteinCorrelation() {
 
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Total Correlation:{" "}
-            {proteinRNA.length
+            {correlationData.length
               ? calculateCorrelation(
-                  proteinRNA
+                  correlationData
                     .map((e) =>
                       numType === "log2"
                         ? e.proteinControl
                         : Math.pow(2, e.proteinControl),
                     )
                     .concat(
-                      proteinRNA.map((e) =>
+                      correlationData.map((e) =>
                         numType === "log2"
                           ? e.proteinTumor
                           : Math.pow(2, e.proteinTumor),
                       ),
                     ),
-                  proteinRNA
+                  correlationData
                     .map((e) =>
                       numType === "log2"
                         ? e.rnaControl
                         : Math.pow(2, e.rnaControl),
                     )
                     .concat(
-                      proteinRNA.map((e) =>
+                      correlationData.map((e) =>
                         numType === "log2"
                           ? e.rnaTumor
                           : Math.pow(2, e.rnaTumor),
