@@ -11,3 +11,8 @@ legend {
 .table thead th {
   border-bottom: 3px solid #dee2e6;
 }
+
+:disabled {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}

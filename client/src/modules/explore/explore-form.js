@@ -159,6 +159,10 @@ export default function ExploreForm({ onSubmit, onReset }) {
               label="Protein and mRNA"
               name="correlation"
               type="radio"
+              disabled={
+                form.dataset.value === "phosphoproteinData" ||
+                form.dataset.value === "phosphoproteinRatioData"
+              }
               id={`correlationMRNA`}
               value="proteinMRNA"
               checked={
