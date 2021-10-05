@@ -6,6 +6,8 @@ import classNames from "classnames";
 import { useRecoilValue } from "recoil";
 import { cancerState, defaultFormState, geneState } from "./explore.state";
 import { useState } from "react";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Tooltip from "react-bootstrap/Tooltip";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
@@ -210,9 +212,18 @@ export default function ExploreForm({ onSubmit, onReset }) {
           Reset
         </Button>
 
-        <Button variant="primary" type="submit" disabled={!isValid()}>
-          Submit
-        </Button>
+        <OverlayTrigger
+          overlay={
+            !isValid() ? (
+              <Tooltip id="phos_tumor_val">Missing Required Parameters</Tooltip>
+            ) : (
+              <></>
+            )
+          }>
+          <Button variant="primary" type="submit" disabled={!isValid()}>
+            Submit
+          </Button>
+        </OverlayTrigger>
       </div>
     </Form>
   );
