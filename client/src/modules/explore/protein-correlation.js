@@ -19,7 +19,7 @@ export default function ProteinCorrelation() {
   const form = useRecoilValue(formState);
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer.map((e) => e.value));
-  const [label, setLabel] = useState("");
+  const [label, setLabel] = useState(form.cancer[0].label);
   const currentTumor = form.cancer.find((e) => e.value === view[0])
     ? view
     : form.cancer.map((e) => e.value);
@@ -30,7 +30,14 @@ export default function ProteinCorrelation() {
   const rnaData = results[0].rna.records.filter((e) =>
     currentTumor.includes(e.cancerId),
   );
-  console.log(label);
+  const currentLabel =
+    currentTumor.length > 1
+      ? ""
+      : form.cancer.find((e) => e.value === view[0])
+      ? label
+      : form.cancer[0].label;
+
+  console.log(currentLabel);
   const datasetName =
     form.dataset.label === "Protein Abundance"
       ? "Protein_Abundance"
@@ -415,9 +422,11 @@ export default function ProteinCorrelation() {
             }}
             value={view}
             required>
-            <option value="all" key={`dataset-all`}>
-              All Tumor Types
-            </option>
+            {form.cancer.length > 1 && (
+              <option value="all" key={`dataset-all`}>
+                All Tumor Types
+              </option>
+            )}
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
@@ -482,7 +491,7 @@ export default function ProteinCorrelation() {
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>${label} ${form.dataset.label} ${form.gene.label} and mRNA Correlation</b>`,
+              title: `<b>${currentLabel} ${form.dataset.label} ${form.gene.label} and mRNA Correlation</b>`,
               autosize: true,
               legend: {
                 orientation: "h",
@@ -507,7 +516,7 @@ export default function ProteinCorrelation() {
               toImageButtonOptions: {
                 ...defaultConfig.toImageButtonOptions,
                 filename: `${
-                  label ? label + "_" : ""
+                  currentLabel ? currentLabel + "_" : ""
                 }${datasetName}_Correlation-${form.gene.label}`,
               },
             }}
@@ -595,9 +604,9 @@ export default function ProteinCorrelation() {
       <div className="m-3">
         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
           <ExcelFile
-            filename={`${label ? label + "_" : ""}${datasetName}_Correlation-${
-              form.gene.label
-            }`}
+            filename={`${
+              currentLabel ? currentLabel + "_" : ""
+            }${datasetName}_Correlation-${form.gene.label}`}
             element={<a href="javascript:void(0)">Export Data</a>}>
             <ExcelSheet
               dataSet={exportSummarySettings()}

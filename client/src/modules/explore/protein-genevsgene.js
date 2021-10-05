@@ -50,14 +50,12 @@ export default function ProteinGeneCorrelation() {
     ? siteTumor.value
     : form.cancer[0].value;
 
-  console.log(form.cancer.find((e) => e.value === siteTumor.value));
   const currentLabel =
     form.dataset.label === "Protein Abundance" && currentTumor.length > 1
       ? ""
       : form.cancer.find((e) => e.value === siteTumor.value)
       ? label
       : form.cancer[0].label;
-  console.log(currentLabel);
 
   var firstGeneSet = results[0].participants.records.filter((e) =>
     tumors.includes(e.cancerId),
@@ -824,9 +822,11 @@ export default function ProteinGeneCorrelation() {
                 }}
                 value={view}
                 required>
-                <option value="all" key={`dataset-all`}>
-                  All Tumor Types
-                </option>
+                {form.cancer.length > 1 && (
+                  <option value="all" key={`dataset-all`}>
+                    All Tumor Types
+                  </option>
+                )}
                 {form.cancer.map((o) => (
                   <option value={o.value} key={`dataset-${o.value}`}>
                     {o.label}
