@@ -304,32 +304,6 @@ export default function ProteinPhosResults() {
       ),
     },
     {
-      accessor: "pValuePaired",
-      label: "P Value (Paired)",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
-          }>
-          <b>P Value (Paired)</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "pValueUnpaired",
-      label: "P Value (Unpaired)",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_pvalue">
-              Mann-Whitney U Test (Unpaired)
-            </Tooltip>
-          }>
-          <b>P Value (Unpaired)</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
       accessor: "tumorNum",
       label: "Tumor Count",
       Header: (
@@ -376,6 +350,32 @@ export default function ProteinPhosResults() {
             </Tooltip>
           }>
           <b>Adj. Normal SE</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValuePaired",
+      label: "P Value (Paired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
+          }>
+          <b>P Value (Paired)</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValueUnpaired",
+      label: "P Value (Unpaired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">
+              Mann-Whitney U Test (Unpaired)
+            </Tooltip>
+          }>
+          <b>P Value (Unpaired)</b>
         </OverlayTrigger>
       ),
     },
@@ -744,12 +744,12 @@ export default function ProteinPhosResults() {
           { value: e.tumorAverage },
           { value: e.controlAverage },
           { value: e.proteinDiff },
-          { value: e.pValuePaired },
-          { value: e.pValueUnpaired },
           { value: e.tumorNum },
           { value: e.controlNum },
           { value: e.tumorError },
           { value: e.controlError },
+          { value: e.pValuePaired },
+          { value: e.pValueUnpaired },
         ];
       }),
     },

@@ -386,32 +386,6 @@ export default function PhosResults() {
       ),
     },
     {
-      accessor: "pValuePaired",
-      label: "P Value (Paired)",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
-          }>
-          <b>P Value (Paired)</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
-      accessor: "pValueUnpaired",
-      label: "P Value (Unpaired)",
-      Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_pvalue">
-              Mann-Whitney U Test (Unpaired)
-            </Tooltip>
-          }>
-          <b>P Value (Unpaired)</b>
-        </OverlayTrigger>
-      ),
-    },
-    {
       accessor: "tumorNum",
       label: "Tumor Count",
       Header: (
@@ -458,6 +432,32 @@ export default function PhosResults() {
             </Tooltip>
           }>
           <b>Adj. Normal SE</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValuePaired",
+      label: "P Value (Paired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
+          }>
+          <b>P Value (Paired)</b>
+        </OverlayTrigger>
+      ),
+    },
+    {
+      accessor: "pValueUnpaired",
+      label: "P Value (Unpaired)",
+      Header: (
+        <OverlayTrigger
+          overlay={
+            <Tooltip id="protein_pvalue">
+              Mann-Whitney U Test (Unpaired)
+            </Tooltip>
+          }>
+          <b>P Value (Unpaired)</b>
         </OverlayTrigger>
       ),
     },
@@ -714,12 +714,12 @@ export default function PhosResults() {
           { value: e.tumorAverage },
           { value: e.controlAverage },
           { value: e.proteinDiff },
-          { value: e.pValuePaired },
-          { value: e.pValueUnpaired },
           { value: e.tumorNum },
           { value: e.controlNum },
           { value: e.tumorError },
           { value: e.controlError },
+          { value: e.pValuePaired },
+          { value: e.pValueUnpaired },
         ];
       }),
     },
@@ -778,18 +778,6 @@ export default function PhosResults() {
             : [],
       },
     ];
-  }
-
-  function getTimestamp() {
-    const date = new Date();
-
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    return year + month + day + minutes + seconds;
   }
 
   return (
