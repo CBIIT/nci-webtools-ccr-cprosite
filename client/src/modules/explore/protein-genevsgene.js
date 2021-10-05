@@ -32,7 +32,7 @@ export default function ProteinGeneCorrelation() {
     value: form.cancer[0].value,
     label: form.cancer[0].label,
   });
-  const [label, setLabel] = useState("");
+  const [label, setLabel] = useState(form.cancer[0].label);
   const [tab, setTab] = useState("summaryView");
 
   const datasetName =
@@ -45,10 +45,20 @@ export default function ProteinGeneCorrelation() {
   const currentTumor = form.cancer.find((e) => e.value === view[0])
     ? view
     : form.cancer.map((e) => e.value);
-  console.log(view);
+
   const currentSiteTumor = form.cancer.find((e) => e.value === siteTumor.value)
     ? siteTumor.value
     : form.cancer[0].value;
+
+  console.log(form.cancer.find((e) => e.value === siteTumor.value));
+  const currentLabel =
+    form.dataset.label === "Protein Abundance" && currentTumor.length > 1
+      ? ""
+      : form.cancer.find((e) => e.value === siteTumor.value)
+      ? label
+      : form.cancer[0].label;
+  console.log(currentLabel);
+
   var firstGeneSet = results[0].participants.records.filter((e) =>
     tumors.includes(e.cancerId),
   );
@@ -880,7 +890,7 @@ export default function ProteinGeneCorrelation() {
                 data={geneScatter}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${label} Protein Abundance ${firstGene} and ${secondGene} Correlation</b>`,
+                  title: `<b>${currentLabel} Protein Abundance ${firstGene} and ${secondGene} Correlation</b>`,
                   autosize: true,
                   legend: {
                     orientation: "h",
@@ -908,7 +918,7 @@ export default function ProteinGeneCorrelation() {
                   toImageButtonOptions: {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${
-                      label ? label + "_" : ""
+                      currentLabel ? currentLabel + "_" : ""
                     }${datasetName}_Correlation-${form.gene.label}-${
                       form.correlatedGene.label
                     }`,
@@ -993,7 +1003,7 @@ export default function ProteinGeneCorrelation() {
             <div className="d-flex" style={{ justifyContent: "flex-end" }}>
               <ExcelFile
                 filename={`${
-                  label ? label + "_" : ""
+                  currentLabel ? currentLabel + "_" : ""
                 }${datasetName}_Correlation-${form.gene.label}-${
                   form.correlatedGene.label
                 }`}
@@ -1049,6 +1059,8 @@ export default function ProteinGeneCorrelation() {
                 options={form.cancer}
                 onChange={(e) => {
                   setSiteTumor(e);
+                  console.log(e);
+                  setLabel(form.cancer.find((d) => d.value === e.value).label);
                 }}
               />
             </div>
@@ -1063,7 +1075,7 @@ export default function ProteinGeneCorrelation() {
                 className="col-xl-1 d-flex"
                 style={{ justifyContent: "flex-end", whiteSpace: "nowrap" }}>
                 <ExcelFile
-                  filename={`${label}_${datasetName}_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
+                  filename={`${currentLabel}_${datasetName}_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet
                     dataSet={exportSiteSettings(form.gene.label)}
@@ -1072,7 +1084,9 @@ export default function ProteinGeneCorrelation() {
                   <ExcelSheet
                     dataSet={exportSite(
                       results[0].summary.records.filter(
-                        (f) => f.cancerId === currentSiteTumor,
+                        (f) =>
+                          f.cancerId === currentSiteTumor &&
+                          f.phosphorylationSite !== "all",
                       ),
                     )}
                     name={`${form.gene.label} Data`}
@@ -1080,7 +1094,9 @@ export default function ProteinGeneCorrelation() {
                   <ExcelSheet
                     dataSet={exportSite(
                       results[1].summary.records.filter(
-                        (f) => f.cancerId === currentSiteTumor,
+                        (f) =>
+                          f.cancerId === currentSiteTumor &&
+                          f.phosphorylationSite !== "all",
                       ),
                     )}
                     name={`${form.correlatedGene.label} Data`}
@@ -1092,7 +1108,11 @@ export default function ProteinGeneCorrelation() {
               columns={siteColumns}
               defaultSort={[{ id: "phosphorylationSite", asec: true }]}
               data={results[0].summary.records
-                .filter((f) => f.cancerId === currentSiteTumor)
+                .filter(
+                  (f) =>
+                    f.cancerId === currentSiteTumor &&
+                    f.phosphorylationSite !== "all",
+                )
                 .map((c) => {
                   return {
                     phosphorylationSite: c.phosphorylationSite,
@@ -1119,7 +1139,11 @@ export default function ProteinGeneCorrelation() {
               columns={siteColumns}
               defaultSort={[{ id: "phosphorylationSite", asec: true }]}
               data={results[1].summary.records
-                .filter((f) => f.cancerId === currentSiteTumor)
+                .filter(
+                  (f) =>
+                    f.cancerId === currentSiteTumor &&
+                    f.phosphorylationSite !== "all",
+                )
                 .map((c) => {
                   return {
                     phosphorylationSite: c.phosphorylationSite,
@@ -1215,7 +1239,7 @@ export default function ProteinGeneCorrelation() {
                   ...defaultLayout,
                   title:
                     siteTumor && firstSite && secondSite
-                      ? `<b>${label} ${form.gene.label}/${
+                      ? `<b>${currentLabel} ${form.gene.label}/${
                           firstSite.value
                         } and ${form.correlatedGene.label}/${
                           secondSite.value === form.correlatedGene.label
@@ -1266,7 +1290,7 @@ export default function ProteinGeneCorrelation() {
                   ...defaultConfig,
                   toImageButtonOptions: {
                     ...defaultConfig.toImageButtonOptions,
-                    filename: `${label}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`,
+                    filename: `${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`,
                   },
                 }}
                 useResizeHandler
@@ -1349,7 +1373,7 @@ export default function ProteinGeneCorrelation() {
                 className="col d-flex"
                 style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
-                  filename={`${label}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
+                  filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet
                     dataSet={exportSummarySettings()}
