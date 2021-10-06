@@ -53,16 +53,30 @@ create table tcgaRnaData (
 
 create unique index tcgaRnaData_unique_index on tcgaRnaData(cancerId, geneId, participantId);
 
+
+drop table if exists genemap;
+create table genemap as (
+  select cast(substring_index(id, ':', -1) as unsigned) as id, name from gene
+  union
+  select cast(substring_index(id, ':', -1) as unsigned )as id, previousName as name from gene
+);
+
+create index genemap_id_name_index on genemap (id, name);
+
 -- create temporary table for protein abundances
 drop table if exists breastcptac2prodata_temp;
 create table breastcptac2prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from breastcptac2prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -75,7 +89,6 @@ select * from (
     value as normalValue
   from breastcptac2prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -89,7 +102,6 @@ select * from (
     value as tumorValue
   from breastcptac2prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -100,14 +112,18 @@ drop table if exists breastcptac2phosphodata_temp;
 create table breastcptac2phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from breastcptac2phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -122,7 +138,6 @@ select * from (
     phosphopeptide
   from breastcptac2phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -143,7 +158,6 @@ select * from (
     phosphopeptide
   from breastcptac2phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -158,11 +172,14 @@ drop table if exists breastcptac2rnadata_temp;
 create table breastcptac2rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from breastcptac2rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -243,11 +260,15 @@ drop table if exists coloncptac2prodata_temp;
 create table coloncptac2prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from coloncptac2prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -260,7 +281,6 @@ select * from (
     value as normalValue
   from coloncptac2prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -274,7 +294,6 @@ select * from (
     value as tumorValue
   from coloncptac2prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -285,14 +304,18 @@ drop table if exists coloncptac2phosphodata_temp;
 create table coloncptac2phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from coloncptac2phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -307,7 +330,6 @@ select * from (
     phosphopeptide
   from coloncptac2phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -328,7 +350,6 @@ select * from (
     phosphopeptide
   from coloncptac2phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -343,11 +364,14 @@ drop table if exists coloncptac2rnadata_temp;
 create table coloncptac2rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from coloncptac2rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -428,11 +452,15 @@ drop table if exists hncptac3prodata_temp;
 create table hncptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from hncptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -445,7 +473,6 @@ select * from (
     value as normalValue
   from hncptac3prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -459,7 +486,6 @@ select * from (
     value as tumorValue
   from hncptac3prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -470,14 +496,18 @@ drop table if exists hncptac3phosphodata_temp;
 create table hncptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from hncptac3phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -492,7 +522,6 @@ select * from (
     phosphopeptide
   from hncptac3phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -513,7 +542,6 @@ select * from (
     phosphopeptide
   from hncptac3phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -528,11 +556,14 @@ drop table if exists hncptac3rnadata_temp;
 create table hncptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from hncptac3rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -613,11 +644,15 @@ drop table if exists ccrcccptac3prodata_temp;
 create table ccrcccptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from ccrcccptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -630,7 +665,6 @@ select * from (
     value as normalValue
   from ccrcccptac3prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -644,7 +678,6 @@ select * from (
     value as tumorValue
   from ccrcccptac3prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -655,14 +688,18 @@ drop table if exists ccrcccptac3phosphodata_temp;
 create table ccrcccptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from ccrcccptac3phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -677,7 +714,6 @@ select * from (
     phosphopeptide
   from ccrcccptac3phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -698,7 +734,6 @@ select * from (
     phosphopeptide
   from ccrcccptac3phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -713,11 +748,14 @@ drop table if exists ccrcccptac3rnadata_temp;
 create table ccrcccptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from ccrcccptac3rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -751,11 +789,15 @@ drop table if exists liverhcccptacprodata_temp;
 create table liverhcccptacprodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from liverhcccptacprodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -768,7 +810,6 @@ select * from (
     value as normalValue
   from liverhcccptacprodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -782,9 +823,68 @@ select * from (
     value as tumorValue
   from liverhcccptacprodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
+
+
+
+-- create temporary table for phosphoprotein abundances
+drop table if exists liverhcccptacphosphodata_temp;
+create table liverhcccptacphosphodata_temp as
+select distinct
+  g.id as geneId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
+  avg(c.PPvalue) as value,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
+  substring_index(c.NPid, ':', 1) as accession,
+  substring_index(c.NPid, ':', -1) as phosphorylationSite,
+  c.Ppep as phosphopeptide
+from liverhcccptacphosphodata c
+inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
+group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
+
+insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
+select * from (
+  select 
+    5 as cancerId,
+    geneId, 
+    participantId, 
+    value as normalValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
+  from liverhcccptacphosphodata_temp
+  where isTumor = 0
+) as new
+on duplicate key update
+  normalValue = new.normalValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
+
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
+select * from (
+  select 
+    5 as cancerId,
+    geneId, 
+    participantId, 
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
+  from liverhcccptacphosphodata_temp
+  where isTumor = 1
+) as new
+on duplicate key update
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
@@ -793,11 +893,14 @@ drop table if exists liverhcccptacrnadata_temp;
 create table liverhcccptacrnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from liverhcccptacrnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -878,11 +981,15 @@ drop table if exists lungadcptac3prodata_temp;
 create table lungadcptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from lungadcptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -895,7 +1002,6 @@ select * from (
     value as normalValue
   from lungadcptac3prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -909,7 +1015,6 @@ select * from (
     value as tumorValue
   from lungadcptac3prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -920,14 +1025,18 @@ drop table if exists lungadcptac3phosphodata_temp;
 create table lungadcptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from lungadcptac3phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -942,7 +1051,6 @@ select * from (
     phosphopeptide
   from lungadcptac3phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -963,7 +1071,6 @@ select * from (
     phosphopeptide
   from lungadcptac3phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -978,11 +1085,14 @@ drop table if exists lungadcptac3rnadata_temp;
 create table lungadcptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from lungadcptac3rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -1063,11 +1173,15 @@ drop table if exists lungsqcptac3prodata_temp;
 create table lungsqcptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from lungsqcptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1080,7 +1194,6 @@ select * from (
     value as normalValue
   from lungsqcptac3prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1094,7 +1207,6 @@ select * from (
     value as tumorValue
   from lungsqcptac3prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -1105,14 +1217,18 @@ drop table if exists lungsqcptac3phosphodata_temp;
 create table lungsqcptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from lungsqcptac3phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1127,7 +1243,6 @@ select * from (
     phosphopeptide
   from lungsqcptac3phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -1148,7 +1263,6 @@ select * from (
     phosphopeptide
   from lungsqcptac3phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -1163,11 +1277,14 @@ drop table if exists lungsqcptac3rnadata_temp;
 create table lungsqcptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from lungsqcptac3rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -1248,11 +1365,15 @@ drop table if exists ovcptac2prodata_temp;
 create table ovcptac2prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from ovcptac2prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1265,7 +1386,6 @@ select * from (
     value as normalValue
   from ovcptac2prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1279,25 +1399,28 @@ select * from (
     value as tumorValue
   from ovcptac2prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
 
 
 -- create temporary table for phosphoprotein abundances
-drop table if exists ovcptac2phosphodata_temp;
-create table ovcptac2phosphodata_temp as
+drop table if exists ovacptac2phosphodata_temp;
+create table ovacptac2phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
-from ovcptac2phosphodata c
+from ovacptac2phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1310,9 +1433,8 @@ select * from (
     accession, 
     phosphorylationSite, 
     phosphopeptide
-  from ovcptac2phosphodata_temp
+  from ovacptac2phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -1331,9 +1453,8 @@ select * from (
     accession, 
     phosphorylationSite, 
     phosphopeptide
-  from ovcptac2phosphodata_temp
+  from ovacptac2phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -1348,11 +1469,14 @@ drop table if exists ovcptac2rnadata_temp;
 create table ovcptac2rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from ovcptac2rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -1433,11 +1557,15 @@ drop table if exists pdaccptac3prodata_temp;
 create table pdaccptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from pdaccptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1450,7 +1578,6 @@ select * from (
     value as normalValue
   from pdaccptac3prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1464,7 +1591,6 @@ select * from (
     value as tumorValue
   from pdaccptac3prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -1475,14 +1601,18 @@ drop table if exists pdaccptac3phosphodata_temp;
 create table pdaccptac3phosphodata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from pdaccptac3phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1497,7 +1627,6 @@ select * from (
     phosphopeptide
   from pdaccptac3phosphodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -1518,7 +1647,6 @@ select * from (
     phosphopeptide
   from pdaccptac3phosphodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -1533,11 +1661,14 @@ drop table if exists pdaccptac3rnadata_temp;
 create table pdaccptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from pdaccptac3rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)
@@ -1622,6 +1753,10 @@ select distinct
   avg(c.CCvalue) as value
 from stomachcptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId;
 
 -- insert protein abundances 
@@ -1631,10 +1766,9 @@ select * from (
     10 as cancerId,
     geneId, 
     participantId, 
-    1 as normalValue, 
+    0 as normalValue, 
     value as tumorValue
   from stomachcptac3prodata_temp
-  where value between -3 and 3
 ) as new
 on duplicate key update 
   normalValue = new.normalValue,
@@ -1654,6 +1788,10 @@ select distinct
   c.Ppep as phosphopeptide
 from stomachcptac3phosphodata c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3  
 group by geneId, participantId, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, tumorValue, accession, phosphorylationSite, phosphopeptide)
@@ -1662,13 +1800,12 @@ select * from (
     10 as cancerId,
     geneId, 
     participantId, 
-    1 as normalValue, 
+    0 as normalValue, 
     value as tumorValue, 
     accession, 
     phosphorylationSite, 
     phosphopeptide
   from stomachcptac3phosphodata_temp
-  where value between -3 and 3
 ) as new
 on duplicate key update
     normalValue = new.normalValue,
@@ -1729,11 +1866,15 @@ drop table if exists uterinecptac3prodata_temp;
 create table uterinecptac3prodata_temp as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from uterinecptac3prodata c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1746,7 +1887,6 @@ select * from (
     value as normalValue
   from uterinecptac3prodata_temp
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -1760,7 +1900,6 @@ select * from (
     value as tumorValue
   from uterinecptac3prodata_temp
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 
@@ -1771,11 +1910,14 @@ drop table if exists uterinecptac3rnadata_temp;
 create table uterinecptac3rnadata_temp as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from uterinecptac3rnadata c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)

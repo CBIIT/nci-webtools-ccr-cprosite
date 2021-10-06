@@ -158,6 +158,38 @@ const timestamp = getTimestamp(
             "normalSampleMedian" = excluded."normalSampleMedian",
             "normalSampleStandardError" = excluded."normalSampleStandardError"`,
       );
+
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            cancerId,
+            geneId,
+            accession,
+            phosphorylationSite,
+            phosphopeptide,
+            normalSampleCount,
+            normalSampleMean,
+            normalSampleMedian,
+            normalSampleStandardError
+        )
+        select
+            cancerId,
+            geneId,
+            accession,
+            'all',
+            'all',
+            count(normalValue) as normalSampleCount,
+            avg(normalValue) as normalSampleMean,
+            median(normalValue) as normalSampleMedian,
+            stdev(normalValue) / sqrt(count(normalValue))
+        from "${dataTable}"
+        where normalValue is not null and phosphorylationSite is not null
+        group by cancerId, geneId, accession
+        on conflict do update set
+            "normalSampleCount" = excluded."normalSampleCount",
+            "normalSampleMean" = excluded."normalSampleMean",
+            "normalSampleMedian" = excluded."normalSampleMedian",
+            "normalSampleStandardError" = excluded."normalSampleStandardError"`,
+      );
       console.log(
         `[${timestamp()}] finished generating normal sample statistics for phosphorylation sites: ${dataSummaryTable}`,
       );
@@ -196,6 +228,39 @@ const timestamp = getTimestamp(
             "tumorSampleMedian" = excluded."tumorSampleMedian",
             "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
       );
+
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+            cancerId,
+            geneId,
+            accession,
+            phosphorylationSite,
+            phosphopeptide,
+            tumorSampleCount,
+            tumorSampleMean,
+            tumorSampleMedian,
+            tumorSampleStandardError
+        )
+        select
+            cancerId,
+            geneId,
+            accession,
+            'all',
+            'all',
+            count(tumorValue) as tumorSampleCount,
+            avg(tumorValue) as tumorSampleMean,
+            median(tumorValue) as tumorSampleMedian,
+            stdev(tumorValue) / sqrt(count(tumorValue)) as tumorSampleStandardError
+        from "${dataTable}"
+        where tumorValue is not null and phosphorylationSite is not null
+        group by cancerId, geneId, accession
+        on conflict do update set
+            "tumorSampleCount" = excluded."tumorSampleCount",
+            "tumorSampleMean" = excluded."tumorSampleMean",
+            "tumorSampleMedian" = excluded."tumorSampleMedian",
+            "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
+      );
+
       console.log(
         `[${timestamp()}] finished generating tumor sample statistics for phosphorylation sites: ${dataSummaryTable}`,
       );
@@ -224,6 +289,32 @@ const timestamp = getTimestamp(
         from "${dataTable}" 
         where phosphorylationSite is not null
         group by cancerId, geneId, accession, phosphorylationSite, phosphopeptide
+        on conflict do update set
+          "pValuePaired" = excluded."pValuePaired",
+          "pValueUnpaired" = excluded."pValueUnpaired"`,
+      );
+
+      database.exec(
+        `insert into "${dataSummaryTable}" (
+          cancerId,
+          geneId,
+          accession,
+          phosphorylationSite,
+          phosphopeptide,
+          pValuePaired,
+          pValueUnpaired
+        )
+        select
+            cancerId,
+            geneId,
+            accession,
+            'all',
+            'all',
+            wilcoxon(normalValue, tumorValue) as pValuePaired,
+            ttest2(normalValue, tumorValue) as pValueUnpaired
+        from "${dataTable}" 
+        where phosphorylationSite is not null
+        group by cancerId, geneId, accession
         on conflict do update set
           "pValuePaired" = excluded."pValuePaired",
           "pValueUnpaired" = excluded."pValueUnpaired"`,

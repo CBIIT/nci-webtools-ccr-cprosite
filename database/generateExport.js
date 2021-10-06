@@ -9,7 +9,6 @@ const config = [
     rnaTable: "breastcptac2rnadata",
     tcgaRnaTable: "breastdata",
   },
-
   {
     cancer: "cancer_colon",
     proteinTable: "coloncptac2prodata",
@@ -17,7 +16,6 @@ const config = [
     rnaTable: "coloncptac2rnadata",
     tcgaRnaTable: "colondata",
   },
-
   {
     cancer: "cancer_head_and_neck",
     proteinTable: "hncptac3prodata",
@@ -31,14 +29,13 @@ const config = [
     phosphoproteinTable: "ccrcccptac3phosphodata",
     rnaTable: "ccrcccptac3rnadata",
   },
-
   {
     cancer: "cancer_liver",
     proteinTable: "liverhcccptacprodata",
+    phosphoproteinTable: "liverhcccptacphosphodata",
     rnaTable: "liverhcccptacrnadata",
     tcgaRnaTable: "liverhccdata",
   },
-
   {
     cancer: "cancer_lung_adenocarcinoma",
     proteinTable: "lungadcptac3prodata",
@@ -46,7 +43,6 @@ const config = [
     rnaTable: "lungadcptac3rnadata",
     tcgaRnaTable: "lungaddata",
   },
-
   {
     cancer: "cancer_lung_squamous_cell_carcinoma",
     proteinTable: "lungsqcptac3prodata",
@@ -54,15 +50,13 @@ const config = [
     rnaTable: "lungsqcptac3rnadata",
     tcgaRnaTable: "lungsqdata",
   },
-
   {
     cancer: "cancer_ovarian",
     proteinTable: "ovcptac2prodata",
-    phosphoproteinTable: "ovcptac2phosphodata",
+    phosphoproteinTable: "ovacptac2phosphodata",
     rnaTable: "ovcptac2rnadata",
     tcgaRnaTable: "ovdata",
   },
-
   {
     cancer: "cancer_pancreas",
     proteinTable: "pdaccptac3prodata",
@@ -70,14 +64,12 @@ const config = [
     rnaTable: "pdaccptac3rnadata",
     tcgaRnaTable: "pancreasdata",
   },
-
   {
     cancer: "cancer_stomach",
     proteinSinglePoolTable: "stomachcptac3prodata",
     phosphoproteinSinglePoolTable: "stomachcptac3phosphodata",
     tcgaRnaTable: "stomachdata",
   },
-
   {
     cancer: "cancer_uterine",
     proteinTable: "uterinecptac3prodata",
@@ -140,6 +132,16 @@ create table tcgaRnaData (
 );
 
 create unique index tcgaRnaData_unique_index on tcgaRnaData(cancerId, geneId, participantId);
+
+
+drop table if exists genemap;
+create table genemap as (
+  select cast(substring_index(id, ':', -1) as unsigned) as id, name from gene
+  union
+  select cast(substring_index(id, ':', -1) as unsigned )as id, previousName as name from gene
+);
+
+create index genemap_id_name_index on genemap (id, name);
 `);
 
 const proteinImportTemplate = _.template(`
@@ -148,11 +150,15 @@ drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select distinct 
   g.id as geneId,
-  regexp_replace(c.CCid, '[_\-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.CCid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.CCvalue) as value,
-  c.CCid like '%Tu' as isTumor
+  regexp_like(c.CCid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -165,7 +171,6 @@ select * from (
     value as normalValue
   from <%= tempTable %>
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update normalValue = new.normalValue;
 
@@ -179,7 +184,6 @@ select * from (
     value as tumorValue
   from <%= tempTable %>
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
 `);
@@ -194,6 +198,10 @@ select distinct
   avg(c.CCvalue) as value
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.CCgene
+where 
+  c.CCid not like 'LungTumor%' and
+  c.CCid not like 'QC%' and
+  c.CCvalue between -3 and 3
 group by geneId, participantId;
 
 -- insert protein abundances 
@@ -203,10 +211,9 @@ select * from (
     <%= cancerId %> as cancerId,
     geneId, 
     participantId, 
-    1 as normalValue, 
+    0 as normalValue, 
     value as tumorValue
   from <%= tempTable %>
-  where value between -3 and 3
 ) as new
 on duplicate key update 
   normalValue = new.normalValue,
@@ -219,14 +226,18 @@ drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select distinct
   g.id as geneId,
-  regexp_replace(c.ppid, '[_\-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.PPvalue) as value,
-  c.ppid like '%Tu' as isTumor,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
   substring_index(c.NPid, ':', 1) as accession,
   substring_index(c.NPid, ':', -1) as phosphorylationSite,
   c.Ppep as phosphopeptide
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -241,7 +252,6 @@ select * from (
     phosphopeptide
   from <%= tempTable %>
   where isTumor = 0
-  and value between -3 and 3
 ) as new
 on duplicate key update
   normalValue = new.normalValue,
@@ -262,7 +272,6 @@ select * from (
     phosphopeptide
   from <%= tempTable %>
   where isTumor = 1
-  and value between -3 and 3
 ) as new
 on duplicate key update
   tumorValue = new.tumorValue,
@@ -284,6 +293,10 @@ select distinct
   c.Ppep as phosphopeptide
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -3 and 3  
 group by geneId, participantId, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, tumorValue, accession, phosphorylationSite, phosphopeptide)
@@ -292,13 +305,12 @@ select * from (
     <%= cancerId %> as cancerId,
     geneId, 
     participantId, 
-    1 as normalValue, 
+    0 as normalValue, 
     value as tumorValue, 
     accession, 
     phosphorylationSite, 
     phosphopeptide
   from <%= tempTable %>
-  where value between -3 and 3
 ) as new
 on duplicate key update
     normalValue = new.normalValue,
@@ -314,11 +326,14 @@ drop table if exists <%= tempTable %>;
 create table <%= tempTable %> as
 select distinct
   g.id as geneId,
-  regexp_replace(c.paid, '[_\-][A-Za-z]{2}$', '') as participantId,
+  replace(regexp_replace(c.paid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
   avg(c.value) as value,
-  c.paid like '%Tu' as isTumor
+  regexp_like(c.paid, '[-_]tu[[:space:]]*$', 'i') as isTumor
 from <%= sourceTable %> c
 inner join geneMap g on g.name = c.gene
+where 
+  c.paid not like 'LungTumor%' and  
+  c.paid not like 'QC%'
 group by geneId, participantId, isTumor;
 
 insert into rnaData(cancerId, geneId, participantId, normalValue)

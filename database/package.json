@@ -10,12 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@stdlib/stdlib": "^0.0.94",
-    "aws-sdk": "^2.936.0",
-    "better-sqlite3": "^7.4.0",
-    "csv-parse": "^4.15.4",
+    "@stdlib/stdlib": "^0.0.96",
+    "better-sqlite3": "^7.4.3",
+    "csv-parse": "^4.16.3",
     "lodash": "^4.17.21",
     "minimist": "^1.2.5",
-    "xlsx": "^0.17.0"
+    "xlsx": "^0.17.2"
   }
 }
