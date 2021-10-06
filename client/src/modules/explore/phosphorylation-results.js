@@ -1102,9 +1102,9 @@ export default function PhosResults() {
                 }}
                 layout={{
                   autosize: true,
-                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
-                    form.gene.label
-                  }/Paired P-Value: ${
+                  title: `<b>${form.gene.label} ${phosView} ${
+                    form.cancer.find((f) => f.value === currentTumor).label
+                  } Log<sub>2</sub> Fold Change</b> (Paired P-Value: ${
                     tumorViewData.find((e) => e.name === phosView)
                       ? tumorViewData.find((e) => e.name === phosView)
                           .pValuePaired
