@@ -750,9 +750,9 @@ export default function Results() {
                 }}
                 layout={{
                   autosize: true,
-                  title: `<b>Log<sub>2</sub> Fold Change</b> (Gene: ${
-                    form.gene.label
-                  }/P-Value: ${
+                  title: `<b>${form.gene.label} ${
+                    form.cancer.find((f) => f.value === currentTumor).label
+                  } Log<sub>2</sub> Fold Change</b> (Paired P-Value: ${
                     averages.length && averages.find((e) => e.id === view)
                       ? averages.find((e) => e.id === view).pValuePaired
                       : "NA"
