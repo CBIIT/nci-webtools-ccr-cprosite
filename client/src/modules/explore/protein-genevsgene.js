@@ -93,7 +93,10 @@ export default function ProteinGeneCorrelation() {
       return { value: e[0], label: e[0] };
     });
   secondSites = [
-    { value: form.correlatedGene.label, label: form.correlatedGene.label },
+    {
+      value: form.correlatedGene.label,
+      label: form.correlatedGene.label + " (Protein)",
+    },
   ].concat(secondSites);
   console.log(firstSites);
   const [firstSite, setFirstSite] = useState({
@@ -102,7 +105,7 @@ export default function ProteinGeneCorrelation() {
   });
   const [secondSite, setSecondSite] = useState({
     value: form.correlatedGene.label,
-    label: form.correlatedGene.label,
+    label: form.correlatedGene.label + " (Protein)",
   });
 
   function handleToggle(e) {
@@ -782,18 +785,6 @@ export default function ProteinGeneCorrelation() {
     ];
   }
 
-  function getTimestamp() {
-    const date = new Date();
-
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    return year + month + day + minutes + seconds;
-  }
-
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       {form.dataset.value === "proteinData" && (
@@ -1239,9 +1230,9 @@ export default function ProteinGeneCorrelation() {
                   ...defaultLayout,
                   title:
                     siteTumor && firstSite && secondSite
-                      ? `<b>${currentLabel} ${form.gene.label}/${
+                      ? `<b>${currentLabel} ${form.gene.label}_${
                           firstSite.value
-                        } and ${form.correlatedGene.label}/${
+                        } and ${form.correlatedGene.label}_${
                           secondSite.value === form.correlatedGene.label
                             ? "Protein"
                             : secondSite.value
@@ -1255,7 +1246,7 @@ export default function ProteinGeneCorrelation() {
                   },
                   xaxis: {
                     title: `<b>${form.gene.label}${
-                      firstSite.value ? `/${firstSite.value}` : ""
+                      firstSite.value ? `_${firstSite.value}` : ""
                     }</b>`,
                     zeroline: false,
                     titlefont: {
@@ -1266,7 +1257,7 @@ export default function ProteinGeneCorrelation() {
                     title: `<b>${form.correlatedGene.label}${
                       secondSite.value === form.correlatedGene.label
                         ? ""
-                        : `/${secondSite.value}`
+                        : `_${secondSite.value}`
                     }</b>`,
                     zeroline: false,
                     titlefont: {

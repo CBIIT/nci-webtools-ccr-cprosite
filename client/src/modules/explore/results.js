@@ -520,7 +520,7 @@ export default function Results() {
       },
     },
     yaxis: {
-      title: "<b>Protein Abundance</b>",
+      title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",
       zeroline: false,
       titlefont: {
         size: 15,

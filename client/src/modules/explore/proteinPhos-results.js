@@ -1068,9 +1068,9 @@ export default function ProteinPhosResults() {
                 data={phosBoxData()}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${phosView} ${
+                  title: `<b>${form.gene.label} ${phosView} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Tumor vs Adjacent Normal</b> (${form.gene.label})`,
+                  } Tumor vs Adjacent Normal</b>`,
                   yaxis: {
                     title: "<b>Phosphorylation/Protein Level</b>",
                     zeroline: false,

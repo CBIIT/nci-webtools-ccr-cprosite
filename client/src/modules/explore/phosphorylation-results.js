@@ -905,7 +905,8 @@ export default function PhosResults() {
                   },
                 },
                 yaxis: {
-                  title: "<b>Phosphorylation Level</b>",
+                  title:
+                    "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
                   zeroline: false,
                   titlefont: {
                     size: 15,
@@ -1033,9 +1034,9 @@ export default function PhosResults() {
                 data={phosBoxData()}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${phosView} ${
+                  title: `<b>${form.gene.label} ${phosView} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Tumor vs Adjacent Normal</b> (${form.gene.label})`,
+                  } Tumor vs Adjacent Normal</b>`,
                   yaxis: {
                     title:
                       "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
