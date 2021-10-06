@@ -99,14 +99,27 @@ export default function ProteinGeneCorrelation() {
     },
   ].concat(secondSites);
   console.log(firstSites);
-  const [firstSite, setFirstSite] = useState({
+  const [first, setFirstSite] = useState({
     value: firstSites.length ? firstSites[0].value : "",
     label: firstSites.length ? firstSites[0].value : "",
   });
-  const [secondSite, setSecondSite] = useState({
+  const [second, setSecondSite] = useState({
     value: form.correlatedGene.label,
     label: form.correlatedGene.label + " (Protein)",
   });
+
+  const firstSite = firstSites.find((f) => f.value === first.value)
+    ? first
+    : {
+        value: firstSites.length ? firstSites[0].value : "",
+        label: firstSites.length ? firstSites[0].value : "",
+      };
+  const secondSite = secondSites.find((f) => f.value === second.value)
+    ? second
+    : {
+        value: form.correlatedGene.label,
+        label: form.correlatedGene.label + " (Protein)",
+      };
 
   function handleToggle(e) {
     setNumType(e.target.id);
