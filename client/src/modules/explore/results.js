@@ -681,11 +681,9 @@ export default function Results() {
                 data={boxPlotData}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${
+                  title: `<b>${form.gene.label} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Protein Abundance Tumor vs Adjacent Normal</b> (${
-                    form.gene.label
-                  })`,
+                  } Protein Abundance Tumor vs Adjacent Normal</b>`,
                   yaxis: {
                     title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",
                     zeroline: false,
