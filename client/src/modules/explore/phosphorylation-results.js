@@ -788,7 +788,7 @@ export default function PhosResults() {
             data={heatMapData}
             layout={{
               ...defaultLayout,
-              title: `<b>Phosphorylation Site Tumor vs Adjacent Normal</b> (${form.gene.label})`,
+              title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
               xaxis: {
                 title: "<b>Tumor Type</b>",
                 automargin: true,

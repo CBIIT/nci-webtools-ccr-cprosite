@@ -829,7 +829,7 @@ export default function ProteinPhosResults() {
             data={heatMapData}
             layout={{
               ...defaultLayout,
-              title: `<b>Phosphorylation/Protein Summary View</b> (Gene: ${form.gene.label})`,
+              title: `<b>${form.gene.label} Phosphorylation/Protein Summary View</b>`,
               xaxis: {
                 title: "<b>Tumor Types</b>",
                 automargin: true,

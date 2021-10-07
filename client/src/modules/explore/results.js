@@ -572,7 +572,7 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: `<b>Protein Abundance Tumor vs Adjacent Normal</b> (${form.gene.label})`,
+                title: `<b>${form.gene.label} Protein Abundance Tumor vs Adjacent Normal</b>`,
                 barmode: "group",
                 autosize: true,
                 legend: {
