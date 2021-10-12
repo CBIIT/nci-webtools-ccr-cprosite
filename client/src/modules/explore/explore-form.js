@@ -85,7 +85,19 @@ export default function ExploreForm({ onSubmit, onReset }) {
           name="dataset"
           placeholder="No dataset selected"
           value={form.dataset}
-          onChange={(e) => handleSelectChange("dataset", e)}
+          onChange={(e) => {
+            if (
+              form.analysis.value === "correlation" &&
+              (e.value === "phosphoproteinData" ||
+                e.value === "phosphoproteinRatioData")
+            ) {
+              mergeForm({
+                ["dataset"]: e,
+                ["correlation"]: "toAnotherProtein",
+                ["correlatedGene"]: "",
+              });
+            } else handleSelectChange("dataset", e);
+          }}
           options={[
             { value: "proteinData", label: "Protein Abundance" },
             { value: "phosphoproteinData", label: "Phosphorylation Site" },
