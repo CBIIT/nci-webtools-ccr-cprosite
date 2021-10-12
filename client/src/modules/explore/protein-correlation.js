@@ -258,14 +258,14 @@ export default function ProteinCorrelation() {
       title: "<b>Protein</b>",
       zeroline: false,
       titlefont: {
-        size: 15,
+        size: 16,
       },
     },
     yaxis: {
       title: "<b>mRNA</b>",
       zeroline: false,
       titlefont: {
-        size: 15,
+        size: 16,
       },
     },
     legend: {

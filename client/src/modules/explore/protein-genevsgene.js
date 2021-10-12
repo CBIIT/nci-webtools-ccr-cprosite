@@ -512,14 +512,14 @@ export default function ProteinGeneCorrelation() {
       title: `<b>${firstGene}</b>`,
       zeroline: false,
       titlefont: {
-        size: 15,
+        size: 16,
       },
     },
     yaxis: {
       title: `<b>${secondGene}</b>`,
       zeroline: false,
       titlefont: {
-        size: 15,
+        size: 16,
       },
     },
     legend: {
@@ -1266,7 +1266,7 @@ export default function ProteinGeneCorrelation() {
                     }</b>`,
                     zeroline: false,
                     titlefont: {
-                      size: 15,
+                      size: 16,
                     },
                   },
                   yaxis: {
@@ -1277,7 +1277,7 @@ export default function ProteinGeneCorrelation() {
                     }</b>`,
                     zeroline: false,
                     titlefont: {
-                      size: 15,
+                      size: 16,
                     },
                   },
                   annotations: [

@@ -631,6 +631,9 @@ export default function ProteinPhosResults() {
   const defaultLayout = {
     xaxis: {
       zeroline: false,
+      tickfont: {
+        size: 16,
+      },
     },
     yaxis: {
       title: "Protein Abundance",
@@ -833,15 +836,21 @@ export default function ProteinPhosResults() {
               xaxis: {
                 title: "<b>Tumor Types</b>",
                 automargin: true,
-                titlefont: {
+                tickfont: {
                   size: 15,
+                },
+                titlefont: {
+                  size: 16,
                 },
               },
               yaxis: {
                 title: "<b>Phosphorylation Site</b>",
                 automargin: true,
-                titlefont: {
+                tickfont: {
                   size: 15,
+                },
+                titlefont: {
+                  size: 16,
                 },
               },
               autosize: true,
@@ -936,6 +945,9 @@ export default function ProteinPhosResults() {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
                   titlefont: {
+                    size: 16,
+                  },
+                  tickfont: {
                     size: 15,
                   },
                 },
@@ -943,7 +955,7 @@ export default function ProteinPhosResults() {
                   title: "<b>Phosphorylation/Protein Level</b>",
                   zeroline: false,
                   titlefont: {
-                    size: 15,
+                    size: 16,
                   },
                 },
                 barmode: "group",
@@ -1073,7 +1085,7 @@ export default function ProteinPhosResults() {
                     title: "<b>Phosphorylation/Protein Level</b>",
                     zeroline: false,
                     titlefont: {
-                      size: 15,
+                      size: 16,
                     },
                   },
                   autosize: true,
@@ -1082,7 +1094,8 @@ export default function ProteinPhosResults() {
                   legend: {
                     orientation: "h",
                     y: -0.1,
-                    x: 0.42,
+                    x: 0.41,
+                    font: { size: 15 },
                   },
                   annotations: [
                     {
@@ -1137,7 +1150,10 @@ export default function ProteinPhosResults() {
                     title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
                     titlefont: {
-                      size: 15,
+                      size: 16,
+                    },
+                    tickfont: {
+                      size: 14,
                     },
                   },
                   xaxis2: {
@@ -1178,9 +1194,9 @@ export default function ProteinPhosResults() {
                 style={{
                   minWidth: "100%",
                   height: `${
-                    foldData().length ? foldData()[0].x.length * 20 : "400"
+                    foldData().length ? foldData()[0].x.length * 25 : "700"
                   }px`,
-                  minHeight: "400px",
+                  minHeight: "700px",
                 }}
               />
             </Col>

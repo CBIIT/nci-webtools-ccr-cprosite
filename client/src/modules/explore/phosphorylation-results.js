@@ -601,6 +601,9 @@ export default function PhosResults() {
   const defaultLayout = {
     xaxis: {
       zeroline: false,
+      tickfont: {
+        size: 16,
+      },
     },
     yaxis: {
       title: "<b>Protein Abundance<b>",
@@ -609,6 +612,9 @@ export default function PhosResults() {
     legend: {
       itemsizing: "constant",
       itemwidth: 40,
+      font: {
+        size: 16,
+      },
     },
     hovermode: "closest",
     hoverlabel: {
@@ -793,6 +799,9 @@ export default function PhosResults() {
                 title: "<b>Tumor Type</b>",
                 automargin: true,
                 titlefont: {
+                  size: 16,
+                },
+                tickfont: {
                   size: 15,
                 },
               },
@@ -800,6 +809,9 @@ export default function PhosResults() {
                 title: "<b>Phosphorylation Site</b>",
                 automargin: true,
                 titlefont: {
+                  size: 16,
+                },
+                tickfont: {
                   size: 15,
                 },
               },
@@ -899,6 +911,9 @@ export default function PhosResults() {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
                   titlefont: {
+                    size: 16,
+                  },
+                  tickfont: {
                     size: 15,
                   },
                 },
@@ -907,7 +922,7 @@ export default function PhosResults() {
                     "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
                   zeroline: false,
                   titlefont: {
-                    size: 15,
+                    size: 16,
                   },
                 },
                 barmode: "group",
@@ -916,6 +931,7 @@ export default function PhosResults() {
                   orientation: "h",
                   y: -0.25,
                   x: 0.42,
+                  font: { size: 15 },
                 },
                 annotations: [
                   {
@@ -1050,6 +1066,7 @@ export default function PhosResults() {
                     orientation: "h",
                     y: -0.1,
                     x: 0.37,
+                    font: { size: 15 },
                   },
                   annotations: [
                     {
@@ -1114,13 +1131,19 @@ export default function PhosResults() {
                     title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
                     titlefont: {
-                      size: 15,
+                      size: 16,
                     },
                   },
                   xaxis2: {
                     zeroline: false,
                     overlaying: "x",
                     side: "top",
+                  },
+                  yaxis: {
+                    tickfont: {
+                      size: 14,
+                    },
+                    automargin: true,
                   },
                   showlegend: false,
                   barmode: "stack",
@@ -1154,9 +1177,9 @@ export default function PhosResults() {
                 style={{
                   minWidth: "100%",
                   height: `${
-                    foldData().length ? foldData()[0].x.length * 20 : "400"
+                    foldData().length ? foldData()[0].x.length * 25 : "700"
                   }px`,
-                  minHeight: "400px",
+                  minHeight: "700px",
                 }}
               />
             </Col>

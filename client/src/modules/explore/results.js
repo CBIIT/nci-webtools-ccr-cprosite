@@ -234,7 +234,7 @@ export default function Results() {
         : [],
       type: "box",
       boxpoints: "all",
-      name: "Tumor",
+      name: "<b>Tumor</b>",
       jitter: 0.6,
       marker: {
         size: 10,
@@ -256,7 +256,7 @@ export default function Results() {
         : [],
       type: "box",
       boxpoints: "all",
-      name: "Adjacent Normal",
+      name: "<b>Adjacent Normal</b>",
       jitter: 0.6,
       marker: {
         size: 10,
@@ -512,13 +512,6 @@ export default function Results() {
   ];
 
   const defaultLayout = {
-    xaxis: {
-      title: "<b>Tumor Type </b>",
-      zeroline: false,
-      titlefont: {
-        size: 15,
-      },
-    },
     yaxis: {
       title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",
       zeroline: false,
@@ -536,7 +529,6 @@ export default function Results() {
       font: { color: "#000", size: 16 },
       bordercolor: "#D3D3D3",
     },
-    legend: {},
   };
 
   const defaultConfig = {
@@ -556,13 +548,7 @@ export default function Results() {
       "hoverClosestCartesian",
     ],
   };
-  console.log({
-    ...defaultConfig,
-    toImageButtonOptions: {
-      ...defaultConfig.toImageButtonOptions,
-      filename: "test",
-    },
-  });
+
   return (
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summary" title="Summary">
@@ -575,10 +561,21 @@ export default function Results() {
                 title: `<b>${form.gene.label} Protein Abundance Tumor vs Adjacent Normal</b>`,
                 barmode: "group",
                 autosize: true,
+                xaxis: {
+                  title: "<b>Tumor Type </b>",
+                  zeroline: false,
+                  titlefont: {
+                    size: 16,
+                  },
+                  tickfont: {
+                    size: 15,
+                  },
+                },
                 legend: {
                   orientation: "h",
                   y: -0.5,
-                  x: 0.42,
+                  x: 0.41,
+                  font: { size: 16 },
                 },
                 annotations: [
                   {
@@ -684,10 +681,19 @@ export default function Results() {
                   title: `<b>${form.gene.label} ${
                     form.cancer.find((f) => f.value === currentTumor).label
                   } Protein Abundance Tumor vs Adjacent Normal</b>`,
+
                   yaxis: {
                     title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",
                     zeroline: false,
                     titlefont: {
+                      size: 15,
+                    },
+                  },
+                  xaxis: {
+                    titlefont: {
+                      size: 16,
+                    },
+                    tickfont: {
                       size: 15,
                     },
                   },
@@ -698,6 +704,7 @@ export default function Results() {
                     orientation: "h",
                     y: -0.1,
                     x: 0.42,
+                    font: { size: 15 },
                   },
                   annotations: [
                     {
@@ -761,13 +768,19 @@ export default function Results() {
                     title: "<b>Log<sub>2</sub> Fold Change</b>",
                     zeroline: false,
                     titlefont: {
-                      size: 15,
+                      size: 16,
                     },
                   },
                   xaxis2: {
                     zeroline: false,
                     overlaying: "x",
                     side: "top",
+                  },
+                  yaxis: {
+                    tickfont: {
+                      size: 14,
+                    },
+                    automargin: true,
                   },
                   showlegend: false,
                   barmode: "stack",
@@ -802,9 +815,9 @@ export default function Results() {
                 style={{
                   minWidth: "100%",
                   height: foldData().length
-                    ? `${foldData()[0].x.length * 20}px`
-                    : "500px",
-                  minHeight: "500px",
+                    ? `${foldData()[0].x.length * 25}px`
+                    : "700px",
+                  minHeight: "700px",
                 }}
               />
             </Col>
