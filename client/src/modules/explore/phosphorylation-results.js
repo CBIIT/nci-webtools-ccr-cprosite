@@ -613,7 +613,7 @@ export default function PhosResults() {
     hovermode: "closest",
     hoverlabel: {
       bgcolor: "#FFF",
-      font: { color: "#000" },
+      font: { color: "#000", size: 16 },
       bordercolor: "#D3D3D3",
       nameLength: 0,
     },
@@ -1126,7 +1126,7 @@ export default function PhosResults() {
                   barmode: "stack",
                   hoverlabel: {
                     bgcolor: "#FFF",
-                    font: { color: "#000" },
+                    font: { color: "#000", size: 16 },
                     bordercolor: "#D3D3D3",
                     nameLength: 0,
                   },

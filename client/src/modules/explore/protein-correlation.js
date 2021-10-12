@@ -275,7 +275,7 @@ export default function ProteinCorrelation() {
     hovermode: "closest",
     hoverlabel: {
       bgcolor: "#FFF",
-      font: { color: "#000" },
+      font: { color: "#000", size: 15 },
       bordercolor: "#D3D3D3",
     },
   };

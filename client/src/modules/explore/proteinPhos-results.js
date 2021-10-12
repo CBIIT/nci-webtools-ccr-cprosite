@@ -643,7 +643,7 @@ export default function ProteinPhosResults() {
     hovermode: "closest",
     hoverlabel: {
       bgcolor: "#FFF",
-      font: { color: "#000" },
+      font: { color: "#000", size: 16 },
       bordercolor: "#D3D3D3",
       nameLength: 0,
     },
@@ -1149,7 +1149,7 @@ export default function ProteinPhosResults() {
                   barmode: "stack",
                   hoverlabel: {
                     bgcolor: "#FFF",
-                    font: { color: "#000" },
+                    font: { color: "#000", size: 16 },
                     bordercolor: "#D3D3D3",
                     nameLength: 0,
                   },
