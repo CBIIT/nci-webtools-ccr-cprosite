@@ -205,23 +205,23 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "tumorValue",
-      label: "Tumor Abundance",
+      label: "Tumor Value",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="phos_tumor_val">Tumor Abundance</Tooltip>}>
-          <b>Tumor Abundance</b>
+          overlay={<Tooltip id="phos_tumor_val">Tumor Value</Tooltip>}>
+          <b>Tumor Value</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "controlValue",
-      label: "Adjacent Normal Abundance",
+      label: "Adjacent Normal Value",
       Header: (
         <OverlayTrigger
           overlay={
-            <Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>
+            <Tooltip id="phos_control_val">Adjacent Normal Value</Tooltip>
           }>
-          <b>Adj. Normal Abundance</b>
+          <b>Adj. Normal Value</b>
         </OverlayTrigger>
       ),
     },
@@ -232,7 +232,7 @@ export default function ProteinPhosResults() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Difference between Tumor and Adjacent Normal Abundance
+              Difference between Tumor and Adjacent Normal Value
             </Tooltip>
           }>
           <b>
@@ -1147,6 +1147,12 @@ export default function ProteinPhosResults() {
                   },
                   showlegend: false,
                   barmode: "stack",
+                  hoverlabel: {
+                    bgcolor: "#FFF",
+                    font: { color: "#000" },
+                    bordercolor: "#D3D3D3",
+                    nameLength: 0,
+                  },
                   annotations: [
                     {
                       text:
