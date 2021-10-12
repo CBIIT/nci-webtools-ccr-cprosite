@@ -534,7 +534,7 @@ export default function ProteinCorrelation() {
               : "NA"}
           </div>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
-            Control Correlation:{" "}
+            Adj. Normal Correlation:{" "}
             {correlationData.length
               ? calculateCorrelation(
                   correlationData.map((e) =>

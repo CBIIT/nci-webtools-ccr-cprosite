@@ -490,10 +490,12 @@ export default function ProteinGeneCorrelation() {
     return dataPoints;
   }
 
+  const unfilteredSiteData = getSite();
+
   const siteData =
     form.dataset.value === "phosphoproteinData" ||
     form.dataset.value === "phosphoproteinRatioData"
-      ? getSite().filter(
+      ? unfilteredSiteData.filter(
           (e) =>
             e.firstTumor !== "NA" &&
             e.firstControl !== "NA" &&
@@ -501,8 +503,6 @@ export default function ProteinGeneCorrelation() {
             e.secondControl !== "NA",
         )
       : [];
-
-  console.log(siteData);
 
   const defaultLayout = {
     xaxis: {
@@ -756,7 +756,7 @@ export default function ProteinGeneCorrelation() {
         columns: columns.map((e) => {
           return { title: e.label, width: { wpx: 200 } };
         }),
-        data: getSite().map((c) => {
+        data: unfilteredSiteData.map((c) => {
           return [
             { value: c.name },
             { value: c.firstPhospho },
@@ -952,7 +952,7 @@ export default function ProteinGeneCorrelation() {
                   : "NA"}
               </div>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Control Correlation:{" "}
+                Adj. Normal Correlation:{" "}
                 {proteinGeneCorrelation.length
                   ? calculateCorrelation(
                       proteinGeneCorrelation.map((e) =>
@@ -1303,35 +1303,61 @@ export default function ProteinGeneCorrelation() {
               />
             </Col>
           </Row>
-
+          {console.log(siteData)}
           <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Tumor Correlation:{" "}
-                {siteData.length
+                {unfilteredSiteData.filter(
+                  (f) => f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                ).length
                   ? calculateCorrelation(
-                      siteData.map((e) =>
-                        numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                      ),
-                      siteData.map((e) =>
-                        numType === "log2" ? e.secondTumor : e.secondTumorNum,
-                      ),
+                      unfilteredSiteData
+                        .filter(
+                          (f) =>
+                            f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                        )
+                        .map((e) =>
+                          numType === "log2" ? e.firstTumor : e.firstTumorNum,
+                        ),
+                      unfilteredSiteData
+                        .filter(
+                          (f) =>
+                            f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                        )
+                        .map((e) =>
+                          numType === "log2" ? e.secondTumor : e.secondTumorNum,
+                        ),
                       { decimals: 4 },
                     )
                   : "NA"}
               </div>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Control Correlation:{" "}
-                {siteData.length
+                Adj. Normal Correlation:{" "}
+                {unfilteredSiteData.filter(
+                  (f) => f.firstControl !== "NA" && f.secondControl !== "NA",
+                ).length
                   ? calculateCorrelation(
-                      siteData.map((e) =>
-                        numType === "log2" ? e.firstControl : e.firstControlNum,
-                      ),
-                      siteData.map((e) =>
-                        numType === "log2"
-                          ? e.secondControl
-                          : e.secondControlNum,
-                      ),
+                      unfilteredSiteData
+                        .filter(
+                          (f) =>
+                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                        )
+                        .map((e) =>
+                          numType === "log2"
+                            ? e.firstControl
+                            : e.firstControlNum,
+                        ),
+                      unfilteredSiteData
+                        .filter(
+                          (f) =>
+                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                        )
+                        .map((e) =>
+                          numType === "log2"
+                            ? e.secondControl
+                            : e.secondControlNum,
+                        ),
                       { decimals: 4 },
                     )
                   : "NA"}
@@ -1422,7 +1448,7 @@ export default function ProteinGeneCorrelation() {
                 ...correlationColumns.slice(1),
               ]}
               defaultSort={[{ id: "name", asec: true }]}
-              data={getSite().map((c) => {
+              data={unfilteredSiteData.map((c) => {
                 return {
                   name: c.name,
                   firstPhospho: c.firstPhospho,
