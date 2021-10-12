@@ -27,11 +27,25 @@ export const rnaState = selector({
 });
 
 export async function getData(params, tumor, gene) {
-  const summary = await query("api/query", {
-    "table": params.dataset.value + "Summary",
-    "_cancerId:in": tumor,
-    "_geneId": gene,
-  });
+  var summary;
+  if (
+    params.dataset.value === "phosphoproteinData" ||
+    params.dataset.value === "phosphoproteinRatioData"
+  ) {
+    summary = await query("api/query", {
+      "table": params.dataset.value + "Summary",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+      "orderBy": "phosphorylationSite",
+      "order": "asc",
+    });
+  } else {
+    summary = await query("api/query", {
+      "table": params.dataset.value + "Summary",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
+  }
 
   const participants = await query("api/query", {
     "table": params.dataset.value,

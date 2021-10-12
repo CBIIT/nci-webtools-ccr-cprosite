@@ -38,7 +38,7 @@ export default function ProteinPhosResults() {
 
   console.log(sortSummary);
 
-  const heatmap = sortSummary.map((e) => {
+  const heatmap = sortSummary.reverse().map((e) => {
     var toAdd = Array(10).fill(null);
     e[1].map((f) => {
       if (f.tumorSampleMean !== null && f.normalSampleMean !== null) {

@@ -39,7 +39,7 @@ export default function PhosResults() {
     _.groupBy(results[0].summary.records, "phosphorylationSite"),
   ).filter((e) => e[0] !== "null" && e[0] !== "all");
 
-  const heatmap = sortSummary.map((e) => {
+  const heatmap = sortSummary.reverse().map((e) => {
     var toAdd = Array(10).fill(null);
     e[1].map((f) => {
       if (f.tumorSampleMean !== null && f.normalSampleMean !== null) {
