@@ -41,7 +41,6 @@ export default function ProteinGeneCorrelation() {
       : form.dataset.label === "Phosphorylation Site"
       ? "Phosphorylation_Site"
       : "Phosphorylation_Protein";
-
   const currentTumor = form.cancer.find((e) => e.value === view[0])
     ? view
     : form.cancer.map((e) => e.value);
@@ -428,7 +427,11 @@ export default function ProteinGeneCorrelation() {
     );
 
     var secondFiltered;
-    if (secondSite.value === form.correlatedGene.label) {
+    if (
+      secondSite.value === form.correlatedGene.label &&
+      (form.dataset.value === "phosphoproteinData" ||
+        form.dataset.value === "phosphoproteinRatioData")
+    ) {
       secondFiltered = results[1].protein.records.filter(
         (f) => f.cancerId === currentTumor,
       );
@@ -526,7 +529,7 @@ export default function ProteinGeneCorrelation() {
     hovermode: "closest",
     hoverlabel: {
       bgcolor: "#FFF",
-      font: { color: "#000" },
+      font: { color: "#000", size: 15 },
       bordercolor: "#D3D3D3",
     },
   };
