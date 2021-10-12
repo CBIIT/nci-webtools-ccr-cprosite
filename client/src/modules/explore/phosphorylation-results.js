@@ -1124,6 +1124,12 @@ export default function PhosResults() {
                   },
                   showlegend: false,
                   barmode: "stack",
+                  hoverlabel: {
+                    bgcolor: "#FFF",
+                    font: { color: "#000" },
+                    bordercolor: "#D3D3D3",
+                    nameLength: 0,
+                  },
                   annotations: [
                     {
                       text:
