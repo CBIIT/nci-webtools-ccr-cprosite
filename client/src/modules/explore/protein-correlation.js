@@ -519,34 +519,54 @@ export default function ProteinCorrelation() {
         <Row>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Tumor Correlation:{" "}
-            {correlationData.length
+            {proteinRNA.filter(
+              (f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA",
+            ).length
               ? calculateCorrelation(
-                  correlationData.map((e) =>
-                    numType === "log2"
-                      ? e.proteinTumor
-                      : Math.pow(2, e.proteinTumor),
-                  ),
-                  correlationData.map((e) =>
-                    numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
-                  ),
+                  proteinRNA
+                    .filter(
+                      (f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA",
+                    )
+                    .map((e) =>
+                      numType === "log2"
+                        ? e.proteinTumor
+                        : Math.pow(2, e.proteinTumor),
+                    ),
+                  proteinRNA
+                    .filter(
+                      (f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA",
+                    )
+                    .map((e) =>
+                      numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
+                    ),
                   { decimals: 4 },
                 )
               : "NA"}
           </div>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Adj. Normal Correlation:{" "}
-            {correlationData.length
+            {proteinRNA.filter(
+              (f) => f.proteinControl !== "NA" && f.rnaControl !== "NA",
+            ).length
               ? calculateCorrelation(
-                  correlationData.map((e) =>
-                    numType === "log2"
-                      ? e.proteinControl
-                      : Math.pow(2, e.proteinControl),
-                  ),
-                  correlationData.map((e) =>
-                    numType === "log2"
-                      ? e.rnaControl
-                      : Math.pow(2, e.rnaControl),
-                  ),
+                  proteinRNA
+                    .filter(
+                      (f) => f.proteinControl !== "NA" && f.rnaControl !== "NA",
+                    )
+                    .map((e) =>
+                      numType === "log2"
+                        ? e.proteinControl
+                        : Math.pow(2, e.proteinControl),
+                    ),
+                  proteinRNA
+                    .filter(
+                      (f) => f.proteinControl !== "NA" && f.rnaControl !== "NA",
+                    )
+                    .map((e) =>
+                      numType === "log2"
+                        ? e.rnaControl
+                        : Math.pow(2, e.rnaControl),
+                    ),
                   { decimals: 4 },
                 )
               : "NA"}
