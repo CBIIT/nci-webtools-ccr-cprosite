@@ -6,7 +6,7 @@ export default function About() {
     <Container className="my-4">
       <Card className="shadow">
         <Card.Body>
-          <h1>About cProSite Analysis</h1>
+          <h1>About cProSite</h1>
 
           <hr />
 
@@ -79,7 +79,7 @@ export default function About() {
               CPTAC portal
             </a>
             . Because of the limitations of mass spectrometry and the analytic
-            algorithms, not all proteins and all phosohorylation sites are
+            algorithms, not all proteins and all phosphorylation sites are
             detected for individual samples.
           </p>
 
