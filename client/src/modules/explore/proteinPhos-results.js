@@ -609,7 +609,8 @@ export default function ProteinPhosResults() {
             ),
           },
           orientation: "h",
-          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
+          hovertemplate:
+            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -622,7 +623,8 @@ export default function ProteinPhosResults() {
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
+          hovertemplate:
+            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
       ];
     } else return [];
@@ -1160,6 +1162,13 @@ export default function ProteinPhosResults() {
                     zeroline: false,
                     overlaying: "x",
                     side: "top",
+                  },
+                  yaxis: {
+                    tickfont: {
+                      size: 14,
+                    },
+                    automargin: true,
+                    type: "category",
                   },
                   showlegend: false,
                   barmode: "stack",

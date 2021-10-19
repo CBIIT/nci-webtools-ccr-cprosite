@@ -385,7 +385,8 @@ export default function Results() {
             ),
           },
           orientation: "h",
-          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
+          hovertemplate:
+            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -398,7 +399,8 @@ export default function Results() {
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
+          hovertemplate:
+            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
       ];
     }
@@ -781,6 +783,7 @@ export default function Results() {
                       size: 14,
                     },
                     automargin: true,
+                    type: "category",
                   },
                   showlegend: false,
                   barmode: "stack",
@@ -845,34 +848,32 @@ export default function Results() {
           <Table
             columns={proteinAbundanceColumns}
             defaultSort={[{ id: "name", asec: true }]}
-            data={results
-              .find(
-                (e) =>
-                  Number(e[0]) ===
-                  (form.cancer.find((e) => e.value === view)
-                    ? view
-                    : form.cancer[0].value),
-              )[1]
-              .map((c) => {
-                return {
-                  name: c.participantId,
-                  tumorValue: c.tumorValue
-                    ? Number(c.tumorValue.toFixed(4))
-                    : "NA",
-                  normalValue: c.normalValue
-                    ? Number(c.normalValue.toFixed(4))
-                    : "NA",
-                  proteinDiff:
-                    c.tumorValue && c.normalValue
-                      ? Number(
-                          (
-                            Number(c.tumorValue.toFixed(4)) -
-                            Number(c.normalValue.toFixed(4))
-                          ).toFixed(4),
-                        )
-                      : "NA",
-                };
-              })}
+            data={
+              results.find((f) => Number(f[0]) === currentTumor)
+                ? results
+                    .find((e) => Number(e[0]) === currentTumor)[1]
+                    .map((c) => {
+                      return {
+                        name: c.participantId,
+                        tumorValue: c.tumorValue
+                          ? Number(c.tumorValue.toFixed(4))
+                          : "NA",
+                        normalValue: c.normalValue
+                          ? Number(c.normalValue.toFixed(4))
+                          : "NA",
+                        proteinDiff:
+                          c.tumorValue && c.normalValue
+                            ? Number(
+                                (
+                                  Number(c.tumorValue.toFixed(4)) -
+                                  Number(c.normalValue.toFixed(4))
+                                ).toFixed(4),
+                              )
+                            : "NA",
+                      };
+                    })
+                : []
+            }
           />
         </div>
       </Tab>

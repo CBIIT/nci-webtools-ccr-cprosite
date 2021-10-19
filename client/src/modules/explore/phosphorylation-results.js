@@ -577,7 +577,8 @@ export default function PhosResults() {
             ),
           },
           orientation: "h",
-          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
+          hovertemplate:
+            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
@@ -590,7 +591,8 @@ export default function PhosResults() {
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate: "%{y} Log Fold Change: %{x}<extra></extra>",
+          hovertemplate:
+            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
       ];
     } else {
@@ -1144,6 +1146,7 @@ export default function PhosResults() {
                       size: 14,
                     },
                     automargin: true,
+                    type: "category",
                   },
                   showlegend: false,
                   barmode: "stack",
