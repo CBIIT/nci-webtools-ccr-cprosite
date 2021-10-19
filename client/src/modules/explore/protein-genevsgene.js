@@ -1193,7 +1193,7 @@ export default function ProteinGeneCorrelation() {
               <Form.Label
                 className="required"
                 style={{ whiteSpace: "nowrap " }}>
-                {secondGene} Phosphorylation Site
+                {secondGene} Phosphorylation Site or Protein
               </Form.Label>
               <Select
                 name="secondSite"
@@ -1263,6 +1263,10 @@ export default function ProteinGeneCorrelation() {
                   xaxis: {
                     title: `<b>${form.gene.label}${
                       firstSite.value ? `_${firstSite.value}` : ""
+                    }${
+                      form.dataset.value === "phosphoproteinRatioData"
+                        ? "/Protein Level"
+                        : ""
                     }</b>`,
                     zeroline: false,
                     titlefont: {
@@ -1274,6 +1278,11 @@ export default function ProteinGeneCorrelation() {
                       secondSite.value === form.correlatedGene.label
                         ? ""
                         : `_${secondSite.value}`
+                    }${
+                      form.dataset.value === "phosphoproteinRatioData" &&
+                      secondSite.value !== form.correlatedGene.label
+                        ? "/Protein Level"
+                        : ""
                     }</b>`,
                     zeroline: false,
                     titlefont: {
