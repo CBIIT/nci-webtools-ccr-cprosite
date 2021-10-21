@@ -16,7 +16,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
-  const [form, setForm] = useRecoilState(formState);
+  const [form, setForm] = useState(defaultFormState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const genes = useRecoilValue(geneState).records.map((e) => {
     return { value: e.id, label: e.name };
