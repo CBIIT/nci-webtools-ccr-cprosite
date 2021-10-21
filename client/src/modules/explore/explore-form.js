@@ -3,15 +3,20 @@ import Button from "react-bootstrap/Button";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import classNames from "classnames";
-import { useRecoilValue } from "recoil";
-import { cancerState, defaultFormState, geneState } from "./explore.state";
+import { useRecoilState, useRecoilValue } from "recoil";
+import {
+  cancerState,
+  formState,
+  defaultFormState,
+  geneState,
+} from "./explore.state";
 import { useState } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
-  const [form, setForm] = useState(defaultFormState);
+  const [form, setForm] = useRecoilState(formState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const genes = useRecoilValue(geneState).records.map((e) => {
     return { value: e.id, label: e.name };

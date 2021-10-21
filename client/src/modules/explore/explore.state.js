@@ -141,6 +141,7 @@ export const defaultFormState = {
   dataset: { value: "proteinData", label: "Protein Abundance" },
   correlation: "toAnotherProtein",
   correlatedGene: "",
+  submitted: false,
 };
 
 export const formState = atom({

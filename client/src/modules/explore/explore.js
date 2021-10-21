@@ -20,7 +20,6 @@ import {
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
-  const [submitted, setSubmitted] = useState(false);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const [_openSidebar, _setOpenSidebar] = useState(true);
 
@@ -29,14 +28,12 @@ export default function Explore() {
   }, [form.openSidebar]);
 
   function handleSubmit(event) {
-    setForm({ ...event, openSidebar: false });
-    setSubmitted(true);
+    setForm({ ...event, openSidebar: false, submitted: true });
     console.log("submit", event);
   }
 
   function handleReset(event) {
     setForm(event);
-    setSubmitted(false);
     console.log("reset", event);
   }
 
@@ -114,7 +111,7 @@ export default function Explore() {
                   </div>
                 }>
                 <Suspense fallback="Loading...">
-                  {submitted ? (
+                  {form.submitted ? (
                     results()
                   ) : (
                     <div className="m-2">
