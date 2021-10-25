@@ -31,13 +31,22 @@ export default function PhosResults() {
     ? view
     : form.cancer[0].value;
 
+  const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
+
   const sortResults = Object.entries(
     _.groupBy(results[0].participants.records, "cancerId"),
   ).filter((e) => e[0] !== "null");
 
   var sortSummary = Object.entries(
     _.groupBy(results[0].summary.records, "phosphorylationSite"),
-  ).filter((e) => e[0] !== "null" && e[0] !== "all");
+  )
+    .filter((e) => e[0] !== "null" && e[0] !== "all")
+    .sort((a, b) => {
+      let first = getNumericPosition(a[0]);
+      let second = getNumericPosition(b[0]);
+
+      return first - second;
+    });
 
   const heatmap = sortSummary.reverse().map((e) => {
     var toAdd = Array(10).fill(null);
@@ -61,7 +70,7 @@ export default function PhosResults() {
       hoverongaps: false,
       colorbar: {
         title: {
-          text: "Log Fold Change",
+          text: "Log<sub>2</sub> Fold Change",
         },
       },
       hovertemplate:
@@ -88,6 +97,7 @@ export default function PhosResults() {
             </a>
           ),
           accession: e.accession ? e.accession : "NA",
+          phosLabel: e.phosphorylationSite,
           phosphorylationSite: (
             <a
               key={"summary-" + e.phosphorylationSite}
@@ -109,6 +119,7 @@ export default function PhosResults() {
         });
       });
     });
+
     return rows;
   }
   const tumorViewData = results[0].summary.records
@@ -180,6 +191,12 @@ export default function PhosResults() {
             : "NA",
         records: patients,
       };
+    })
+    .sort((a, b) => {
+      let first = getNumericPosition(a.name);
+      let second = getNumericPosition(b.name);
+
+      return first - second;
     });
 
   const [phosView, setPhosView] = useState(
@@ -267,10 +284,12 @@ export default function PhosResults() {
         </OverlayTrigger>
       ),
       sort: true,
-      sortType: (a, b) =>
-        a.original.phosphorylationSite.key > b.original.phosphorylationSite.key
-          ? 1
-          : -1,
+      sortType: (a, b) => {
+        return (
+          getNumericPosition(a.original.phosphorylationSite.key) -
+          getNumericPosition(b.original.phosphorylationSite.key)
+        );
+      },
     },
     {
       accessor: "accession",
@@ -335,7 +354,12 @@ export default function PhosResults() {
         </OverlayTrigger>
       ),
       sort: true,
-      sortType: (a, b) => (a.original.link.key > b.original.link.key ? 1 : -1),
+      sortType: (a, b) => {
+        return (
+          getNumericPosition(a.original.link.key) -
+          getNumericPosition(b.original.link.key)
+        );
+      },
     },
     {
       accessor: "phosphopeptide",
@@ -792,47 +816,52 @@ export default function PhosResults() {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summaryView" title="Summary View">
         <div className="m-3">
-          <Plot
-            data={heatMapData}
-            layout={{
-              ...defaultLayout,
-              title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
-              xaxis: {
-                title: "<b>Tumor Type</b>",
-                automargin: true,
-                titlefont: {
-                  size: 16,
+          <div style={{ height: "800px", overflowY: "auto" }}>
+            <Plot
+              data={heatMapData}
+              layout={{
+                ...defaultLayout,
+                title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
+                xaxis: {
+                  title: "<b>Tumor Type</b>",
+                  automargin: true,
+                  titlefont: {
+                    size: 16,
+                  },
+                  tickfont: {
+                    size: 15,
+                  },
                 },
-                tickfont: {
-                  size: 15,
+                yaxis: {
+                  title: "<b>Phosphorylation Site</b>",
+                  automargin: true,
+                  titlefont: {
+                    size: 16,
+                  },
+                  tickfont: {
+                    size: 15,
+                  },
                 },
-              },
-              yaxis: {
-                title: "<b>Phosphorylation Site</b>",
-                automargin: true,
-                titlefont: {
-                  size: 16,
+                autosize: true,
+              }}
+              useResizeHandler
+              config={{
+                ...defaultConfig,
+                toImageButtonOptions: {
+                  ...defaultConfig.toImageButtonOptions,
+                  filename: `Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
                 },
-                tickfont: {
-                  size: 15,
-                },
-              },
-              autosize: true,
-            }}
-            useResizeHandler
-            config={{
-              ...defaultConfig,
-              toImageButtonOptions: {
-                ...defaultConfig.toImageButtonOptions,
-                filename: `Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
-              },
-            }}
-            style={{
-              height: "800px",
-              width: `100%`,
-              minWidth: "100%",
-            }}
-          />
+              }}
+              style={{
+                height: sortSummary.length
+                  ? `${sortSummary.length * 25}px`
+                  : "800px",
+                minHeight: "800px",
+                width: `100%`,
+                minWidth: "100%",
+              }}
+            />
+          </div>
           <div className="mx-3" style={{ color: "grey" }}>
             Note: Fold Change may not be statistically significant.
           </div>

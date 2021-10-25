@@ -27,6 +27,8 @@ export default function ProteinPhosResults() {
   const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
+  const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
+
   const results = useRecoilValue(resultsState);
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
@@ -34,8 +36,14 @@ export default function ProteinPhosResults() {
 
   var sortSummary = Object.entries(
     _.groupBy(results[0].summary.records, "phosphorylationSite"),
-  ).filter((e) => e[0] !== "null" && e[0] !== "all");
+  )
+    .filter((e) => e[0] !== "null" && e[0] !== "all")
+    .sort((a, b) => {
+      let first = getNumericPosition(a[0]);
+      let second = getNumericPosition(b[0]);
 
+      return first - second;
+    });
   console.log(sortSummary);
 
   const heatmap = sortSummary.reverse().map((e) => {
@@ -103,7 +111,7 @@ export default function ProteinPhosResults() {
       hoverongaps: false,
       colorbar: {
         title: {
-          text: "Log Fold Change",
+          text: "Log<sub>2</sub> Fold Change",
         },
       },
       hovertemplate:
@@ -135,10 +143,12 @@ export default function ProteinPhosResults() {
         </OverlayTrigger>
       ),
       sort: true,
-      sortType: (a, b) =>
-        a.original.phosphorylationSite.key > b.original.phosphorylationSite.key
-          ? 1
-          : -1,
+      sortType: (a, b) => {
+        return (
+          getNumericPosition(a.original.phosphorylationSite.key) -
+          getNumericPosition(b.original.phosphorylationSite.key)
+        );
+      },
     },
     {
       accessor: "accession",
@@ -453,6 +463,12 @@ export default function ProteinPhosResults() {
             : "NA",
         records: patients,
       };
+    })
+    .sort((a, b) => {
+      let first = getNumericPosition(a.name);
+      let second = getNumericPosition(b.name);
+
+      return first - second;
     });
 
   const [phosView, setPhosView] = useState(
@@ -830,47 +846,52 @@ export default function ProteinPhosResults() {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       <Tab eventKey="summaryView" title="Summary View">
         <div className="m-3">
-          <Plot
-            data={heatMapData}
-            layout={{
-              ...defaultLayout,
-              title: `<b>${form.gene.label} Phosphorylation/Protein Summary View</b>`,
-              xaxis: {
-                title: "<b>Tumor Types</b>",
-                automargin: true,
-                tickfont: {
-                  size: 15,
+          <div style={{ height: "800px", overflowY: "auto" }}>
+            <Plot
+              data={heatMapData}
+              layout={{
+                ...defaultLayout,
+                title: `<b>${form.gene.label} Phosphorylation/Protein Summary View</b>`,
+                xaxis: {
+                  title: "<b>Tumor Types</b>",
+                  automargin: true,
+                  tickfont: {
+                    size: 15,
+                  },
+                  titlefont: {
+                    size: 16,
+                  },
                 },
-                titlefont: {
-                  size: 16,
+                yaxis: {
+                  title: "<b>Phosphorylation Site</b>",
+                  automargin: true,
+                  tickfont: {
+                    size: 15,
+                  },
+                  titlefont: {
+                    size: 16,
+                  },
                 },
-              },
-              yaxis: {
-                title: "<b>Phosphorylation Site</b>",
-                automargin: true,
-                tickfont: {
-                  size: 15,
+                autosize: true,
+              }}
+              useResizeHandler
+              config={{
+                ...defaultConfig,
+                toImageButtonOptions: {
+                  ...defaultConfig.toImageButtonOptions,
+                  filename: `Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
                 },
-                titlefont: {
-                  size: 16,
-                },
-              },
-              autosize: true,
-            }}
-            useResizeHandler
-            config={{
-              ...defaultConfig,
-              toImageButtonOptions: {
-                ...defaultConfig.toImageButtonOptions,
-                filename: `Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
-              },
-            }}
-            style={{
-              height: "800px",
-              width: `100%`,
-              minWidth: "100%",
-            }}
-          />
+              }}
+              style={{
+                height: sortSummary.length
+                  ? `${sortSummary.length * 25}px`
+                  : "800px",
+                minHeight: "800px",
+                width: `100%`,
+                minWidth: "100%",
+              }}
+            />
+          </div>
           <div className="mx-3" style={{ color: "grey" }}>
             Note: Fold Change may not be statistically significant.
           </div>
