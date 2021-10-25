@@ -28,7 +28,7 @@ export default function Explore() {
   }, [form.openSidebar]);
 
   function handleSubmit(event) {
-    setForm({ ...event, openSidebar: false, submitted: true });
+    setForm({ ...event, submitted: true });
     console.log("submit", event);
   }
 
