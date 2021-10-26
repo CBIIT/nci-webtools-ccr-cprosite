@@ -344,10 +344,10 @@ export default function ProteinCorrelation() {
 
   const proteinRNAScatter = [
     {
-      x: correlationData.map((e) =>
+      x: proteinRNA.map((e) =>
         numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor),
       ),
-      y: correlationData.map((e) =>
+      y: proteinRNA.map((e) =>
         numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor),
       ),
       marker: {
@@ -364,10 +364,10 @@ export default function ProteinCorrelation() {
       }: %{y})<extra></extra>`,
     },
     {
-      x: correlationData.map((e) =>
+      x: proteinRNA.map((e) =>
         numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl),
       ),
-      y: correlationData.map((e) =>
+      y: proteinRNA.map((e) =>
         numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl),
       ),
       marker: {
@@ -488,7 +488,11 @@ export default function ProteinCorrelation() {
               },
               annotations: [
                 {
-                  text: correlationData.length === 0 ? "No data available" : "",
+                  text:
+                    proteinRNAScatter[0].x.length === 0 &&
+                    proteinRNAScatter[1].x.length === 0
+                      ? "No data available"
+                      : "",
                   xref: "paper",
                   yref: "paper",
                   showarrow: false,
