@@ -509,14 +509,14 @@ export default function ProteinGeneCorrelation() {
 
   const defaultLayout = {
     xaxis: {
-      title: `<b>${firstGene}</b>`,
+      title: `<b>${firstGene} Tumor/Normal</b>`,
       zeroline: false,
       titlefont: {
         size: 16,
       },
     },
     yaxis: {
-      title: `<b>${secondGene}</b>`,
+      title: `<b>${secondGene} Tumor/Normal</b>`,
       zeroline: false,
       titlefont: {
         size: 16,
@@ -1267,7 +1267,7 @@ export default function ProteinGeneCorrelation() {
                       form.dataset.value === "phosphoproteinRatioData"
                         ? "/Protein Level"
                         : ""
-                    }</b>`,
+                    } Tumor/Normal</b>`,
                     zeroline: false,
                     titlefont: {
                       size: 16,
@@ -1283,7 +1283,7 @@ export default function ProteinGeneCorrelation() {
                       secondSite.value !== form.correlatedGene.label
                         ? "/Protein Level"
                         : ""
-                    }</b>`,
+                    } Tumor/Normal</b>`,
                     zeroline: false,
                     titlefont: {
                       size: 16,
@@ -1379,29 +1379,49 @@ export default function ProteinGeneCorrelation() {
                 Total Correlation:{" "}
                 {siteData.length
                   ? calculateCorrelation(
-                      siteData
+                      unfilteredSiteData
+                        .filter(
+                          (f) =>
+                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                        )
                         .map((e) =>
                           numType === "log2"
                             ? e.firstControl
                             : e.firstControlNum,
                         )
                         .concat(
-                          siteData.map((e) =>
-                            numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                          ),
+                          unfilteredSiteData
+                            .filter(
+                              (f) =>
+                                f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                            )
+                            .map((e) =>
+                              numType === "log2"
+                                ? e.firstTumor
+                                : e.firstTumorNum,
+                            ),
                         ),
-                      siteData
+                      unfilteredSiteData
+                        .filter(
+                          (f) =>
+                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                        )
                         .map((e) =>
                           numType === "log2"
                             ? e.secondControl
                             : e.secondControlNum,
                         )
                         .concat(
-                          siteData.map((e) =>
-                            numType === "log2"
-                              ? e.secondTumor
-                              : e.secondTumorNum,
-                          ),
+                          unfilteredSiteData
+                            .filter(
+                              (f) =>
+                                f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                            )
+                            .map((e) =>
+                              numType === "log2"
+                                ? e.secondTumor
+                                : e.secondTumorNum,
+                            ),
                         ),
                       { decimals: 4 },
                     )
