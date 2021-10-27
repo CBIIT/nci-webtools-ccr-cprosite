@@ -358,7 +358,7 @@ export default function Results() {
               ? view
               : form.cancer[0].value),
         )[1]
-        .filter((e) => e.tumorValue && e.normalValue)
+        .filter((e) => e.tumorValue !== null && e.normalValue !== null)
         .sort((a, b) => {
           const aFoldChange = a.tumorValue - a.normalValue;
           const bFoldChange = b.tumorValue - b.normalValue;
@@ -855,14 +855,16 @@ export default function Results() {
                     .map((c) => {
                       return {
                         name: c.participantId,
-                        tumorValue: c.tumorValue
-                          ? Number(c.tumorValue.toFixed(4))
-                          : "NA",
-                        normalValue: c.normalValue
-                          ? Number(c.normalValue.toFixed(4))
-                          : "NA",
+                        tumorValue:
+                          c.tumorValue !== null
+                            ? Number(c.tumorValue.toFixed(4))
+                            : "NA",
+                        normalValue:
+                          c.normalValue !== null
+                            ? Number(c.normalValue.toFixed(4))
+                            : "NA",
                         proteinDiff:
-                          c.tumorValue && c.normalValue
+                          c.tumorValue !== null && c.normalValue !== null
                             ? Number(
                                 (
                                   Number(c.tumorValue.toFixed(4)) -
