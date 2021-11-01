@@ -576,12 +576,14 @@ export default function ProteinGeneCorrelation() {
         }: %{y})<extra></extra>`,
     },
     {
-      x: proteinGeneCorrelation.map((e) =>
-        numType === "log2" ? e.firstControl : e.firstControlNum,
-      ),
-      y: proteinGeneCorrelation.map((e) =>
-        numType === "log2" ? e.secondControl : e.secondControlNum,
-      ),
+      x: proteinGeneCorrelation
+        .filter((f) => f.firstControl !== 0 && f.secondControl !== 0)
+        .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
+      y: proteinGeneCorrelation
+        .filter((f) => f.firstControl !== 0 && f.secondControl !== 0)
+        .map((e) =>
+          numType === "log2" ? e.secondControl : e.secondControlNum,
+        ),
       marker: {
         size: 8,
         color: "rgb(31,119,180)",
@@ -623,12 +625,14 @@ export default function ProteinGeneCorrelation() {
         }: %{y}<extra></extra>`,
     },
     {
-      x: siteData.map((e) =>
-        numType === "log2" ? e.firstControl : e.firstControlNum,
-      ),
-      y: siteData.map((e) =>
-        numType === "log2" ? e.secondControl : e.secondControlNum,
-      ),
+      x: siteData
+        .filter((f) => f.firstControl !== 0 && f.secondControl !== 0)
+        .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
+      y: siteData
+        .filter((f) => f.firstControl !== 0 && f.secondControl !== 0)
+        .map((e) =>
+          numType === "log2" ? e.secondControl : e.secondControlNum,
+        ),
       marker: {
         size: 8,
         color: "rgb(31,119,180)",
