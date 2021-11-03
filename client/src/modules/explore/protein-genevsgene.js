@@ -419,7 +419,7 @@ export default function ProteinGeneCorrelation() {
     const currentTumor = form.cancer.find((e) => e.value === siteTumor.value)
       ? siteTumor.value
       : form.cancer[0].value;
-    console.log(currentTumor);
+
     const firstFiltered = firstGeneSet.filter(
       (f) =>
         f.cancerId === currentTumor &&
@@ -507,16 +507,17 @@ export default function ProteinGeneCorrelation() {
         )
       : [];
 
+  console.log(view);
   const defaultLayout = {
     xaxis: {
-      title: `<b>${firstGene} Tumor/Normal</b>`,
+      title: `<b>${firstGene} ${view[0] === 10 ? "Tumor/Normal" : ""}</b>`,
       zeroline: false,
       titlefont: {
         size: 16,
       },
     },
     yaxis: {
-      title: `<b>${secondGene} Tumor/Normal</b>`,
+      title: `<b>${secondGene} ${view[0] === 10 ? "Tumor/Normal" : ""}</b>`,
       zeroline: false,
       titlefont: {
         size: 16,
@@ -1070,7 +1071,6 @@ export default function ProteinGeneCorrelation() {
                 options={form.cancer}
                 onChange={(e) => {
                   setSiteTumor(e);
-                  console.log(e);
                   setLabel(form.cancer.find((d) => d.value === e.value).label);
                 }}
               />
@@ -1241,7 +1241,6 @@ export default function ProteinGeneCorrelation() {
               />
             </Form.Group>
           </Row>
-
           <Row className="mx-3 mt-3">
             <Col xl={12}>
               <Plot
@@ -1271,7 +1270,7 @@ export default function ProteinGeneCorrelation() {
                       form.dataset.value === "phosphoproteinRatioData"
                         ? "/Protein Level"
                         : ""
-                    } Tumor/Normal</b>`,
+                    } ${siteTumor.value === 10 ? "Tumor/Normal" : ""}</b>`,
                     zeroline: false,
                     titlefont: {
                       size: 16,
@@ -1287,7 +1286,7 @@ export default function ProteinGeneCorrelation() {
                       secondSite.value !== form.correlatedGene.label
                         ? "/Protein Level"
                         : ""
-                    } Tumor/Normal</b>`,
+                    } ${siteTumor.value === 10 ? "Tumor/Normal" : ""}</b>`,
                     zeroline: false,
                     titlefont: {
                       size: 16,
