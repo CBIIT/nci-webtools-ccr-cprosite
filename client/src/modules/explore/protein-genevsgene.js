@@ -902,7 +902,9 @@ export default function ProteinGeneCorrelation() {
                 data={geneScatter}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${currentLabel} Protein Abundance ${firstGene} and ${secondGene} Correlation</b>`,
+                  title: `<b>${currentLabel} Protein Abundance ${firstGene} and ${secondGene} Correlation</b><br>(${
+                    numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
+                  } Values)`,
                   autosize: true,
                   legend: {
                     orientation: "h",
@@ -1293,7 +1295,11 @@ export default function ProteinGeneCorrelation() {
                           secondSite.value === form.correlatedGene.label
                             ? "Protein"
                             : secondSite.value
-                        } Correlation</b>`
+                        } Correlation</b><br>(${
+                          numType === "log2"
+                            ? "Log<sub>2</sub>"
+                            : "Converted Normal"
+                        } Values)`
                       : "",
                   autosize: true,
                   legend: {
