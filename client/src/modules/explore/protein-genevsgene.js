@@ -978,31 +978,69 @@ export default function ProteinGeneCorrelation() {
 
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Total Correlation:{" "}
-                {proteinGeneCorrelation.length
+                {proteinGeneCorrelation.filter(
+                  (f) =>
+                    f.firstTumor !== 0 &&
+                    f.firstControl !== 0 &&
+                    f.secondTumor !== 0 &&
+                    f.secondControl !== 0,
+                ).length
                   ? calculateCorrelation(
                       proteinGeneCorrelation
+                        .filter(
+                          (f) =>
+                            f.firstTumor !== 0 &&
+                            f.firstControl !== 0 &&
+                            f.secondTumor !== 0 &&
+                            f.secondControl !== 0,
+                        )
                         .map((e) =>
                           numType === "log2"
                             ? e.firstControl
                             : e.firstControlNum,
                         )
                         .concat(
-                          proteinGeneCorrelation.map((e) =>
-                            numType === "log2" ? e.firstTumor : e.firstTumorNum,
-                          ),
+                          proteinGeneCorrelation
+                            .filter(
+                              (f) =>
+                                f.firstTumor !== 0 &&
+                                f.firstControl !== 0 &&
+                                f.secondTumor !== 0 &&
+                                f.secondControl !== 0,
+                            )
+                            .map((e) =>
+                              numType === "log2"
+                                ? e.firstTumor
+                                : e.firstTumorNum,
+                            ),
                         ),
                       proteinGeneCorrelation
+                        .filter(
+                          (f) =>
+                            f.firstTumor !== 0 &&
+                            f.firstControl !== 0 &&
+                            f.secondTumor !== 0 &&
+                            f.secondControl !== 0,
+                        )
                         .map((e) =>
                           numType === "log2"
                             ? e.secondControl
                             : e.secondControlNum,
                         )
                         .concat(
-                          proteinGeneCorrelation.map((e) =>
-                            numType === "log2"
-                              ? e.secondTumor
-                              : e.secondTumorNum,
-                          ),
+                          proteinGeneCorrelation
+                            .filter(
+                              (f) =>
+                                f.firstTumor !== 0 &&
+                                f.firstControl !== 0 &&
+                                f.secondTumor !== 0 &&
+                                f.secondControl !== 0,
+                            )
+                            .map((e) =>
+                              numType === "log2"
+                                ? e.secondTumor
+                                : e.secondTumorNum,
+                            ),
                         ),
                       { decimals: 4 },
                     )
