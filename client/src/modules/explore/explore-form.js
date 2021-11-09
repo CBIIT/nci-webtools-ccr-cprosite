@@ -24,7 +24,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   const tumors = [{ value: 0, label: "All Tumor Types" }].concat(
     cancer.records.map((e) => {
-      return { value: e.id, label: e.name };
+      return { value: e.id, label: e.name, singlePool: e.singlePool };
     }),
   );
 

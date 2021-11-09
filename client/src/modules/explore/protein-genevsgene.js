@@ -97,7 +97,7 @@ export default function ProteinGeneCorrelation() {
       label: form.correlatedGene.label + " (Protein)",
     },
   ].concat(secondSites);
-  console.log(firstSites);
+
   const [first, setFirstSite] = useState({
     value: firstSites.length ? firstSites[0].value : "",
     label: firstSites.length ? firstSites[0].value : "",
@@ -507,17 +507,24 @@ export default function ProteinGeneCorrelation() {
         )
       : [];
 
-  console.log(view);
   const defaultLayout = {
     xaxis: {
-      title: `<b>${firstGene} ${view[0] === 10 ? "Tumor/Normal" : ""}</b>`,
+      title: `<b>${firstGene} ${
+        form.cancer.find((e) => e.value === view[0]).singlePool === 1
+          ? "Tumor/Normal"
+          : ""
+      }</b>`,
       zeroline: false,
       titlefont: {
         size: 16,
       },
     },
     yaxis: {
-      title: `<b>${secondGene} ${view[0] === 10 ? "Tumor/Normal" : ""}</b>`,
+      title: `<b>${secondGene} ${
+        form.cancer.find((e) => e.value === view[0]).singlePool === 1
+          ? "Tumor/Normal"
+          : ""
+      }</b>`,
       zeroline: false,
       titlefont: {
         size: 16,
@@ -945,7 +952,7 @@ export default function ProteinGeneCorrelation() {
             </Col>
           </Row>
 
-          <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
+          <fieldset className="mx-5 mb-3 border" style={{ color: "grey" }}>
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Tumor Correlation:{" "}
@@ -1050,6 +1057,13 @@ export default function ProteinGeneCorrelation() {
               </div>
             </Row>
           </fieldset>
+
+          {form.cancer.find((e) => e.value === view[0]).singlePool === 1 && (
+            <div className="mx-5" style={{ color: "grey" }}>
+              Note: {form.cancer.find((e) => e.value === view[0]).label} is a
+              single pool type tumor set
+            </div>
+          )}
 
           <div className="m-3">
             <div className="d-flex" style={{ justifyContent: "flex-end" }}>
@@ -1314,7 +1328,7 @@ export default function ProteinGeneCorrelation() {
                       form.dataset.value === "phosphoproteinRatioData"
                         ? "/Protein Level"
                         : ""
-                    } ${siteTumor.value === 10 ? "Tumor/Normal" : ""}</b>`,
+                    } ${siteTumor.singlePool === 1 ? "Tumor/Normal" : ""}</b>`,
                     zeroline: false,
                     titlefont: {
                       size: 16,
@@ -1330,7 +1344,7 @@ export default function ProteinGeneCorrelation() {
                       secondSite.value !== form.correlatedGene.label
                         ? "/Protein Level"
                         : ""
-                    } ${siteTumor.value === 10 ? "Tumor/Normal" : ""}</b>`,
+                    } ${siteTumor.singlePool === 1 ? "Tumor/Normal" : ""}</b>`,
                     zeroline: false,
                     titlefont: {
                       size: 16,
@@ -1362,8 +1376,8 @@ export default function ProteinGeneCorrelation() {
               />
             </Col>
           </Row>
-          {console.log(siteData)}
-          <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
+
+          <fieldset className="mx-5 mb-3 border" style={{ color: "grey" }}>
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Tumor Correlation:{" "}
@@ -1476,6 +1490,11 @@ export default function ProteinGeneCorrelation() {
               </div>
             </Row>
           </fieldset>
+          {siteTumor.singlePool === 1 && (
+            <div className="mx-5" style={{ color: "grey" }}>
+              Note: {siteTumor.label} is a single pool type tumor set
+            </div>
+          )}
           <div className="m-3">
             <div className="row">
               <div
