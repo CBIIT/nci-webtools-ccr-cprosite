@@ -1262,9 +1262,7 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-            <Form.Group
-              className="col-md-6 mt-2 col-form-label"
-              style={{ whiteSpace: "nowrap " }}>
+            <Form.Group className="col-md-6 mt-2 col-form-label">
               <br />
               <Form.Check
                 inline
