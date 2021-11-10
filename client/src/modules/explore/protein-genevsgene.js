@@ -1373,13 +1373,20 @@ export default function ProteinGeneCorrelation() {
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Adj. Normal Correlation:{" "}
                 {unfilteredSiteData.filter(
-                  (f) => f.firstControl !== "NA" && f.secondControl !== "NA",
+                  (f) =>
+                    f.firstControl !== "NA" &&
+                    f.secondControl !== "NA" &&
+                    f.firstControl !== 0 &&
+                    f.secondControl !== 0,
                 ).length
                   ? calculateCorrelation(
                       unfilteredSiteData
                         .filter(
                           (f) =>
-                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                            f.firstControl !== "NA" &&
+                            f.secondControl !== "NA" &&
+                            f.firstControl !== 0 &&
+                            f.secondControl !== 0,
                         )
                         .map((e) =>
                           numType === "log2"
@@ -1389,7 +1396,10 @@ export default function ProteinGeneCorrelation() {
                       unfilteredSiteData
                         .filter(
                           (f) =>
-                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                            f.firstControl !== "NA" &&
+                            f.secondControl !== "NA" &&
+                            f.firstControl !== 0 &&
+                            f.secondControl !== 0,
                         )
                         .map((e) =>
                           numType === "log2"
@@ -1403,12 +1413,21 @@ export default function ProteinGeneCorrelation() {
 
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Total Correlation:{" "}
-                {siteData.length
+                {siteData.filter(
+                  (f) =>
+                    f.firstTumor !== 0 &&
+                    f.firstControl !== 0 &&
+                    f.secondTumor !== 0 &&
+                    f.secondControl !== 0,
+                ).length
                   ? calculateCorrelation(
                       unfilteredSiteData
                         .filter(
                           (f) =>
-                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                            f.firstControl !== "NA" &&
+                            f.secondControl !== "NA" &&
+                            f.firstControl !== 0 &&
+                            f.secondControl !== 0,
                         )
                         .map((e) =>
                           numType === "log2"
@@ -1419,7 +1438,10 @@ export default function ProteinGeneCorrelation() {
                           unfilteredSiteData
                             .filter(
                               (f) =>
-                                f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                                f.firstTumor !== "NA" &&
+                                f.secondTumor !== "NA" &&
+                                f.firstControl !== 0 &&
+                                f.secondControl !== 0,
                             )
                             .map((e) =>
                               numType === "log2"
@@ -1430,7 +1452,10 @@ export default function ProteinGeneCorrelation() {
                       unfilteredSiteData
                         .filter(
                           (f) =>
-                            f.firstControl !== "NA" && f.secondControl !== "NA",
+                            f.firstControl !== "NA" &&
+                            f.secondControl !== "NA" &&
+                            f.firstControl !== 0 &&
+                            f.secondControl !== 0,
                         )
                         .map((e) =>
                           numType === "log2"
@@ -1441,7 +1466,10 @@ export default function ProteinGeneCorrelation() {
                           unfilteredSiteData
                             .filter(
                               (f) =>
-                                f.firstTumor !== "NA" && f.secondTumor !== "NA",
+                                f.firstTumor !== "NA" &&
+                                f.secondTumor !== "NA" &&
+                                f.firstControl !== 0 &&
+                                f.secondControl !== 0,
                             )
                             .map((e) =>
                               numType === "log2"
