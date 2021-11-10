@@ -1135,39 +1135,6 @@ export default function ProteinGeneCorrelation() {
               <b className="col-xl-11" style={{ textAlign: "center" }}>
                 Phosphorylation Site - {form.gene.label}
               </b>
-
-              <div
-                className="col-xl-1 d-flex"
-                style={{ justifyContent: "flex-end", whiteSpace: "nowrap" }}>
-                <ExcelFile
-                  filename={`${currentLabel}_${datasetName}_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
-                  element={<a href="javascript:void(0)">Export Data</a>}>
-                  <ExcelSheet
-                    dataSet={exportSiteSettings(form.gene.label)}
-                    name="Input Configuration"
-                  />
-                  <ExcelSheet
-                    dataSet={exportSite(
-                      results[0].summary.records.filter(
-                        (f) =>
-                          f.cancerId === currentSiteTumor &&
-                          f.phosphorylationSite !== "all",
-                      ),
-                    )}
-                    name={`${form.gene.label} Data`}
-                  />
-                  <ExcelSheet
-                    dataSet={exportSite(
-                      results[1].summary.records.filter(
-                        (f) =>
-                          f.cancerId === currentSiteTumor &&
-                          f.phosphorylationSite !== "all",
-                      ),
-                    )}
-                    name={`${form.correlatedGene.label} Data`}
-                  />
-                </ExcelFile>
-              </div>
             </div>
             <Table
               columns={siteColumns}
