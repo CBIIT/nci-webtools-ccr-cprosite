@@ -682,7 +682,11 @@ export default function Results() {
                   ...defaultLayout,
                   title: `<b>${form.gene.label} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Protein Abundance Tumor vs Adjacent Normal</b>`,
+                  } Protein Abundance Tumor vs Adjacent Normal</b>  (Unpaired P-Value: ${
+                    averages.length && averages.find((e) => e.id === view)
+                      ? averages.find((e) => e.id === view).pValueUnpaired
+                      : "NA"
+                  })`,
 
                   yaxis: {
                     title: "<b>Relative Protein Abundance (TMT log2 vlaue)</b>",

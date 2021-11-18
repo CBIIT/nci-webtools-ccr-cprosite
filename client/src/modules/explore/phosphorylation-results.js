@@ -229,6 +229,20 @@ export default function PhosResults() {
           <b>Tumor Abundance</b>
         </OverlayTrigger>
       ),
+      sortType: (a, b) => {
+        return (
+          Number(
+            a.values.tumorValue === "NA"
+              ? Number.MIN_SAFE_INTEGER
+              : Number(a.values.tumorValue),
+          ) -
+          Number(
+            b.values.tumorValue === "NA"
+              ? Number.MIN_SAFE_INTEGER
+              : Number(b.values.tumorValue),
+          )
+        );
+      },
     },
     {
       accessor: "controlValue",
@@ -241,6 +255,20 @@ export default function PhosResults() {
           <b>Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
+      sortType: (a, b) => {
+        return (
+          Number(
+            a.values.controlValue === "NA"
+              ? Number.MIN_SAFE_INTEGER
+              : Number(a.values.controlValue),
+          ) -
+          Number(
+            b.values.controlValue === "NA"
+              ? Number.MIN_SAFE_INTEGER
+              : Number(b.values.controlValue),
+          )
+        );
+      },
     },
     {
       accessor: "proteinDiff",
@@ -574,7 +602,7 @@ export default function PhosResults() {
     if (tumorViewData.find((c) => c.name === phosView)) {
       var caseList = tumorViewData
         .find((c) => c.name === phosView)
-        .records.filter((e) => e.tumorValue && e.normalValue)
+        .records.filter((e) => e.tumorValue !== null && e.normalValue !== null)
         .sort((a, b) => {
           const aFoldChange = a.tumorValue - a.normalValue;
           const bFoldChange = b.tumorValue - b.normalValue;
@@ -937,7 +965,7 @@ export default function PhosResults() {
                 ...defaultLayout,
                 title: `<b>${form.gene.label} ${
                   form.cancer.find((f) => f.value === currentTumor).label
-                } Phosphorylation Site Tumor vs Adjacent Normal</b>`,
+                } Phosphorylation Site Tumor vs Adjacent Normal</b> `,
                 xaxis: {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
@@ -1071,7 +1099,7 @@ export default function PhosResults() {
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
-
+        {console.log(tumorViewData)}
         <Row className="mx-3 mt-3">
           {plotTab === "tumorVsControl" ? (
             <Col xl={12} style={{ height: "800px" }}>
@@ -1081,7 +1109,12 @@ export default function PhosResults() {
                   ...defaultLayout,
                   title: `<b>${form.gene.label} ${phosView} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Tumor vs Adjacent Normal</b>`,
+                  } Tumor vs Adjacent Normal</b> (Unpaired P-Value: ${
+                    tumorViewData.find((e) => e.name === phosView)
+                      ? tumorViewData.find((e) => e.name === phosView)
+                          .pValueUnpaired
+                      : "NA"
+                  })`,
                   yaxis: {
                     title:
                       "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
@@ -1191,8 +1224,10 @@ export default function PhosResults() {
                         !tumorViewData.find((c) => c.name === phosView) ||
                         tumorViewData
                           .find((c) => c.name === phosView)
-                          .records.filter((e) => e.tumorValue && e.normalValue)
-                          .length === 0
+                          .records.filter(
+                            (e) =>
+                              e.tumorValue !== null && e.normalValue !== null,
+                          ).length === 0
                           ? "No data available"
                           : "",
                       xref: "paper",
@@ -1217,7 +1252,6 @@ export default function PhosResults() {
             </Col>
           )}
         </Row>
-
         <fieldset className="mx-5 mb-5 border row" style={{ color: "grey" }}>
           <div className="col-xl-6 my-2 d-flex justify-content-center">
             Accession: {site.accession}
