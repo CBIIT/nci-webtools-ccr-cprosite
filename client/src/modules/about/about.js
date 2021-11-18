@@ -28,11 +28,12 @@ export default function About() {
               <li>2) More user-friendly environment.</li>
               <li>
                 3) Less need for bioinformatics expertise to perform the
-                analysis. cProSite currently includes 10 tumor types (breast
+                analysis. cProSite currently includes 11 tumor types (breast
                 cancer, colon cancer, head and neck cancer, liver cancer, lung
                 adenocarcinoma (Lung AD), lung squamous carcinoma (Lung SC),
-                ovarian cancer, stomach cancer and uterine cancer). The cProSite
-                Dataset will be updated with the new CPTAC release.
+                ovarian cancer, pancreatic ductal adenocarcinoma, stomach cancer
+                and uterine cancer). The cProSite Dataset will be updated with
+                the new CPTAC release.
               </li>
             </ul>
           </p>
