@@ -1103,7 +1103,7 @@ export default function ProteinPhosResults() {
                   ...defaultLayout,
                   title: `<b>${form.gene.label} ${phosView} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Tumor vs Adjacent Normal</b> (Unpaired P-Value: ${
+                  } Tumor vs Adjacent Normal</b><br>(Unpaired P-Value: ${
                     tumorViewData.find((e) => e.name === phosView)
                       ? tumorViewData.find((e) => e.name === phosView)
                           .pValueUnpaired
@@ -1168,7 +1168,7 @@ export default function ProteinPhosResults() {
                   autosize: true,
                   title: `<b>${form.gene.label} ${phosView} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Log<sub>2</sub> Fold Change</b> (Paired P-Value: ${
+                  } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${
                     tumorViewData.find((e) => e.name === phosView)
                       ? tumorViewData.find((e) => e.name === phosView)
                           .pValuePaired
