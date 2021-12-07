@@ -682,7 +682,7 @@ export default function Results() {
                   ...defaultLayout,
                   title: `<b>${form.gene.label} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Protein Abundance Tumor vs Adjacent Normal</b> (Unpaired P-Value: ${
+                  } Protein Abundance Tumor vs Adjacent Normal</b><br>(Unpaired P-Value: ${
                     averages.length && averages.find((e) => e.id === view)
                       ? averages.find((e) => e.id === view).pValueUnpaired
                       : "NA"
@@ -765,7 +765,7 @@ export default function Results() {
                   autosize: true,
                   title: `<b>${form.gene.label} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Log<sub>2</sub> Fold Change</b> (Paired P-Value: ${
+                  } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${
                     averages.length && averages.find((e) => e.id === view)
                       ? averages.find((e) => e.id === view).pValuePaired
                       : "NA"
