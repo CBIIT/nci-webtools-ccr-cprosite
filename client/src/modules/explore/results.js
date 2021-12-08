@@ -295,9 +295,17 @@ export default function Results() {
       controlNum: e.normalSampleCount !== null ? e.normalSampleCount : "NA",
       tumorNum: e.tumorSampleCount !== null ? e.tumorSampleCount : "NA",
       pValuePaired:
-        e.pValuePaired !== null ? Number(e.pValuePaired.toFixed(4)) : "NA",
+        e.pValuePaired !== null
+          ? Number(e.pValuePaired.toFixed(4)) < 0.0001
+            ? "< 0.0001"
+            : Number(e.pValuePaired.toFixed(4))
+          : "NA",
       pValueUnpaired:
-        e.pValueUnpaired !== null ? Number(e.pValueUnpaired.toFixed(4)) : "NA",
+        e.pValueUnpaired !== null
+          ? Number(e.pValueUnpaired.toFixed(4)) < 0.0001
+            ? "< 0.0001"
+            : Number(e.pValueUnpaired.toFixed(4))
+          : "NA",
       controlError:
         e.normalSampleStandardError !== null
           ? Number(e.normalSampleStandardError.toFixed(4))
