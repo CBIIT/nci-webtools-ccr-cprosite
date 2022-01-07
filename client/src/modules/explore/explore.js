@@ -81,8 +81,8 @@ export default function Explore() {
                   <div style={{ color: "red" }}>
                     The server encountered an internal error or
                     misconfiguration. Please contact{" "}
-                    <a href="mailto:CPTACSearchWebAdmin@mail.nih.gov">
-                      CPTACSearchWebAdmin@mail.nih.gov
+                    <a href="mailto:NCIcProSiteWebAdmin@mail.nih.gov">
+                      NCIcProSiteWebAdmin@mail.nih.gov
                     </a>{" "}
                     and inform them your configuration settings and the time
                     that the error occured.{" "}
@@ -103,8 +103,8 @@ export default function Explore() {
                   <div style={{ color: "red" }}>
                     The server encountered an internal error or
                     misconfiguration. Please contact{" "}
-                    <a href="mailto:CPTACSearchWebAdmin@mail.nih.gov">
-                      CPTACSearchWebAdmin@mail.nih.gov
+                    <a href="mailto:NCIcProSiteWebAdmin@mail.nih.gov">
+                      NCIcProSiteWebAdmin@mail.nih.gov
                     </a>{" "}
                     and inform them your configuration settings and the time
                     that the error occured.{" "}
