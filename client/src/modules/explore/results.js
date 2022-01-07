@@ -30,11 +30,14 @@ export default function Results() {
     _.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId"),
   ).filter((e) => e[0] !== "null");
 
-  console.log(results);
   const [view, setView] = useState(results.length ? Number(results[0][0]) : 0);
+
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
+    : results.length
+    ? Number(results[0][0])
     : form.cancer[0].value;
+  console.log(currentTumor);
 
   const proteinAbundanceColumns = [
     {
@@ -219,17 +222,13 @@ export default function Results() {
     },
   ];
 
+  console.log(results);
+  console.log(currentTumor);
   const boxPlotData = [
     {
-      y: results.length
+      y: results.find((e) => Number(e[0]) === currentTumor)
         ? results
-            .find(
-              (e) =>
-                Number(e[0]) ===
-                (form.cancer.find((e) => e.value === view)
-                  ? view
-                  : form.cancer[0].value),
-            )[1]
+            .find((e) => Number(e[0]) === currentTumor)[1]
             .map((e) => e.tumorValue)
         : [],
       type: "box",
@@ -243,16 +242,10 @@ export default function Results() {
       hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
     },
     {
-      y: results.length
+      y: results.find((e) => Number(e[0]) === currentTumor)
         ? results
-            .find(
-              (e) =>
-                Number(e[0]) ===
-                (form.cancer.find((e) => e.value === view)
-                  ? view
-                  : form.cancer[0].value),
-            )[1]
-            .map((e) => e.normalValue)
+            .find((e) => Number(e[0]) === currentTumor)[1]
+            .map((e) => e.tumorValue)
         : [],
       type: "box",
       boxpoints: "all",
@@ -317,8 +310,6 @@ export default function Results() {
     };
   });
 
-  console.log(averages);
-
   function multiBarPlotData() {
     return [
       {
@@ -359,13 +350,7 @@ export default function Results() {
   function foldData() {
     if (results.length !== 0) {
       var caseList = results
-        .find(
-          (e) =>
-            Number(e[0]) ===
-            (form.cancer.find((e) => e.value === view)
-              ? view
-              : form.cancer[0].value),
-        )[1]
+        .find((e) => Number(e[0]) === currentTumor)[1]
         .filter((e) => e.tumorValue !== null && e.normalValue !== null)
         .sort((a, b) => {
           const aFoldChange = a.tumorValue - a.normalValue;
@@ -476,8 +461,8 @@ export default function Results() {
       data: [
         [
           {
-            value: form.cancer.find((e) => e.value === view)
-              ? form.cancer.find((e) => e.value === view).label
+            value: form.cancer.find((e) => e.value === currentTumor)
+              ? form.cancer.find((e) => e.value === currentTumor).label
               : "NA",
           },
           { value: "Protein Abundance" },
@@ -494,10 +479,9 @@ export default function Results() {
         return { title: e.label, width: { wpx: 160 } };
       }),
       data:
-        results.length &&
-        results.find((e) => Number(e[0]) === view) &&
+        results.find((e) => Number(e[0]) === currentTumor) &&
         results
-          .find((e) => Number(e[0]) === view)[1]
+          .find((e) => Number(e[0]) === currentTumor)[1]
           .map((c) => {
             return [
               { value: c.participantId },
