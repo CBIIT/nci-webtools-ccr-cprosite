@@ -245,7 +245,7 @@ export default function Results() {
       y: results.find((e) => Number(e[0]) === currentTumor)
         ? results
             .find((e) => Number(e[0]) === currentTumor)[1]
-            .map((e) => e.tumorValue)
+            .map((e) => e.normalValue)
         : [],
       type: "box",
       boxpoints: "all",
