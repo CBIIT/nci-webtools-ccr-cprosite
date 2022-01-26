@@ -35,6 +35,8 @@ export default function ProteinGeneCorrelation() {
   const [label, setLabel] = useState(form.cancer[0].label);
   const [tab, setTab] = useState("summaryView");
 
+  const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
+
   const datasetName =
     form.dataset.label === "Protein Abundance"
       ? "Protein_Abundance"
@@ -276,10 +278,12 @@ export default function ProteinGeneCorrelation() {
         </OverlayTrigger>
       ),
       sort: true,
-      sortType: (a, b) =>
-        a.original.phosphorylationSite.key > b.original.phosphorylationSite.key
-          ? 1
-          : -1,
+      sortType: (a, b) => {
+        return (
+          getNumericPosition(a.original.phosphorylationSite) -
+          getNumericPosition(b.original.phosphorylationSite)
+        );
+      },
     },
     {
       accessor: "accession",
@@ -510,7 +514,7 @@ export default function ProteinGeneCorrelation() {
   const defaultLayout = {
     xaxis: {
       title: `<b>${firstGene} ${
-        form.cancer.find((e) => e.value === view[0]).singlePool === 1
+        form.cancer.find((e) => e.value === currentTumor[0]).singlePool === 1
           ? "Tumor/Normal"
           : ""
       }</b>`,
@@ -521,7 +525,7 @@ export default function ProteinGeneCorrelation() {
     },
     yaxis: {
       title: `<b>${secondGene} ${
-        form.cancer.find((e) => e.value === view[0]).singlePool === 1
+        form.cancer.find((e) => e.value === currentTumor[0]).singlePool === 1
           ? "Tumor/Normal"
           : ""
       }</b>`,
@@ -1058,10 +1062,11 @@ export default function ProteinGeneCorrelation() {
             </Row>
           </fieldset>
 
-          {form.cancer.find((e) => e.value === view[0]).singlePool === 1 && (
+          {form.cancer.find((e) => e.value === currentTumor[0]).singlePool ===
+            1 && (
             <div className="mx-5" style={{ color: "grey" }}>
-              Note: {form.cancer.find((e) => e.value === view[0]).label} is a
-              single pool type tumor set
+              Note: {form.cancer.find((e) => e.value === currentTumor[0]).label}{" "}
+              is a single pool type tumor set
             </div>
           )}
 
