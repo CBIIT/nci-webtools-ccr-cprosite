@@ -1,26 +1,9 @@
-# DynamoDB Schema
-
-| Partition Key        | Sort Key                         | Attributes                                                                                                                                                                                             |
-| -------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| gene#geneId          | gene#geneId                      | <ul><li>name</li><li>description</li></ul>                                                                                                                                                             |
-| cancer#cancerId      | cancer#cancerId                  | <ul><li>name</li><li>description</li></ul>                                                                                                                                                             |
-| case#geneId#cancerId | proteinDataSummary#caseId        | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
-|                      | phosphoproteinDataSummary#caseId | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
-|                      | rnaDataSummary#caseId            | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
-|                      | tcgaRnaDataSummary#caseId        | <ul><li>name</li><li>normalValueCount</li><li>normalValueMean</li><li>normalValueStandardError</li><li>tumorValueCount</li><li>tumorValueMean</li><li>tumorValueStandardError</li><li>pValue</li></ul> |
-|                      | proteinData#caseId               | <ul><li>name</li><li>normalValue</li><li>tumorValue</li></ul>                                                                                                                                          |
-|                      | phosphoproteinData#caseId        | <ul><li>name</li><li>normalValue</li><li>tumorValue</li><li>accession</li><li>phosphorylationSite</li><li>phosphopeptide</li></ul>                                                                     |
-|                      | rnaData#caseId                   | <ul><li>name</li><li>normalValue</li><li>tumorValue</li></ul>                                                                                                                                          |
-|                      | tcgaRnaData#caseId               | <ul><li>name</li><li>normalValue</li><li>tumorValue</li></ul>                                                                                                                                          |
-
 # Import Process
 
-1. A list of sources is specified in the `sources.json` file.
-2. A temporary SQLite database is used to normalize, validate, and join source datasets in a unified view, as well as to calculate summary statistics (eg: mean, standard error, p-value)
-3. This unified view is then imported into the DynamoDB table.
-
-# Running DynamoDB Locally
-
-1. Download and unzip [DynamoDB](https://s3.us-west-2.amazonaws.com/dynamodb-local/dynamodb_local_latest.zip) to the database/localDynamoDB folder
-2. Ensure that credentials have been set in the AWS CLI
-3. Run `npm start` in the database folder
+1. Create a MySQL database from the dump files provided by our client
+2. Run the `export.sql` script against the imported database. If our client has provided additional datasets, modify the `generateExport.js` script and run it to regenerate the `export.sql` script
+3. Create a data/ folder
+4. Export the following four tables to the data/ folder as csv files: phosphoproteinData.csv, proteinData.csv, rnaData.csv, tcgaRnaData.csv
+5. Download the following csv files to the data/ folder: gene.csv, geneAlias.csv, cancer.csv
+6. Confirm that `sources.json` contains valid references to files in the data/ folder
+7. Run the import.js script to generate the sqlite database (`cprosite.db` if no filename argument is provided)
