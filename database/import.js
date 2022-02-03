@@ -6,6 +6,7 @@ const incrstdev = require("@stdlib/stats/incr/stdev");
 const wilcoxon = require("@stdlib/stats/wilcoxon");
 const ttest2 = require("@stdlib/stats/ttest2");
 const { zip } = require("lodash");
+const { exportData } = require("./export.js");
 const sources = require("./sources.json");
 const args = require("minimist")(process.argv.slice(2));
 const timestamp = getTimestamp(
@@ -13,7 +14,9 @@ const timestamp = getTimestamp(
 );
 
 (async function main() {
-  const databaseFilePath = args.db || "cprosite.db";
+  await exportData(args);
+
+  const databaseFilePath = args.output || "cprosite.db";
 
   const mainTablesSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
   const mainIndexesSql = await fsp.readFile("schema/indexes/main.sql", "utf-8");
