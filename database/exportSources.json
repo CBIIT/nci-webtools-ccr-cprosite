@@ -1,0 +1,88 @@
+[
+  {
+    "cancer": "cancer_breast",
+    "cancerId": 1,
+    "proteinTable": "breastcptac2prodata",
+    "phosphoproteinTable": "breastCPTAC2phosphodata",
+    "rnaTable": "breastcptac2rnadata",
+    "tcgaRnaTable": "breastdata"
+  },
+  {
+    "cancer": "cancer_colon",
+    "cancerId": 2,
+    "proteinTable": "coloncptac2prodata",
+    "phosphoproteinTable": "coloncptac2phosphodata",
+    "rnaTable": "coloncptac2rnadata",
+    "tcgaRnaTable": "colondata"
+  },
+  {
+    "cancer": "cancer_head_and_neck",
+    "cancerId": 3,
+    "proteinTable": "hncptac3prodata",
+    "phosphoproteinTable": "hncptac3phosphodata",
+    "rnaTable": "hncptac3rnadata",
+    "tcgaRnaTable": "hndata"
+  },
+  {
+    "cancer": "cancer_kidney",
+    "cancerId": 4,
+    "proteinTable": "ccrcccptac3prodata",
+    "phosphoproteinTable": "ccrcccptac3phosphodata",
+    "rnaTable": "ccrcccptac3rnadata"
+  },
+  {
+    "cancer": "cancer_liver",
+    "cancerId": 5,
+    "proteinTable": "liverhcccptacprodata",
+    "phosphoproteinTable": "liverhcccptacphosphodata",
+    "rnaTable": "liverhcccptacrnadata",
+    "tcgaRnaTable": "liverhccdata"
+  },
+  {
+    "cancer": "cancer_lung_adenocarcinoma",
+    "cancerId": 6,
+    "proteinTable": "lungadcptac3prodata",
+    "phosphoproteinTable": "lungadcptac3phosphodata",
+    "rnaTable": "lungadcptac3rnadata",
+    "tcgaRnaTable": "lungaddata"
+  },
+  {
+    "cancer": "cancer_lung_squamous_cell_carcinoma",
+    "cancerId": 7,
+    "proteinTable": "lungsqcptac3prodata",
+    "phosphoproteinTable": "lungsqcptac3phosphodata",
+    "rnaTable": "lungsqcptac3rnadata",
+    "tcgaRnaTable": "lungsqdata"
+  },
+  {
+    "cancer": "cancer_ovarian",
+    "cancerId": 8,
+    "proteinTable": "ovcptac2prodata",
+    "phosphoproteinTable": "ovacptac2phosphodata",
+    "rnaTable": "ovcptac2rnadata",
+    "tcgaRnaTable": "ovdata"
+  },
+  {
+    "cancer": "cancer_pancreas",
+    "cancerId": 9,
+    "proteinTable": "pdaccptac3prodata",
+    "phosphoproteinTable": "pdaccptac3phosphodata",
+    "rnaTable": "pdaccptac3rnadata",
+    "tcgaRnaTable": "pancreasdata"
+  },
+  {
+    "cancer": "cancer_stomach",
+    "cancerId": 10,
+    "proteinSinglePoolTable": "stomachcptac3prodata",
+    "phosphoproteinSinglePoolTable": "stomachcptac3phosphodata",
+    "tcgaRnaTable": "stomachdata"
+  },
+  {
+    "cancer": "cancer_uterine",
+    "cancerId": 11,
+    "proteinTable": "uterinecptac3prodata",
+    "phosphoproteinTable": "uterinecptac3phosphodata",
+    "rnaTable": "uterinecptac3rnadata",
+    "tcgaRnaTable": "uterinedata"
+  }
+]

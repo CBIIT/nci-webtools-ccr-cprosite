@@ -5,8 +5,8 @@
     "headers": ["id", "name", "description"]
   },
   {
-    "filePath": "data/geneAlias.csv",
-    "table": "geneAlias",
+    "filePath": "data/geneName.csv",
+    "table": "geneName",
     "headers": ["id", "name"]
   },
   {
