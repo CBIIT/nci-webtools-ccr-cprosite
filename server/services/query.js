@@ -8,6 +8,9 @@ function query(database, params) {
   let { table, offset, limit, order, orderBy, columns, distinct, count, raw } =
     params;
 
+  limit = limit || 100000;
+  offset = offset || 0;
+
   // validate provided table
   const isValidTable =
     database

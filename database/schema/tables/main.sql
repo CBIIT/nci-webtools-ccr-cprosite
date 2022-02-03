@@ -3,7 +3,8 @@ create table "cancer"
     "id" integer primary key,
     "name" text,
     "description" text,
-    "study" text
+    "study" text,
+    "singlePool" integer
 );
 
 create table "gene"
@@ -11,6 +12,12 @@ create table "gene"
     "id" integer primary key,
     "name" text,
     "description" text
+);
+
+create table "geneAlias"
+(
+    "id" integer,
+    "name" text
 );
 
 create table "proteinData" (

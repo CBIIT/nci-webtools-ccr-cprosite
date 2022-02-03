@@ -73,6 +73,7 @@ const config = [
   {
     cancer: "cancer_uterine",
     proteinTable: "uterinecptac3prodata",
+    phosphoproteinTable: "uterinecptac3phosphodata",
     rnaTable: "uterinecptac3rnadata",
     tcgaRnaTable: "uterinedata",
   },
@@ -158,7 +159,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -201,7 +202,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId;
 
 -- insert protein abundances 
@@ -237,7 +238,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -296,7 +297,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3  
+  c.PPvalue between -30 and 30  
 group by geneId, participantId, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, tumorValue, accession, phosphorylationSite, phosphopeptide)
