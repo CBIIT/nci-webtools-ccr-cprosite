@@ -14,7 +14,7 @@ create table "gene"
     "description" text
 );
 
-create table "geneAlias"
+create table "geneName"
 (
     "id" integer,
     "name" text
