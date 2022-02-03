@@ -504,10 +504,8 @@ export default function ProteinGeneCorrelation() {
     form.dataset.value === "phosphoproteinRatioData"
       ? unfilteredSiteData.filter(
           (e) =>
-            e.firstTumor !== "NA" &&
-            e.firstControl !== "NA" &&
-            e.secondTumor !== "NA" &&
-            e.secondControl !== "NA",
+            (e.firstTumor !== "NA" && e.secondTumor !== "NA") ||
+            (e.firstControl !== "NA" && e.secondControl !== "NA"),
         )
       : [];
 
