@@ -76,7 +76,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -123,7 +123,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -268,7 +268,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -315,7 +315,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -460,7 +460,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -507,7 +507,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -652,7 +652,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -699,7 +699,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -797,7 +797,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -844,7 +844,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -989,7 +989,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1036,7 +1036,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1181,7 +1181,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1228,7 +1228,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1373,7 +1373,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1420,7 +1420,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1565,7 +1565,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1612,7 +1612,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3
+  c.PPvalue between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
@@ -1756,7 +1756,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId;
 
 -- insert protein abundances 
@@ -1791,7 +1791,7 @@ inner join geneMap g on g.name = c.Ppgene
 where 
   c.ppid not like 'LungTumor%' and  
   c.ppid not like 'QC%' and
-  c.PPvalue between -3 and 3  
+  c.PPvalue between -30 and 30  
 group by geneId, participantId, accession, phosphorylationSite, phosphopeptide;
 
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, tumorValue, accession, phosphorylationSite, phosphopeptide)
@@ -1874,7 +1874,7 @@ inner join geneMap g on g.name = c.CCgene
 where 
   c.CCid not like 'LungTumor%' and
   c.CCid not like 'QC%' and
-  c.CCvalue between -3 and 3
+  c.CCvalue between -30 and 30
 group by geneId, participantId, isTumor;
 
 -- insert protein abundances for normal tissue samples
@@ -1902,6 +1902,66 @@ select * from (
   where isTumor = 1
 ) as new
 on duplicate key update tumorValue = new.tumorValue;
+
+
+
+-- create temporary table for phosphoprotein abundances
+drop table if exists uterinecptac3phosphodata_temp;
+create table uterinecptac3phosphodata_temp as
+select distinct
+  g.id as geneId,
+  replace(regexp_replace(c.ppid, '[-_][[:alpha:]]{2}[[:space:]]*$', ''), '.', '-') as participantId,
+  avg(c.PPvalue) as value,
+  regexp_like(c.ppid, '[-_]tu[[:space:]]*$', 'i') as isTumor,
+  substring_index(c.NPid, ':', 1) as accession,
+  substring_index(c.NPid, ':', -1) as phosphorylationSite,
+  c.Ppep as phosphopeptide
+from uterinecptac3phosphodata c
+inner join geneMap g on g.name = c.Ppgene
+where 
+  c.ppid not like 'LungTumor%' and  
+  c.ppid not like 'QC%' and
+  c.PPvalue between -30 and 30
+group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
+
+insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
+select * from (
+  select 
+    11 as cancerId,
+    geneId, 
+    participantId, 
+    value as normalValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
+  from uterinecptac3phosphodata_temp
+  where isTumor = 0
+) as new
+on duplicate key update
+  normalValue = new.normalValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
+
+
+insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
+select * from (
+  select 
+    11 as cancerId,
+    geneId, 
+    participantId, 
+    value as tumorValue, 
+    accession, 
+    phosphorylationSite, 
+    phosphopeptide
+  from uterinecptac3phosphodata_temp
+  where isTumor = 1
+) as new
+on duplicate key update
+  tumorValue = new.tumorValue,
+  accession = new.accession,
+  phosphorylationSite = new.phosphorylationSite,
+  phosphopeptide = new.phosphopeptide;
 
 
 
