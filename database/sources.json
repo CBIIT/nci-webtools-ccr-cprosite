@@ -7,7 +7,7 @@
   {
     "filePath": "data/geneAlias.csv",
     "table": "geneAlias",
-    "headers": ["id", "geneId", "name"]
+    "headers": ["id", "name"]
   },
   {
     "filePath": "data/cancer.csv",

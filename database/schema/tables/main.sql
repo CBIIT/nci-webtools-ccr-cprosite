@@ -16,8 +16,7 @@ create table "gene"
 
 create table "geneAlias"
 (
-    "id" integer primary key,
-    "geneId" integer primary key,
+    "id" integer,
     "name" text
 );
 
