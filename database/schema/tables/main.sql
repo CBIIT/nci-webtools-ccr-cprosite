@@ -14,6 +14,13 @@ create table "gene"
     "description" text
 );
 
+create table "geneAlias"
+(
+    "id" integer primary key,
+    "geneId" integer primary key,
+    "name" text
+);
+
 create table "proteinData" (
     "id" integer primary key,
     "cancerId" integer references "cancer"("id"),

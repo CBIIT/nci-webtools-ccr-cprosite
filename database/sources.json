@@ -5,6 +5,11 @@
     "headers": ["id", "name", "description"]
   },
   {
+    "filePath": "data/geneAlias.csv",
+    "table": "geneAlias",
+    "headers": ["id", "geneId", "name"]
+  },
+  {
     "filePath": "data/cancer.csv",
     "table": "cancer",
     "headers": ["id", "name", "description", "study", "singlePool"]
