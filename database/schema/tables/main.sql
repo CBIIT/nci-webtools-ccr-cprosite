@@ -3,7 +3,8 @@ create table "cancer"
     "id" integer primary key,
     "name" text,
     "description" text,
-    "study" text
+    "study" text,
+    "singlePool" integer
 );
 
 create table "gene"
