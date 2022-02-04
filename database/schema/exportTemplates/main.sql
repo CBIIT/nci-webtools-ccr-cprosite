@@ -55,14 +55,14 @@ create unique index tcgaRnaData_unique_index on tcgaRnaData(cancerId, geneId, pa
 
 drop table if exists gene;
 create table gene as (
-  select cast(substring_index(id, ':', -1) as unsigned) as id, name, description from geneSource
+  select distinct cast(substring_index(id, ':', -1) as unsigned) as id, name, description from geneSource
 );
 
 drop table if exists geneName;
 create table geneName as (
-  select cast(substring_index(id, ':', -1) as unsigned) as id, name from geneSource where name != ''
+  select distinct cast(substring_index(id, ':', -1) as unsigned) as id, name from geneSource where name != ''
   union
-  select cast(substring_index(id, ':', -1) as unsigned) as id, previousName as name from geneSource where previousName != ''
+  select distinct cast(substring_index(id, ':', -1) as unsigned) as id, previousName as name from geneSource where previousName != ''
 );
 
 create index geneName_id_name_index on geneName (id, name);
