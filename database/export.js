@@ -5,9 +5,7 @@ const { template } = require("lodash");
 const { getTimestamp } = require("./utils");
 const exportSources = require("./exportSources.json");
 const importSources = require("./importSources.json");
-const timestamp = getTimestamp(
-  ([absolute, relative]) => `${absolute / 1000}s, ${relative / 1000}s`,
-);
+const timestamp = getTimestamp(([absolute, relative]) => `${absolute / 1000}s, ${relative / 1000}s`);
 
 if (require.main === module) {
   const args = require("minimist")(process.argv.slice(2));
@@ -71,34 +69,18 @@ async function exportData({ host, port, user, password, database }) {
   }
 }
 
+function getTemplate(filePath) {
+  return template(fs.readFileSync(filePath, "utf8"));
+}
+
 function generateExportSqlStatements(sources) {
-  const mainTableTemplate = template(
-    fs.readFileSync("./schema/exportTemplates/main.sql", "utf8"),
-  );
-  const proteinDataTemplate = template(
-    fs.readFileSync("./schema/exportTemplates/proteinData.sql", "utf8"),
-  );
-  const proteinSinglePoolDataTemplate = template(
-    fs.readFileSync(
-      "./schema/exportTemplates/proteinSinglePoolData.sql",
-      "utf8",
-    ),
-  );
-  const phosphoproteinDataTemplate = template(
-    fs.readFileSync("./schema/exportTemplates/phosphoproteinData.sql", "utf8"),
-  );
-  const phosphoproteinSinglePoolDataTemplate = template(
-    fs.readFileSync(
-      "./schema/exportTemplates/phosphoproteinSinglePoolData.sql",
-      "utf8",
-    ),
-  );
-  const rnaDataTemplate = template(
-    fs.readFileSync("./schema/exportTemplates/rnaData.sql", "utf8"),
-  );
-  const tcgaRnaDataTemplate = template(
-    fs.readFileSync("./schema/exportTemplates/tcgaRnaData.sql", "utf8"),
-  );
+  const mainTableTemplate = getTemplate("./schema/exportTemplates/main.sql");
+  const proteinDataTemplate = getTemplate("./schema/exportTemplates/proteinData.sql");
+  const proteinSinglePoolDataTemplate = getTemplate("./schema/exportTemplates/proteinSinglePoolData.sql");
+  const phosphoproteinDataTemplate = getTemplate("./schema/exportTemplates/phosphoproteinData.sql");
+  const phosphoproteinSinglePoolDataTemplate = getTemplate("./schema/exportTemplates/phosphoproteinSinglePoolData.sql");
+  const rnaDataTemplate = getTemplate("./schema/exportTemplates/rnaData.sql", "utf8");
+  const tcgaRnaDataTemplate = getTemplate("./schema/exportTemplates/tcgaRnaData.sql", "utf8");
 
   let sqlStatements = [{ label: "main", sql: mainTableTemplate() }];
 
