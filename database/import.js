@@ -9,13 +9,9 @@ const { zip } = require("lodash");
 const { exportData } = require("./export.js");
 const sources = require("./importSources.json");
 const args = require("minimist")(process.argv.slice(2));
-const timestamp = getTimestamp(
-  ([absolute, relative]) => `${absolute / 1000}s, ${relative / 1000}s`,
-);
+const timestamp = getTimestamp(([absolute, relative]) => `${absolute / 1000}s, ${relative / 1000}s`);
 
 (async function main() {
-  await exportData(args);
-
   const databaseFilePath = args.output || "cprosite.db";
 
   const mainTablesSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
@@ -29,10 +25,7 @@ const timestamp = getTimestamp(
   database.exec(mainTablesSql);
 
   // define functions
-  database.function(
-    "extract",
-    (string, delimiter, index) => string.split(delimiter)[index],
-  );
+  database.function("extract", (string, delimiter, index) => string.split(delimiter)[index]);
   database.function("sqrt", (v) => nanToNull(Math.sqrt(v)));
   database.aggregate("stdev", {
     start: () => incrstdev(),
@@ -63,9 +56,7 @@ const timestamp = getTimestamp(
       }
     },
     result: ({ x, y }) =>
-      x.length > 1 && zip(x, y).some(([x, y]) => x - y !== 0)
-        ? nanToNull(wilcoxon(x, y).pValue)
-        : null,
+      x.length > 1 && zip(x, y).some(([x, y]) => x - y !== 0) ? nanToNull(wilcoxon(x, y).pValue) : null,
   });
   database.aggregate("ttest2", {
     start: () => ({ x: [], y: [] }),
@@ -73,9 +64,13 @@ const timestamp = getTimestamp(
       if (xValue !== null) x.push(xValue);
       if (yValue !== null) y.push(yValue);
     },
-    result: ({ x, y }) =>
-      x.length > 1 && y.length > 1 ? nanToNull(ttest2(x, y).pValue) : null,
+    result: ({ x, y }) => (x.length > 1 && y.length > 1 ? nanToNull(ttest2(x, y).pValue) : null),
   });
+
+  // prepare data folder
+  console.log(`[${timestamp()}] preparing data directory`);
+  await exportData(args);
+  console.log(`[${timestamp()}] finished preparing data directory`);
 
   // import sources
   for (const { filePath, table, headers } of sources) {
@@ -268,9 +263,7 @@ const timestamp = getTimestamp(
         `[${timestamp()}] finished generating tumor sample statistics for phosphorylation sites: ${dataSummaryTable}`,
       );
 
-      console.log(
-        `[${timestamp()}] started generating p-values for phosphorylation sites: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] started generating p-values for phosphorylation sites: ${dataSummaryTable}`);
       database.exec(
         `insert into "${dataSummaryTable}" (
           cancerId,
@@ -323,14 +316,10 @@ const timestamp = getTimestamp(
           "pValueUnpaired" = excluded."pValueUnpaired"`,
       );
 
-      console.log(
-        `[${timestamp()}] finished generating p-values for phosphorylation sites: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] finished generating p-values for phosphorylation sites: ${dataSummaryTable}`);
     } else {
       // insert normal values
-      console.log(
-        `[${timestamp()}] started generating normal sample statistics: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] started generating normal sample statistics: ${dataSummaryTable}`);
       database.exec(
         `insert into "${dataSummaryTable}" (
             geneId,
@@ -356,13 +345,9 @@ const timestamp = getTimestamp(
             "normalSampleMedian" = excluded."normalSampleMedian",
             "normalSampleStandardError" = excluded."normalSampleStandardError"`,
       );
-      console.log(
-        `[${timestamp()}] finished generating normal sample statistics: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] finished generating normal sample statistics: ${dataSummaryTable}`);
 
-      console.log(
-        `[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`);
       database.exec(
         `insert into "${dataSummaryTable}" (
             cancerId,
@@ -388,13 +373,9 @@ const timestamp = getTimestamp(
             "tumorSampleMedian" = excluded."tumorSampleMedian",
             "tumorSampleStandardError" = excluded."tumorSampleStandardError"`,
       );
-      console.log(
-        `[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] finished generating tumor sample statistics: ${dataSummaryTable}`);
 
-      console.log(
-        `[${timestamp()}] started generating p-values: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] started generating p-values: ${dataSummaryTable}`);
       database.exec(
         `insert into "${dataSummaryTable}" (
           cancerId,
@@ -414,9 +395,7 @@ const timestamp = getTimestamp(
           "pValueUnpaired" = excluded."pValueUnpaired"`,
       );
 
-      console.log(
-        `[${timestamp()}] finished generating p-values: ${dataSummaryTable}`,
-      );
+      console.log(`[${timestamp()}] finished generating p-values: ${dataSummaryTable}`);
     }
   }
 
