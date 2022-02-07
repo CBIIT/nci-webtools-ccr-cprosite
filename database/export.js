@@ -59,7 +59,7 @@ async function exportData({ host, port, user, password, database }) {
     const sql = `
       SELECT ${headers.map((h) => `'${h}'`).join(",")}
       UNION ALL
-      SELECT ${headers.join(",")} FROM ${table}
+      SELECT ${headers.map((h) => `IFNULL(${h}, '')`).join(",")} FROM ${table}
         INTO OUTFILE '${csvFilePath.replace(/\\/g, "/")}'
       FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' ESCAPED BY '"'
       LINES TERMINATED BY '\r\n'`;
@@ -67,6 +67,8 @@ async function exportData({ host, port, user, password, database }) {
     await connection.query(sql);
     console.log(`[${timestamp()}] finished exporting table: ${table}`);
   }
+
+  await connection.end();
 }
 
 function getTemplate(filePath) {
