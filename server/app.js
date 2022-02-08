@@ -1,5 +1,4 @@
 const express = require("express");
-const helmet = require("helmet");
 const config = require("./config.json");
 const getLogger = require("./services/logger");
 const forkCluster = require("./services/cluster");
@@ -12,13 +11,11 @@ if (forkCluster()) return;
 const app = express();
 app.locals.logger = logger;
 
-app.use(helmet({ contentSecurityPolicy: false }));
 app.use(logErrors);
 app.use("/api", require("./services/api"));
 
 // serve public folder during local development
-if (!production && config.server.client)
-  app.use(express.static(config.server.client));
+if (!production && config.server.client) app.use(express.static(config.server.client));
 
 app.listen(config.server.port, () => {
   logger.info(`Application is running on port: ${config.server.port}`);
