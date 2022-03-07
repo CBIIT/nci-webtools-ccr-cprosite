@@ -40,7 +40,7 @@ export default function ProteinCorrelation() {
   console.log(currentLabel);
   const datasetName =
     form.dataset.label === "Protein Abundance"
-      ? "Protein_Abundance"
+      ? "Protein_Abundance" 
       : form.dataset.label === "Phosphorylation Site"
       ? "Phosphorylation_Site"
       : "Phosphorylation_Protein";
