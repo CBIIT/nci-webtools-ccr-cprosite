@@ -859,14 +859,7 @@ export default function ProteinPhosResults() {
                 ...defaultLayout,
                 title: `<b>${form.gene.label} Phosphorylation/Protein Summary View</b>`,
                 xaxis: {
-                  title: "<b>Tumor Types</b>",
                   automargin: true,
-                  tickfont: {
-                    size: 15,
-                  },
-                  titlefont: {
-                    size: 16,
-                  },
                 },
                 yaxis: {
                   title: "<b>Phosphorylation Site</b>",

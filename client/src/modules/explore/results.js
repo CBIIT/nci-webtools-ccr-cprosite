@@ -222,8 +222,6 @@ export default function Results() {
     },
   ];
 
-  console.log(results);
-  console.log(currentTumor);
   const boxPlotData = [
     {
       y: results.find((e) => Number(e[0]) === currentTumor)
@@ -555,16 +553,6 @@ export default function Results() {
                 title: `<b>${form.gene.label} Protein Abundance Tumor vs Adjacent Normal</b>`,
                 barmode: "group",
                 autosize: true,
-                xaxis: {
-                  title: "<b>Tumor Type </b>",
-                  zeroline: false,
-                  titlefont: {
-                    size: 16,
-                  },
-                  tickfont: {
-                    size: 15,
-                  },
-                },
                 legend: {
                   orientation: "h",
                   y: -0.5,
