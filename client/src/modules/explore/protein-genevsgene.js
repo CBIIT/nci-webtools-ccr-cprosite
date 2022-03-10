@@ -875,12 +875,13 @@ export default function ProteinGeneCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-            <Form.Group className="col-xl-6 mb-3 col-form-label">
+            <Form.Group className="col-xl-7 row col-form-label">
               <Form.Check
+                className="col-xl-4"
                 inline
                 label={
                   <span>
-                    Using Log<sub>2</sub> values
+                    Using TMT Log<sub>2</sub> ratios
                   </span>
                 }
                 type="radio"
@@ -891,10 +892,11 @@ export default function ProteinGeneCorrelation() {
               />
 
               <Form.Check
+                className="col-xl-7"
                 inline
                 label={
                   <span>
-                    Using normal values converted by log<sub>2</sub> values
+                    Using normal values converted by TMT log<sub>2</sub> ratios
                   </span>
                 }
                 type="radio"
@@ -1232,13 +1234,13 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-            <Form.Group className="col-md-6 mt-2 col-form-label">
+            <Form.Group className="col-md-6 col-form-label">
               <br />
               <Form.Check
                 inline
                 label={
                   <span>
-                    Using Log<sub>2</sub> values
+                    Using TMT Log<sub>2</sub> ratios
                   </span>
                 }
                 type="radio"
@@ -1252,7 +1254,7 @@ export default function ProteinGeneCorrelation() {
                 inline
                 label={
                   <span>
-                    Using normal values converted by log<sub>2</sub> values
+                    Using normal values converted by TMT log<sub>2</sub> ratios
                   </span>
                 }
                 type="radio"

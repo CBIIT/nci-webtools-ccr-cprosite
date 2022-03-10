@@ -505,7 +505,7 @@ export default function Results() {
 
   const defaultLayout = {
     yaxis: {
-      title: "<b>Relative Protein Abundance (TMT log2 value)</b>",
+      title: "<b>Relative Protein Abundance (TMT log2 ratio)</b>",
       zeroline: false,
       titlefont: {
         size: 15,

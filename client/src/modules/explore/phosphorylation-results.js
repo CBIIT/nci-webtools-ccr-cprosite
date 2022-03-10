@@ -977,7 +977,7 @@ export default function PhosResults() {
                 },
                 yaxis: {
                   title:
-                    "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
+                    "<b>Relative Phosphorylation Level (TMT log2 ratio)</b>",
                   zeroline: false,
                   titlefont: {
                     size: 16,
