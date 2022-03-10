@@ -977,7 +977,7 @@ export default function PhosResults() {
                 },
                 yaxis: {
                   title:
-                    "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
+                    "<b>Relative Phosphorylation Level (TMT log2 ratio)</b>",
                   zeroline: false,
                   titlefont: {
                     size: 16,
@@ -1098,7 +1098,6 @@ export default function PhosResults() {
             </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
-        {console.log(tumorViewData)}
         <Row className="mx-3 mt-3">
           {plotTab === "tumorVsControl" ? (
             <Col xl={12} style={{ height: "800px" }}>
@@ -1116,7 +1115,7 @@ export default function PhosResults() {
                   })`,
                   yaxis: {
                     title:
-                      "<b>Relative Phosphorylation Level (TMT log2 value)</b>",
+                      "<b>Relative Phosphorylation Level (TMT log2 ratio)</b>",
                     zeroline: false,
                     titlefont: {
                       size: 15,
