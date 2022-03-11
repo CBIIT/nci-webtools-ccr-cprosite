@@ -550,7 +550,7 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
-                title: `<b>${form.gene.label} Protein Abundance Tumor vs Adjacent Normal</b>`,
+                title: `<b>${form.gene.label} Protein Abundance</b>`,
                 barmode: "group",
                 autosize: true,
                 legend: {
@@ -662,7 +662,7 @@ export default function Results() {
                   ...defaultLayout,
                   title: `<b>${form.gene.label} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Protein Abundance Tumor vs Adjacent Normal</b><br>(Unpaired P-Value: ${
+                  } Protein Abundance</b><br>(Unpaired P-Value: ${
                     averages.length && averages.find((e) => e.id === view)
                       ? averages.find((e) => e.id === view).pValueUnpaired
                       : "NA"

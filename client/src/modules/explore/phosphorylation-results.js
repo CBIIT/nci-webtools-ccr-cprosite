@@ -964,7 +964,7 @@ export default function PhosResults() {
                 ...defaultLayout,
                 title: `<b>${form.gene.label} ${
                   form.cancer.find((f) => f.value === currentTumor).label
-                } Phosphorylation Site Tumor vs Adjacent Normal</b> `,
+                } Phosphorylation Site</b> `,
                 xaxis: {
                   title: "<b>Phosphorylation Site</b>",
                   zeroline: false,
@@ -1107,7 +1107,7 @@ export default function PhosResults() {
                   ...defaultLayout,
                   title: `<b>${form.gene.label} ${phosView} ${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  } Tumor vs Adjacent Normal</b><br>(Unpaired P-Value: ${
+                  }</b><br>(Unpaired P-Value: ${
                     tumorViewData.find((e) => e.name === phosView)
                       ? tumorViewData.find((e) => e.name === phosView)
                           .pValueUnpaired

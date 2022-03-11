@@ -122,7 +122,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           name="analysis"
           value={form.analysis}
           options={[
-            { value: "tumor-control", label: "Tumor vs Adjacent Normal" },
+            { value: "tumor-control", label: "Tumor vs Normal Tissue Adjacent to the Tumor" },
             { value: "correlation", label: "Correlation" },
           ]}
           onChange={(e) => {
