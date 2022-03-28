@@ -1,5 +1,5 @@
 import { RecoilRoot } from "recoil";
-import { HashRouter as Router, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Navbar from "./modules/components/navbar";
 import About from "./modules/about/about";
 import Explore from "./modules/explore/explore";
@@ -14,10 +14,10 @@ export default function App() {
     <RecoilRoot>
       <Router>
         <Navbar links={navbarLinks} className="shadow-sm" />
-        <Switch>
-          <Route path="/about" component={About} />
-          <Route path="/" component={Explore} />
-        </Switch>
+        <Routes>
+          <Route path="/about" element={<About />} />
+          <Route path="/" element={<Explore />} />
+        </Routes>
       </Router>
     </RecoilRoot>
   );
