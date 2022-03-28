@@ -79,8 +79,13 @@ export default function ProteinGeneCorrelation() {
     .filter((e) => e[0] !== "null")
     .map((e) => {
       return { value: e[0], label: e[0] };
+    }).sort((a, b) => {
+      return (
+        getNumericPosition(a.value) -
+        getNumericPosition(b.value)
+      );
     });
-
+    
   var secondSites = Object.entries(
     _.groupBy(
       results[1].participants.records.filter(
@@ -92,7 +97,13 @@ export default function ProteinGeneCorrelation() {
     .filter((f) => f[0] !== "null")
     .map((e) => {
       return { value: e[0], label: e[0] };
+    }).sort((a, b) => {
+      return (
+        getNumericPosition(a.value) -
+        getNumericPosition(b.value)
+      );
     });
+
   secondSites = [
     {
       value: form.correlatedGene.label,
