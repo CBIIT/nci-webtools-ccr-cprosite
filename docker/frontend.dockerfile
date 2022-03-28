@@ -29,4 +29,4 @@ EXPOSE 80
 EXPOSE 443
 
 CMD rm -rf /run/httpd/* /tmp/httpd* \
- && exec /usr/sbin/apachectl -DFOREGROUND
+ && exec /usr/sbin/httpd -DFOREGROUND
