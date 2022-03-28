@@ -1,6 +1,6 @@
 FROM quay.io/centos/centos:stream8
 
-RUN dnf -y update \
+RUN dnf -y update --allowerasing \
  && dnf -y install \
     dnf-plugins-core \
     epel-release \
