@@ -1,6 +1,6 @@
 FROM quay.io/centos/centos:stream9
 
-RUN dnf -y update --allowerasing --nobest \
+RUN dnf -y update \
  && dnf -y install \
     gcc-c++ \
     make \
