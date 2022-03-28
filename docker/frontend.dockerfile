@@ -1,9 +1,6 @@
 FROM quay.io/centos/centos:stream9
 
-# gcc-c++ needs to be installed first so that postinstall scripts can be properly executed before installing other packages
 RUN dnf -y update \
- && dnf -y install \
-    gcc-c++ \ 
  && dnf -y install \
     httpd \
     make \
