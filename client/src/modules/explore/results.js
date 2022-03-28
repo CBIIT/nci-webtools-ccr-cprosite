@@ -11,12 +11,13 @@ import Plot from "react-plotly.js";
 import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
-import ReactExport from "react-data-export";
+import { ExcelFile, ExcelSheet } from "../components/excel-export";
+// import ReactExport from "react-data-export";
 import React, { useState } from "react";
 import _ from "lodash";
 
-const ExcelFile = ReactExport.ExcelFile;
-const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
+// const ExcelFile = ReactExport.ExcelFile;
+// const ExcelSheet = ReactExport.ExcelFile.Excelsheet;
 
 export default function Results() {
   const form = useRecoilValue(formState);
@@ -26,9 +27,9 @@ export default function Results() {
   const [tab, setTab] = useState("summary");
   const [plotTab, setPlot] = useState("tumorVsControl");
 
-  const results = Object.entries(
-    _.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId"),
-  ).filter((e) => e[0] !== "null");
+  const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
+    (e) => e[0] !== "null",
+  );
 
   const [view, setView] = useState(results.length ? Number(results[0][0]) : 0);
 
@@ -45,8 +46,7 @@ export default function Results() {
       id: "name",
       label: "Patient ID",
       Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="protein_patient">Patient ID</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="protein_patient">Patient ID</Tooltip>}>
           <b>Patient ID</b>
         </OverlayTrigger>
       ),
@@ -55,8 +55,7 @@ export default function Results() {
       accessor: "tumorValue",
       label: "Tumor Abundance",
       Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="protein_tumor_val">Tumor Abundance</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="protein_tumor_val">Tumor Abundance</Tooltip>}>
           <b>Tumor Abundance</b>
         </OverlayTrigger>
       ),
@@ -65,10 +64,7 @@ export default function Results() {
       accessor: "normalValue",
       label: "Adjacent Normal Abundance",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>}>
           <b>Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
@@ -80,10 +76,10 @@ export default function Results() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_log_fold">
-              Average Protein Abundance Difference (log<sub>2</sub> ratio
-              between Tumor vs Adjacent Normal)
+              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
-          }>
+          }
+        >
           <b>
             Log<sub>2</sub> Fold Change
           </b>
@@ -98,8 +94,7 @@ export default function Results() {
       id: "link",
       label: "Tumor Type",
       Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="protein_tumor">Tumor Type</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="protein_tumor">Tumor Type</Tooltip>}>
           <b>Tumor Type</b>
         </OverlayTrigger>
       ),
@@ -109,8 +104,7 @@ export default function Results() {
       accessor: "tumorAverage",
       label: "Average Tumor",
       Header: (
-        <OverlayTrigger
-          overlay={<Tooltip id="protein_av_tumor">Average Tumor</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="protein_av_tumor">Average Tumor</Tooltip>}>
           <b>Avg. Tumor</b>
         </OverlayTrigger>
       ),
@@ -119,10 +113,7 @@ export default function Results() {
       accessor: "controlAverage",
       label: "Average Adjacent Normal",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>}>
           <b>Avg. Adj. Normal</b>
         </OverlayTrigger>
       ),
@@ -134,10 +125,10 @@ export default function Results() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Average Protein Abundance Difference (log<sub>2</sub> ratio
-              between Tumor vs Adjacent Normal)
+              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
-          }>
+          }
+        >
           <b>Tumor vs Adj. Normal</b>
         </OverlayTrigger>
       ),
@@ -146,10 +137,7 @@ export default function Results() {
       accessor: "tumorNum",
       label: "Tumor Count",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_tumor_count">Tumor Sample Number</Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_tumor_count">Tumor Sample Number</Tooltip>}>
           <b>Tumor Count</b>
         </OverlayTrigger>
       ),
@@ -158,12 +146,7 @@ export default function Results() {
       accessor: "controlNum",
       label: "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_normal_count">
-              Adjacent Normal Sample Number
-            </Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Adjacent Normal Sample Number</Tooltip>}>
           <b>Adj. Normal Count</b>
         </OverlayTrigger>
       ),
@@ -172,10 +155,7 @@ export default function Results() {
       accessor: "tumorError",
       label: "Tumor SE",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_tumor_se">Tumor Standard Error</Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_tumor_se">Tumor Standard Error</Tooltip>}>
           <b>Tumor SE</b>
         </OverlayTrigger>
       ),
@@ -184,12 +164,7 @@ export default function Results() {
       accessor: "controlError",
       label: "Adjacent Normal SE",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_control_se">
-              Adjacent Normal Stanadard Error
-            </Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_control_se">Adjacent Normal Stanadard Error</Tooltip>}>
           <b>Adj. Normal SE</b>
         </OverlayTrigger>
       ),
@@ -198,10 +173,7 @@ export default function Results() {
       accessor: "pValuePaired",
       label: "P Value (Paired)",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_pvalue">Mann-Whitney U Test (Paired)</Tooltip>}>
           <b>P Value (Paired)</b>
         </OverlayTrigger>
       ),
@@ -210,12 +182,7 @@ export default function Results() {
       accessor: "pValueUnpaired",
       label: "P Value (Unpaired)",
       Header: (
-        <OverlayTrigger
-          overlay={
-            <Tooltip id="protein_pvalue">
-              Mann-Whitney U Test (Unpaired)
-            </Tooltip>
-          }>
+        <OverlayTrigger overlay={<Tooltip id="protein_pvalue">Mann-Whitney U Test (Unpaired)</Tooltip>}>
           <b>P Value (Unpaired)</b>
         </OverlayTrigger>
       ),
@@ -225,9 +192,7 @@ export default function Results() {
   const boxPlotData = [
     {
       y: results.find((e) => Number(e[0]) === currentTumor)
-        ? results
-            .find((e) => Number(e[0]) === currentTumor)[1]
-            .map((e) => e.tumorValue)
+        ? results.find((e) => Number(e[0]) === currentTumor)[1].map((e) => e.tumorValue)
         : [],
       type: "box",
       boxpoints: "all",
@@ -241,9 +206,7 @@ export default function Results() {
     },
     {
       y: results.find((e) => Number(e[0]) === currentTumor)
-        ? results
-            .find((e) => Number(e[0]) === currentTumor)[1]
-            .map((e) => e.normalValue)
+        ? results.find((e) => Number(e[0]) === currentTumor)[1].map((e) => e.normalValue)
         : [],
       type: "box",
       boxpoints: "all",
@@ -267,18 +230,13 @@ export default function Results() {
             setView(e.cancerId);
             setTab("tumorView");
           }}
-          href="javascript:void(0)">
+          href="javascript:void(0)"
+        >
           {form.cancer.find((f) => f.value === e.cancerId).label}
         </a>
       ),
-      controlAverage:
-        e.normalSampleMean !== null
-          ? Number(e.normalSampleMean.toFixed(4))
-          : "NA",
-      tumorAverage:
-        e.tumorSampleMean !== null
-          ? Number(e.tumorSampleMean.toFixed(4))
-          : "NA",
+      controlAverage: e.normalSampleMean !== null ? Number(e.normalSampleMean.toFixed(4)) : "NA",
+      tumorAverage: e.tumorSampleMean !== null ? Number(e.tumorSampleMean.toFixed(4)) : "NA",
       proteinDiff:
         e.normalSampleMean !== null && e.tumorSampleMean !== null
           ? Number((e.tumorSampleMean - e.normalSampleMean).toFixed(4))
@@ -297,14 +255,8 @@ export default function Results() {
             ? "< 0.0001"
             : Number(e.pValueUnpaired.toFixed(4))
           : "NA",
-      controlError:
-        e.normalSampleStandardError !== null
-          ? Number(e.normalSampleStandardError.toFixed(4))
-          : "NA",
-      tumorError:
-        e.tumorSampleStandardError !== null
-          ? Number(e.tumorSampleStandardError.toFixed(4))
-          : "NA",
+      controlError: e.normalSampleStandardError !== null ? Number(e.normalSampleStandardError.toFixed(4)) : "NA",
+      tumorError: e.tumorSampleStandardError !== null ? Number(e.tumorSampleStandardError.toFixed(4)) : "NA",
     };
   });
 
@@ -358,11 +310,7 @@ export default function Results() {
         });
 
       const values = caseList.map((c) =>
-        Number(
-          (
-            Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))
-          ).toFixed(4),
-        ),
+        Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4)),
       );
 
       return [
@@ -371,27 +319,21 @@ export default function Results() {
           x: values,
           y: caseList.map((c) => c.participantId),
           marker: {
-            color: values.map((c) =>
-              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-            ),
+            color: values.map((c) => (c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)")),
           },
           orientation: "h",
-          hovertemplate:
-            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
+          hovertemplate: "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
         {
           type: "bar",
           x: values,
           y: caseList.map((c) => c.participantId),
           marker: {
-            color: values.map((c) =>
-              c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)",
-            ),
+            color: values.map((c) => (c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)")),
           },
           xaxis: "x2",
           orientation: "h",
-          hovertemplate:
-            "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
+          hovertemplate: "Patient ID: %{y}<br>Log Fold Change: %{x}<extra></extra>",
         },
       ];
     }
@@ -492,10 +434,7 @@ export default function Results() {
               {
                 value:
                   c.tumorValue && c.normalValue
-                    ? Number(
-                        Number(c.tumorValue.toFixed(4)) -
-                          Number(c.normalValue.toFixed(4)).toFixed(4),
-                      )
+                    ? Number(Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4)).toFixed(4))
                     : "NA",
               },
             ];
@@ -533,12 +472,7 @@ export default function Results() {
       scale: 1,
     },
     displaylogo: false,
-    modeBarButtonsToRemove: [
-      "select2d",
-      "lasso2d",
-      "hoverCompareCartesian",
-      "hoverClosestCartesian",
-    ],
+    modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
 
   return (
@@ -590,28 +524,20 @@ export default function Results() {
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
               filename={`Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet
-                dataSet={exportSummarySettings()}
-                name="Input Configuration"
-              />
+              element={<a href="javascript:void(0)">Export Data</a>}
+            >
+              <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportSummary()} name="Summary Data" />
             </ExcelFile>
           </div>
 
-          <Table
-            columns={summaryColumns}
-            data={averages}
-            defaultSort={[{ id: "link", asec: true }]}
-          />
+          <Table columns={summaryColumns} data={averages} defaultSort={[{ id: "link", asec: true }]} />
         </div>
       </Tab>
 
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label
-            className="col-xl-1 col-xs-12 col-form-label"
-            style={{ minWidth: "120px" }}>
+          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
           <div className="col-xl-3">
@@ -621,7 +547,8 @@ export default function Results() {
                 setView(parseInt(e.target.value));
               }}
               value={view}
-              required>
+              required
+            >
               {results.map((o) => (
                 <option value={Number(o[0])} key={`dataset-${o[0]}`}>
                   {form.cancer.find((f) => f.value === Number(o[0])).label}
@@ -634,21 +561,20 @@ export default function Results() {
             name="plot-tab"
             value={plotTab}
             className="col-xl-6"
-            style={{ whiteSpace: "nowrap" }}>
+            style={{ whiteSpace: "nowrap" }}
+          >
             <ToggleButton
-              className={
-                plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"
-              }
+              className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
-              onClick={handleToggle}>
+              onClick={handleToggle}
+            >
               Tumor vs Adj. Normal
             </ToggleButton>
             <ToggleButton
-              className={
-                plotTab === "foldChange" ? "btn-primary" : "btn-secondary"
-              }
+              className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
-              onClick={handleToggle}>
+              onClick={handleToggle}
+            >
               Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
@@ -695,10 +621,7 @@ export default function Results() {
                   annotations: [
                     {
                       text:
-                        results.filter((f) => Number(f[0]) === currentTumor)
-                          .length === 0
-                          ? "No data available"
-                          : "",
+                        results.filter((f) => Number(f[0]) === currentTumor).length === 0 ? "No data available" : "",
                       xref: "paper",
                       yref: "paper",
                       showarrow: false,
@@ -715,9 +638,7 @@ export default function Results() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${
-                      form.gene.label
-                    }`,
+                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
                   },
                 }}
                 useResizeHandler
@@ -736,9 +657,7 @@ export default function Results() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal_Log_Fold_Change-${
-                      form.gene.label
-                    }`,
+                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal_Log_Fold_Change-${form.gene.label}`,
                   },
                 }}
                 layout={{
@@ -781,10 +700,7 @@ export default function Results() {
                     {
                       text:
                         results.filter((f) =>
-                          Number(f[0]) ===
-                          form.cancer.find((e) => e.value === view)
-                            ? view
-                            : form.cancer[0].value,
+                          Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value,
                         ).length === 0
                           ? "No data available"
                           : "",
@@ -801,9 +717,7 @@ export default function Results() {
                 useResizeHandler
                 style={{
                   minWidth: "100%",
-                  height: foldData().length
-                    ? `${foldData()[0].x.length * 25}px`
-                    : "700px",
+                  height: foldData().length ? `${foldData()[0].x.length * 25}px` : "700px",
                   minHeight: "700px",
                 }}
               />
@@ -817,15 +731,10 @@ export default function Results() {
               filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
               }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}>
-              <ExcelSheet
-                dataSet={exportAbundanceSettings}
-                name="Input Configuration"
-              />
-              <ExcelSheet
-                dataSet={exportAbundance}
-                name="Protein Abundance Data"
-              />
+              element={<a href="javascript:void(0)">Export Data</a>}
+            >
+              <ExcelSheet dataSet={exportAbundanceSettings} name="Input Configuration" />
+              <ExcelSheet dataSet={exportAbundance} name="Protein Abundance Data" />
             </ExcelFile>
           </div>
 
@@ -839,22 +748,11 @@ export default function Results() {
                     .map((c) => {
                       return {
                         name: c.participantId,
-                        tumorValue:
-                          c.tumorValue !== null
-                            ? Number(c.tumorValue.toFixed(4))
-                            : "NA",
-                        normalValue:
-                          c.normalValue !== null
-                            ? Number(c.normalValue.toFixed(4))
-                            : "NA",
+                        tumorValue: c.tumorValue !== null ? Number(c.tumorValue.toFixed(4)) : "NA",
+                        normalValue: c.normalValue !== null ? Number(c.normalValue.toFixed(4)) : "NA",
                         proteinDiff:
                           c.tumorValue !== null && c.normalValue !== null
-                            ? Number(
-                                (
-                                  Number(c.tumorValue.toFixed(4)) -
-                                  Number(c.normalValue.toFixed(4))
-                                ).toFixed(4),
-                              )
+                            ? Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4))
                             : "NA",
                       };
                     })
