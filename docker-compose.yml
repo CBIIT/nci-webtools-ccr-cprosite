@@ -1,0 +1,19 @@
+version: "3"
+services:
+  backend:
+    build:
+      context: "."
+      dockerfile: "./docker/backend.dockerfile"
+    volumes:
+      - "./server/config.json:/deploy/server/config.json:ro"
+    ports:
+      - "10000:10000"
+
+  frontend:
+    build:
+      context: "."
+      dockerfile: "./docker/frontend.dockerfile"
+    environment:
+      API_HOST: http://backend:10000
+    ports:
+      - "8200:80"
