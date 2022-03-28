@@ -54,7 +54,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   // avoid loading all genes as Select options
   function filterGenes(value, limit = 100) {
-    return genes
+    return genes.sort()
       .filter((gene) => !value || gene.label.startsWith(value.toUpperCase()))
       .slice(0, limit);
   }
