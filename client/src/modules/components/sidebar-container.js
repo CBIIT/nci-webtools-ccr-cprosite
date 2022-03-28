@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
+import classNames from "classnames";
 
 export const SidebarPanel = ({ children }) => <>{children}</>;
 export const MainPanel = ({ children }) => <>{children}</>;
 export const CollapseButton = ({ collapsed, toggleCollapse }) => (
-  <button
+  <i
     onClick={toggleCollapse}
+    className={classNames("bi", collapsed ? " bi-caret-right-fill" : " bi-caret-left-fill")}
     style={{
       position: "absolute",
       left: "-10px",
@@ -14,24 +14,12 @@ export const CollapseButton = ({ collapsed, toggleCollapse }) => (
       border: "none",
       outline: "none",
       color: "rgb(0, 126, 167)",
-    }}>
-    <span className="sr-only">Show or hide input sidebar</span>
-    {collapsed ? (
-      <FontAwesomeIcon
-        icon={faCaretRight}
-        style={{ fontSize: "20px" }}
-        data-toggle="tooltip"
-        title="Show Configuration Panel"
-      />
-    ) : (
-      <FontAwesomeIcon
-        icon={faCaretLeft}
-        style={{ fontSize: "20px" }}
-        data-toggle="tooltip"
-        title="Hide Configuration Panel"
-      />
-    )}
-  </button>
+      cursor: "pointer",
+      fontSize: "20px",
+    }}
+    data-toggle="tooltip"
+    title={collapsed ? "Show Configuration Panel" : "Hide Configuration Panel"}
+  />
 );
 
 export function SidebarContainer({
@@ -62,9 +50,7 @@ export function SidebarContainer({
 
   return (
     <div data-testid="SidebarContainer" className={`row ${className}`}>
-      <div
-        data-testid="SidebarPanel"
-        className={_collapsed ? "d-none" : sidebarPanelClass}>
+      <div data-testid="SidebarPanel" className={_collapsed ? "d-none" : sidebarPanelClass}>
         {sidebarPanel}
       </div>
 
@@ -73,7 +59,8 @@ export function SidebarContainer({
         className={`
                 position-relative
                 ${_collapsed ? "col-md" : mainPanelClass}
-            `}>
+            `}
+      >
         {collapseButton({
           collapsed: _collapsed,
           toggleCollapse: toggleCollapse,
