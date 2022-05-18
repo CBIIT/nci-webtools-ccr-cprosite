@@ -22,11 +22,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
     return { value: e.id, label: e.name };
   });
 
-  const tumors = [{ value: 0, label: "All Tumor Types" }].concat(
+  const tumors =
     cancer.records.map((e) => {
       return { value: e.id, label: e.name, singlePool: e.singlePool };
-    }),
-  );
+    })
+
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -54,7 +54,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   // avoid loading all genes as Select options
   function filterGenes(value, limit = 100) {
-    return genes.sort((a,b) => a.label.localeCompare(b.label))
+    return genes.sort((a, b) => a.label.localeCompare(b.label))
       .filter((gene) => !value || gene.label.startsWith(value.toUpperCase()))
       .slice(0, limit);
   }
@@ -204,7 +204,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
                   "required",
                   (form.analysis.value !== "correlation" ||
                     form.correlation !== "toAnotherProtein") &&
-                    "text-muted",
+                  "text-muted",
                 )}>
                 Correlated Gene
               </Form.Label>
