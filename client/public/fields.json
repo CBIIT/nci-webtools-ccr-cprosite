@@ -1,6 +1,5 @@
 {
   "cancer": [
-    { "value": 0, "label": "All Tumor Types" },
     { "value": 1, "label": "Breast Cancer" },
     { "value": 2, "label": "Colon Cancer" },
     { "value": 3, "label": "Head & Neck Cancer" },

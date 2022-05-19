@@ -28,7 +28,6 @@ export default function ProteinCorrelation() {
   const currentLabel =
     currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
 
-  console.log(currentLabel);
   const datasetName =
     form.dataset.label === "Protein Abundance"
       ? "Protein_Abundance"
@@ -345,7 +344,7 @@ export default function ProteinCorrelation() {
           >
             {form.cancer.length > 1 && (
               <option value="all" key={`dataset-all`}>
-                All Tumor Types
+                All Selected Tumor Types
               </option>
             )}
             {form.cancer.map((o) => (

@@ -46,9 +46,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    // Add all cancer types if "All Tumor Types" is selected
-    if (name === "cancer" && selection.find((option) => option.value === 0))
-      selection = tumors.slice(1);
     mergeForm({ [name]: selection });
   }
 

@@ -684,7 +684,7 @@ export default function ProteinGeneCorrelation() {
               >
                 {form.cancer.length > 1 && (
                   <option value="all" key={`dataset-all`}>
-                    All Tumor Types
+                    All Selected Tumor Types
                   </option>
                 )}
                 {form.cancer.map((o) => (
