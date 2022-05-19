@@ -73,7 +73,7 @@ export default function Explore() {
       <SidebarContainer
         collapsed={!_openSidebar}
         onCollapsed={(collapsed) => mergeForm({ ["openSidebar"]: !collapsed })}>
-        <SidebarPanel classname="col-xl-4">
+        <SidebarPanel>
           <Card className="shadow">
             <Card.Body>
               <ErrorBoundary
@@ -95,7 +95,7 @@ export default function Explore() {
             </Card.Body>
           </Card>
         </SidebarPanel>
-        <MainPanel className="col-xl-8">
+        <MainPanel>
           <Card className="shadow h-100">
             <Card.Body className="p-0">
               <ErrorBoundary
