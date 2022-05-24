@@ -132,7 +132,7 @@ export const defaultFormState = {
   cancer: [{ value: 6, label: "Lung Adenocarcinoma" }],
   gene: { value: 1722, label: "CDK1" },
   analysis: { value: "tumor-control", label: "Tumor vs Normal Tissue Adjacent to the Tumor" },
-  dataset: { value: "proteinData", label: "Protein Abundance" },
+  dataset: { value: "proteinData", label: "Relative Protein Abundance" },
   correlation: "toAnotherProtein",
   correlatedGene: "",
   submitted: false,
