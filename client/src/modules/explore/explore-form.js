@@ -24,6 +24,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
   function handleChange(event) {
     const { name, value } = event.target;
     // todo: validate selected gene
+    if (name === "cancer") value = [value];
+
     mergeForm({ [name]: value });
   }
 
@@ -56,6 +58,8 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
     return form.cancer && form.dataset && form.analysis && form.gene;
   }
+
+  console.log(form);
 
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
