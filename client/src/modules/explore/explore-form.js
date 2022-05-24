@@ -39,10 +39,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    console.log(name);
+    console.log("test1");
+    console.log(selection);
     if (name === "cancer") {
-      console.log("test");
-      mergeForm({ cancer: [value] });
+      console.log("test2");
+      mergeForm({ cancer: [selection] });
     } else mergeForm({ [name]: selection });
   }
 
