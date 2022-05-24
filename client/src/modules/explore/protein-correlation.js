@@ -368,7 +368,7 @@ export default function ProteinCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-        <Form.Group className="col-xl-6 mb-3 col-form-label">
+        <Form.Group className="mb-3 col-form-label">
           <Form.Check
             inline
             label={

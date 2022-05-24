@@ -708,9 +708,8 @@ export default function ProteinGeneCorrelation() {
               Numeric vs Numeric
             </ToggleButton>
             </ToggleButtonGroup>*/}
-            <Form.Group className="col-xl-7 row col-form-label">
+            <Form.Group className="row col-form-label">
               <Form.Check
-                className="col-xl-4"
                 inline
                 label={
                   <span>
@@ -725,7 +724,6 @@ export default function ProteinGeneCorrelation() {
               />
 
               <Form.Check
-                className="col-xl-7"
                 inline
                 label={
                   <span>
