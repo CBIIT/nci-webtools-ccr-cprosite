@@ -68,8 +68,7 @@ export default function ProteinPhosResults() {
                 setView(tumor.value);
                 setTab("tumorView");
               }}
-              href="javascript:void(0)"
-            >
+              href="javascript:void(0)">
               {tumor.label}
             </a>
           ),
@@ -82,8 +81,7 @@ export default function ProteinPhosResults() {
                 setPhosView(e.phosphorylationSite);
                 setTab("phosView");
               }}
-              href="javascript:void(0)"
-            >
+              href="javascript:void(0)">
               {e.phosphorylationSite}
             </a>
           ),
@@ -162,8 +160,7 @@ export default function ProteinPhosResults() {
             <Tooltip id="tumor_type">
               Average Protein Phosphorylation Level Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
-          }
-        >
+          }>
           <b>
             Log<sub>2</sub> Fold Change
           </b>
@@ -224,8 +221,7 @@ export default function ProteinPhosResults() {
       label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_diff">Difference between Tumor and Adjacent Normal Value</Tooltip>}
-        >
+          overlay={<Tooltip id="protein_diff">Difference between Tumor and Adjacent Normal Value</Tooltip>}>
           <b>
             Log<sub>2</sub> Fold Change
           </b>
@@ -281,8 +277,7 @@ export default function ProteinPhosResults() {
             <Tooltip id="protein_diff">
               Average Protein Phosphorylation Level Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
-          }
-        >
+          }>
           <b>
             Log<sub>2</sub> Fold Change
           </b>
@@ -378,8 +373,7 @@ export default function ProteinPhosResults() {
               setTab("phosView");
               setSite(patients.filter((d) => d.phosphopeptide !== null)[0]);
             }}
-            href="javascript:void(0)"
-          >
+            href="javascript:void(0)">
             {e.phosphorylationSite}
           </a>
         ),
@@ -798,8 +792,7 @@ export default function ProteinPhosResults() {
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
               filename={`Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}
-            >
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportSummary} name="Summary Data" />
             </ExcelFile>
@@ -809,7 +802,7 @@ export default function ProteinPhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="row mx-3" controlId="tumorView">
+        {/*<Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
@@ -839,7 +832,7 @@ export default function ProteinPhosResults() {
               ))}
             </Form.Select>
           </div>
-        </Form.Group>
+              </Form.Group>*/}
 
         <Row className="m-3">
           <Col xl={12} style={{ overflowX: "auto" }}>
@@ -912,8 +905,7 @@ export default function ProteinPhosResults() {
               filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
               }_Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}
-            >
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportTumorSettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportTumor} name="Tumor View Data" />
             </ExcelFile>
@@ -934,8 +926,7 @@ export default function ProteinPhosResults() {
                 setSite(tumorViewData.find((c) => c.name === e.target.value));
               }}
               value={phosView}
-              required
-            >
+              required>
               {tumorViewData.map((c) => (
                 <option value={c.name} key={`dataset-${c.name}`}>
                   {c.name}
@@ -949,20 +940,17 @@ export default function ProteinPhosResults() {
             name="plot-tab"
             value={plotTab}
             className="col-xl-6"
-            style={{ whiteSpace: "nowrap" }}
-          >
+            style={{ whiteSpace: "nowrap" }}>
             <ToggleButton
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
-              onClick={handleToggle}
-            >
+              onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
             <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
-              onClick={handleToggle}
-            >
+              onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
@@ -1115,8 +1103,7 @@ export default function ProteinPhosResults() {
               filename={`${phosView}_${
                 form.cancer.find((f) => f.value === currentTumor).label
               }_Phosphorylation_Protein_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}
-            >
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSiteSettings} name="Input Configuration" />
               <ExcelSheet dataSet={exportSite()} name="Phosphorylation/Protein Site" />
             </ExcelFile>

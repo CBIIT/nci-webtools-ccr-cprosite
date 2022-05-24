@@ -319,7 +319,7 @@ export default function ProteinCorrelation() {
   return (
     <div>
       <Form.Group className="row m-3" controlId="tumorView">
-        <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+        {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
           Tumor Type
         </Form.Label>
         <div className="col-xl-3">
@@ -336,11 +336,11 @@ export default function ProteinCorrelation() {
             }}
             value={view}
             required>
-            {/*form.cancer.length > 1 && (
+            {form.cancer.length > 1 && (
               <option value="all" key={`dataset-all`}>
                 All Selected Tumor Types
               </option>
-            )*/}
+            )}
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
@@ -348,7 +348,7 @@ export default function ProteinCorrelation() {
             ))}
           </Form.Select>
         </div>
-        {/*<ToggleButtonGroup
+       <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={numType}

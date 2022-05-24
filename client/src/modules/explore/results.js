@@ -78,8 +78,7 @@ export default function Results() {
             <Tooltip id="protein_log_fold">
               Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
-          }
-        >
+          }>
           <b>
             Log<sub>2</sub> Fold Change
           </b>
@@ -127,8 +126,7 @@ export default function Results() {
             <Tooltip id="protein_diff">
               Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
-          }
-        >
+          }>
           <b>Tumor vs Adj. Normal</b>
         </OverlayTrigger>
       ),
@@ -230,8 +228,7 @@ export default function Results() {
             setView(e.cancerId);
             setTab("tumorView");
           }}
-          href="javascript:void(0)"
-        >
+          href="javascript:void(0)">
           {form.cancer.find((f) => f.value === e.cancerId).label}
         </a>
       ),
@@ -524,8 +521,7 @@ export default function Results() {
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
               filename={`Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}
-            >
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportSummary()} name="Summary Data" />
             </ExcelFile>
@@ -537,7 +533,7 @@ export default function Results() {
 
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+          {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
           <div className="col-xl-3">
@@ -555,26 +551,23 @@ export default function Results() {
                 </option>
               ))}
             </Form.Select>
-          </div>
+              </div>*/}
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={plotTab}
             className="col-xl-6"
-            style={{ whiteSpace: "nowrap" }}
-          >
+            style={{ whiteSpace: "nowrap" }}>
             <ToggleButton
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
-              onClick={handleToggle}
-            >
+              onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
             <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
-              onClick={handleToggle}
-            >
+              onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
@@ -731,8 +724,7 @@ export default function Results() {
               filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
               }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-              element={<a href="javascript:void(0)">Export Data</a>}
-            >
+              element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportAbundanceSettings} name="Input Configuration" />
               <ExcelSheet dataSet={exportAbundance} name="Protein Abundance Data" />
             </ExcelFile>
