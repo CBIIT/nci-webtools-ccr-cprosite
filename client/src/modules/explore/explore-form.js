@@ -54,7 +54,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     if (form.analysis.value === "correlation" && form.correlation === "toAnotherProtein" && !form.correlatedGene)
       return false;
 
-    return form.cancer.length && form.dataset && form.analysis && form.gene;
+    return form.cancer && form.dataset && form.analysis && form.gene;
   }
 
   return (

@@ -28,10 +28,7 @@ export const rnaState = selector({
 
 export async function getData(params, tumor, gene) {
   var summary;
-  if (
-    params.dataset.value === "phosphoproteinData" ||
-    params.dataset.value === "phosphoproteinRatioData"
-  ) {
+  if (params.dataset.value === "phosphoproteinData" || params.dataset.value === "phosphoproteinRatioData") {
     summary = await query("api/query", {
       "table": params.dataset.value + "Summary",
       "_cancerId:in": tumor,
@@ -67,10 +64,7 @@ export async function getData(params, tumor, gene) {
     });
 
     return { summary, participants, rna, rnaSummary };
-  } else if (
-    params.correlation === "toAnotherProtein" &&
-    params.dataset.value !== "proteinData"
-  ) {
+  } else if (params.correlation === "toAnotherProtein" && params.dataset.value !== "proteinData") {
     const protein = await query("api/query", {
       "table": "proteinData",
       "_cancerId:in": tumor,
@@ -135,7 +129,7 @@ export const dataState = selectorFamily({
 
 export const defaultFormState = {
   openSidebar: true,
-  cancer: [{ value: 6, label: "Lung Adenocarcinoma" }],
+  cancer: { value: 6, label: "Lung Adenocarcinoma" },
   gene: { value: 1722, label: "CDK1" },
   analysis: { value: "tumor-control", label: "Tumor vs Normal Tissue Adjacent to the Tumor" },
   dataset: { value: "proteinData", label: "Protein Abundance" },
