@@ -24,9 +24,11 @@ export default function ExploreForm({ onSubmit, onReset }) {
   function handleChange(event) {
     const { name, value } = event.target;
     // todo: validate selected gene
-    if (name === "cancer") value = [value];
-
-    mergeForm({ [name]: value });
+    console.log(name);
+    if (name === "cancer") {
+      console.log("test");
+      mergeForm({ cancer: [value] });
+    } else mergeForm({ [name]: value });
   }
 
   function handleSubmit(event) {
