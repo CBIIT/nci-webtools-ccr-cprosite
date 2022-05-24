@@ -144,8 +144,7 @@ export default function ProteinGeneCorrelation() {
             <Tooltip id="first_correlation_tumor_log2">
               {firstGene} Tumor Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             {firstGene} Tumor Log<sub>2</sub>
           </b>
@@ -170,8 +169,7 @@ export default function ProteinGeneCorrelation() {
             <Tooltip id="second_tumor_log2">
               {secondGene} Tumor Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             {secondGene} Tumor Log<sub>2</sub>
           </b>
@@ -196,8 +194,7 @@ export default function ProteinGeneCorrelation() {
             <Tooltip id="first_correlation_control_log2">
               ${firstGene} Adjacent Normal Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             {firstGene} Adj. Normal Log<sub>2</sub>
           </b>
@@ -209,8 +206,7 @@ export default function ProteinGeneCorrelation() {
       label: `${firstGene} Adjacent Normal Abundance`,
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_correlation_control_num">{firstGene} Adjacent Normal Abundance</Tooltip>}
-        >
+          overlay={<Tooltip id="protein_correlation_control_num">{firstGene} Adjacent Normal Abundance</Tooltip>}>
           <b>{firstGene} Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
@@ -224,8 +220,7 @@ export default function ProteinGeneCorrelation() {
             <Tooltip id="second_control_log2">
               {secondGene} Adjacent Normal Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             {secondGene} Adj. Normal Log<sub>2</sub>
           </b>
@@ -592,8 +587,7 @@ export default function ProteinGeneCorrelation() {
         label: form.gene.label + " Phosphorylation Site",
         Header: (
           <OverlayTrigger
-            overlay={<Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>}
-          >
+            overlay={<Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>}>
             <b>{form.gene.label} Phospho. Site</b>
           </OverlayTrigger>
         ),
@@ -603,8 +597,9 @@ export default function ProteinGeneCorrelation() {
         label: form.correlatedGene.label + " Phosphorylation Site",
         Header: (
           <OverlayTrigger
-            overlay={<Tooltip id="site_correlation_phospho2">{form.correlatedGene.label} Phosphorylation Site</Tooltip>}
-          >
+            overlay={
+              <Tooltip id="site_correlation_phospho2">{form.correlatedGene.label} Phosphorylation Site</Tooltip>
+            }>
             <b>{form.correlatedGene.label} Phospho. Site</b>
           </OverlayTrigger>
         ),
@@ -680,13 +675,12 @@ export default function ProteinGeneCorrelation() {
                   }
                 }}
                 value={view}
-                required
-              >
-                {form.cancer.length > 1 && (
+                required>
+                {/*form.cancer.length > 1 && (
                   <option value="all" key={`dataset-all`}>
                     All Selected Tumor Types
                   </option>
-                )}
+                )*/}
                 {form.cancer.map((o) => (
                   <option value={o.value} key={`dataset-${o.value}`}>
                     {o.label}
@@ -872,8 +866,7 @@ export default function ProteinGeneCorrelation() {
                 filename={`${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}-${
                   form.correlatedGene.label
                 }`}
-                element={<a href="javascript:void(0)">Export Data</a>}
-              >
+                element={<a href="javascript:void(0)">Export Data</a>}>
                 <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
                 <ExcelSheet dataSet={exportSummary} name="Summary Data" />
               </ExcelFile>
@@ -1212,8 +1205,7 @@ export default function ProteinGeneCorrelation() {
               <div className="col d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
                   filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
-                  element={<a href="javascript:void(0)">Export Data</a>}
-                >
+                  element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
                   <ExcelSheet dataSet={exportSiteData()} name="Site Data" />
                 </ExcelFile>
@@ -1228,8 +1220,9 @@ export default function ProteinGeneCorrelation() {
                   label: form.gene.label + "Phosphorylation Site",
                   Header: (
                     <OverlayTrigger
-                      overlay={<Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>}
-                    >
+                      overlay={
+                        <Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>
+                      }>
                       <b>{form.gene.label} Phospho. Site</b>
                     </OverlayTrigger>
                   ),
@@ -1243,8 +1236,7 @@ export default function ProteinGeneCorrelation() {
                         <Tooltip id="site_correlation_phospho2">
                           {form.correlatedGene.label} Phosphorylation Site
                         </Tooltip>
-                      }
-                    >
+                      }>
                       <b>{form.correlatedGene.label} Phospho. Site</b>
                     </OverlayTrigger>
                   ),

@@ -61,8 +61,7 @@ export default function ProteinCorrelation() {
             <Tooltip id="protein_correlation_tumor_log2">
               Protein Tumor Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             Protein Tumor Log<sub>2</sub>
           </b>
@@ -96,8 +95,7 @@ export default function ProteinCorrelation() {
             <Tooltip id="protein_rna_tumor_log2">
               RNA Tumor Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             RNA Tumor Log<sub>2</sub>
           </b>
@@ -114,8 +112,7 @@ export default function ProteinCorrelation() {
             <Tooltip id="protein_correlation_control_log2">
               Protein Adjacent Normal Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             Protein Adj. Normal Log<sub>2</sub>
           </b>
@@ -127,8 +124,7 @@ export default function ProteinCorrelation() {
       label: "Protein Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_correlation_control_num">Protein Adjacent Normal Abundance</Tooltip>}
-        >
+          overlay={<Tooltip id="protein_correlation_control_num">Protein Adjacent Normal Abundance</Tooltip>}>
           <b>Protein Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
@@ -152,8 +148,7 @@ export default function ProteinCorrelation() {
             <Tooltip id="protein_rna_contro_log2">
               RNA Adjacent Normal Log<sub>2</sub>
             </Tooltip>
-          }
-        >
+          }>
           <b>
             RNA Adj. Normal Log<sub>2</sub>
           </b>
@@ -340,13 +335,12 @@ export default function ProteinCorrelation() {
               }
             }}
             value={view}
-            required
-          >
-            {form.cancer.length > 1 && (
+            required>
+            {/*form.cancer.length > 1 && (
               <option value="all" key={`dataset-all`}>
                 All Selected Tumor Types
               </option>
-            )}
+            )*/}
             {form.cancer.map((o) => (
               <option value={o.value} key={`dataset-${o.value}`}>
                 {o.label}
@@ -504,8 +498,7 @@ export default function ProteinCorrelation() {
         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
           <ExcelFile
             filename={`${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}`}
-            element={<a href="javascript:void(0)">Export Data</a>}
-          >
+            element={<a href="javascript:void(0)">Export Data</a>}>
             <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
             <ExcelSheet dataSet={exportSummary} name="Summary Data" />
           </ExcelFile>

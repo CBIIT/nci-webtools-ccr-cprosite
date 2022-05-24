@@ -4,12 +4,7 @@ import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import classNames from "classnames";
 import { useRecoilState, useRecoilValue } from "recoil";
-import {
-  cancerState,
-  formState,
-  defaultFormState,
-  geneState,
-} from "./explore.state";
+import { cancerState, formState, defaultFormState, geneState } from "./explore.state";
 import { useState } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
@@ -22,11 +17,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
     return { value: e.id, label: e.name };
   });
 
-  const tumors =
-    cancer.records.map((e) => {
-      return { value: e.id, label: e.name, singlePool: e.singlePool };
-    })
-
+  const tumors = cancer.records.map((e) => {
+    return { value: e.id, label: e.name, singlePool: e.singlePool };
+  });
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -51,17 +44,14 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   // avoid loading all genes as Select options
   function filterGenes(value, limit = 100) {
-    return genes.sort((a, b) => a.label.localeCompare(b.label))
+    return genes
+      .sort((a, b) => a.label.localeCompare(b.label))
       .filter((gene) => !value || gene.label.startsWith(value.toUpperCase()))
       .slice(0, limit);
   }
 
   function isValid() {
-    if (
-      form.analysis.value === "correlation" &&
-      form.correlation === "toAnotherProtein" &&
-      !form.correlatedGene
-    )
+    if (form.analysis.value === "correlation" && form.correlation === "toAnotherProtein" && !form.correlatedGene)
       return false;
 
     return form.cancer.length && form.dataset && form.analysis && form.gene;
@@ -74,7 +64,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Select
           placeholder="No cancer selected"
           name="cancer"
-          isMulti="true"
           value={form.cancer}
           onChange={(ev) => handleSelectChange("cancer", ev)}
           options={tumors}
@@ -90,8 +79,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           onChange={(e) => {
             if (
               form.analysis.value === "correlation" &&
-              (e.value === "phosphoproteinData" ||
-                e.value === "phosphoproteinRatioData")
+              (e.value === "phosphoproteinData" || e.value === "phosphoproteinRatioData")
             ) {
               mergeForm({
                 ["dataset"]: e,
@@ -101,7 +89,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
             } else handleSelectChange("dataset", e);
           }}
           options={[
-            { value: "proteinData", label: "Protein Abundance" },
+            { value: "proteinData", label: "Relative Protein Abundance" },
             { value: "phosphoproteinData", label: "Phosphorylation Site" },
             {
               value: "phosphoproteinRatioData",
@@ -142,17 +130,13 @@ export default function ExploreForm({ onSubmit, onReset }) {
           value={form.gene}
           onChange={(ev) => handleSelectChange("gene", ev)}
           defaultOptions
-          loadOptions={(inputValue, callback) =>
-            callback(filterGenes(inputValue))
-          }
+          loadOptions={(inputValue, callback) => callback(filterGenes(inputValue))}
           clearIndicator
         />
       </Form.Group>
 
       {form.analysis.value === "correlation" && (
-        <fieldset
-          disabled={form.analysis.value !== "correlation"}
-          className="border px-3 mb-4">
+        <fieldset disabled={form.analysis.value !== "correlation"} className="border px-3 mb-4">
           <legend className="legend">Correlation</legend>
 
           <Form.Group className="mb-3">
@@ -163,10 +147,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               type="radio"
               id="correlationToAnotherProtein"
               value="toAnotherProtein"
-              checked={
-                form.analysis.value === "correlation" &&
-                form.correlation === "toAnotherProtein"
-              }
+              checked={form.analysis.value === "correlation" && form.correlation === "toAnotherProtein"}
               onChange={handleChange}
             />
 
@@ -175,16 +156,10 @@ export default function ExploreForm({ onSubmit, onReset }) {
               label="Protein and mRNA"
               name="correlation"
               type="radio"
-              disabled={
-                form.dataset.value === "phosphoproteinData" ||
-                form.dataset.value === "phosphoproteinRatioData"
-              }
+              disabled={form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData"}
               id={`correlationMRNA`}
               value="proteinMRNA"
-              checked={
-                form.analysis.value === "correlation" &&
-                form.correlation === "proteinMRNA"
-              }
+              checked={form.analysis.value === "correlation" && form.correlation === "proteinMRNA"}
               onChange={(e) => {
                 mergeForm({
                   ["correlation"]: "proteinMRNA",
@@ -199,9 +174,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               <Form.Label
                 className={classNames(
                   "required",
-                  (form.analysis.value !== "correlation" ||
-                    form.correlation !== "toAnotherProtein") &&
-                  "text-muted",
+                  (form.analysis.value !== "correlation" || form.correlation !== "toAnotherProtein") && "text-muted",
                 )}>
                 Correlated Gene
               </Form.Label>
@@ -211,9 +184,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 value={form.correlatedGene}
                 onChange={(ev) => handleSelectChange("correlatedGene", ev)}
                 defaultOptions
-                loadOptions={(inputValue, callback) =>
-                  callback(filterGenes(inputValue))
-                }
+                loadOptions={(inputValue, callback) => callback(filterGenes(inputValue))}
                 clearIndicator
               />
             </Form.Group>
@@ -227,13 +198,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         </Button>
 
         <OverlayTrigger
-          overlay={
-            !isValid() ? (
-              <Tooltip id="phos_tumor_val">Missing Required Parameters</Tooltip>
-            ) : (
-              <></>
-            )
-          }>
+          overlay={!isValid() ? <Tooltip id="phos_tumor_val">Missing Required Parameters</Tooltip> : <></>}>
           <Button variant="primary" type="submit" disabled={!isValid()}>
             Submit
           </Button>
