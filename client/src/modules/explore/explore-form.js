@@ -59,8 +59,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
     return form.cancer && form.dataset && form.analysis && form.gene;
   }
 
-  console.log(form);
-
   return (
     <Form onSubmit={handleSubmit} onReset={handleReset}>
       <Form.Group className="mb-3" controlId="cancer">
