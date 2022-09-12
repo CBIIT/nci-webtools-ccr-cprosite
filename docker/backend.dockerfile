@@ -1,8 +1,9 @@
-FROM quay.io/centos/centos:stream9
+FROM public.ecr.aws/amazonlinux/amazonlinux:2022
 
 RUN dnf -y update \
  && dnf -y install \
     nodejs \
+    npm \
  && dnf clean all
 
 RUN mkdir -p /deploy/server /deploy/logs
