@@ -17,9 +17,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
     return { value: e.id, label: e.name };
   });
 
-  const tumors = cancer.records.map((e) => {
+  const tumors = [{ value: 0, label: "All Tumor Types"}].concat(cancer.records.map((e) => {
     return { value: e.id, label: e.name, singlePool: e.singlePool };
-  });
+  }));
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -39,9 +39,10 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    if (name === "cancer") {
-      mergeForm({ cancer: [selection] });
-    } else mergeForm({ [name]: selection });
+    if (name === "cancer" && selection.find((option) => option.value === 0)) {
+      selection = tumors.slice(1)
+    }
+    mergeForm({ [name]: selection });
   }
 
   // avoid loading all genes as Select options
@@ -66,6 +67,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Select
           placeholder="No cancer selected"
           name="cancer"
+          isMulti={true}
           value={form.cancer}
           onChange={(ev) => handleSelectChange("cancer", ev)}
           options={tumors}
