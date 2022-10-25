@@ -659,7 +659,7 @@ export default function ProteinGeneCorrelation() {
       {form.dataset.value === "proteinData" && (
         <Tab eventKey="summaryView" title="Summary">
           <Form.Group className="row m-3" controlId="tumorView">
-            {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+            <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
             <div className="col-xl-3">
@@ -687,7 +687,7 @@ export default function ProteinGeneCorrelation() {
                   </option>
                 ))}
               </Form.Select>
-                </div>*/}
+                </div>
             {/*<ToggleButtonGroup
             type="radio"
             name="plot-tab"
@@ -895,7 +895,7 @@ export default function ProteinGeneCorrelation() {
 
       {form.dataset.value !== "proteinData" && (
         <Tab eventKey="summaryView" title="Summary">
-          {/*<Form.Group className="m-3 row" controlId="siteTumor">
+          <Form.Group className="m-3 row" controlId="siteTumor">
             <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
@@ -917,7 +917,7 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
               </div>
-          </Form.Group>*/}
+          </Form.Group>
           <div className="m-3">
             <div className="row">
               <b className="col-xl-11" style={{ textAlign: "center" }}>

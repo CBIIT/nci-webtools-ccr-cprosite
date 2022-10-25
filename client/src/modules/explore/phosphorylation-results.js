@@ -788,7 +788,7 @@ export default function PhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        {/*<Form.Group className="row mx-3" controlId="tumorView">
+        <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
@@ -818,7 +818,7 @@ export default function PhosResults() {
               ))}
             </Form.Select>
           </div>
-              </Form.Group>*/}
+              </Form.Group>
 
         <Row className="m-3">
           <Col xl={12} style={{ overflowX: "auto" }}>

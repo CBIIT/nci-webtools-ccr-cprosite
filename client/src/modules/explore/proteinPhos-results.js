@@ -802,7 +802,7 @@ export default function ProteinPhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        {/*<Form.Group className="row mx-3" controlId="tumorView">
+        <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
@@ -832,7 +832,7 @@ export default function ProteinPhosResults() {
               ))}
             </Form.Select>
           </div>
-              </Form.Group>*/}
+        </Form.Group>
 
         <Row className="m-3">
           <Col xl={12} style={{ overflowX: "auto" }}>
@@ -915,6 +915,38 @@ export default function ProteinPhosResults() {
       </Tab>
       <Tab eventKey="phosView" title="Phosphorylation Site">
         <Form.Group className="row mx-3" controlId="phosView">
+          
+          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+            Tumor Type
+          </Form.Label>
+          <div className="col-xl-3">
+            <Form.Select
+              name="caseView"
+              onChange={(c) => {
+                setView(parseInt(c.target.value));
+                const phos = sortPhospho.find((e) => Number(e[0]) === parseInt(c.target.value))
+                  ? Object.entries(
+                      _.groupBy(
+                        sortPhospho.find((e) => Number(e[0]) === parseInt(c.target.value))[1],
+                        "phosphorylationSite",
+                      ),
+                    ).filter((e) => e[0] !== "null")
+                  : [];
+                setPhosView(phos.length ? phos[0][0] : "");
+                setSite(phos.length ? phos[0][1][0] : "");
+              }}
+              value={view}
+              required
+            >
+              {form.cancer.map((o) => (
+                <option value={o.value} key={`dataset-${o.value}`}>
+                  {o.label}
+                </option>
+              ))}
+            </Form.Select>
+          </div>
+        
+          <div/>
           <Form.Label className="col-xl-2 col-xs-12 col-form-label" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
@@ -935,6 +967,7 @@ export default function ProteinPhosResults() {
             </Form.Select>
           </div>
 
+          
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"

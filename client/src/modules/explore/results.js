@@ -258,10 +258,12 @@ export default function Results() {
   });
 
   function multiBarPlotData() {
+    //console.log(results.length)
     return [
       {
         x: averages.map((c) => c.name),
-        y: averages.map((c) => c.tumorAverage),
+        y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
+       // y: averages.map((c) => c.tumorAverage),
         error_y: {
           type: "data",
           array: averages.map((c) => c.tumorError),
@@ -275,9 +277,10 @@ export default function Results() {
         name: "Tumor",
         hovertemplate: "%{x}: %{y} <extra></extra>",
       },
-      {
-        x: averages.map((c) => c.name),
-        y: averages.map((c) => c.controlAverage),
+      results.length ==1 ? 
+       {
+         x: averages.map((c) => c.name),
+         y: averages.map((c) => c.controlAverage),
         error_y: {
           type: "data",
           array: averages.map((c) => c.controlError),
@@ -290,7 +293,7 @@ export default function Results() {
         type: "bar",
         name: "Adjacent Normal",
         hovertemplate: "%{x}: %{y} <extra></extra>",
-      },
+      } : {}
     ];
   }
 
@@ -533,7 +536,7 @@ export default function Results() {
 
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
-          {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
           <div className="col-xl-3">
@@ -551,7 +554,7 @@ export default function Results() {
                 </option>
               ))}
             </Form.Select>
-              </div>*/}
+              </div>
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"

@@ -10,6 +10,8 @@ import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 // import ReactExport from "react-data-export";
+import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
+import ToggleButton from "react-bootstrap/esm/ToggleButton";
 
 import { useState } from "react";
 
@@ -319,7 +321,7 @@ export default function ProteinCorrelation() {
   return (
     <div>
       <Form.Group className="row m-3" controlId="tumorView">
-        {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+        <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
           Tumor Type
         </Form.Label>
         <div className="col-xl-3">
@@ -367,7 +369,7 @@ export default function ProteinCorrelation() {
               onClick={handleToggle}>
               Numeric vs Numeric
             </ToggleButton>
-            </ToggleButtonGroup>*/}
+            </ToggleButtonGroup>
         <Form.Group className="mb-3 col-form-label">
           <Form.Check
             inline
