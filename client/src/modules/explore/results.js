@@ -12,6 +12,7 @@ import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
+import TumorDropdown from "../components/type-dropdown"
 // import ReactExport from "react-data-export";
 import React, { useState } from "react";
 import _ from "lodash";
@@ -536,7 +537,7 @@ export default function Results() {
 
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+          {/* <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
           <div className="col-xl-3">
@@ -554,7 +555,11 @@ export default function Results() {
                 </option>
               ))}
             </Form.Select>
-              </div>
+          </div> */}
+          {results.length >1? 
+          <TumorDropdown form={form} results={results} view = {view} setView ={setView} controlid="tumorViewDropdown"/>
+          :''}
+          <div/>
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
