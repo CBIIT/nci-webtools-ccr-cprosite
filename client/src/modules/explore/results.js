@@ -260,9 +260,10 @@ export default function Results() {
 
   function multiBarPlotData() {
     //console.log(results.length)
-    return [
-      {
-        x: averages.map((c) => c.name),
+    return (
+      results.length > 1?
+      [{
+        x: averages.map((c) => xlabelmap(c)),
         y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
        // y: averages.map((c) => c.tumorAverage),
         error_y: {
@@ -277,11 +278,27 @@ export default function Results() {
         type: "bar",
         name: "Tumor",
         hovertemplate: "%{x}: %{y} <extra></extra>",
+      }]:
+      [
+      {
+        x: averages.map((c) => c.name),
+        y: averages.map((c) => c.tumorAverage),
+        error_y: {
+          type: "data",
+          array: averages.map((c) => c.tumorError),
+          visible: true,
+          color: "rgb(255,0,0)",
+        },
+        marker: {
+          color: "rgb(255,0,0)",
+        },
+        type: "bar",
+        name: "Tumor",
+        hovertemplate: "%{x}: %{y} <extra></extra>",
       },
-      results.length ==1 ? 
-       {
-         x: averages.map((c) => c.name),
-         y: averages.map((c) => c.controlAverage),
+      {
+        x: averages.map((c) => c.name),
+        y: averages.map((c) => c.controlAverage),
         error_y: {
           type: "data",
           array: averages.map((c) => c.controlError),
@@ -294,8 +311,18 @@ export default function Results() {
         type: "bar",
         name: "Adjacent Normal",
         hovertemplate: "%{x}: %{y} <extra></extra>",
-      } : {}
-    ];
+      },
+    ]
+    )
+  }
+ function xlabelmap(c){
+    var xlabel = c.name;
+    if (xlabel.includes("Lung Adenocarcinoma")) xlabel = "Lung AD";
+    else if (xlabel.includes("Lung Squamous Cell Carcinoma")) xlabel = "Lung SC";
+    else if (xlabel.includes("Pancreatic Ductal Adenocarcinoma")) xlabel = "PDAC";
+    else xlabel = xlabel.replace("Cancer","")
+    xlabel =  xlabel+" "+form.gene.label+"("+c.tumorNum+"-"+c.controlNum+")"
+    return xlabel;
   }
 
   function foldData() {
@@ -485,6 +512,15 @@ export default function Results() {
               data={multiBarPlotData()}
               layout={{
                 ...defaultLayout,
+                bargap:0.05,
+                xaxis: {
+                  tickfont: {
+                    size: results.length > 1? 11: 14,
+                    color: 'black',
+                  },
+                  //tickangle:results.length > 1? 90: 0,
+                  automargin: true,
+                },
                 title: `<b>${form.gene.label} Protein Abundance</b>`,
                 barmode: "group",
                 autosize: true,
