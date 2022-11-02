@@ -612,7 +612,7 @@ export default function PhosResults() {
   const exportSummary = [
     {
       columns: summaryColumns.map((e) => {
-        return { title: e.label, width: { wpx: 20 } };
+        return { title: e.label, width: { wpx: 200 } };
       }),
       data: summaryViewData().map((e) => {
         return [

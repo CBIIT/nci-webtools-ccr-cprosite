@@ -257,6 +257,16 @@ export default function Results() {
       tumorError: e.tumorSampleStandardError !== null ? Number(e.tumorSampleStandardError.toFixed(4)) : "NA",
     };
   });
+  
+ function xlabelmap(c){
+    var xlabel = c.name;
+    if (xlabel.includes("Lung Adenocarcinoma")) xlabel = "Lung AD";
+    else if (xlabel.includes("Lung Squamous Cell Carcinoma")) xlabel = "Lung SC";
+    else if (xlabel.includes("Pancreatic Ductal Adenocarcinoma")) xlabel = "PDAC";
+    else xlabel = xlabel.replace("Cancer","")
+    xlabel =  xlabel+" "+form.gene.label+"("+c.tumorNum+"-"+c.controlNum+")"
+    return xlabel;
+  }
 
   function multiBarPlotData() {
     //console.log(results.length)
@@ -314,15 +324,6 @@ export default function Results() {
       },
     ]
     )
-  }
- function xlabelmap(c){
-    var xlabel = c.name;
-    if (xlabel.includes("Lung Adenocarcinoma")) xlabel = "Lung AD";
-    else if (xlabel.includes("Lung Squamous Cell Carcinoma")) xlabel = "Lung SC";
-    else if (xlabel.includes("Pancreatic Ductal Adenocarcinoma")) xlabel = "PDAC";
-    else xlabel = xlabel.replace("Cancer","")
-    xlabel =  xlabel+" "+form.gene.label+"("+c.tumorNum+"-"+c.controlNum+")"
-    return xlabel;
   }
 
   function foldData() {
