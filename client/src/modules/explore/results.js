@@ -378,10 +378,11 @@ export default function Results() {
     var settings = form.cancer.map((e) => {
       return [{ value: e.label }];
     });
-    settings[0].push({ value: "Protein Abundance" });
-    settings[0].push({ value: "Tumor vs Control" });
-    settings[0].push({ value: form.gene.label });
-
+    settings.forEach((s) => {
+      s.push({ value: "Protein Abundance" })
+      s.push({ value: "Tumor vs Control" })
+      s.push({ value: form.gene.label })
+    });
     return [
       {
         columns: [
@@ -770,6 +771,7 @@ export default function Results() {
                 form.cancer.find((f) => f.value === currentTumor).label
               }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
+                
               <ExcelSheet dataSet={exportAbundanceSettings} name="Input Configuration" />
               <ExcelSheet dataSet={exportAbundance} name="Protein Abundance Data" />
             </ExcelFile>
