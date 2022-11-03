@@ -1,6 +1,6 @@
 import Form from "react-bootstrap/Form";
 
-const typeDropdown = ({form,results, view,setView,controlid}) => {
+const TypeDropdown = ({form,results, view,setView,controlid}) => {
   return(
       <div>
         <Form.Group className="row mx-3" controlId={controlid}>
@@ -28,4 +28,4 @@ const typeDropdown = ({form,results, view,setView,controlid}) => {
   );
  };
 
- export default typeDropdown;
+ export default TypeDropdown;

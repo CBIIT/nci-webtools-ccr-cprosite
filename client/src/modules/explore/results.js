@@ -602,7 +602,7 @@ export default function Results() {
             type="radio"
             name="plot-tab"
             value={plotTab}
-            className="col-xl-6"
+            className="col-xl-6 m-3"
             style={{ whiteSpace: "nowrap" }}>
             <ToggleButton
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}

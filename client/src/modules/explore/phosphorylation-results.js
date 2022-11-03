@@ -13,6 +13,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 // import ReactExport from "react-data-export";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
+import PhosDropdown from "../components/phospy-dropdown"
 
 import { useImperativeHandle, useState } from "react";
 import _ from "lodash";
@@ -74,7 +75,7 @@ export default function PhosResults() {
 
   function summaryViewData() {
     var rows = [];
-    console.log(results);
+    //console.log(tumors);
     sortSummary.map((c) => {
       c[1].map((e) => {
         const currentTumor = tumors.find((f) => f.value === e.cancerId);
@@ -591,11 +592,12 @@ export default function PhosResults() {
     var settings = form.cancer.map((e) => {
       return [{ value: e.label }];
     });
-
-    settings[0].push({ value: "Phosphorylation Site" });
-    settings[0].push({ value: "Tumor vs Control" });
-    settings[0].push({ value: form.gene.label });
-
+    settings.forEach((s) => {
+      s.push({ value: "Protein Abundance" })
+      s.push({ value: "Tumor vs Control" })
+      s.push({ value: form.gene.label })
+    });
+   
     return [
       {
         columns: [
@@ -788,7 +790,16 @@ export default function PhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="row mx-3" controlId="tumorView">
+         {tumors.length >1? 
+            <PhosDropdown form={form} 
+            sortResults={sortResults} 
+            view = {view} 
+            setView ={setView} 
+            setPhosView={setPhosView}
+            setSite={setSite}
+            controlid="PhosphSiteDropdown"/>
+          :''}
+        {/* <Form.Group className="row mx-3" controlId="tumorView">
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
@@ -818,7 +829,7 @@ export default function PhosResults() {
               ))}
             </Form.Select>
           </div>
-              </Form.Group>
+              </Form.Group> */}
 
         <Row className="m-3">
           <Col xl={12} style={{ overflowX: "auto" }}>
@@ -903,10 +914,21 @@ export default function PhosResults() {
       </Tab>
 
       <Tab eventKey="phosView" title="Phosphorylation Site">
-        <Form.Group className="row mx-3" controlId="phosView">
+        {tumors.length >1? 
+            <PhosDropdown form={form} 
+            sortResults={sortResults} 
+            view = {view} 
+            setView ={setView} 
+            setPhosView={setPhosView}
+            setSite={setSite}
+            controlid="PhosphSiteDropdown"/>
+          :''}
+        <Form.Group className="row mx-3 m-3" controlId="phosView">
+           
           <Form.Label className="col-xl-2 col-xs-12 col-form-label" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
+         
           <div className="col-xl-3">
             <Form.Select
               name="phosView"
