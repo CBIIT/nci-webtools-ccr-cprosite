@@ -39,9 +39,23 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function handleSelectChange(name, selection = []) {
+    var ifBrain = -1;
+    var ifBrainFirst= false;
+    var ifAll = -1;
+    if (selection.length > 0){
+      ifBrain = selection.findIndex(s => s.label === "Breast Cancer")
+      ifBrainFirst = selection[0].label === "Breast Cancer"
+      ifAll = selection.findIndex(s => s.label === "All Tumor Types")
+      console.log(ifBrain,selection,ifBrainFirst,ifAll)
+    }
     if (name === "cancer" && selection.find((option) => option.value === 0)) {
       selection = tumors.slice(1)
     }
+    if (ifBrain > -1 && ifBrainFirst) selection = selection.filter(option => option.label.includes("Breast"))
+    if ((ifBrain > -1 && !ifBrainFirst) || ifAll > 0) selection = selection.filter(option => !option.label.includes("Breast"))
+   
+    //try to exclude a specific cancer if select all types
+    //selection = selection.filter(option => !option.label.includes("Breast"))
     mergeForm({ [name]: selection });
   }
 

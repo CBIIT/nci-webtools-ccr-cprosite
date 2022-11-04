@@ -269,12 +269,15 @@ export default function Results() {
   }
 
   function multiBarPlotData() {
-    //console.log(results.length)
+    console.log("averages: ",averages)
     return (
       results.length > 1?
       [{
-        x: averages.map((c) => xlabelmap(c)),
-        y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
+       x: averages.map((c) => xlabelmap(c)),
+       y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
+   
+        //x: averages.filter(c => !c.name.includes("Breast")).map((c) => xlabelmap(c)),
+        //y: averages.filter(c => !c.name.includes("Breast")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
        // y: averages.map((c) => c.tumorAverage),
         // error_y: {
         //   type: "data",
