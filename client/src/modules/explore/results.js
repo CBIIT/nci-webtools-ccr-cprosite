@@ -276,12 +276,12 @@ export default function Results() {
         x: averages.map((c) => xlabelmap(c)),
         y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
        // y: averages.map((c) => c.tumorAverage),
-        error_y: {
-          type: "data",
-          array: averages.map((c) => c.tumorError),
-          visible: true,
-          color: "rgb(255,0,0)",
-        },
+        // error_y: {
+        //   type: "data",
+        //   array: averages.map((c) => c.tumorError),
+        //   visible: true,
+        //   color: "rgb(255,0,0)",
+        // },
         marker: {
           color: "rgb(255,0,0)",
         },
@@ -474,7 +474,7 @@ export default function Results() {
 
   const defaultLayout = {
     yaxis: {
-      title: "<b>Relative Protein Abundance (TMT log2 ratio)</b>",
+      title: results.length >1? "log2 Fold Change" :"<b>Relative Protein Abundance (TMT log2 ratio)</b>",
       zeroline: false,
       titlefont: {
         size: 15,
