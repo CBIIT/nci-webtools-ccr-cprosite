@@ -13,6 +13,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 // import ReactExport from "react-data-export";
+import PhosDropdown from "../components/phospy-dropdown"
 
 import { useImperativeHandle, useState } from "react";
 import _ from "lodash";
@@ -802,7 +803,17 @@ export default function ProteinPhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="row mx-3" controlId="tumorView">
+        <Form.Group className="row mx-3" controlId="phosSiteView">
+          {tumors.length >1? 
+            <PhosDropdown form={form} 
+            sortResults={sortPhospho} 
+            view = {view} 
+            setView ={setView} 
+            setPhosView={setPhosView}
+            setSite={setSite}
+            controlid="phosphySiteProteinPhosDropdown"/>
+          :''}
+{/* 
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
@@ -831,7 +842,7 @@ export default function ProteinPhosResults() {
                 </option>
               ))}
             </Form.Select>
-          </div>
+          </div> */}
         </Form.Group>
 
         <Row className="m-3">
@@ -914,12 +925,20 @@ export default function ProteinPhosResults() {
         </div>
       </Tab>
       <Tab eventKey="phosView" title="Phosphorylation Site">
-        <Form.Group className="row mx-3" controlId="phosView">
-          
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+        <Form.Group className="row mx-3" controlId="ProteinPhos_phosView">
+          {tumors.length >1? 
+            <PhosDropdown form={form} 
+            sortResults={sortPhospho} 
+            view = {view} 
+            setView ={setView} 
+            setPhosView={setPhosView}
+            setSite={setSite}
+            controlid="tumorProteinPhosDropdown"/>
+          :''}
+          {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
-          <div className="col-xl-3">
+           <div className="col-xl-3">
             <Form.Select
               name="caseView"
               onChange={(c) => {
@@ -944,9 +963,10 @@ export default function ProteinPhosResults() {
                 </option>
               ))}
             </Form.Select>
-          </div>
+          </div> 
         
-          <div/>
+          <div/>*/}
+           <Row className="m-3"> 
           <Form.Label className="col-xl-2 col-xs-12 col-form-label" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
@@ -966,8 +986,7 @@ export default function ProteinPhosResults() {
               ))}
             </Form.Select>
           </div>
-
-          
+                    
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
@@ -987,8 +1006,9 @@ export default function ProteinPhosResults() {
               Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
+          </Row>
         </Form.Group>
-
+        
         <Row className="mx-3 mt-3">
           {plotTab === "tumorVsControl" ? (
             <Col xl={12} style={{ height: "800px" }}>
