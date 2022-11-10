@@ -744,10 +744,7 @@ export default function PhosResults() {
                 title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
                 xaxis: {
                   automargin: true,
-                  autorange:true,
-                  showgrid: false,
-                  zeroline: false,
-                  showline: false,
+                  autorange:true
                 },
                 yaxis: {
                   title: "<b>Phosphorylation Site</b>",
