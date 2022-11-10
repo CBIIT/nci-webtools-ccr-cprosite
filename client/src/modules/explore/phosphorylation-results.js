@@ -736,12 +736,18 @@ export default function PhosResults() {
         <div className="m-3">
           <div style={{ height: "800px", overflowY: "auto" }}>
             <Plot
+             divID = "phosphoSummery"
               data={heatMapData}
+              
               layout={{
                 ...defaultLayout,
                 title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
                 xaxis: {
                   automargin: true,
+                  autorange:true,
+                  showgrid: false,
+                  zeroline: false,
+                  showline: false,
                 },
                 yaxis: {
                   title: "<b>Phosphorylation Site</b>",

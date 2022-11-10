@@ -754,7 +754,7 @@ export default function ProteinPhosResults() {
                 ...defaultLayout,
                 title: `<b>${form.gene.label} Phosphorylation/Protein Summary View</b>`,
                 xaxis: {
-                  automargin: true,
+                  automargin: true
                 },
                 yaxis: {
                   title: "<b>Phosphorylation Site</b>",
