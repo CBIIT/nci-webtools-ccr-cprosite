@@ -70,7 +70,7 @@ async function importTable(
     const values = headers
       .map((header) => row[header])
       .map((value) => (value === "" ? null : value));
-
+    
     insertStatement.run(values);
   }
 

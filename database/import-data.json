@@ -2,7 +2,7 @@
   {
     "filePath": "data/braincptac3phosphodata.csv",
     "table": "brainphosphy",
-    "headers": ["Phosohosite", "Case_id", "Peptide","Gene","Value"],
+    "headers": ["Phosphosite", "case_id", "Peptide","Gene","value"],
     "cancer": "cancer_brain",
     "cancerId": 12,
     "proteinTable": "braincptac2prodata",
@@ -11,13 +11,19 @@
     "tcgaRnaTable": "braindata"
   },
    {
-    "filePath": "data/Braincptac3prodata_shared.csv",
+    "filePath": "data/braincptac3prodata_shared.csv",
     "table": "brainprotain",
     "headers": ["Gene", "Case_id", "value"],
+    "cancer": "cancer_brain",
     "cancerId": 12,
     "proteinTable": "braincptac2prodata",
     "phosphoproteinTable": "brainCPTAC2phosphodata",
     "rnaTable": "braincptac2rnadata",
     "tcgaRnaTable": "braindata"
+  },
+   {
+    "filePath": "data/geneName.csv",
+    "table": "geneName",
+    "headers": ["id", "name"]
   }
 ]
