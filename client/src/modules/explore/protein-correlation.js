@@ -40,7 +40,9 @@ export default function ProteinCorrelation() {
   const [numType, setNumType] = useState("log2");
 
   function handleToggle(e) {
-    setNumType(e.target.id);
+    //console.log(e.target.control.id)
+    setNumType(e.target.control.id);
+    //if radio, return e.target.id;
   }
 
   const correlationColumns = [
@@ -321,10 +323,12 @@ export default function ProteinCorrelation() {
   return (
     <div>
       <Form.Group className="row m-3" controlId="tumorView">
-        <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+      { form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
           Tumor Type
         </Form.Label>
-        <div className="col-xl-3">
+        : ''}
+        { form.cancer.length > 1 ? 
+        <div className="col-xl-4">
           <Form.Select
             name="caseView"
             onChange={(e) => {
@@ -349,57 +353,30 @@ export default function ProteinCorrelation() {
               </option>
             ))}
           </Form.Select>
-        </div>
+        </div> : ''}
+        
        <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={numType}
-            className="col-xl-5">
-            <ToggleButton
+            className="col-xl-7 m-3">
+            <ToggleButton 
               className={numType === "log2" ? "btn-primary" : "btn-secondary"}
-              id={"log2"}
+              id="log2"
+              checked={numType === "log2"}
               onClick={handleToggle}>
-              Log<sub>2</sub> vs Log<sub>2</sub>
+               Using Log<sub>2</sub> values
             </ToggleButton>
-            <ToggleButton
-              className={
-                numType === "numeric" ? "btn-primary" : "btn-secondary"
-              }
-              id={"numeric"}
+            <ToggleButton 
+              className={numType === "numeric" ? "btn-primary" : "btn-secondary"}
+              id="numeric"
+              checked={numType === "numeric"}
               onClick={handleToggle}>
-              Numeric vs Numeric
+               Using normal values converted by log<sub>2</sub> values
             </ToggleButton>
-            </ToggleButtonGroup>
-        <Form.Group className="mb-3 col-form-label">
-          <Form.Check
-            inline
-            label={
-              <span>
-                Using Log<sub>2</sub> values
-              </span>
-            }
-            type="radio"
-            id="log2"
-            value="numType"
-            checked={numType === "log2"}
-            onChange={handleToggle}
-          />
-
-          <Form.Check
-            inline
-            label={
-              <span>
-                Using normal values converted by log<sub>2</sub> values
-              </span>
-            }
-            type="radio"
-            id="numeric"
-            value="numType"
-            checked={numType === "numeric"}
-            onChange={handleToggle}
-          />
-        </Form.Group>
-      </Form.Group>
+          </ToggleButtonGroup>
+      </Form.Group> 
+     
 
       <Row className="mx-3 mt-3">
         <Col xl={12}>

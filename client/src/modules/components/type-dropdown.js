@@ -2,11 +2,6 @@ import Form from "react-bootstrap/Form";
 
 const TypeDropdown = ({form,results, view,setView,controlid}) => {
   return(
-      <div>
-        <Form.Group className="row mx-3" controlId={controlid}>
-         <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
           <div className="col-xl-3">
             <Form.Select
               name="caseView"
@@ -23,8 +18,6 @@ const TypeDropdown = ({form,results, view,setView,controlid}) => {
               ))}
             </Form.Select>
           </div>
-           </Form.Group>
-      </div>
   );
  };
 
