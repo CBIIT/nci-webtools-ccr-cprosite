@@ -4,9 +4,10 @@ import Col from "react-bootstrap/Col";
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Form from "react-bootstrap/Form";
-import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
-import ToggleButton from "react-bootstrap/esm/ToggleButton";
 import Table from "../components/table";
+import TypeDropdownCorrelation from "../components/protain-correlation-dropdown"
+import CorrelationToggleButton from "../components/correlation-togglebutton"
+
 import Plot from "react-plotly.js";
 import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -121,7 +122,7 @@ export default function ProteinGeneCorrelation() {
       };
 
   function handleToggle(e) {
-    setNumType(e.target.id);
+    setNumType(e.target.control.id);
   }
 
   const correlationColumns = [
@@ -658,87 +659,18 @@ export default function ProteinGeneCorrelation() {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       {form.dataset.value === "proteinData" && (
         <Tab eventKey="summaryView" title="Summary">
-          <Form.Group className="row m-3" controlId="tumorView">
-            <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+          <Form.Group className="row m-2" controlId="tumorView">
+            { form.cancer.length > 1 ?
+            <Form.Label className="col-xl-1 col-xs-12 col-form-label">
               Tumor Type
-            </Form.Label>
-            <div className="col-xl-3">
-              <Form.Select
-                name="caseView"
-                onChange={(e) => {
-                  if (e.target.value === "all") {
-                    setView(form.cancer.map((e) => e.value));
-                    setLabel("");
-                  } else {
-                    setView([parseInt(e.target.value)]);
-                    setLabel(form.cancer.find((d) => d.value === parseInt(e.target.value)).label);
-                  }
-                }}
-                value={view}
-                required>
-                {form.cancer.length > 1 && (
-                  <option value="all" key={`dataset-all`}>
-                    All Selected Tumor Types
-                  </option>
-                )}
-                {form.cancer.map((o) => (
-                  <option value={o.value} key={`dataset-${o.value}`}>
-                    {o.label}
-                  </option>
-                ))}
-              </Form.Select>
-                </div>
-            {/*<ToggleButtonGroup
-            type="radio"
-            name="plot-tab"
-            value={numType}
-            className="col-xl-5">
-            <ToggleButton
-              className={numType === "log2" ? "btn-primary" : "btn-secondary"}
-              id={"log2"}
-              onClick={handleToggle}>
-              Log<sub>2</sub> vs Log<sub>2</sub>
-            </ToggleButton>
-            <ToggleButton
-              className={
-                numType === "numeric" ? "btn-primary" : "btn-secondary"
-              }
-              id={"numeric"}
-              onClick={handleToggle}>
-              Numeric vs Numeric
-            </ToggleButton>
-            </ToggleButtonGroup>*/}
-            <Form.Group className="col-xl-12 row col-form-label">
-              <Form.Check
-                className="col-xl-4"
-                inline
-                label={
-                  <span>
-                    Using TMT Log<sub>2</sub> ratios
-                  </span>
-                }
-                type="radio"
-                id="log2"
-                value="numType"
-                checked={numType === "log2"}
-                onChange={handleToggle}
-              />
-
-              <Form.Check
-                className="col-xl-8"
-                inline
-                label={
-                  <span>
-                    Using normal values converted by TMT log<sub>2</sub> ratios
-                  </span>
-                }
-                type="radio"
-                id="numeric"
-                value="numType"
-                checked={numType === "numeric"}
-                onChange={handleToggle}
-              />
-            </Form.Group>
+            </Form.Label> : ''}
+            { form.cancer.length > 1 ?  
+            <div className="col-xl-4 m-2">
+           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
+           </TypeDropdownCorrelation>
+            </div> : ''}
+              <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+ 
           </Form.Group>
           <Row className="mx-3 mt-3">
             <Col xl={12}>
@@ -899,7 +831,7 @@ export default function ProteinGeneCorrelation() {
             <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
-            <div className="col-xl-3">
+            <div className="col-xl-5">
               <Select
                 name="siteTumor"
                 value={
@@ -968,8 +900,31 @@ export default function ProteinGeneCorrelation() {
 
       {(form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
-          <Row className="m-3">
-            <Form.Group className="col-md-3" controlId="site1">
+          <Row className="m-1">
+             <Form.Group className="col-xl-4 col-md-3" controlId="site1">
+             <Form.Label className="required " style={{ whiteSpace: "nowrap ",minWidth: "120px" }}>
+              Tumor Type
+            </Form.Label>
+            <div className="col-xl-12">
+              <Select
+                name="siteTumor"
+                value={
+                  form.cancer.find((e) => e.value === siteTumor.value)
+                    ? siteTumor
+                    : {
+                        label: form.cancer[0].label,
+                        value: form.cancer[0].value,
+                      }
+                }
+                options={form.cancer}
+                onChange={(e) => {
+                  setSiteTumor(e);
+                  setLabel(form.cancer.find((d) => d.value === e.value).label);
+                }}
+              />
+              </div>
+         </Form.Group>
+            <Form.Group className="col-xl-3 col-md-3" controlId="site1">
               <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
                 {firstGene} Phosphorylation Site
               </Form.Label>
@@ -982,7 +937,6 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-
             <Form.Group className="col-md-3" controlId="site2">
               <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
                 {secondGene} Phosphorylation Site or Protein
@@ -996,36 +950,11 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-            <Form.Group className="col-md-6 col-form-label">
-              <br />
-              <Form.Check
-                inline
-                label={
-                  <span>
-                    Using TMT Log<sub>2</sub> ratios
-                  </span>
-                }
-                type="radio"
-                id="log2"
-                value="numType"
-                checked={numType === "log2"}
-                onChange={handleToggle}
-              />
-
-              <Form.Check
-                inline
-                label={
-                  <span>
-                    Using normal values converted by TMT log<sub>2</sub> ratios
-                  </span>
-                }
-                type="radio"
-                id="numeric"
-                value="numType"
-                checked={numType === "numeric"}
-                onChange={handleToggle}
-              />
-            </Form.Group>
+             </Row>
+          <Row >
+            <Form.Group className="col-xl-12 col-md-12 col-form-label">    
+              <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+           </Form.Group>
           </Row>
           <Row className="mx-3 mt-3">
             <Col xl={12}>

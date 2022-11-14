@@ -803,7 +803,7 @@ export default function ProteinPhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        <Form.Group className="row mx-3" controlId="phosSiteView">
+        <Form.Group className="row mx-3 m-3" controlId="phosSiteView">
           {tumors.length >1? 
             <PhosDropdown form={form} 
             sortResults={sortPhospho} 
@@ -813,36 +813,6 @@ export default function ProteinPhosResults() {
             setSite={setSite}
             controlid="phosphySiteProteinPhosDropdown"/>
           :''}
-{/* 
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-          <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(c) => {
-                setView(parseInt(c.target.value));
-                const phos = sortPhospho.find((e) => Number(e[0]) === parseInt(c.target.value))
-                  ? Object.entries(
-                      _.groupBy(
-                        sortPhospho.find((e) => Number(e[0]) === parseInt(c.target.value))[1],
-                        "phosphorylationSite",
-                      ),
-                    ).filter((e) => e[0] !== "null")
-                  : [];
-                setPhosView(phos.length ? phos[0][0] : "");
-                setSite(phos.length ? phos[0][1][0] : "");
-              }}
-              value={view}
-              required
-            >
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
-                </option>
-              ))}
-            </Form.Select>
-          </div> */}
         </Form.Group>
 
         <Row className="m-3">
@@ -925,7 +895,7 @@ export default function ProteinPhosResults() {
         </div>
       </Tab>
       <Tab eventKey="phosView" title="Phosphorylation Site">
-        <Form.Group className="row mx-3" controlId="ProteinPhos_phosView">
+        <Form.Group className="row mx-3 m-3" controlId="ProteinPhos_phosView">
           {tumors.length >1? 
             <PhosDropdown form={form} 
             sortResults={sortPhospho} 
@@ -935,42 +905,11 @@ export default function ProteinPhosResults() {
             setSite={setSite}
             controlid="tumorProteinPhosDropdown"/>
           :''}
-          {/*<Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-           <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(c) => {
-                setView(parseInt(c.target.value));
-                const phos = sortPhospho.find((e) => Number(e[0]) === parseInt(c.target.value))
-                  ? Object.entries(
-                      _.groupBy(
-                        sortPhospho.find((e) => Number(e[0]) === parseInt(c.target.value))[1],
-                        "phosphorylationSite",
-                      ),
-                    ).filter((e) => e[0] !== "null")
-                  : [];
-                setPhosView(phos.length ? phos[0][0] : "");
-                setSite(phos.length ? phos[0][1][0] : "");
-              }}
-              value={view}
-              required
-            >
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
-                </option>
-              ))}
-            </Form.Select>
-          </div> 
-        
-          <div/>*/}
-           <Row className="m-3"> 
-          <Form.Label className="col-xl-2 col-xs-12 col-form-label" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
+
+          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
-          <div className="col-xl-3">
+          <div className="col-xl-2 m-1">
             <Form.Select
               name="phosView"
               onChange={(e) => {
@@ -1006,7 +945,6 @@ export default function ProteinPhosResults() {
               Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
-          </Row>
         </Form.Group>
         
         <Row className="mx-3 mt-3">

@@ -674,7 +674,7 @@ export default function Results() {
           )}
 
           {plotTab === "foldChange" && (
-            <Col xl={12} style={{ height: "800px", overflowY: "scroll" }}>
+            <Col xl={12} style={{ height: "800px", overflowY: "auto" }}>
               <Plot
                 data={foldData()}
                 config={{

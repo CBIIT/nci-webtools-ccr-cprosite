@@ -1,14 +1,15 @@
 import Form from "react-bootstrap/Form";
 import _ from "lodash";
+import Row from "react-bootstrap/esm/Row";
 
 const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,controlid}) => {
   return(
-      <div>
-       <Form.Group className="row mx-3" controlId={controlid}>
+       <div className="col-xl-7">
+         <Row>
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
-          <div className="col-xl-3">
+          <div className="col-xl-9">
             <Form.Select
               name="caseView"
               onChange={(c) => {
@@ -34,8 +35,8 @@ const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,control
               ))}
             </Form.Select>
           </div>
-              </Form.Group> 
-      </div>
+          </Row>
+         </div>
   );
  };
 
