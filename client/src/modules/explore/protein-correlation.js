@@ -3,6 +3,9 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Form from "react-bootstrap/Form";
 import Table from "../components/table";
+import TypeDropdownCorrelation from "../components/protain-correlation-dropdown"
+import CorrelationToggleButton from "../components/correlation-togglebutton"
+
 import Plot from "react-plotly.js";
 import { formState, resultsState } from "./explore.state";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -10,8 +13,6 @@ import Tooltip from "react-bootstrap/Tooltip";
 import calculateCorrelation from "calculate-correlation";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 // import ReactExport from "react-data-export";
-import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
-import ToggleButton from "react-bootstrap/esm/ToggleButton";
 
 import { useState } from "react";
 
@@ -40,7 +41,9 @@ export default function ProteinCorrelation() {
   const [numType, setNumType] = useState("log2");
 
   function handleToggle(e) {
-    setNumType(e.target.id);
+    //console.log(e.target.control.id)
+    setNumType(e.target.control.id);
+    //if radio, return e.target.id;
   }
 
   const correlationColumns = [
@@ -320,87 +323,21 @@ export default function ProteinCorrelation() {
 
   return (
     <div>
-      <Form.Group className="row m-3" controlId="tumorView">
-        <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+      <Form.Group className="row m-2 " controlId="tumorView">
+      { form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" >
           Tumor Type
         </Form.Label>
-        <div className="col-xl-3">
-          <Form.Select
-            name="caseView"
-            onChange={(e) => {
-              if (e.target.value === "all") {
-                setView(form.cancer.map((e) => e.value));
-                setLabel("");
-              } else {
-                setView([parseInt(e.target.value)]);
-                setLabel(form.cancer.find((d) => d.value === parseInt(e.target.value)).label);
-              }
-            }}
-            value={view}
-            required>
-            {form.cancer.length > 1 && (
-              <option value="all" key={`dataset-all`}>
-                All Selected Tumor Types
-              </option>
-            )}
-            {form.cancer.map((o) => (
-              <option value={o.value} key={`dataset-${o.value}`}>
-                {o.label}
-              </option>
-            ))}
-          </Form.Select>
-        </div>
-       <ToggleButtonGroup
-            type="radio"
-            name="plot-tab"
-            value={numType}
-            className="col-xl-5">
-            <ToggleButton
-              className={numType === "log2" ? "btn-primary" : "btn-secondary"}
-              id={"log2"}
-              onClick={handleToggle}>
-              Log<sub>2</sub> vs Log<sub>2</sub>
-            </ToggleButton>
-            <ToggleButton
-              className={
-                numType === "numeric" ? "btn-primary" : "btn-secondary"
-              }
-              id={"numeric"}
-              onClick={handleToggle}>
-              Numeric vs Numeric
-            </ToggleButton>
-            </ToggleButtonGroup>
-        <Form.Group className="mb-3 col-form-label">
-          <Form.Check
-            inline
-            label={
-              <span>
-                Using Log<sub>2</sub> values
-              </span>
-            }
-            type="radio"
-            id="log2"
-            value="numType"
-            checked={numType === "log2"}
-            onChange={handleToggle}
-          />
-
-          <Form.Check
-            inline
-            label={
-              <span>
-                Using normal values converted by log<sub>2</sub> values
-              </span>
-            }
-            type="radio"
-            id="numeric"
-            value="numType"
-            checked={numType === "numeric"}
-            onChange={handleToggle}
-          />
-        </Form.Group>
-      </Form.Group>
-
+        : ''}
+        { form.cancer.length > 1 ? 
+        <div className="col-xl-4 m-3">
+          <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
+           </TypeDropdownCorrelation>
+        </div> : ''}
+        
+      <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+      
+      </Form.Group> 
+     
       <Row className="mx-3 mt-3">
         <Col xl={12}>
           <Plot
