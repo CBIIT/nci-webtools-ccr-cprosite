@@ -4,13 +4,11 @@ import Row from "react-bootstrap/esm/Row";
 
 const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,controlid}) => {
   return(
-       <div className="col-xl-7">
-         <Row>
+    <Row>
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
-          <div className="col-xl-9">
-            <Form.Select
+            <Form.Select className="col-xl-4 col-xs-12" style={{width: "66%"}}
               name="caseView"
               onChange={(c) => {
                 setView(parseInt(c.target.value));
@@ -34,9 +32,7 @@ const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,control
                 </option>
               ))}
             </Form.Select>
-          </div>
           </Row>
-         </div>
   );
  };
 

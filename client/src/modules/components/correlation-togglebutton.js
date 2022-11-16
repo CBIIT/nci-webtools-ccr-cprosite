@@ -7,16 +7,16 @@ const correlationToggleButton = ({numType, handleToggle}) => {
             type="radio"
             name="plot-tab"
             value={numType}
-            className="col-xl-6 m-3">
+            className="col-xl-7">
             <ToggleButton 
-              className={numType === "log2" ? "btn-primary btn-sm" : "btn-secondary btn-sm"}
+              className={numType === "log2" ? "btn-primary " : "btn-secondary "}
               id="log2"
               checked={numType === "log2"}
               onClick={handleToggle}>
                Using Log<sub>2</sub> values
             </ToggleButton>
             <ToggleButton 
-              className={numType === "numeric" ? "btn-primary btn-sm" : "btn-secondary btn-sm"}
+              className={numType === "numeric" ? "btn-primary " : "btn-secondary "}
               id="numeric"
               checked={numType === "numeric"}
               onClick={handleToggle}>

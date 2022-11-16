@@ -2,7 +2,7 @@ import Form from "react-bootstrap/Form";
 
 const TypeDropdown = ({form,results, view,setView,controlid}) => {
   return(
-          <div className="col-xl-3">
+          <div className="col-xl-4" style={{width: "35%"}}>
             <Form.Select
               name="caseView"
               onChange={(e) => {

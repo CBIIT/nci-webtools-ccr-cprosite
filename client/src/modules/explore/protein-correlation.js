@@ -323,13 +323,13 @@ export default function ProteinCorrelation() {
 
   return (
     <div>
-      <Form.Group className="row m-2 " controlId="tumorView">
-      { form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" >
+      <Form.Group className="row mx-3 m-3 " controlId="tumorView">
+      { form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label m-3" style={{minWidth:"120px"}}>
           Tumor Type
         </Form.Label>
         : ''}
         { form.cancer.length > 1 ? 
-        <div className="col-xl-4 m-3">
+        <div className="col-xl-5 m-3" style={{width:"35%"}}>
           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
            </TypeDropdownCorrelation>
         </div> : ''}

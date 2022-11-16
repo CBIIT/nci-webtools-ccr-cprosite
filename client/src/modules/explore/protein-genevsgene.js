@@ -659,18 +659,19 @@ export default function ProteinGeneCorrelation() {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       {form.dataset.value === "proteinData" && (
         <Tab eventKey="summaryView" title="Summary">
-          <Form.Group className="row m-2" controlId="tumorView">
+          <Form.Group className="row mx-3 m-2" controlId="tumorView">
             { form.cancer.length > 1 ?
-            <Form.Label className="col-xl-1 col-xs-12 col-form-label">
+            <Form.Label className="col-xl-1 col-xs-12 col-form-label"  style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label> : ''}
             { form.cancer.length > 1 ?  
-            <div className="col-xl-4 m-2">
+            <div className="col-xl-5" style={{width:"35%"}}>
            <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
            </TypeDropdownCorrelation>
             </div> : ''}
+            <div className="p-3">
               <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
- 
+            </div>
           </Form.Group>
           <Row className="mx-3 mt-3">
             <Col xl={12}>
@@ -831,7 +832,7 @@ export default function ProteinGeneCorrelation() {
             <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
-            <div className="col-xl-5">
+            <div className="col-xl-5" style={{width: "34%"}}>
               <Select
                 name="siteTumor"
                 value={
@@ -901,7 +902,7 @@ export default function ProteinGeneCorrelation() {
       {(form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
           <Row className="m-1">
-             <Form.Group className="col-xl-4 col-md-3" controlId="site1">
+             <Form.Group className="col-xl-4 col-md-3" controlId="site1" >
              <Form.Label className="required " style={{ whiteSpace: "nowrap ",minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
@@ -951,8 +952,8 @@ export default function ProteinGeneCorrelation() {
               />
             </Form.Group>
              </Row>
-          <Row >
-            <Form.Group className="col-xl-12 col-md-12 col-form-label">    
+          <Row className="m-1">
+            <Form.Group className="col-xl-12 col-md-12 col-form-label p-2">    
               <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
            </Form.Group>
           </Row>
