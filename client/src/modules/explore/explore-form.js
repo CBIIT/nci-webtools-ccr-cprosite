@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Select from "react-select";
 import AsyncSelect from "react-select/async";
 import classNames from "classnames";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { constSelector, useRecoilState, useRecoilValue } from "recoil";
 import { cancerState, formState, defaultFormState, geneState } from "./explore.state";
 import { useState } from "react";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
@@ -11,13 +11,17 @@ import Tooltip from "react-bootstrap/Tooltip";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
+  
+  const cancer_temp = [...cancer.records]
+  cancer_temp.sort((a,b) => a.name.localeCompare(b.name))
+  
   const [form, setForm] = useState(defaultFormState);
   const mergeForm = (obj) => setForm({ ...form, ...obj });
   const genes = useRecoilValue(geneState).records.map((e) => {
     return { value: e.id, label: e.name };
   });
 
-  const tumors = [{ value: 0, label: "All Tumor Types"}].concat(cancer.records.map((e) => {
+  const tumors = [{ value: 0, label: "All Tumor Types"}].concat(cancer_temp.map((e) => {
     return { value: e.id, label: e.name, singlePool: e.singlePool };
   }));
 

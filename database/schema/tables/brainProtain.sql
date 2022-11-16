@@ -53,7 +53,13 @@ select * from (
     participantId, 
     value as normalValue
   from brainProtain_temp
-  where isTumor > 1
+  where isTumor >= 1
 ) as new
 where true
 on CONFLICT(id) DO update set tumorValue = new.tumorValue, isTumor = 1;
+
+-- copy table into cprosite.DATABASE
+--INSERT INTO destDB.cancer(id,name) VALUES(12,'Brain Cancer')
+--INSERT INTO destDB.proteinData(cancerId, geneId, participantId,normalValue, tumorValue) 
+--SELECT cancerId, geneId, participantId,normalValue, tumorValue FROM proteinData;
+
