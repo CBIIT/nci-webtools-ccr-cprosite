@@ -43,7 +43,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     var ifBrainFirst= false;
     var ifAll = -1;
     //const excludeType = "Breast Cancer"
-    const excludeType = "test"
+    const excludeType = "Brain Cancer"
     if (selection.length > 0){
       ifBrain = selection.findIndex(s => s.label === excludeType )
       ifBrainFirst = selection[0].label === excludeType
