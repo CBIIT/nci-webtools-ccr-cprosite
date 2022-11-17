@@ -832,7 +832,7 @@ export default function ProteinGeneCorrelation() {
             <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
-            <div className="col-xl-5" style={{width: "34%"}}>
+            <div className="col-xl-5" style={{width: "36%"}}>
               <Select
                 name="siteTumor"
                 value={
@@ -902,7 +902,7 @@ export default function ProteinGeneCorrelation() {
       {(form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
           <Row className="m-1">
-             <Form.Group className="col-xl-4 col-md-3" controlId="site1" >
+             <Form.Group className="col-xl-4 col-md-3"  style={{width:"35%"}} controlId="site1" >
              <Form.Label className="required " style={{ whiteSpace: "nowrap ",minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
