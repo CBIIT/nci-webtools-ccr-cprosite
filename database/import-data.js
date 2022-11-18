@@ -87,9 +87,7 @@ const { template } = require("lodash");
     console.log(`[${timestamp()}] finished importing ${table}`);
   }
 
-  console.log("beging create brain protain")
-  let destDB = 'cprosite.db';
-  await database.exec(`ATTACH '${destDB}' AS destDB`);
+  console.log("begin to create brain protain")
   
   database.exec(brainProtainSql);
   database.exec(brainPhosphoProtainSql);
@@ -100,9 +98,6 @@ const { template } = require("lodash");
   //A1BG	GTEX-Y8DK-0011-R10A-SM-HAKY1-No	-0.8782370354085390
   //A1BG	C3N-03183-Tu	0.02527919416672740
   //gene name will map with geneName.csv, geneName.name = brainTable.gene
-
-
-
 
 
 //  generate ratios table
@@ -426,6 +421,8 @@ const { template } = require("lodash");
   }
 
 
+let destDB = 'cprosite.db';
+await database.exec(`ATTACH '${destDB}' AS destDB`);
   //insert into cprosite db
   database.exec(`INSERT INTO destDB.cancer(id,name) VALUES(12,'Brain Cancer');
   INSERT INTO destDB.proteinData(cancerId, geneId, participantId,normalValue, tumorValue) SELECT cancerId, geneId, participantId,normalValue, tumorValue FROM proteinData;

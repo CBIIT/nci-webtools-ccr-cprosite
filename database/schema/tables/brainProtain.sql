@@ -6,8 +6,11 @@ select distinct
   instr(brainprotain.Case_id, '-Tu') as isTumor,
   avg(brainprotain.value) as value
 from brainprotain
-inner join geneName
- on geneName.name = brainprotain.Gene
+inner join geneName on geneName.name = brainprotain.Gene
+where 
+  brainprotain.case_id not like 'LungTumor%' and  
+  brainprotain.case_id not like 'QC%' and
+  brainprotain.value between -30 and 30
 group by geneId, participantId, isTumor;
  
 -- create temporary table for protein abundances
