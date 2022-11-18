@@ -22,6 +22,7 @@ import _ from "lodash";
 
 export default function Results() {
   const form = useRecoilValue(formState);
+ 
   const getResults = useRecoilValue(resultsState);
   const tumors = form.cancer.map((c) => c.value);
 

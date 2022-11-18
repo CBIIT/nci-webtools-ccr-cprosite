@@ -39,25 +39,28 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    var ifBrain = -1;
-    var ifBrainFirst= false;
-    var ifAll = -1;
-    //const excludeType = "Breast Cancer"
-    const excludeType = "Brain Cancer"
-    if (selection.length > 0){
-      ifBrain = selection.findIndex(s => s.label === excludeType )
-      ifBrainFirst = selection[0].label === excludeType
-      ifAll = selection.findIndex(s => s.label === "All Tumor Types")
-      console.log(ifBrain,selection,ifBrainFirst,ifAll)
-    }
-    if (name === "cancer" && selection.find((option) => option.value === 0)) {
-      selection = tumors.slice(1)
-    }
-    if (ifBrain > -1 && ifBrainFirst) selection = selection.filter(option => option.label.includes(excludeType))
-    if ((ifBrain > -1 && !ifBrainFirst) || ifAll > -1) selection = selection.filter(option => !option.label.includes(excludeType))
+    // var ifBrain = -1;
+    // var ifBrainFirst= false;
+    // var ifAll = -1;
+    // //const excludeType = "Breast Cancer"
+    // const excludeType = "Brain Cancer"
+    // if (selection.length > 0){
+    //   ifBrain = selection.findIndex(s => s.label === excludeType )
+    //   ifBrainFirst = selection[0].label === excludeType
+    //   ifAll = selection.findIndex(s => s.label === "All Tumor Types")
+    //   console.log(ifBrain,selection,ifBrainFirst,ifAll)
+    // }
+    // if (name === "cancer" && selection.find((option) => option.value === 0)) {
+    //   selection = tumors.slice(1)
+    // }
+    // if (ifBrain > -1 && ifBrainFirst) selection = selection.filter(option => option.label.includes(excludeType))
+    // if ((ifBrain > -1 && !ifBrainFirst) || ifAll > -1) selection = selection.filter(option => !option.label.includes(excludeType))
    
     //try to exclude a specific cancer if select all types
     //selection = selection.filter(option => !option.label.includes("Breast"))
+    if (name === "cancer" && selection.find((option) => option.value === 0)) {
+       selection = tumors.slice(1)
+     }
     mergeForm({ [name]: selection });
   }
 
