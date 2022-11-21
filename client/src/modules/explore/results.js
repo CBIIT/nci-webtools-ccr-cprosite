@@ -40,8 +40,7 @@ export default function Results() {
     : results.length
     ? Number(results[0][0])
     : form.cancer[0].value;
-  console.log(currentTumor);
-
+  //console.log(currentTumor);
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -274,8 +273,8 @@ export default function Results() {
     return (
       results.length > 1?
       [{
-       x: averages.map((c) => xlabelmap(c)),
-       y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
+       x: averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c)),
+       y: averages.filter(c => !c.name.includes("Brain")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
    
         //x: averages.filter(c => !c.name.includes("Breast")).map((c) => xlabelmap(c)),
         //y: averages.filter(c => !c.name.includes("Breast")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
@@ -287,7 +286,7 @@ export default function Results() {
         //   color: "rgb(255,0,0)",
         // },
         marker: {
-          color: "rgb(139,0,0)",
+          color: "rgb(255,0,0)",
         },
         type: "bar",
         name: "Tumor",

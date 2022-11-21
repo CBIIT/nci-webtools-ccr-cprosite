@@ -3,6 +3,8 @@ import _ from "lodash";
 import Row from "react-bootstrap/esm/Row";
 
 const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,controlid}) => {
+   let sortedCancer = [...form.cancer]
+  sortedCancer = sortedCancer.sort((a,b)=> (a.label>b.label)?1:-1)
   return(
     <Row>
           <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
@@ -26,7 +28,7 @@ const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,control
               value={form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value}
               required
             >
-              {form.cancer.map((o) => (
+              { sortedCancer.map((o) => (
                 <option value={o.value} key={`dataset-${o.value}`}>
                   {o.label}
                 </option>

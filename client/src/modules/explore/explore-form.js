@@ -12,7 +12,9 @@ import Tooltip from "react-bootstrap/Tooltip";
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
   const [form, setForm] = useState(defaultFormState);
+
   const mergeForm = (obj) => setForm({ ...form, ...obj });
+
   const genes = useRecoilValue(geneState).records.map((e) => {
     return { value: e.id, label: e.name };
   });
@@ -61,6 +63,9 @@ export default function ExploreForm({ onSubmit, onReset }) {
     if (name === "cancer" && selection.find((option) => option.value === 0)) {
        selection = tumors.slice(1)
      }
+
+   // selection.sort((a,b) => a.label.localeCompare(b.label))
+   // console.log(selection)
     mergeForm({ [name]: selection });
   }
 

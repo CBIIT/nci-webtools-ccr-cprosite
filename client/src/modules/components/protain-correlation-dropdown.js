@@ -1,6 +1,8 @@
 import Form from "react-bootstrap/Form";
 
 const TypeDropdownCorrelation = ({form, view,setView,setLabel}) => {
+  let sortedCancer = [...form.cancer]
+  sortedCancer = sortedCancer.sort((a,b)=> (a.label>b.label)?1:-1)
   return(
             <Form.Select
                 name="caseView"
@@ -20,7 +22,7 @@ const TypeDropdownCorrelation = ({form, view,setView,setLabel}) => {
                     All Selected Tumor Types
                   </option>
                 )}
-                {form.cancer.map((o) => (
+                {sortedCancer.map((o) => (
                   <option value={o.value} key={`dataset-${o.value}`}>
                     {o.label}
                   </option>

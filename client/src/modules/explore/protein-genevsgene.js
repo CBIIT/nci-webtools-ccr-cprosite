@@ -843,7 +843,7 @@ export default function ProteinGeneCorrelation() {
                         value: form.cancer[0].value,
                       }
                 }
-                options={form.cancer}
+                options={[...form.cancer].sort((a,b)=> (a.label>b.label)?1:-1)}
                 onChange={(e) => {
                   setSiteTumor(e);
                   setLabel(form.cancer.find((d) => d.value === e.value).label);
@@ -917,7 +917,7 @@ export default function ProteinGeneCorrelation() {
                         value: form.cancer[0].value,
                       }
                 }
-                options={form.cancer}
+                options={[...form.cancer].sort((a,b)=> (a.label>b.label)?1:-1)}
                 onChange={(e) => {
                   setSiteTumor(e);
                   setLabel(form.cancer.find((d) => d.value === e.value).label);
