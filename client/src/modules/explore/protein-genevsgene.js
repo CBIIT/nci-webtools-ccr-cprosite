@@ -447,8 +447,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
+      text: proteinGeneCorrelation.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y})<extra></extra>`,
     },
     {
@@ -465,8 +466,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
+      text: proteinGeneCorrelation.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
@@ -482,8 +484,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
+      text: siteData.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
     {
@@ -500,8 +503,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
+      text: siteData.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];

@@ -301,7 +301,8 @@ export default function ProteinCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
-      hovertemplate: `Protein Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Tumor ${
+      text: proteinRNA.map((e) =>  e.name),
+      hovertemplate: `Patient ID: %{text}<br>Protein Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Tumor ${
         numType === "log2" ? "Log2" : "Abundance"
       }: %{y})<extra></extra>`,
     },
@@ -315,7 +316,8 @@ export default function ProteinCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
-      hovertemplate: `Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${
+      text: proteinRNA.map((e) =>  e.name),
+      hovertemplate: `Patient ID: %{text}<br>Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${
         numType === "log2" ? "Log2" : "Abundance"
       }: %{y})<extra></extra>`,
     },

@@ -201,7 +201,10 @@ export default function Results() {
         size: 10,
         color: "rgb(255,0,0)",
       },
-      hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
+      text:results.find((e) => Number(e[0]) === currentTumor)
+        ? results.find((e) => Number(e[0]) === currentTumor)[1].map((e) => e.participantId)
+        : [] ,
+      hovertemplate: "Patient ID: %{text} <br>Tumor Abundance: %{y}<extra></extra>",
     },
     {
       y: results.find((e) => Number(e[0]) === currentTumor)
@@ -215,7 +218,10 @@ export default function Results() {
         size: 10,
         color: "rgb(31,119,180)",
       },
-      hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
+      text:results.find((e) => Number(e[0]) === currentTumor)
+        ? results.find((e) => Number(e[0]) === currentTumor)[1].map((e) => e.participantId)
+        : [] ,
+      hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
     },
   ];
 
@@ -269,7 +275,7 @@ export default function Results() {
   }
 
   function multiBarPlotData() {
-    console.log("averages: ",averages)
+    //console.log("averages: ",averages)
     return (
       results.length > 1?
       [{
@@ -572,7 +578,7 @@ export default function Results() {
             </ExcelFile>
           </div>
 
-          <Table columns={summaryColumns} data={averages} defaultSort={[{ id: "link", asec: true }]} />
+          <Table columns={summaryColumns} data={averages} defaultSort={[{ id: "link", desc: false }]} />
         </div>
       </Tab>
 
@@ -766,7 +772,7 @@ export default function Results() {
 
           <Table
             columns={proteinAbundanceColumns}
-            defaultSort={[{ id: "name", asec: true }]}
+            defaultSort={[{ id: "name", asc: true }]}
             data={
               results.find((f) => Number(f[0]) === currentTumor)
                 ? results

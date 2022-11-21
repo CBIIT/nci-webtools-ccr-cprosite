@@ -492,7 +492,10 @@ export default function ProteinPhosResults() {
             size: 10,
             color: "rgb(255,0,0)",
           },
-          hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
+          text: tumorViewData.length
+            ? tumorViewData.find((e) => e.name === phosView).records.map((d) => d.participantId)
+            : [],
+          hovertemplate: "Patient ID: %{text}<br>Tumor Abundance: %{y}<extra></extra>",
         },
         {
           y: tumorViewData.length
@@ -507,9 +510,12 @@ export default function ProteinPhosResults() {
             size: 10,
             color: "rgb(31,119,180)",
           },
+          text: tumorViewData.length
+            ? tumorViewData.find((e) => e.name === phosView).records.map((d) => d.participantId)
+            : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
