@@ -45,6 +45,9 @@ export default function ProteinGeneCorrelation() {
       : form.dataset.label === "Phosphorylation Site"
       ? "Phosphorylation_Site"
       : "Phosphorylation_Protein";
+  
+      //adjust label if it is brain, since the dropdown will not contains brain
+ 
   const currentTumor = form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
 
   const currentSiteTumor = form.cancer.find((e) => e.value === siteTumor.value)
@@ -52,12 +55,13 @@ export default function ProteinGeneCorrelation() {
     : form.cancer[0].value;
 
   const currentLabel =
-    form.dataset.label === "Protein Abundance" && currentTumor.length > 1
-      ? ""
-      : form.cancer.find((e) => e.value === siteTumor.value)
-      ? label
-      : form.cancer[0].label;
-
+   currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
+    // form.dataset.label === "Relative Protein Abundance" && (tumors.length > 1 && label === "All Selected Tumor Type")
+    //   ? ""
+    //   : form.cancer.find((e) => e.value === siteTumor.value)
+    //   ? label
+    //   : form.cancer[0].label;
+  console.log(label,currentLabel)    
   var firstGeneSet = results[0].participants.records.filter((e) => tumors.includes(e.cancerId));
 
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
@@ -291,10 +295,14 @@ export default function ProteinGeneCorrelation() {
       ),
     },
   ];
-
-  const firstFilteredSet = firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
-  const secondFilteredSet = secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
-
+ //filter out brain data to display in tabel
+  const firstFilteredSet = tumors.length > 1 
+        ?  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
+        :  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  const secondFilteredSet =  tumors.length > 1 
+        ? secondGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
+        : secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  //console.log(tumors.length,firstGeneSet)
   //Organize datasets (unfiltered)
   const getData = firstFilteredSet.map((first) => {
     const second = secondFilteredSet.find((d) => {
@@ -331,6 +339,7 @@ export default function ProteinGeneCorrelation() {
   const proteinGene = getData.filter(
     (e) => e.firstTumor !== null && e.firstControl !== null && e.secondTumor !== null && e.secondControl !== null,
   );
+ 
   const proteinGeneCorrelation = proteinGene.filter(
     (e) => e.firstTumor !== "NA" && e.firstControl !== "NA" && e.secondTumor !== "NA" && e.secondControl !== "NA",
   );
@@ -543,7 +552,7 @@ export default function ProteinGeneCorrelation() {
       columns: correlationColumns.map((e) => {
         return { title: e.label, width: { wpx: 200 } };
       }),
-      data: proteinGene.map((e) => {
+      data: proteinGene.filter(c => !c.name.includes("Brain")).map((e) => {
         return [
           { value: e.name },
           { value: e.firstTumor },

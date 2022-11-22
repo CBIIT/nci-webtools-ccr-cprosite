@@ -276,6 +276,14 @@ export default function Results() {
 
   function multiBarPlotData() {
     //console.log("averages: ",averages)
+    const hovertext = averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c))
+    const hovertextdisplay = hovertext.map(ht =>{
+      ht = ht.replace("(","<br>Tumor Count:");
+      ht = ht.replace("-","<br>Adj. Normal Count:");
+      ht = ht.replace(")","");
+      return ht;
+    })
+    //console.log(hovertextdisplay)
     return (
       results.length > 1?
       [{
@@ -296,7 +304,8 @@ export default function Results() {
         },
         type: "bar",
         name: "Tumor",
-        hovertemplate: "%{x}: %{y} <extra></extra>",
+        hovertext: hovertextdisplay,
+        hovertemplate: "%{hovertext}<br>Tumor vs Normal:%{y} <extra></extra>",
       }]:
       [
       {
@@ -411,7 +420,7 @@ export default function Results() {
         columns: summaryColumns.map((e) => {
           return { title: e.label, width: { wpx: 160 } };
         }),
-        data: averages.map((e) => {
+        data: averages.filter(c => !c.name.includes("Brain")).map((e) => {
           return [
             { value: e.name },
             { value: e.tumorAverage },
@@ -578,7 +587,8 @@ export default function Results() {
             </ExcelFile>
           </div>
 
-          <Table columns={summaryColumns} data={averages} defaultSort={[{ id: "link", desc: false }]} />
+          <Table columns={summaryColumns} data={averages.length>1? averages.filter(c => !c.name.includes("Brain")):averages} 
+          defaultSort={[{ id: "link", desc: false }]} />
         </div>
       </Tab>
 

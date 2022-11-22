@@ -1,7 +1,7 @@
 import Form from "react-bootstrap/Form";
 
 const TypeDropdownCorrelation = ({form, view,setView,setLabel}) => {
-  let sortedCancer = [...form.cancer]
+  let sortedCancer = [...form.cancer.filter(c=>!c.label.includes("Brain"))]
   sortedCancer = sortedCancer.sort((a,b)=> (a.label>b.label)?1:-1)
   return(
             <Form.Select
