@@ -17,7 +17,7 @@ import { ExcelFile, ExcelSheet } from "../components/excel-export";
 // import ReactExport from "react-data-export";
 import Select from "react-select";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 
 // const ExcelFile = ReactExport.ExcelFile;
@@ -30,6 +30,12 @@ export default function ProteinGeneCorrelation() {
   const secondGene = form.correlatedGene.label;
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer.map((e) => e.value));
+  
+  //if (view.length>1) setView(tumors)
+  //have to update the view value if form value changes
+  //useEffect(()=>{setView(tumors);console.log("this view in effect",view)},[])
+  console.log(view,tumors)
+  
   const [siteTumor, setSiteTumor] = useState({
     value: form.cancer[0].value,
     label: form.cancer[0].label,
@@ -47,9 +53,8 @@ export default function ProteinGeneCorrelation() {
       : "Phosphorylation_Protein";
   
       //adjust label if it is brain, since the dropdown will not contains brain
- 
+  //view.length>1? setView(tumors):''
   const currentTumor = form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
-
   const currentSiteTumor = form.cancer.find((e) => e.value === siteTumor.value)
     ? siteTumor.value
     : form.cancer[0].value;
@@ -61,7 +66,7 @@ export default function ProteinGeneCorrelation() {
     //   : form.cancer.find((e) => e.value === siteTumor.value)
     //   ? label
     //   : form.cancer[0].label;
-  console.log(label,currentLabel)    
+  //console.log(label,currentLabel,tumors)    
   var firstGeneSet = results[0].participants.records.filter((e) => tumors.includes(e.cancerId));
 
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
@@ -302,13 +307,11 @@ export default function ProteinGeneCorrelation() {
   const secondFilteredSet =  tumors.length > 1 
         ? secondGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
         : secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
-  //console.log(tumors.length,firstGeneSet)
   //Organize datasets (unfiltered)
   const getData = firstFilteredSet.map((first) => {
     const second = secondFilteredSet.find((d) => {
       return first.participantId === d.participantId && first.phosphorylationSite === d.phosphorylationSite;
     });
-
     if (second) {
       return {
         name: first.participantId,
@@ -343,7 +346,6 @@ export default function ProteinGeneCorrelation() {
   const proteinGeneCorrelation = proteinGene.filter(
     (e) => e.firstTumor !== "NA" && e.firstControl !== "NA" && e.secondTumor !== "NA" && e.secondControl !== "NA",
   );
-
   function getSite() {
     const currentTumor = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.value : form.cancer[0].value;
 
@@ -444,8 +446,9 @@ export default function ProteinGeneCorrelation() {
     displaylogo: false,
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
-
+  
   const geneScatter = [
+    //console.log(numType,proteinGeneCorrelation),
     {
       x: proteinGeneCorrelation.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
       y: proteinGeneCorrelation.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
@@ -567,7 +570,7 @@ export default function ProteinGeneCorrelation() {
       }),
     },
   ];
-
+ 
   function exportSiteSettings(gene) {
     return [
       {
