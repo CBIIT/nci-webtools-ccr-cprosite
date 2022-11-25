@@ -10,14 +10,14 @@ const { zip } = require("lodash");
 const sources = require("./import-data.json");
 const args = require("minimist")(process.argv.slice(2));
 const timestamp = getTimestamp(([absolute, relative]) => `${absolute / 1000}s, ${relative / 1000}s`);
-const { template } = require("lodash");
+const _ = require("lodash");
 
 (async function main() {
   const databaseFilePath = args.output || "cprosite_temp.db";
 
   const mainTablesSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
-  const brainProtainSql = await fsp.readFile("schema/tables/brainProtain.sql", "utf-8");
-  const brainPhosphoProtainSql = await fsp.readFile("schema/tables/brainPhosphoprotein.sql", "utf-8");
+  const brainProtainSql = _.template(await fsp.readFile("schema/tables/brainProtain.sql", "utf-8"));
+  const brainPhosphoProtainSql = _.template(await fsp.readFile("schema/tables/brainPhosphoprotein.sql", "utf-8"));
   const mainIndexesSql = await fsp.readFile("schema/indexes/main.sql", "utf-8");
 
   // recreate database
@@ -89,8 +89,14 @@ const { template } = require("lodash");
 
   console.log("begin to create brain protain")
   
-  database.exec(brainProtainSql);
-  database.exec(brainPhosphoProtainSql);
+  database.exec(brainProtainSql({ 
+        'tempTable': 'brainProtain_temp',
+        'cancerId':"12"
+      }));
+   database.exec(brainPhosphoProtainSql({
+     tempTable: `brainProtainPhospho_temp`,
+         cancerId:"12"
+  }));
 
   //run convert brain table to related tables
   //parse case_id: 
@@ -421,17 +427,17 @@ const { template } = require("lodash");
   }
 
 
-let destDB = 'cprosite.db';
-await database.exec(`ATTACH '${destDB}' AS destDB`);
-  //insert into cprosite db
-  database.exec(`INSERT INTO destDB.cancer(id,name) VALUES(12,'Brain Cancer');
-  INSERT INTO destDB.proteinData(cancerId, geneId, participantId,normalValue, tumorValue) SELECT cancerId, geneId, participantId,normalValue, tumorValue FROM proteinData;
-  INSERT INTO destDB.proteinDataSummary(cancerId, geneId, normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired) SELECT cancerId, geneId, normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired FROM proteinDataSummary;
-  INSERT INTO destDB.phosphoproteinData(cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide) SELECT cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide FROM phosphoproteinData;
-  INSERT INTO destDB.phosphoproteinDataSummary(cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired) SELECT cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired FROM phosphoproteinDataSummary;
-  INSERT INTO destDB.phosphoproteinRatioData(cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide) SELECT cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide FROM phosphoproteinRatioData;
-  INSERT INTO destDB.phosphoproteinRatioDataSummary(cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired) SELECT cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired FROM phosphoproteinRatioDataSummary;
- `)
+// let destDB = 'cprosite.db';
+// await database.exec(`ATTACH '${destDB}' AS destDB`);
+//   //insert into cprosite db
+//   database.exec(`INSERT INTO destDB.cancer(id,name) VALUES(12,'Brain Cancer');
+//   INSERT INTO destDB.proteinData(cancerId, geneId, participantId,normalValue, tumorValue) SELECT cancerId, geneId, participantId,normalValue, tumorValue FROM proteinData;
+//   INSERT INTO destDB.proteinDataSummary(cancerId, geneId, normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired) SELECT cancerId, geneId, normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired FROM proteinDataSummary;
+//   INSERT INTO destDB.phosphoproteinData(cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide) SELECT cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide FROM phosphoproteinData;
+//   INSERT INTO destDB.phosphoproteinDataSummary(cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired) SELECT cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired FROM phosphoproteinDataSummary;
+//   INSERT INTO destDB.phosphoproteinRatioData(cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide) SELECT cancerId, geneId, participantId,normalValue, tumorValue,accession,phosphorylationSite,phosphopeptide FROM phosphoproteinRatioData;
+//   INSERT INTO destDB.phosphoproteinRatioDataSummary(cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired) SELECT cancerId, geneId, accession,phosphorylationSite,phosphopeptide,normalSampleCount,normalSampleMean,normalSampleMedian,normalSampleStandardError,tumorSampleCount,tumorSampleMean,tumorSampleMedian,tumorSampleStandardError,pValuePaired,pValueUnpaired FROM phosphoproteinRatioDataSummary;
+//  `)
  
   database.close();
 })();

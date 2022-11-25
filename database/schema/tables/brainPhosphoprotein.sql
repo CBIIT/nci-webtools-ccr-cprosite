@@ -1,6 +1,6 @@
 -- create temporary table for phosphoprotein abundances
-drop table if exists brainProtainPhospho_temp;
-CREATE TABLE brainProtainPhospho_temp AS
+drop table if exists <%= tempTable %>;
+CREATE TABLE <%= tempTable %> AS
 select distinct
   geneName.id as geneId, 
   SUBSTR(c.case_id, length(c.case_id)-2, -length(c.case_id)) as participantId,
@@ -22,14 +22,14 @@ PRAGMA foreign_keys = OFF;
 insert into phosphoproteinData(cancerId, geneId, participantId, normalValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
-    12 as cancerId,
+    <%= cancerId %> as cancerId,
     geneId, 
     participantId, 
     value as normalValue, 
     accession, 
     phosphorylationSite, 
     phosphopeptide
-  from brainProtainPhospho_temp
+  from <%= tempTable %>
   where isTumor = 0
 ) as new
 where true
@@ -43,14 +43,14 @@ on CONFLICT(id) DO update set normalValue = new.normalValue,
 insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
 select * from (
   select 
-    12 as cancerId,
+    <%= cancerId %> as cancerId,
     geneId, 
     participantId, 
     value as tumorValue, 
     accession, 
     phosphorylationSite, 
     phosphopeptide
-  from brainProtainPhospho_temp
+  from <%= tempTable %>
   where isTumor >= 1
 ) as new
 where true

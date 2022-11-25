@@ -1,5 +1,5 @@
-drop table if exists brainProtain_temp;
-CREATE TABLE brainProtain_temp AS
+drop table if exists <%= tempTable %>;
+CREATE TABLE <%= tempTable %> AS
 select distinct 
   geneName.id as geneId, 
   SUBSTR(brainprotain.Case_id, length(brainprotain.Case_id)-2, -length(brainprotain.Case_id)) as participantId,
@@ -37,11 +37,11 @@ PRAGMA foreign_keys = OFF;
 insert into proteinData(cancerId, geneId, participantId, normalValue)
 select * from (
   select 
-    cast(12 as integer) as cancerId,
+    cast(<%= cancerId %> as integer) as cancerId,
     cast(geneId as integer), 
     participantId, 
     value as normalValue
-  from brainProtain_temp
+  from <%= tempTable %>
   where isTumor = 0
 ) as new
 where true
@@ -51,11 +51,11 @@ on CONFLICT(id) DO update set normalValue = new.normalValue;
 insert into proteinData(cancerId, geneId, participantId, tumorValue)
 select * from (
   select 
-    cast(12 as integer) as cancerId,
+    cast(<%= cancerId %> as integer) as cancerId,
     cast(geneId as integer), 
     participantId, 
     value as normalValue
-  from brainProtain_temp
+  from <%= tempTable %>
   where isTumor >= 1
 ) as new
 where true
