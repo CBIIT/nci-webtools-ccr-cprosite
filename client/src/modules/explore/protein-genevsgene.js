@@ -54,7 +54,7 @@ export default function ProteinGeneCorrelation() {
   
       //adjust label if it is brain, since the dropdown will not contains brain
   //view.length>1? setView(tumors):''
-  const currentTumor = form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
+  const currentTumor = view.length> 1 ? form.cancer.map((e) => e.value) :form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
   const currentSiteTumor = form.cancer.find((e) => e.value === siteTumor.value)
     ? siteTumor.value
     : form.cancer[0].value;

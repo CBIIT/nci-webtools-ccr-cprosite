@@ -15,7 +15,7 @@ const TypeDropdownCorrelation = ({form, view,setView,setLabel}) => {
                     setLabel(form.cancer.find((d) => d.value === parseInt(e.target.value)).label);
                   }
                 }}
-                value={view}
+                // value={view}
                 required>
                 {form.cancer.length > 1 && (
                   <option value="all" key={`dataset-all`}>
