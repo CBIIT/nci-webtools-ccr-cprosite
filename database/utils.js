@@ -70,7 +70,7 @@ async function importTable(
     const values = headers
       .map((header) => row[header])
       .map((value) => (value === "" ? null : value));
-    
+
     insertStatement.run(values);
   }
 
@@ -84,4 +84,9 @@ function getTimestamp(formatter = (v) => v.join(", ")) {
     this.now = new Date().getTime();
     return formatter([now - start, now - previous]);
   };
+}
+
+function splitTcgaCsv(rows,ifPrepare = false){
+ 
+  return rows
 }

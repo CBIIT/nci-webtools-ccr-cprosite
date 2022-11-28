@@ -81,7 +81,7 @@ const _ = require("lodash");
   for (const { filePath, table, headers } of sources) {
     console.log(`[${timestamp()}] started importing ${table}`);
     const rows = readFileAsIterable(filePath, headers);
-    //console.log(rows)
+    console.log(rows)
     //await importTable(database, table, headers, rows);
     await importTable(database, table, headers, rows,true);
     console.log(`[${timestamp()}] finished importing ${table}`);
