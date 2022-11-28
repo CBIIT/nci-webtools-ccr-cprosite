@@ -1,7 +1,7 @@
 import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 import ToggleButton from "react-bootstrap/esm/ToggleButton";
 
-const correlationToggleButton = ({numType, handleToggle}) => {
+const correlationToggleButton = ({numType, handleToggle,currentTumor}) => {
   return(
            <ToggleButtonGroup
             type="radio"
@@ -15,13 +15,13 @@ const correlationToggleButton = ({numType, handleToggle}) => {
               onClick={handleToggle}>
                Using Log<sub>2</sub> values
             </ToggleButton>
-            <ToggleButton 
+            {currentTumor != 13? <ToggleButton 
               className={numType === "numeric" ? "btn-primary " : "btn-secondary "}
               id="numeric"
               checked={numType === "numeric"}
               onClick={handleToggle}>
                Using normal values converted by log<sub>2</sub> values
-            </ToggleButton>
+            </ToggleButton>:''}
           </ToggleButtonGroup>
   );
  };

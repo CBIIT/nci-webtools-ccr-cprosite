@@ -613,12 +613,12 @@ export default function Results() {
               onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
-            <ToggleButton
+           {currentTumor != 12? <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
-            </ToggleButton>
+            </ToggleButton>:''}
           </ToggleButtonGroup>
         </Form.Group>
         <Row className="mx-3 mt-3">

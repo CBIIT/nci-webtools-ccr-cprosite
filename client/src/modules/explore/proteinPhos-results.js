@@ -950,12 +950,12 @@ export default function ProteinPhosResults() {
               onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
-            <ToggleButton
+            {currentTumor != 12?<ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
-            </ToggleButton>
+            </ToggleButton>:''}
           </ToggleButtonGroup>
           </Row>
         </Form.Group>

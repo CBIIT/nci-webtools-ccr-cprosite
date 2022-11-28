@@ -682,11 +682,11 @@ export default function ProteinGeneCorrelation() {
             </Form.Label> : ''}
             { form.cancer.length > 1 ?  
             <div className="col-xl-5" style={{width:"35%"}}>
-           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
+           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} >  
            </TypeDropdownCorrelation>
             </div> : ''}
             <div className="p-3">
-              <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+              <CorrelationToggleButton numType={numType} handleToggle={handleToggle} currentTumor={currentSiteTumor}></CorrelationToggleButton>
             </div>
           </Form.Group>
           <Row className="mx-3 mt-3">
@@ -970,7 +970,7 @@ export default function ProteinGeneCorrelation() {
              </Row>
           <Row className="m-1">
             <Form.Group className="col-xl-12 col-md-12 col-form-label p-2">    
-              <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+              <CorrelationToggleButton numType={numType} handleToggle={handleToggle} currentTumor={currentSiteTumor}></CorrelationToggleButton>
            </Form.Group>
           </Row>
           <Row className="mx-3 mt-3">
