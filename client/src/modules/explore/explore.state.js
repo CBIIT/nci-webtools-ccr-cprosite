@@ -3,7 +3,9 @@ import { query } from "../../services/query";
 
 export const cancerState = selector({
   key: "explore.fieldState",
-  get: ({ get }) => query("api/query", { table: "cancer" }),
+  get: ({ get }) => query("api/query", { table: "cancer",
+     orderBy: "name",
+      order: "asc", })
 });
 
 export const casesState = selector({
@@ -70,10 +72,10 @@ export async function getData(params, tumor, gene) {
       "_cancerId:in": tumor,
       "_geneId": gene,
     });
-
+    
     return { summary, participants, protein };
   }
-
+  //console.log("summary: ",summary)
   return { summary, participants };
 }
 
@@ -84,7 +86,7 @@ export const resultsState = selector({
     if (!params) return null;
 
     var results = [];
-    console.log(params);
+    console.log("params:",params);
 
     for (const gene of [params.gene, params.correlatedGene]) {
       if (!gene) continue;
@@ -103,7 +105,7 @@ export const resultsState = selector({
         protein,
       });
     }
-    console.log(results);
+   // console.log(results);
     return results;
   },
 });

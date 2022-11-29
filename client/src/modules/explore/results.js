@@ -22,6 +22,7 @@ import _ from "lodash";
 
 export default function Results() {
   const form = useRecoilValue(formState);
+ 
   const getResults = useRecoilValue(resultsState);
   const tumors = form.cancer.map((c) => c.value);
 
@@ -39,8 +40,7 @@ export default function Results() {
     : results.length
     ? Number(results[0][0])
     : form.cancer[0].value;
-  console.log(currentTumor);
-
+  //console.log(currentTumor);
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -201,7 +201,10 @@ export default function Results() {
         size: 10,
         color: "rgb(255,0,0)",
       },
-      hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
+      text:results.find((e) => Number(e[0]) === currentTumor)
+        ? results.find((e) => Number(e[0]) === currentTumor)[1].map((e) => e.participantId)
+        : [] ,
+      hovertemplate: "Patient ID: %{text} <br>Tumor Abundance: %{y}<extra></extra>",
     },
     {
       y: results.find((e) => Number(e[0]) === currentTumor)
@@ -215,7 +218,10 @@ export default function Results() {
         size: 10,
         color: "rgb(31,119,180)",
       },
-      hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
+      text:results.find((e) => Number(e[0]) === currentTumor)
+        ? results.find((e) => Number(e[0]) === currentTumor)[1].map((e) => e.participantId)
+        : [] ,
+      hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
     },
   ];
 
@@ -269,12 +275,20 @@ export default function Results() {
   }
 
   function multiBarPlotData() {
-    console.log("averages: ",averages)
+    //console.log("averages: ",averages)
+    const hovertext = averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c))
+    const hovertextdisplay = hovertext.map(ht =>{
+      ht = ht.replace("(","<br>Tumor Count:");
+      ht = ht.replace("-","<br>Adj. Normal Count:");
+      ht = ht.replace(")","");
+      return ht;
+    })
+    //console.log(hovertextdisplay)
     return (
       results.length > 1?
       [{
-       x: averages.map((c) => xlabelmap(c)),
-       y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
+       x: averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c)),
+       y: averages.filter(c => !c.name.includes("Brain")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
    
         //x: averages.filter(c => !c.name.includes("Breast")).map((c) => xlabelmap(c)),
         //y: averages.filter(c => !c.name.includes("Breast")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
@@ -286,11 +300,12 @@ export default function Results() {
         //   color: "rgb(255,0,0)",
         // },
         marker: {
-          color: "rgb(139,0,0)",
+          color: "rgb(255,0,0)",
         },
         type: "bar",
         name: "Tumor",
-        hovertemplate: "%{x}: %{y} <extra></extra>",
+        hovertext: hovertextdisplay,
+        hovertemplate: "%{hovertext}<br>Tumor vs Normal:%{y} <extra></extra>",
       }]:
       [
       {
@@ -405,7 +420,7 @@ export default function Results() {
         columns: summaryColumns.map((e) => {
           return { title: e.label, width: { wpx: 160 } };
         }),
-        data: averages.map((e) => {
+        data: averages.filter(c => !c.name.includes("Brain")).map((e) => {
           return [
             { value: e.name },
             { value: e.tumorAverage },
@@ -572,7 +587,8 @@ export default function Results() {
             </ExcelFile>
           </div>
 
-          <Table columns={summaryColumns} data={averages} defaultSort={[{ id: "link", asec: true }]} />
+          <Table columns={summaryColumns} data={averages.length>1? averages.filter(c => !c.name.includes("Brain")):averages} 
+          defaultSort={[{ id: "link", desc: false }]} />
         </div>
       </Tab>
 
@@ -589,7 +605,7 @@ export default function Results() {
             type="radio"
             name="plot-tab"
             value={plotTab}
-            className="col-xl-6"
+            className="col-xl-5"
             style={{ whiteSpace: "nowrap" }}>
             <ToggleButton
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
@@ -597,12 +613,12 @@ export default function Results() {
               onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
-            <ToggleButton
+           {currentTumor != 12? <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
-            </ToggleButton>
+            </ToggleButton>:''}
           </ToggleButtonGroup>
         </Form.Group>
         <Row className="mx-3 mt-3">
@@ -766,7 +782,7 @@ export default function Results() {
 
           <Table
             columns={proteinAbundanceColumns}
-            defaultSort={[{ id: "name", asec: true }]}
+            defaultSort={[{ id: "name", asc: true }]}
             data={
               results.find((f) => Number(f[0]) === currentTumor)
                 ? results

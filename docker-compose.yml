@@ -16,4 +16,4 @@ services:
     environment:
       API_HOST: http://backend:10000
     ports:
-      - "8200:80"
+      - "8400:80"

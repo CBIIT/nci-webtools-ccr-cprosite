@@ -6,7 +6,7 @@ import Explore from "./modules/explore/explore";
 
 export default function App() {
   const navbarLinks = [
-    { path: "/", title: "Explore", exact: true },
+    { path: "/", title: "Explore", exact: "true" },
     { path: "/about", title: "About" },
   ];
 

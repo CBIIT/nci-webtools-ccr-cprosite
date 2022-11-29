@@ -475,7 +475,10 @@ export default function PhosResults() {
             size: 10,
             color: "rgb(255,0,0)",
           },
-          hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
+          text:tumorViewData.length
+            ? tumorViewData.find((e) => e.name === phosView).records.map((d) => d.participantId)
+            : [],
+          hovertemplate: "Patient ID: %{text}<br>Tumor Abundance: %{y}<extra></extra>",
         },
         {
           y: tumorViewData.length
@@ -490,13 +493,15 @@ export default function PhosResults() {
             size: 10,
             color: "rgb(31,119,180)",
           },
+          text:tumorViewData.length
+            ? tumorViewData.find((e) => e.name === phosView).records.map((d) => d.participantId)
+            : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
-
     return [];
   }
 
@@ -793,7 +798,8 @@ export default function PhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        <div className="m-3">
+        <Row className="m-3">
+          <Col lg={6}>
          {tumors.length >1? 
             <PhosDropdown form={form} 
             sortResults={sortResults} 
@@ -803,7 +809,8 @@ export default function PhosResults() {
             setSite={setSite}
             controlid="PhosphSiteDropdown"/>
           :''}
-        </div>
+          </Col>
+        </Row>
 
         <Row className="m-3">
           <Col xl={12} style={{ overflowX: "auto" }}>
@@ -889,6 +896,8 @@ export default function PhosResults() {
 
       <Tab eventKey="phosView" title="Phosphorylation Site">
          <Form.Group className="row mx-3 m-3" controlId="phosView">
+           <Row >
+             <Col lg={tumors.length >1? 6:'auto'} className="p-2">
            {tumors.length >1? 
             <PhosDropdown form={form} 
             sortResults={sortResults} 
@@ -898,11 +907,13 @@ export default function PhosResults() {
             setSite={setSite}
             controlid="PhosphSiteDropdown"/>
           :''}
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label " style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
+          </Col>
+          
+          <Form.Label className="col-xl-1 col-xs-12 col-form-label m-2" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
          
-          <div className="col-xl-2 m-1">
+          <div className="col-xl-2 p-2">
             <Form.Select
               name="phosView"
               onChange={(e) => {
@@ -918,12 +929,12 @@ export default function PhosResults() {
               ))}
             </Form.Select>
           </div>
-         
+                 
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={plotTab}
-            className="col-xl-6"
+            className="col-xl-5 p-2"
             style={{ whiteSpace: "nowrap" }}>
             <ToggleButton
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
@@ -931,13 +942,14 @@ export default function PhosResults() {
               onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
-            <ToggleButton
+            {currentTumor !=12 ? <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
-            </ToggleButton>
+            </ToggleButton>:''}
           </ToggleButtonGroup>
+          </Row>
         </Form.Group>
         <Row className="mx-3 mt-3">
           {plotTab === "tumorVsControl" ? (

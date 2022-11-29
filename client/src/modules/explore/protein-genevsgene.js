@@ -17,7 +17,7 @@ import { ExcelFile, ExcelSheet } from "../components/excel-export";
 // import ReactExport from "react-data-export";
 import Select from "react-select";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import _ from "lodash";
 
 // const ExcelFile = ReactExport.ExcelFile;
@@ -30,6 +30,12 @@ export default function ProteinGeneCorrelation() {
   const secondGene = form.correlatedGene.label;
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer.map((e) => e.value));
+  
+  //if (view.length>1) setView(tumors)
+  //have to update the view value if form value changes
+  //useEffect(()=>{setView(tumors);console.log("this view in effect",view)},[])
+  console.log(view,tumors)
+  
   const [siteTumor, setSiteTumor] = useState({
     value: form.cancer[0].value,
     label: form.cancer[0].label,
@@ -45,19 +51,22 @@ export default function ProteinGeneCorrelation() {
       : form.dataset.label === "Phosphorylation Site"
       ? "Phosphorylation_Site"
       : "Phosphorylation_Protein";
-  const currentTumor = form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
-
+  
+      //adjust label if it is brain, since the dropdown will not contains brain
+  //view.length>1? setView(tumors):''
+  const currentTumor = view.length> 1 ? form.cancer.map((e) => e.value) :form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
   const currentSiteTumor = form.cancer.find((e) => e.value === siteTumor.value)
     ? siteTumor.value
     : form.cancer[0].value;
 
   const currentLabel =
-    form.dataset.label === "Protein Abundance" && currentTumor.length > 1
-      ? ""
-      : form.cancer.find((e) => e.value === siteTumor.value)
-      ? label
-      : form.cancer[0].label;
-
+   currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
+    // form.dataset.label === "Relative Protein Abundance" && (tumors.length > 1 && label === "All Selected Tumor Type")
+    //   ? ""
+    //   : form.cancer.find((e) => e.value === siteTumor.value)
+    //   ? label
+    //   : form.cancer[0].label;
+  //console.log(label,currentLabel,tumors)    
   var firstGeneSet = results[0].participants.records.filter((e) => tumors.includes(e.cancerId));
 
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
@@ -291,16 +300,20 @@ export default function ProteinGeneCorrelation() {
       ),
     },
   ];
-
+ //filter out brain data to display in tabel
+  // const firstFilteredSet = tumors.length > 1 
+  //       ?  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
+  //       :  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  // const secondFilteredSet =  tumors.length > 1 
+  //       ? secondGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
+  //       : secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  //Organize datasets (unfiltered)
   const firstFilteredSet = firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
   const secondFilteredSet = secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
-
-  //Organize datasets (unfiltered)
   const getData = firstFilteredSet.map((first) => {
     const second = secondFilteredSet.find((d) => {
       return first.participantId === d.participantId && first.phosphorylationSite === d.phosphorylationSite;
     });
-
     if (second) {
       return {
         name: first.participantId,
@@ -331,10 +344,10 @@ export default function ProteinGeneCorrelation() {
   const proteinGene = getData.filter(
     (e) => e.firstTumor !== null && e.firstControl !== null && e.secondTumor !== null && e.secondControl !== null,
   );
+ 
   const proteinGeneCorrelation = proteinGene.filter(
     (e) => e.firstTumor !== "NA" && e.firstControl !== "NA" && e.secondTumor !== "NA" && e.secondControl !== "NA",
   );
-
   function getSite() {
     const currentTumor = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.value : form.cancer[0].value;
 
@@ -435,8 +448,9 @@ export default function ProteinGeneCorrelation() {
     displaylogo: false,
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
-
+  
   const geneScatter = [
+    //console.log(numType,proteinGeneCorrelation),
     {
       x: proteinGeneCorrelation.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
       y: proteinGeneCorrelation.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
@@ -447,8 +461,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
+      text: proteinGeneCorrelation.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y})<extra></extra>`,
     },
     {
@@ -465,8 +480,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
+      text: proteinGeneCorrelation.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
@@ -482,8 +498,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
+      text: siteData.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
     {
@@ -500,8 +517,9 @@ export default function ProteinGeneCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
+      text: siteData.map((e) =>  e.name),
       hovertemplate:
-        `${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+        `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
@@ -539,7 +557,7 @@ export default function ProteinGeneCorrelation() {
       columns: correlationColumns.map((e) => {
         return { title: e.label, width: { wpx: 200 } };
       }),
-      data: proteinGene.map((e) => {
+      data: proteinGene.filter(c => c.name).map((e) => {
         return [
           { value: e.name },
           { value: e.firstTumor },
@@ -554,7 +572,7 @@ export default function ProteinGeneCorrelation() {
       }),
     },
   ];
-
+ 
   function exportSiteSettings(gene) {
     return [
       {
@@ -659,18 +677,19 @@ export default function ProteinGeneCorrelation() {
     <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
       {form.dataset.value === "proteinData" && (
         <Tab eventKey="summaryView" title="Summary">
-          <Form.Group className="row m-2" controlId="tumorView">
+          <Form.Group className="row mx-3 m-2" controlId="tumorView">
             { form.cancer.length > 1 ?
-            <Form.Label className="col-xl-1 col-xs-12 col-form-label">
+            <Form.Label className="col-xl-1 col-xs-12 col-form-label"  style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label> : ''}
             { form.cancer.length > 1 ?  
-            <div className="col-xl-4 m-2">
-           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
+            <div className="col-xl-5" style={{width:"35%"}}>
+           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} >  
            </TypeDropdownCorrelation>
             </div> : ''}
-              <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
- 
+            <div className="p-3">
+              <CorrelationToggleButton numType={numType} handleToggle={handleToggle} currentTumor={currentSiteTumor}></CorrelationToggleButton>
+            </div>
           </Form.Group>
           <Row className="mx-3 mt-3">
             <Col xl={12}>
@@ -678,7 +697,7 @@ export default function ProteinGeneCorrelation() {
                 data={geneScatter}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${currentLabel} Protein Abundance ${firstGene} and ${secondGene} Correlation</b><br>(${
+                  title: `<b> Protein Abundance ${firstGene} and ${secondGene} Correlation</b><br>(${
                     numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
                   } Values)`,
                   autosize: true,
@@ -831,7 +850,7 @@ export default function ProteinGeneCorrelation() {
             <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
-            <div className="col-xl-5">
+            <div className="col-xl-5" style={{width: "36%"}}>
               <Select
                 name="siteTumor"
                 value={
@@ -842,7 +861,7 @@ export default function ProteinGeneCorrelation() {
                         value: form.cancer[0].value,
                       }
                 }
-                options={form.cancer}
+                options={[...form.cancer].sort((a,b)=> (a.label>b.label)?1:-1)}
                 onChange={(e) => {
                   setSiteTumor(e);
                   setLabel(form.cancer.find((d) => d.value === e.value).label);
@@ -901,7 +920,7 @@ export default function ProteinGeneCorrelation() {
       {(form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
           <Row className="m-1">
-             <Form.Group className="col-xl-4 col-md-3" controlId="site1">
+             <Form.Group className="col-xl-4 col-md-3"  style={{width:"35%"}} controlId="site1" >
              <Form.Label className="required " style={{ whiteSpace: "nowrap ",minWidth: "120px" }}>
               Tumor Type
             </Form.Label>
@@ -916,7 +935,7 @@ export default function ProteinGeneCorrelation() {
                         value: form.cancer[0].value,
                       }
                 }
-                options={form.cancer}
+                options={[...form.cancer].sort((a,b)=> (a.label>b.label)?1:-1)}
                 onChange={(e) => {
                   setSiteTumor(e);
                   setLabel(form.cancer.find((d) => d.value === e.value).label);
@@ -951,9 +970,9 @@ export default function ProteinGeneCorrelation() {
               />
             </Form.Group>
              </Row>
-          <Row >
-            <Form.Group className="col-xl-12 col-md-12 col-form-label">    
-              <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+          <Row className="m-1">
+            <Form.Group className="col-xl-12 col-md-12 col-form-label p-2">    
+              <CorrelationToggleButton numType={numType} handleToggle={handleToggle} currentTumor={currentSiteTumor}></CorrelationToggleButton>
            </Form.Group>
           </Row>
           <Row className="mx-3 mt-3">
