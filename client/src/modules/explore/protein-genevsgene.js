@@ -301,13 +301,15 @@ export default function ProteinGeneCorrelation() {
     },
   ];
  //filter out brain data to display in tabel
-  const firstFilteredSet = tumors.length > 1 
-        ?  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
-        :  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
-  const secondFilteredSet =  tumors.length > 1 
-        ? secondGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
-        : secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  // const firstFilteredSet = tumors.length > 1 
+  //       ?  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
+  //       :  firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  // const secondFilteredSet =  tumors.length > 1 
+  //       ? secondGeneSet.filter((f) => currentTumor.includes(f.cancerId) && f.cancerId !=12)
+  //       : secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
   //Organize datasets (unfiltered)
+  const firstFilteredSet = firstGeneSet.filter((f) => currentTumor.includes(f.cancerId));
+  const secondFilteredSet = secondGeneSet.filter((f) => currentTumor.includes(f.cancerId));
   const getData = firstFilteredSet.map((first) => {
     const second = secondFilteredSet.find((d) => {
       return first.participantId === d.participantId && first.phosphorylationSite === d.phosphorylationSite;
@@ -555,7 +557,7 @@ export default function ProteinGeneCorrelation() {
       columns: correlationColumns.map((e) => {
         return { title: e.label, width: { wpx: 200 } };
       }),
-      data: proteinGene.filter(c => !c.name.includes("Brain")).map((e) => {
+      data: proteinGene.filter(c => c.name).map((e) => {
         return [
           { value: e.name },
           { value: e.firstTumor },
@@ -695,7 +697,7 @@ export default function ProteinGeneCorrelation() {
                 data={geneScatter}
                 layout={{
                   ...defaultLayout,
-                  title: `<b>${currentLabel} Protein Abundance ${firstGene} and ${secondGene} Correlation</b><br>(${
+                  title: `<b> Protein Abundance ${firstGene} and ${secondGene} Correlation</b><br>(${
                     numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
                   } Values)`,
                   autosize: true,
