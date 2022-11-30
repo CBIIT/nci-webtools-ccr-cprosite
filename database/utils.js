@@ -63,9 +63,8 @@ async function importTable(
   const insertStatement = database.prepare(
     `insert into "${tableName}" values (${placeholders})`,
   );
-
+  
   database.exec("begin transaction");
-
   for await (const row of rows) {
     const values = headers
       .map((header) => row[header])
@@ -86,7 +85,3 @@ function getTimestamp(formatter = (v) => v.join(", ")) {
   };
 }
 
-function splitTcgaCsv(rows,ifPrepare = false){
- 
-  return rows
-}

@@ -45,7 +45,7 @@ select * from (
   where isTumor = 0
 ) as new
 where true
-on CONFLICT(id) DO update set normalValue = new.normalValue;
+on CONFLICT(cancerId, geneId, participantId) DO update set normalValue = excluded.normalValue;
 
 -- insert protein abundances for tumor tissue samples
 insert into proteinData(cancerId, geneId, participantId, tumorValue)
@@ -59,7 +59,7 @@ select * from (
   where isTumor >= 1
 ) as new
 where true
-on CONFLICT(id) DO update set tumorValue = new.tumorValue, isTumor = 1;
+on CONFLICT(cancerId, geneId, participantId) DO update set tumorValue = excluded.tumorValue;
 
 -- copy table into cprosite.DATABASE
 --INSERT INTO destDB.cancer(id,name) VALUES(12,'Brain Cancer')

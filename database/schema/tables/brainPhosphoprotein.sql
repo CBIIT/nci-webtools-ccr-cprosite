@@ -33,11 +33,11 @@ select * from (
   where isTumor = 0
 ) as new
 where true
-on CONFLICT(id) DO update set normalValue = new.normalValue,
-  normalValue = new.normalValue,
-  accession = new.accession,
-  phosphorylationSite = new.phosphorylationSite,
-  phosphopeptide = new.phosphopeptide;
+on CONFLICT(cancerId, geneId, participantId, accession, phosphorylationSite, phosphopeptide) DO update set 
+  normalValue = excluded.normalValue,
+  accession = excluded.accession,
+  phosphorylationSite = excluded.phosphorylationSite,
+  phosphopeptide = excluded.phosphopeptide;
 
 
 insert into phosphoproteinData(cancerId, geneId, participantId, tumorValue, accession, phosphorylationSite, phosphopeptide)
@@ -54,9 +54,8 @@ select * from (
   where isTumor >= 1
 ) as new
 where true
-on CONFLICT(id) DO update set tumorValue = new.tumorValue, 
-  isTumor = 1,
-  tumorValue = new.tumorValue,
-  accession = new.accession,
-  phosphorylationSite = new.phosphorylationSite,
-  phosphopeptide = new.phosphopeptide;
+on CONFLICT(cancerId, geneId, participantId, accession, phosphorylationSite, phosphopeptide) DO update set 
+  tumorValue = excluded.tumorValue,
+  accession = excluded.accession,
+  phosphorylationSite = excluded.phosphorylationSite,
+  phosphopeptide = excluded.phosphopeptide;

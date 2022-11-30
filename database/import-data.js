@@ -18,6 +18,7 @@ const _ = require("lodash");
   const mainTablesSql = await fsp.readFile("schema/tables/main.sql", "utf-8");
   const brainProtainSql = _.template(await fsp.readFile("schema/tables/brainProtain.sql", "utf-8"));
   const brainPhosphoProtainSql = _.template(await fsp.readFile("schema/tables/brainPhosphoprotein.sql", "utf-8"));
+  const tcgaSql = _.template(await fsp.readFile("schema/tables/tcgaRnaData.sql", "utf-8"));
   const mainIndexesSql = await fsp.readFile("schema/indexes/main.sql", "utf-8");
 
   // recreate database
@@ -26,8 +27,7 @@ const _ = require("lodash");
   const database = sqlite(databaseFilePath);
   const nanToNull = (value) => (isNaN(value) ? null : value);
   database.exec(mainTablesSql);
-
-  // define functions
+   // define functions
   database.function("extract", (string, delimiter, index) => string.split(delimiter)[index]);
   database.function("sqrt", (v) => nanToNull(Math.sqrt(v)));
   database.aggregate("stdev", {
@@ -69,8 +69,11 @@ const _ = require("lodash");
     },
     result: ({ x, y }) => (x.length > 1 && y.length > 1 ? nanToNull(ttest2(x, y).pValue) : null),
   });
-
-
+  console.log(`[${timestamp()}] started generating indexes`);
+  
+  database.exec(mainIndexesSql);
+  console.log(`[${timestamp()}] finished generating indexes`);
+  
 
   // prepare data folder
   console.log(`[${timestamp()}] preparing data directory`);
@@ -78,14 +81,29 @@ const _ = require("lodash");
   //console.log(`[${timestamp()}] finished preparing data directory`);
 
   // import sources
+  const tcgaTables = ["brain","breast","colon","hn","liverhcc","lungad","lungsq","ovarian","pancreas","stomach","uterine"]
+  const cancerids = ["12","1","2","3","5","6","7","8","9","10","11"]
   for (const { filePath, table, headers } of sources) {
     console.log(`[${timestamp()}] started importing ${table}`);
-    const rows = readFileAsIterable(filePath, headers);
-    console.log(rows)
+    
+    if (table.includes("TCGA")){
+      console.log("working on TCGA import ....");
+      for await (const t of tcgaTables) {
+        const tname = t+"TCGA";
+        const tcgafilepath = filePath+tname+".csv"; 
+        const rows = readFileAsIterable(tcgafilepath, headers);
+        await importTable(database, tname, headers, rows,true)
+        console.log(`[${timestamp()}] finished importing ${tname}`);
+      };
+    }
     //await importTable(database, table, headers, rows);
-    await importTable(database, table, headers, rows,true);
-    console.log(`[${timestamp()}] finished importing ${table}`);
+    else {
+     const rows = readFileAsIterable(filePath, headers);
+     await importTable(database, table, headers, rows,true);
+     console.log(`[${timestamp()}] finished importing ${table}`);
+    }
   }
+  
 
   console.log("begin to create brain protain")
   
@@ -95,8 +113,21 @@ const _ = require("lodash");
       }));
    database.exec(brainPhosphoProtainSql({
      tempTable: `brainProtainPhospho_temp`,
-         cancerId:"12"
+     cancerId:"12"
   }));
+ 
+
+  for(let cancer = 0; cancer <tcgaTables.length; cancer++){
+    const temptableName = tcgaTables[cancer]+'tcga_temp'
+    const cancerId = cancerids[cancer];
+    const sourceTable = tcgaTables[cancer]+"TCGA";
+    console.log(temptableName,cancerId)
+      database.exec(tcgaSql({ 
+        tempTable: `${temptableName}`,
+        cancerId:`${cancerId}`,
+        sourceTable:`${sourceTable}`
+      }));
+  }
 
   //run convert brain table to related tables
   //parse case_id: 
@@ -135,10 +166,7 @@ const _ = require("lodash");
   );
 
   // create indexes
-  console.log(`[${timestamp()}] started generating indexes`);
-  
-    database.exec(mainIndexesSql);
-  console.log(`[${timestamp()}] finished generating indexes`);
+ 
 
   for (const [dataTable, dataSummaryTable] of [
     ["proteinData", "proteinDataSummary"],

@@ -25,5 +25,10 @@
     "filePath": "data/geneName.csv",
     "table": "geneName",
     "headers": ["id", "name"]
+  },
+   {
+    "filePath": "data/TCGA/",
+    "table": "TCGA",
+    "headers": ["paid", "gene", "value"]
   }
 ]
