@@ -12,7 +12,7 @@
   },
    {
     "filePath": "data/braincptac3prodata_shared.csv",
-    "table": "brainprotain",
+    "table": "brainprotein",
     "headers": ["Gene", "Case_id", "value"],
     "cancer": "cancer_brain",
     "cancerId": 12,
@@ -27,8 +27,13 @@
     "headers": ["id", "name"]
   },
    {
-    "filePath": "data/TCGA/",
-    "table": "TCGA",
-    "headers": ["paid", "gene", "value"]
+    "filePath": "data/TCGA/brainTCGA.csv",
+    "table": "brainTCGA",
+    "headers": ["gene", "paid", "value"]
+  },
+  {
+    "filePath": "data/CPTAC2RNA/brainCPTAC3RNA.csv",
+    "table": "brainCPTAC",
+    "headers": ["gene", "paid", "value"]
   }
 ]

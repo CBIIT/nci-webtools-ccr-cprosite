@@ -2,15 +2,11 @@ drop table if exists <%= tempTable %>;
 CREATE TABLE <%= tempTable %> AS
 select distinct 
   geneName.id as geneId, 
-  SUBSTR(brainprotain.Case_id, length(brainprotain.Case_id)-2, -length(brainprotain.Case_id)) as participantId,
-  instr(brainprotain.Case_id, '-Tu') as isTumor,
-  avg(brainprotain.value) as value
-from brainprotain
-inner join geneName on geneName.name = brainprotain.Gene
-where 
-  brainprotain.case_id not like 'LungTumor%' and  
-  brainprotain.case_id not like 'QC%' and
-  brainprotain.value between -30 and 30
+  SUBSTR(c.Case_id, length(c.Case_id)-2, -length(c.Case_id)) as participantId,
+  instr(c.Case_id, '-Tu') as isTumor,
+  avg(c.value) as value
+from <%= sourceTable %> c
+inner join geneName on geneName.name = c.Gene
 group by geneId, participantId, isTumor;
  
 -- create temporary table for protein abundances
@@ -37,8 +33,8 @@ PRAGMA foreign_keys = OFF;
 insert into proteinData(cancerId, geneId, participantId, normalValue)
 select * from (
   select 
-    cast(<%= cancerId %> as integer) as cancerId,
-    cast(geneId as integer), 
+    <%= cancerId %>  as cancerId,
+    geneId, 
     participantId, 
     value as normalValue
   from <%= tempTable %>

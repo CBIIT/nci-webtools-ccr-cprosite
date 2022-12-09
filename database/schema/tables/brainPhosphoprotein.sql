@@ -9,12 +9,8 @@ select distinct
   SUBSTR(c.Phosphosite, 1, instr(c.Phosphosite, ':')-1) as accession,
   SUBSTR(c.Phosphosite, instr(c.Phosphosite, ':')+1) as phosphorylationSite,
   c.Peptide as phosphopeptide
-from brainphosphy c
+from <%= sourceTable %> c
 inner join geneName on geneName.name = c.Gene
-where 
-  c.case_id not like 'LungTumor%' and  
-  c.case_id not like 'QC%' and
-  c.value between -30 and 30
 group by geneId, participantId, isTumor, accession, phosphorylationSite, phosphopeptide;
 
 PRAGMA foreign_keys = OFF;
