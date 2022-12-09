@@ -570,12 +570,12 @@ export default function RNAResults() {
                         onClick={() => setRNAType("cptac")}>
                         CPTAC
                     </ToggleButton>
-                    {currentTumor != 12 ? <ToggleButton
+                    <ToggleButton
                         className={rnaType === "tcga" ? "btn-primary" : "btn-secondary"}
                         id={"tcga"}
                         onClick={() => setRNAType("tcga")}>
                         TCGA
-                    </ToggleButton> : ''}
+                    </ToggleButton>
                 </ToggleButtonGroup>
 
                 {rnaType === "cptac" && <div className="m-3">
@@ -648,12 +648,12 @@ export default function RNAResults() {
                             onClick={() => setRNAType("cptac")}>
                             CPTAC
                         </ToggleButton>
-                        {currentTumor != 12 ? <ToggleButton
+                        <ToggleButton
                             className={rnaType === "tcga" ? "btn-primary" : "btn-secondary"}
                             id={"tcga"}
                             onClick={() => setRNAType("tcga")}>
                             TCGA
-                        </ToggleButton> : ''}
+                        </ToggleButton>
                     </ToggleButtonGroup>
                     {rnaType === "cptac" && <Row className="mx-3 mt-3">
                         {plotTab === "tumorVsControl" && (
