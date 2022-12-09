@@ -30,6 +30,7 @@ export const rnaState = selector({
 
 export async function getData(params, tumor, gene) {
   var summary;
+  var participants
   if (params.dataset.value === "phosphoproteinData" || params.dataset.value === "phosphoproteinRatioData") {
     summary = await query("api/query", {
       "table": params.dataset.value + "Summary",
@@ -38,21 +39,28 @@ export async function getData(params, tumor, gene) {
       "orderBy": "phosphorylationSite",
       "order": "asc",
     });
-  } else {
+
+    participants = await query("api/query", {
+      "table": params.dataset.value,
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
+  } else if(params.dataset.value === "proteinData") {
     summary = await query("api/query", {
       "table": params.dataset.value + "Summary",
       "_cancerId:in": tumor,
       "_geneId": gene,
     });
+    
+    participants = await query("api/query", {
+      "table": params.dataset.value,
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
   }
 
-  const participants = await query("api/query", {
-    "table": params.dataset.value,
-    "_cancerId:in": tumor,
-    "_geneId": gene,
-  });
 
-  if (params.correlation === "proteinMRNA") {
+  if (params.dataset.value === "rnaLevel" || params.correlation === "proteinMRNA") {
     const rna = await query("api/query", {
       "table": "rnaData",
       "_cancerId:in": tumor,
@@ -65,7 +73,19 @@ export async function getData(params, tumor, gene) {
       "_geneId": gene,
     });
 
-    return { summary, participants, rna, rnaSummary };
+    const tcga = await query("api/query", {
+      "table": "tcgaRnaData",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    })
+
+    const tcgaSummary = await query("api/query", {
+      "table": "tcgaRnaDataSummary",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    })
+
+    return { summary, participants, rna, rnaSummary, tcga, tcgaSummary };
   } else if (params.correlation === "toAnotherProtein" && params.dataset.value !== "proteinData") {
     const protein = await query("api/query", {
       "table": "proteinData",
@@ -91,7 +111,7 @@ export const resultsState = selector({
     for (const gene of [params.gene, params.correlatedGene]) {
       if (!gene) continue;
 
-      const { summary, participants, rna, rnaSummary, protein } = await getData(
+      const { summary, participants, rna, rnaSummary, tcga, tcgaSummary, protein } = await getData(
         params,
         params.cancer.map((e) => e.value),
         gene.value,
@@ -102,6 +122,8 @@ export const resultsState = selector({
         participants,
         rnaSummary,
         rna,
+        tcgaSummary,
+        tcga,
         protein,
       });
     }

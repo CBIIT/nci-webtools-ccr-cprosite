@@ -12,6 +12,7 @@ import PhosResults from "./phosphorylation-results";
 import ProteinCorrelation from "./protein-correlation";
 import ProteinGeneCorrelation from "./protein-genevsgene";
 import ProteinPhosResults from "./proteinPhos-results";
+import RNAResults from "./rna-results";
 import {
   SidebarContainer,
   SidebarPanel,
@@ -63,6 +64,11 @@ export default function Explore() {
         ) : (
           <ProteinGeneCorrelation />
         );
+      case "rnaLevel":
+        return form.analysis.value === "tumor-control" ? (
+          <RNAResults />
+        ) :
+        <></>
       default:
         return "";
     }
