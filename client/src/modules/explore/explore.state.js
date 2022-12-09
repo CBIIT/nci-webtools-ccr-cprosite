@@ -112,7 +112,7 @@ export const resultsState = selector({
 
 export const geneState = selector({
   key: "explore.geneState",
-  get: ({ get }) => query("api/query", { table: "gene" }),
+  get: ({ get }) => query("api/query", { table: "geneName" }),
 });
 
 export const dataState = selectorFamily({
