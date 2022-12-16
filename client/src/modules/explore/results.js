@@ -32,8 +32,8 @@ export default function Results() {
   const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
-
-  const [view, setView] = useState(results.length ? Number(results[0][0]) : 0);
+ 
+  const [view, setView] = useState(form.cancer[0].value);
 
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
