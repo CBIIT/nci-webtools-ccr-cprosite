@@ -22,7 +22,6 @@ export default function RNAResults() {
             ? form.cancer[0].value
             : 0;
 
-    console.log(getResults)
     const rna = getResults[0].rna.records;
     const rnaSummary = getResults[0].rnaSummary.records.map((e) => {
         return ({
@@ -97,8 +96,7 @@ export default function RNAResults() {
             tumorError: e.tumorSampleStandardError !== null ? Number(e.tumorSampleStandardError.toFixed(4)) : "NA",
             controlError: e.normalSampleStandardError !== null ? Number(e.normalSampleStandardError.toFixed(4)) : "NA",
         })
-    });
-
+    }); 
     function exportSummarySettings() {
         var settings = form.cancer.map((e) => {
             return [{ value: e.label }];
@@ -297,7 +295,7 @@ export default function RNAResults() {
     ];
 
     function xlabelmap(c) {
-        var xlabel = c.label;
+        var xlabel = c.name;
         if (xlabel.includes("Lung Adenocarcinoma")) xlabel = "Lung AD";
         else if (xlabel.includes("Lung Squamous Cell Carcinoma")) xlabel = "Lung SC";
         else if (xlabel.includes("Pancreatic Ductal Adenocarcinoma")) xlabel = "PDAC";
@@ -305,8 +303,8 @@ export default function RNAResults() {
         return xlabel;
     }
 
-    function summaryData() {
-        const hovertext = form.cancer.map((e) => xlabelmap(e))
+    function summaryData(records) {
+        const hovertext = records.map((e) => xlabelmap(e))
         const hovertextdisplay = hovertext.map(ht => {
             ht = ht.replace("(", "<br>Tumor Count:");
             ht = ht.replace("-", "<br>Adj. Normal Count:");
@@ -316,9 +314,15 @@ export default function RNAResults() {
 
         return ([
             {
-                x: form.cancer.map((e) => xlabelmap(e)),
-                y: rnaSummary.map((e) => e.proteinDiff),
+                x: records.map((e) => xlabelmap(e)),
+                y: records.map((e) => e.tumorAverage),
                 marker: {
+                    color: "rgb(255,0,0)",
+                },
+                error_y: {
+                    type: "data",
+                    array: records.map((e) => e.tumorError),
+                    visible: true,
                     color: "rgb(255,0,0)",
                 },
                 type: "bar",
@@ -327,8 +331,14 @@ export default function RNAResults() {
                 hovertemplate: "%{hovertext}<br>Tumor vs Normal:%{y} <extra></extra>",
             },
             {
-                x: form.cancer.map((e) => xlabelmap(e)),
-                y: tcgaSummary.map((e) => e.proteinDiff),
+                x: records.map((e) => xlabelmap(e)),
+                y: records.map((e) => e.controlAverage),
+                error_y: {
+                    type: "data",
+                    array: records.map((e) => e.controlError),
+                    visible: true,
+                    color: "rgb(0,112,192)",
+                },
                 marker: {
                     color: "rgb(0,112,192)",
                 },
@@ -439,7 +449,6 @@ export default function RNAResults() {
     ];
 
     function exportAbundance(records) {
-        console.log(records)
         return (
             [
                 {
@@ -506,63 +515,11 @@ export default function RNAResults() {
     return (
         <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
             <Tab eventKey="summary" title="Summary">
-                <Row className="m-3">
-                    <Col xl={12}>
-                        <Plot
-                            data={summaryData()}
-                            layout={{
-                                ...defaultLayout,
-                                bargap: 0.2,
-                                bargroupgap: 0.1,
-                                xaxis: {
-                                    tickfont: {
-                                        size: form.cancer.length > 1 ? 11 : 14,
-                                        color: 'black',
-                                    },
-                                    //tickangle:results.length > 1? 90: 0,
-                                    automargin: true,
-                                },
-                                title: `<b>${form.gene.label} RNA Level Tumor vs Control</b>`,
-                                barmode: "group",
-                                autosize: true,
-                                legend: {
-                                    orientation: "h",
-                                    y: -0.1,
-                                    x: 0.41,
-                                    font: { size: 16 },
-                                },
-                                annotations: [
-                                    {
-                                        text: rna.length && tcga.length === 0 ? "No data available" : "",
-                                        xref: "paper",
-                                        yref: "paper",
-                                        showarrow: false,
-                                        font: {
-                                            size: 28,
-                                            color: "grey",
-                                        },
-                                    },
-                                ],
-                            }}
-                            config={{
-                                ...defaultConfig,
-                                toImageButtonOptions: {
-                                    ...defaultConfig.toImageButtonOptions,
-                                    filename: `RNA_Level_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
-                                },
-                            }}
-                            useResizeHandler
-                            className="flex-fill w-100"
-                            style={{ height: "500px" }}
-                        />
-                    </Col>
-                </Row>
-
                 <ToggleButtonGroup
                     type="radio"
                     name="plot-tab"
                     value={rnaType}
-                    className="mx-3 col-xl-5"
+                    className="mx-3 col-xl-6"
                     style={{ whiteSpace: "nowrap" }}>
                     <ToggleButton
                         className={rnaType === "cptac" ? "btn-primary" : "btn-secondary"}
@@ -577,33 +534,79 @@ export default function RNAResults() {
                         TCGA
                     </ToggleButton>
                 </ToggleButtonGroup>
+                <Row className="m-3">
+                    <Col xl={12}>
+                        <Plot
+                            data={summaryData(rnaType === "cptac" ? rnaSummary : tcgaSummary)}
+                            layout={{
+                                ...defaultLayout,
+                                bargap: 0.2,
+                                bargroupgap: 0.1,
+                                xaxis: {
+                                    tickfont: {
+                                        size: form.cancer.length > 1 ? 11 : 14,
+                                        color: 'black',
+                                    },
+                                    //tickangle:results.length > 1? 90: 0,
+                                    automargin: true,
+                                },
+                                yaxis: {
+                                    title: rnaType === "cptac" ? "<b>HTSeq Counts</b>" : "<b>RNASeq Value</b>",
+                                    zeroline: false,
+                                    titlefont: {
+                                        size: 15,
+                                    },
+                                },
+                                title: `<b>${form.gene.label} ${rnaType === "cptac" ? "CPTAC" : "TCGA"} RNA Level Tumor vs Control</b>`,
+                                barmode: "group",
+                                autosize: true,
+                                legend: {
+                                    orientation: "h",
+                                    y: -0.1,
+                                    x: 0.41,
+                                    font: { size: 16 },
+                                },
+                                annotations: [
+                                    {
+                                        text: (rnaType === "cptac" && rna.length === 0) || (rnaType === "tcga" && tcga.length === 0) ? "No data available" : "",
+                                        xref: "paper",
+                                        yref: "paper",
+                                        showarrow: false,
+                                        font: {
+                                            size: 28,
+                                            color: "grey",
+                                        },
+                                    },
+                                ],
+                            }}
+                            config={{
+                                ...defaultConfig,
+                                toImageButtonOptions: {
+                                    ...defaultConfig.toImageButtonOptions,
+                                    filename: `${rnaType === "cptac" ? "CPTAC" : "TCGA"}_RNA_Level_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                                },
+                            }}
+                            useResizeHandler
+                            className="flex-fill w-100"
+                            style={{ height: "500px" }}
+                        />
+                    </Col>
+                </Row>
 
-                {rnaType === "cptac" && <div className="m-3">
+
+                <div className="m-3">
                     {<div className="d-flex" style={{ justifyContent: "flex-end" }}>
                         <ExcelFile
-                            filename={`RNA_Level_CPTAC_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
+                            filename={`${rnaType === "cptac" ? "CPTAC" : "TCGA"}_RNA_Level_TCGA_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
                             element={<a href="javascript:void(0)">Export Data</a>}>
                             <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
-                            <ExcelSheet dataSet={exportSummary(rnaSummary)} name="Summary Data" />
+                            <ExcelSheet dataSet={exportSummary(rnaType === "cptac" ? rnaSummary : tcgaSummary)} name="Summary Data" />
                         </ExcelFile>
                     </div>}
 
-                    {rnaType === "cptac" && <Table columns={summaryColumns} data={rnaSummary}
-                        defaultSort={[{ id: "link", desc: false }]} />}
-                </div>}
-                {rnaType === "tcga" && <div className="m-3">
-                    {<div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                        <ExcelFile
-                            filename={`RNA_Level_TCGA_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
-                            element={<a href="javascript:void(0)">Export Data</a>}>
-                            <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
-                            <ExcelSheet dataSet={exportSummary(tcgaSummary)} name="Summary Data" />
-                        </ExcelFile>
-                    </div>}
-
-                    <Table columns={summaryColumns} data={tcgaSummary}
+                    <Table columns={summaryColumns} data={rnaType === "cptac" ? rnaSummary : tcgaSummary}
                         defaultSort={[{ id: "link", desc: false }]} />
-                </div>}
+                </div>
             </Tab>
             <Tab eventKey="tumorView" title="Tumor View">
                 <Form.Group className="row mx-3" controlId="tumorView">
@@ -616,31 +619,11 @@ export default function RNAResults() {
                             <TumorDropdown form={form} view={view} setView={setView} controlid="tumorViewDropdown" />
                             : ''}
                     </div>
-
-                    <ToggleButtonGroup
-                        type="radio"
-                        name="plot-tab"
-                        value={plotTab}
-                        className="col-xl-5"
-                        style={{ whiteSpace: "nowrap" }}>
-                        <ToggleButton
-                            className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
-                            id={"tumorVsControl"}
-                            onClick={handleToggle}>
-                            Tumor vs Adj. Normal
-                        </ToggleButton>
-                        {currentTumor != 12 ? <ToggleButton
-                            className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
-                            id={"foldChange"}
-                            onClick={handleToggle}>
-                            Log<sub>2</sub> Fold Change
-                        </ToggleButton> : ''}
-                    </ToggleButtonGroup>
                     <ToggleButtonGroup
                         type="radio"
                         name="plot-tab"
                         value={rnaType}
-                        className="col-xl-5"
+                        className="col-xl-6"
                         style={{ whiteSpace: "nowrap" }}>
                         <ToggleButton
                             className={rnaType === "cptac" ? "btn-primary" : "btn-secondary"}
@@ -655,6 +638,27 @@ export default function RNAResults() {
                             TCGA
                         </ToggleButton>
                     </ToggleButtonGroup>
+
+                    <ToggleButtonGroup
+                        type="radio"
+                        name="plot-tab"
+                        value={plotTab}
+                        className="col-xl-6"
+                        style={{ whiteSpace: "nowrap" }}>
+                        <ToggleButton
+                            className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
+                            id={"tumorVsControl"}
+                            onClick={handleToggle}>
+                            Tumor vs Adj. Normal
+                        </ToggleButton>
+                        {currentTumor != 12 ? <ToggleButton
+                            className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
+                            id={"foldChange"}
+                            onClick={handleToggle}>
+                            Log<sub>2</sub> Fold Change
+                        </ToggleButton> : ''}
+                    </ToggleButtonGroup>
+                    
                     {rnaType === "cptac" && <Row className="mx-3 mt-3">
                         {plotTab === "tumorVsControl" && (
                             <Col xl={12} style={{ height: "800px" }}>
@@ -669,7 +673,7 @@ export default function RNAResults() {
                                             })`,
 
                                         yaxis: {
-                                            title: "<b>Relative Protein Abundance (TMT log2 ratio)</b>",
+                                            title: "<b>HTSeq Counts</b>",
                                             zeroline: false,
                                             titlefont: {
                                                 size: 15,
@@ -840,7 +844,7 @@ export default function RNAResults() {
                                             })`,
 
                                         yaxis: {
-                                            title: "<b>Relative Protein Abundance (TMT log2 ratio)</b>",
+                                            title: "<b>RNASeq Value</b>",
                                             zeroline: false,
                                             titlefont: {
                                                 size: 15,
