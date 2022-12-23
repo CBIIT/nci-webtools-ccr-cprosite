@@ -64,6 +64,7 @@ export default function RNAResults() {
     const tcgaSummary = getResults[0].tcgaSummary.records.map((e) => {
         return ({
             name: form.cancer.find((f) => f.value === e.cancerId).label,
+            id: e.cancerId,
             link:
                 <a
                     onClick={() => {
@@ -304,6 +305,7 @@ export default function RNAResults() {
     }
 
     function summaryData(records) {
+        records = records.sort((a,b) => a.name.localeCompare(b.name))
         const hovertext = records.map((e) => xlabelmap(e))
         const hovertextdisplay = hovertext.map(ht => {
             ht = ht.replace("(", "<br>Tumor Count:");
@@ -326,7 +328,7 @@ export default function RNAResults() {
                     color: "rgb(255,0,0)",
                 },
                 type: "bar",
-                name: "CPTAC",
+                name: "Tumor",
                 hovertext: hovertextdisplay,
                 hovertemplate: "%{hovertext}<br>Tumor vs Normal:%{y} <extra></extra>",
             },
@@ -343,7 +345,7 @@ export default function RNAResults() {
                     color: "rgb(0,112,192)",
                 },
                 type: "bar",
-                name: "TCGA",
+                name: "Control",
                 hovertext: hovertextdisplay,
                 hovertemplate: "%{hovertext}<br>Tumor vs Normal:%{y} <extra></extra>",
             }
@@ -547,7 +549,7 @@ export default function RNAResults() {
                                         size: form.cancer.length > 1 ? 11 : 14,
                                         color: 'black',
                                     },
-                                    //tickangle:results.length > 1? 90: 0,
+                                    tickangle:form.cancer.length > 1 ? 30 : 0,
                                     automargin: true,
                                 },
                                 yaxis: {
@@ -557,12 +559,12 @@ export default function RNAResults() {
                                         size: 15,
                                     },
                                 },
-                                title: `<b>${form.gene.label} ${rnaType === "cptac" ? "CPTAC" : "TCGA"} RNA Level Tumor vs Control</b>`,
+                                title: `<b>${form.gene.label} mRNA Level Tumor vs Control</b>`,
                                 barmode: "group",
                                 autosize: true,
                                 legend: {
                                     orientation: "h",
-                                    y: -0.1,
+                                    y: -0.15,
                                     x: 0.41,
                                     font: { size: 16 },
                                 },
@@ -667,7 +669,7 @@ export default function RNAResults() {
                                     layout={{
                                         ...defaultLayout,
                                         title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
-                                            } CPTAC RNA Level Protein Abundance</b><br>(Unpaired P-Value: ${rnaSummary.length && rnaSummary.find((e) => e.id === view)
+                                        } mRNA Level </b><br>(Unpaired P-Value: ${rnaSummary.length && rnaSummary.find((e) => e.id === view)
                                                 ? rnaSummary.find((e) => e.id === view).pValueUnpaired
                                                 : "NA"
                                             })`,
@@ -738,7 +740,7 @@ export default function RNAResults() {
                                     layout={{
                                         autosize: true,
                                         title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
-                                            } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${rnaSummary.length && rnaSummary.find((e) => e.id === view)
+                                        } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${rnaSummary.length && rnaSummary.find((e) => e.id === view)
                                                 ? rnaSummary.find((e) => e.id === view).pValuePaired
                                                 : "NA"
                                             })`,
@@ -830,6 +832,8 @@ export default function RNAResults() {
                             />
                         </div>
                     </Row>}
+                    {console.log(rnaSummary)}
+                    {console.log(tcgaSummary)}
                     {rnaType === "tcga" && <Row className="mx-3 mt-3">
                         {plotTab === "tumorVsControl" && (
                             <Col xl={12} style={{ height: "800px" }}>
@@ -838,7 +842,7 @@ export default function RNAResults() {
                                     layout={{
                                         ...defaultLayout,
                                         title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
-                                            } TCGA RNA Level Protein Abundance</b><br>(Unpaired P-Value: ${tcgaSummary.length && tcgaSummary.find((e) => e.id === view)
+                                        } mRNA Level</b><br>(Unpaired P-Value: ${tcgaSummary.length && tcgaSummary.find((e) => e.id === view)
                                                 ? tcgaSummary.find((e) => e.id === view).pValueUnpaired
                                                 : "NA"
                                             })`,
@@ -909,7 +913,7 @@ export default function RNAResults() {
                                     layout={{
                                         autosize: true,
                                         title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
-                                            } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${tcgaSummary.length && tcgaSummary.find((e) => e.id === view)
+                                        } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${tcgaSummary.length && tcgaSummary.find((e) => e.id === view)
                                                 ? tcgaSummary.find((e) => e.id === view).pValuePaired
                                                 : "NA"
                                             })`,
