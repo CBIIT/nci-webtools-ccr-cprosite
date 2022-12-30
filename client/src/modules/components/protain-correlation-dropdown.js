@@ -5,7 +5,7 @@ const TypeDropdownCorrelation = ({ form, view, setView, setLabel }) => {
   let sortedCancer = [...form.cancer.filter(c => c.label)]
   sortedCancer = sortedCancer.sort((a, b) => (a.label > b.label) ? 1 : -1)
   return (
-    <div className="col-xl-4" style={{ width: "35%" }}>
+    <div className="col-xl-5">
       <Form.Select
         name="caseView"
         onChange={(e) => {

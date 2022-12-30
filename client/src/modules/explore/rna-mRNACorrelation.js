@@ -1,6 +1,6 @@
 import { useRecoilValue } from "recoil";
 import { Row, Col, Form, ToggleButton, ToggleButtonGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
-import { Suspense, useEffect, useState } from "react";
+import { useState } from "react";
 import { formState, resultsState } from "./explore.state";
 import Plot from "react-plotly.js";
 
@@ -254,7 +254,7 @@ export default function MRNACorrelation() {
                     type="radio"
                     name="plot-tab"
                     value={rnaType}
-                    className="mx-3 col-xl-5"
+                    className="col-xl-5"
                     style={{ whiteSpace: "nowrap" }}>
                     <ToggleButton
                         className={rnaType === "cptac" ? "btn-primary" : "btn-secondary"}

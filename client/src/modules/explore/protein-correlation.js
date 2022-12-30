@@ -322,7 +322,7 @@ export default function ProteinCorrelation() {
       }: %{y})<extra></extra>`,
     },
   ];
-
+  {console.log(results)}
   return (
     <div>
       <Form.Group className="row mx-3 m-3 " controlId="tumorView">
@@ -331,7 +331,7 @@ export default function ProteinCorrelation() {
         </Form.Label>
         : ''}
         { form.cancer.length > 1 ? 
-        <div className="col-xl-5 m-3" style={{width:"35%"}}>
+        <div className="col-xl-7 m-3">
           <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
            </TypeDropdownCorrelation>
         </div> : ''}
