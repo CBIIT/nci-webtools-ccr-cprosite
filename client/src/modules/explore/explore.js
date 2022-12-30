@@ -13,6 +13,7 @@ import ProteinCorrelation from "./protein-correlation";
 import ProteinGeneCorrelation from "./protein-genevsgene";
 import ProteinPhosResults from "./proteinPhos-results";
 import RNAResults from "./rna-results";
+import MRNACorrelation from "./rna-mRNACorrelation";
 import {
   SidebarContainer,
   SidebarPanel,
@@ -67,6 +68,8 @@ export default function Explore() {
       case "rnaLevel":
         return form.analysis.value === "tumor-control" ? (
           <RNAResults />
+        ) : form.correlation === "toAnotherMRNA" ? (
+          <MRNACorrelation/>
         ) :
         <></>
       default:
