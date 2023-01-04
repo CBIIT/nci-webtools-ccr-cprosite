@@ -14,11 +14,13 @@ import ProteinGeneCorrelation from "./protein-genevsgene";
 import ProteinPhosResults from "./proteinPhos-results";
 import RNAResults from "./rna-results";
 import MRNACorrelation from "./rna-mRNACorrelation";
+
 import {
   SidebarContainer,
   SidebarPanel,
   MainPanel,
 } from "../components/sidebar-container";
+
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
@@ -70,8 +72,9 @@ export default function Explore() {
           <RNAResults />
         ) : form.correlation === "toAnotherMRNA" ? (
           <MRNACorrelation/>
-        ) :
-        <></>
+        ) : (
+          <ProteinCorrelation/>
+        )
       default:
         return "";
     }

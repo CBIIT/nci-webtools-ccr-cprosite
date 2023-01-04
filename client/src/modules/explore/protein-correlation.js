@@ -346,7 +346,7 @@ export default function ProteinCorrelation() {
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>${form.dataset.label} ${form.gene.label} and mRNA Correlation</b><br>(${
+              title: `<b>CPTAC ${currentLabel} ${form.gene.label} to mRNA Abundance Correlation</b><br>(${
                 numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
               } Values)`,
               autosize: true,
