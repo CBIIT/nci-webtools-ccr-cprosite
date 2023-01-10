@@ -559,12 +559,12 @@ export default function RNAResults() {
                                         size: 15,
                                     },
                                 },
-                                title: `<b>${form.gene.label} mRNA Level Tumor vs Control</b>`,
+                                title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} ${form.gene.label} mRNA Level Tumor vs Control</b>`,
                                 barmode: "group",
                                 autosize: true,
                                 legend: {
                                     orientation: "h",
-                                    y: -0.15,
+                                    y: -0.22,
                                     x: 0.41,
                                     font: { size: 16 },
                                 },
@@ -668,7 +668,7 @@ export default function RNAResults() {
                                     data={boxPlotData(rna)}
                                     layout={{
                                         ...defaultLayout,
-                                        title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
+                                        title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} ${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
                                         } mRNA Level </b><br>(Unpaired P-Value: ${rnaSummary.length && rnaSummary.find((e) => e.id === view)
                                                 ? rnaSummary.find((e) => e.id === view).pValueUnpaired
                                                 : "NA"
@@ -739,7 +739,7 @@ export default function RNAResults() {
                                     }}
                                     layout={{
                                         autosize: true,
-                                        title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
+                                        title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} ${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
                                         } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${rnaSummary.length && rnaSummary.find((e) => e.id === view)
                                                 ? rnaSummary.find((e) => e.id === view).pValuePaired
                                                 : "NA"
@@ -841,7 +841,7 @@ export default function RNAResults() {
                                     data={boxPlotData(tcga)}
                                     layout={{
                                         ...defaultLayout,
-                                        title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
+                                        title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} ${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
                                         } mRNA Level</b><br>(Unpaired P-Value: ${tcgaSummary.length && tcgaSummary.find((e) => e.id === view)
                                                 ? tcgaSummary.find((e) => e.id === view).pValueUnpaired
                                                 : "NA"
@@ -912,7 +912,7 @@ export default function RNAResults() {
                                     }}
                                     layout={{
                                         autosize: true,
-                                        title: `<b>${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
+                                        title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} ${form.gene.label} ${form.cancer.find((f) => f.value === currentTumor).label
                                         } Log<sub>2</sub> Fold Change</b><br>(Paired P-Value: ${tcgaSummary.length && tcgaSummary.find((e) => e.id === view)
                                                 ? tcgaSummary.find((e) => e.id === view).pValuePaired
                                                 : "NA"
