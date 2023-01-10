@@ -1,5 +1,5 @@
 import { useRecoilValue } from "recoil";
-import { Row, Col, Form, ToggleButton, ToggleButtonGroup, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { Row, Col, Form, ToggleButton, ToggleButtonGroup, OverlayTrigger, Tooltip, Tabs, Tab } from "react-bootstrap";
 import { useState } from "react";
 import { formState, resultsState } from "./explore.state";
 import Plot from "react-plotly.js";
@@ -16,8 +16,9 @@ export default function MRNACorrelation() {
     const [view, setView] = useState(form.cancer.map((e) => e.value))
     const [rnaType, setRNAType] = useState("cptac")
     const [label, setLabel] = useState(form.cancer[0].label);
+    const [tab, setTab] = useState("summaryView");
 
-    const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) :form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
+    const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) : form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
     const currentLabel = currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
 
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
@@ -240,94 +241,98 @@ export default function MRNACorrelation() {
     };
 
     return (
-        <Form.Group className="row m-3" controlId="mRNACorrelationView">
-            <div className="row col-xl-12 mb-3">
-                {form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
-                    Tumor Type
-                </Form.Label>
-                    : ''}
-                {form.cancer.length > 1 ?
-                    <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} controlid="tumorViewDropdown" />
-                    : ''}
+        <Tabs activeKey={tab} onSelect={(e) => setTab(e)} className="mb-3">
+            <Tab eventKey="summaryView" title="Summary">
+                <Form.Group className="row m-3" controlId="mRNACorrelationView">
+                    <div className="row col-xl-12 mb-3">
+                        {form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+                            Tumor Type
+                        </Form.Label>
+                            : ''}
+                        {form.cancer.length > 1 ?
+                            <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} controlid="tumorViewDropdown" />
+                            : ''}
 
-                <ToggleButtonGroup
-                    type="radio"
-                    name="plot-tab"
-                    value={rnaType}
-                    className="col-xl-5"
-                    style={{ whiteSpace: "nowrap" }}>
-                    <ToggleButton
-                        className={rnaType === "cptac" ? "btn-primary" : "btn-secondary"}
-                        id={"cptac"}
-                        onClick={() => setRNAType("cptac")}>
-                        CPTAC
-                    </ToggleButton>
-                    <ToggleButton
-                        className={rnaType === "tcga" ? "btn-primary" : "btn-secondary"}
-                        id={"tcga"}
-                        onClick={() => setRNAType("tcga")}>
-                        TCGA
-                    </ToggleButton>
-                </ToggleButtonGroup>
-            </div>
-            <Row className="mx-3 mt-3">
-                <Col xl={12}>
-                    <Plot
-                        data={geneScatter}
-                        layout={{
-                            ...defaultLayout,
-                            title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} mRNA${currentLabel ? " " + currentLabel : ""} ${firstGene} and ${secondGene} Correlation</b><br>`,
-                            autosize: true,
-                            legend: {
-                                orientation: "h",
-                                y: -0.13,
-                                x: 0.38,
-                            },
-                            annotations: [
-                                {
-                                    text: correlatedParticipants.length === 0 ? "No data available" : "",
-                                    xref: "paper",
-                                    yref: "paper",
-                                    showarrow: false,
-                                    font: {
-                                        size: 28,
-                                        color: "grey",
+                        <ToggleButtonGroup
+                            type="radio"
+                            name="plot-tab"
+                            value={rnaType}
+                            className="col-xl-5"
+                            style={{ whiteSpace: "nowrap" }}>
+                            <ToggleButton
+                                className={rnaType === "cptac" ? "btn-primary" : "btn-secondary"}
+                                id={"cptac"}
+                                onClick={() => setRNAType("cptac")}>
+                                CPTAC
+                            </ToggleButton>
+                            <ToggleButton
+                                className={rnaType === "tcga" ? "btn-primary" : "btn-secondary"}
+                                id={"tcga"}
+                                onClick={() => setRNAType("tcga")}>
+                                TCGA
+                            </ToggleButton>
+                        </ToggleButtonGroup>
+                    </div>
+                    <Row className="mx-3 mt-3">
+                        <Col xl={12}>
+                            <Plot
+                                data={geneScatter}
+                                layout={{
+                                    ...defaultLayout,
+                                    title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} mRNA${currentLabel ? " " + currentLabel : ""} ${firstGene} and ${secondGene} Correlation</b><br>`,
+                                    autosize: true,
+                                    legend: {
+                                        orientation: "h",
+                                        y: -0.13,
+                                        x: 0.38,
                                     },
-                                },
-                            ],
-                        }}
-                        config={{
-                            ...defaultConfig,
-                            toImageButtonOptions: {
-                                ...defaultConfig.toImageButtonOptions,
-                                filename: `mRNA_Correlation-${currentLabel}-${form.gene.label}-${form.correlatedGene.label}`,
-                            },
-                        }}
-                        useResizeHandler
-                        className="flex-fill w-100"
-                        style={{ height: "800px" }}
-                    />
-                </Col>
-            </Row>
-            <Row>
-                <div className="m-3">
-                    <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                        <ExcelFile
-                            filename={`${currentLabel}_${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA Correlation-${form.gene.label}-${form.correlatedGene.label}`}
-                            element={<a href="javascript:void(0)">Export Data</a>}>
+                                    annotations: [
+                                        {
+                                            text: correlatedParticipants.length === 0 ? "No data available" : "",
+                                            xref: "paper",
+                                            yref: "paper",
+                                            showarrow: false,
+                                            font: {
+                                                size: 28,
+                                                color: "grey",
+                                            },
+                                        },
+                                    ],
+                                }}
+                                config={{
+                                    ...defaultConfig,
+                                    toImageButtonOptions: {
+                                        ...defaultConfig.toImageButtonOptions,
+                                        filename: `mRNA_Correlation-${currentLabel}-${form.gene.label}-${form.correlatedGene.label}`,
+                                    },
+                                }}
+                                useResizeHandler
+                                className="flex-fill w-100"
+                                style={{ height: "800px" }}
+                            />
+                        </Col>
+                    </Row>
+                    <Row>
+                        <div className="m-3">
+                            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+                                <ExcelFile
+                                    filename={`${currentLabel}_${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA Correlation-${form.gene.label}-${form.correlatedGene.label}`}
+                                    element={<a href="javascript:void(0)">Export Data</a>}>
 
-                            <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
-                            <ExcelSheet dataSet={exportSummary} name="Protein Abundance Data" />
-                        </ExcelFile>
+                                    <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
+                                    <ExcelSheet dataSet={exportSummary} name="Protein Abundance Data" />
+                                </ExcelFile>
                             </div>
 
-                    <Table
-                        columns={correlationColumns}
-                        defaultSort={[{ id: "name", asc: true }]}
-                        data={participantData}
-                    />
-                </div>
-            </Row>
-        </Form.Group>
+                            <Table
+                                columns={correlationColumns}
+                                defaultSort={[{ id: "name", asc: true }]}
+                                data={participantData}
+                            />
+                        </div>
+                    </Row>
+                </Form.Group>
+            </Tab>
+        </Tabs>
     )
 }
