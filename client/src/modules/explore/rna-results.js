@@ -426,7 +426,7 @@ export default function RNAResults() {
             ];
         }
     }
-
+    console.log(foldData(rna))
     const exportAbundanceSettings = [
         {
             columns: [
@@ -653,12 +653,12 @@ export default function RNAResults() {
                             onClick={handleToggle}>
                             Tumor vs Adj. Normal
                         </ToggleButton>
-                        {currentTumor != 12 ? <ToggleButton
+                        <ToggleButton
                             className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
                             id={"foldChange"}
                             onClick={handleToggle}>
                             Log<sub>2</sub> Fold Change
-                        </ToggleButton> : ''}
+                        </ToggleButton>
                     </ToggleButtonGroup>
                     
                     {rnaType === "cptac" && <Row className="mx-3 mt-3">
@@ -774,9 +774,7 @@ export default function RNAResults() {
                                         annotations: [
                                             {
                                                 text:
-                                                    rna.filter((f) =>
-                                                        Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value,
-                                                    ).length === 0
+                                                    foldData(rna)[0].x.length === 0
                                                         ? "No data available"
                                                         : "",
                                                 xref: "paper",
@@ -797,6 +795,7 @@ export default function RNAResults() {
                                     }}
                                 />
                             </Col>
+                          
                         )}
                     </Row>}
                     {rnaType === "cptac" && <Row>
@@ -947,9 +946,7 @@ export default function RNAResults() {
                                         annotations: [
                                             {
                                                 text:
-                                                    tcga.filter((f) =>
-                                                        Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value,
-                                                    ).length === 0
+                                                foldData(tcga)[0].x.length === 0
                                                         ? "No data available"
                                                         : "",
                                                 xref: "paper",
