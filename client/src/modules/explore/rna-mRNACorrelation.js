@@ -7,7 +7,7 @@ import Plot from "react-plotly.js";
 import TypeDropdownCorrelation from "../components/protain-correlation-dropdown"
 import Table from "../components/table";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
-
+import calculateCorrelation from "calculate-correlation";
 
 export default function MRNACorrelation() {
     const form = useRecoilValue(formState);
@@ -387,6 +387,56 @@ export default function MRNACorrelation() {
                             />
                         </Col>
                     </Row>
+                    <fieldset className="ml-5 mb-5 border" style={{ color: "grey" }}>
+                        <Row>
+                            <div className="col-xl-4 my-2 d-flex justify-content-center">
+                                Tumor Correlation:{" "}
+                                {correlatedParticipants.filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA").length
+                                    ? calculateCorrelation(
+                                        correlatedParticipants
+                                            .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                            .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
+                                        correlatedParticipants
+                                            .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                            .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
+                                        { decimals: 4 },
+                                    )
+                                    : "NA"}
+                            </div>
+                            <div className="col-xl-4 my-2 d-flex justify-content-center">
+                                Adj. Normal Correlation:{" "}
+                                {correlatedParticipants.filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA").length
+                                    ? calculateCorrelation(
+                                        correlatedParticipants
+                                            .filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA")
+                                            .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
+                                        correlatedParticipants
+                                            .filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA")
+                                            .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum)),
+                                        { decimals: 4 },
+                                    )
+                                    : "NA"}
+                            </div>
+
+                            <div className="col-xl-4 my-2 d-flex justify-content-center">
+                                Total Correlation:{" "}
+                                {correlatedParticipants.length
+                                    ? calculateCorrelation(
+                                        correlatedParticipants
+                                            .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum))
+                                            .concat(
+                                                correlatedParticipants.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum))
+                                            ),
+                                        correlatedParticipants
+                                            .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum))
+                                            .concat(correlatedParticipants.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum))
+                                            ),
+                                        { decimals: 4 },
+                                    )
+                                    : "NA"}
+                            </div>
+                        </Row>
+                    </fieldset>
 
                     <div className="">
                         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
