@@ -8,6 +8,7 @@ import TypeDropdownCorrelation from "../components/protain-correlation-dropdown"
 import Table from "../components/table";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 
+
 export default function MRNACorrelation() {
     const form = useRecoilValue(formState);
     const results = useRecoilValue(resultsState);
@@ -17,6 +18,7 @@ export default function MRNACorrelation() {
     const [rnaType, setRNAType] = useState("cptac")
     const [label, setLabel] = useState(form.cancer[0].label);
     const [tab, setTab] = useState("summaryView");
+    const [numType, setNumType] = useState("log2");
 
     const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) : form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
     const currentLabel = currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
@@ -32,10 +34,14 @@ export default function MRNACorrelation() {
         if (second) {
             return {
                 name: first.participantId,
-                firstTumor: first.tumorValue !== null ? Number(first.tumorValue.toFixed(4)) : "NA",
-                firstControl: first.normalValue !== null ? Number(first.normalValue.toFixed(4)) : "NA",
-                secondTumor: second.tumorValue !== null ? Number(second.tumorValue.toFixed(4)) : "NA",
-                secondControl: second.normalValue !== null ? Number(second.normalValue.toFixed(4)) : "NA",
+                firstTumor: first.tumorValue !== null ? Number(Math.log2(first.tumorValue).toFixed(4)) : "NA",
+                firstTumorNum: first.tumorValue !== null ? Number(first.tumorValue.toFixed(4)) : "NA",
+                firstControl: first.normalValue !== null ? Number(Math.log2(first.normalValue).toFixed(4)) : "NA",
+                firstControlNum: first.normalValue !== null ? Number(first.normalValue.toFixed(4)) : "NA",
+                secondTumor: second.tumorValue !== null ? Number(Math.log2(second.tumorValue).toFixed(4)) : "NA",
+                secondTumorNum: second.tumorValue !== null ? Number(second.tumorValue.toFixed(4)) : "NA",
+                secondControl: second.normalValue !== null ? Number(Math.log2(second.normalValue).toFixed(4)) : "NA",
+                secondControlNum: second.normalValue !== null ? Number(second.normalValue.toFixed(4)) : "NA",
             };
         }
     })
@@ -48,8 +54,8 @@ export default function MRNACorrelation() {
     const geneScatter = [
         //console.log(numType,proteinGeneCorrelation),
         {
-            x: correlatedParticipants.map((e) => e.firstTumor),
-            y: correlatedParticipants.map((e) => e.secondTumor),
+            x: correlatedParticipants.map((e) => numType === "log2" ? e.firstTumor : e.firstTumorNum),
+            y: correlatedParticipants.map((e) => numType === "log2" ? e.secondTumor : e.secondTumor),
             marker: {
                 size: 8,
                 color: "rgb(255,0,0)",
@@ -63,8 +69,8 @@ export default function MRNACorrelation() {
                 `${secondGene} Tumor Abuncance: %{y})<extra></extra>`,
         },
         {
-            x: correlatedParticipants.map((e) => e.firstControl),
-            y: correlatedParticipants.map((e) => e.secondControl),
+            x: correlatedParticipants.map((e) => numType === "log2" ? e.firstControl : e.firstControlNum),
+            y: correlatedParticipants.map((e) => numType === "log2" ? e.secondControl : e.secondControlNum),
             marker: {
                 size: 8,
                 color: "rgb(31,119,180)",
@@ -92,17 +98,26 @@ export default function MRNACorrelation() {
         },
         {
             accessor: "firstTumor",
-            label: `${firstGene} Tumor`,
+            label: `${firstGene} Tumor Log2`,
             Header: (
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="first_tumor">
-                            {firstGene} Tumor
+                            {firstGene} Tumor Log<sub>2</sub>
                         </Tooltip>
                     }>
                     <b>
-                        {firstGene} Tumor
+                        {firstGene} Tumor Log<sub>2</sub>
                     </b>
+                </OverlayTrigger>
+            ),
+        },
+        {
+            accessor: "firstTumorNum",
+            label: `${firstGene} Tumor Abundance`,
+            Header: (
+                <OverlayTrigger overlay={<Tooltip id="first_correlation_tumor_num">{firstGene} Tumor Abundance</Tooltip>}>
+                    <b>{firstGene} Tumor Abundance</b>
                 </OverlayTrigger>
             ),
         },
@@ -113,12 +128,21 @@ export default function MRNACorrelation() {
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="second_tumor">
-                            {secondGene} Tumor
+                            {secondGene} Tumor Log<sub>2</sub>
                         </Tooltip>
                     }>
                     <b>
-                        {secondGene} Tumor
+                        {secondGene} Tumor Log<sub>2</sub>
                     </b>
+                </OverlayTrigger>
+            ),
+        },
+        {
+            accessor: "secondTumorNum",
+            label: `${secondGene} Tumor Abundance`,
+            Header: (
+                <OverlayTrigger overlay={<Tooltip id="second_tumor_num">{secondGene} Tumor Abundance</Tooltip>}>
+                    <b>{secondGene} Tumor Abundance</b>
                 </OverlayTrigger>
             ),
         },
@@ -129,12 +153,22 @@ export default function MRNACorrelation() {
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="first_control">
-                            ${firstGene} Adjacent Normal
+                            {firstGene} Adjacent Normal Log<sub>2</sub>
                         </Tooltip>
                     }>
                     <b>
-                        {firstGene} Adj. Normal
+                        {firstGene} Adj. Normal Log<sub>2</sub>
                     </b>
+                </OverlayTrigger>
+            ),
+        },
+        {
+            accessor: "firstControlNum",
+            label: `${firstGene} Adjacent Normal Abundance`,
+            Header: (
+                <OverlayTrigger
+                    overlay={<Tooltip id="protein_correlation_control_num">{firstGene} Adjacent Normal Abundance</Tooltip>}>
+                    <b>{firstGene} Adj. Normal Abundance</b>
                 </OverlayTrigger>
             ),
         },
@@ -145,16 +179,31 @@ export default function MRNACorrelation() {
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="second_control">
-                            {secondGene} Adjacent Normal
+                            {secondGene} Adjacent Normal Log<sub>2</sub>
                         </Tooltip>
                     }>
                     <b>
-                        {secondGene} Adj. Normal
+                        {secondGene} Adj. Normal Log<sub>2</sub>
                     </b>
                 </OverlayTrigger>
             ),
-        }
+        },
+        {
+            accessor: "secondControlNum",
+            label: `${secondGene} Adjacent Normal Abundance`,
+            Header: (
+                <OverlayTrigger overlay={<Tooltip id="second_control_num">{secondGene} Adjacent Normal Abundance</Tooltip>}>
+                    <b>{secondGene} Adj. Normal Abundance</b>
+                </OverlayTrigger>
+            ),
+        },
     ];
+
+    function handleToggle(e) {
+        //console.log(e.target.control.id)
+        setNumType(e.target.control.id);
+        //if radio, return e.target.id;
+    }
 
     function exportSummarySettings() {
         var settings = form.cancer
@@ -192,9 +241,13 @@ export default function MRNACorrelation() {
                 return [
                     { value: e.name },
                     { value: e.firstTumor },
+                    { value: e.firstTumorNum },
                     { value: e.secondTumor },
+                    { value: e.secondTumorNum },
                     { value: e.firstControl },
+                    { value: e.firstControlNum },
                     { value: e.secondControl },
+                    { value: e.secondControlNum },
                 ];
             }),
         },
@@ -252,12 +305,34 @@ export default function MRNACorrelation() {
                         {form.cancer.length > 1 ?
                             <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} controlid="tumorViewDropdown" />
                             : ''}
+                    </div>
+                    <div className="row">
+                        <ToggleButtonGroup
+                            type="radio"
+                            name="plot-tab"
+                            value={numType}
+                            className="col-xl-6">
+                            <ToggleButton
+                                className={numType === "log2" ? "btn-primary " : "btn-secondary "}
+                                id="log2"
+                                checked={numType === "log2"}
+                                onClick={handleToggle}>
+                                Using Converted Log<sub>2</sub> values
+                            </ToggleButton>
+                            {currentTumor != 13 ? <ToggleButton
+                                className={numType === "numeric" ? "btn-primary " : "btn-secondary "}
+                                id="numeric"
+                                checked={numType === "numeric"}
+                                onClick={handleToggle}>
+                                Using normal values
+                            </ToggleButton> : ''}
+                        </ToggleButtonGroup>
 
                         <ToggleButtonGroup
                             type="radio"
                             name="plot-tab"
                             value={rnaType}
-                            className="col-xl-5"
+                            className="col-xl-6"
                             style={{ whiteSpace: "nowrap" }}>
                             <ToggleButton
                                 className={rnaType === "cptac" ? "btn-primary" : "btn-secondary"}
@@ -279,7 +354,7 @@ export default function MRNACorrelation() {
                                 data={geneScatter}
                                 layout={{
                                     ...defaultLayout,
-                                    title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} mRNA${currentLabel ? " " + currentLabel : ""} ${firstGene} and ${secondGene} Correlation</b><br>`,
+                                    title: `<b>${rnaType === "cptac" ? "CPTAC" : "TCGA"} mRNA${currentLabel ? " " + currentLabel : ""} ${firstGene} and ${secondGene} Correlation</b><br>(${numType === "log2" ? "Converted Log<sub>2</sub>" : "Normal"} Values)`,
                                     autosize: true,
                                     legend: {
                                         orientation: "h",
@@ -312,25 +387,25 @@ export default function MRNACorrelation() {
                             />
                         </Col>
                     </Row>
-                    <Row>
-                        <div className="m-3">
-                            <div className="d-flex" style={{ justifyContent: "flex-end" }}>
-                                <ExcelFile
-                                    filename={`${currentLabel}_${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA Correlation-${form.gene.label}-${form.correlatedGene.label}`}
-                                    element={<a href="javascript:void(0)">Export Data</a>}>
 
-                                    <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
-                                    <ExcelSheet dataSet={exportSummary} name="Protein Abundance Data" />
-                                </ExcelFile>
-                            </div>
+                    <div className="">
+                        <div className="d-flex" style={{ justifyContent: "flex-end" }}>
+                            <ExcelFile
+                                filename={`${currentLabel}_${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA Correlation-${form.gene.label}-${form.correlatedGene.label}`}
+                                element={<a href="javascript:void(0)">Export Data</a>}>
 
-                            <Table
-                                columns={correlationColumns}
-                                defaultSort={[{ id: "name", asc: true }]}
-                                data={participantData}
-                            />
+                                <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
+                                <ExcelSheet dataSet={exportSummary} name="Protein Abundance Data" />
+                            </ExcelFile>
                         </div>
-                    </Row>
+
+                        <Table
+                            columns={correlationColumns}
+                            defaultSort={[{ id: "name", asc: true }]}
+                            data={participantData}
+                        />
+                    </div>
+
                 </Form.Group>
             </Tab>
         </Tabs>

@@ -35,8 +35,8 @@ export default function ProteinCorrelation() {
     form.dataset.label === "Protein Abundance"
       ? "Protein_Abundance"
       : form.dataset.label === "Phosphorylation Site"
-      ? "Phosphorylation_Site"
-      : "Phosphorylation_Protein";
+        ? "Phosphorylation_Site"
+        : "Phosphorylation_Protein";
 
   const [numType, setNumType] = useState("log2");
 
@@ -301,10 +301,9 @@ export default function ProteinCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Tumor",
-      text: proteinRNA.map((e) =>  e.name),
-      hovertemplate: `Patient ID: %{text}<br>Protein Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Tumor ${
-        numType === "log2" ? "Log2" : "Abundance"
-      }: %{y})<extra></extra>`,
+      text: proteinRNA.map((e) => e.name),
+      hovertemplate: `Patient ID: %{text}<br>Protein Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Tumor ${numType === "log2" ? "Log2" : "Abundance"
+        }: %{y})<extra></extra>`,
     },
     {
       x: proteinRNA.map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl))),
@@ -316,39 +315,37 @@ export default function ProteinCorrelation() {
       mode: "markers",
       type: "scatter",
       name: "Adjacent Normal",
-      text: proteinRNA.map((e) =>  e.name),
-      hovertemplate: `Patient ID: %{text}<br>Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${
-        numType === "log2" ? "Log2" : "Abundance"
-      }: %{y})<extra></extra>`,
+      text: proteinRNA.map((e) => e.name),
+      hovertemplate: `Patient ID: %{text}<br>Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${numType === "log2" ? "Log2" : "Abundance"
+        }: %{y})<extra></extra>`,
     },
   ];
-  {console.log(results)}
+  { console.log(results) }
   return (
     <div>
       <Form.Group className="row mx-3 m-3 " controlId="tumorView">
-      { form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label m-3" style={{minWidth:"120px"}}>
+        {form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label m-3" style={{ minWidth: "120px" }}>
           Tumor Type
         </Form.Label>
-        : ''}
-        { form.cancer.length > 1 ? 
-        <div className="col-xl-7 m-3">
-          <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>  
-           </TypeDropdownCorrelation>
-        </div> : ''}
-        
-      <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
-      
-      </Form.Group> 
-     
+          : ''}
+        {form.cancer.length > 1 ?
+          <div className="col-xl-7 m-3">
+            <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>
+            </TypeDropdownCorrelation>
+          </div> : ''}
+
+        <CorrelationToggleButton numType={numType} handleToggle={handleToggle}></CorrelationToggleButton>
+
+      </Form.Group>
+
       <Row className="mx-3 mt-3">
         <Col xl={12}>
           <Plot
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>CPTAC ${currentLabel} ${form.gene.label} to mRNA Abundance Correlation</b><br>(${
-                numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
-              } Values)`,
+              title: `<b>CPTAC ${currentLabel} ${form.gene.label} to mRNA Abundance Correlation</b><br>(${numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
+                } Values)`,
               autosize: true,
               legend: {
                 orientation: "h",
@@ -391,28 +388,28 @@ export default function ProteinCorrelation() {
             Tumor Correlation:{" "}
             {proteinRNA.filter((f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA").length
               ? calculateCorrelation(
-                  proteinRNA
-                    .filter((f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA")
-                    .map((e) => (numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor))),
-                  proteinRNA
-                    .filter((f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA")
-                    .map((e) => (numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor))),
-                  { decimals: 4 },
-                )
+                proteinRNA
+                  .filter((f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA")
+                  .map((e) => (numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor))),
+                proteinRNA
+                  .filter((f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA")
+                  .map((e) => (numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor))),
+                { decimals: 4 },
+              )
               : "NA"}
           </div>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Adj. Normal Correlation:{" "}
             {proteinRNA.filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA").length
               ? calculateCorrelation(
-                  proteinRNA
-                    .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
-                    .map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl))),
-                  proteinRNA
-                    .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
-                    .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl))),
-                  { decimals: 4 },
-                )
+                proteinRNA
+                  .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
+                  .map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl))),
+                proteinRNA
+                  .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
+                  .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl))),
+                { decimals: 4 },
+              )
               : "NA"}
           </div>
 
@@ -420,16 +417,16 @@ export default function ProteinCorrelation() {
             Total Correlation:{" "}
             {correlationData.length
               ? calculateCorrelation(
-                  correlationData
-                    .map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl)))
-                    .concat(
-                      correlationData.map((e) => (numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor))),
-                    ),
-                  correlationData
-                    .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl)))
-                    .concat(correlationData.map((e) => (numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor)))),
-                  { decimals: 4 },
-                )
+                correlationData
+                  .map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl)))
+                  .concat(
+                    correlationData.map((e) => (numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor))),
+                  ),
+                correlationData
+                  .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl)))
+                  .concat(correlationData.map((e) => (numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor)))),
+                { decimals: 4 },
+              )
               : "NA"}
           </div>
         </Row>

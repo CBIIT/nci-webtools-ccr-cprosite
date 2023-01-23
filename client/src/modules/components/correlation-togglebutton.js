@@ -7,7 +7,7 @@ const correlationToggleButton = ({numType, handleToggle,currentTumor}) => {
             type="radio"
             name="plot-tab"
             value={numType}
-            className="col-xl-7">
+            className="col-xl-6">
             <ToggleButton 
               className={numType === "log2" ? "btn-primary " : "btn-secondary "}
               id="log2"
