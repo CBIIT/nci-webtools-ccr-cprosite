@@ -114,8 +114,7 @@ export const resultsState = selector({
     const params = get(formState);
     if (!params) return null;
 
-    var results = [];
-    console.log("params:", params);
+    var results = []; 
 
     for (const gene of [params.gene, params.correlatedGene]) {
       if (!gene) continue;

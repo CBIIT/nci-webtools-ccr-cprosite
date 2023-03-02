@@ -613,12 +613,12 @@ export default function Results() {
               onClick={handleToggle}>
               Tumor vs Adj. Normal
             </ToggleButton>
-           {currentTumor != 12? <ToggleButton
+           <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
               id={"foldChange"}
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
-            </ToggleButton>:''}
+            </ToggleButton>
           </ToggleButtonGroup>
         </Form.Group>
         <Row className="mx-3 mt-3">
@@ -688,7 +688,8 @@ export default function Results() {
               />
             </Col>
           )}
-
+          {console.log(results.filter((f) =>
+                          Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value))}
           {plotTab === "foldChange" && (
             <Col xl={12} style={{ height: "800px", overflowY: "auto" }}>
               <Plot
@@ -743,7 +744,7 @@ export default function Results() {
                       text:
                         results.filter((f) =>
                           Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value,
-                        ).length === 0
+                        ).length === 0 || view === 12
                           ? "No data available"
                           : "",
                       xref: "paper",
