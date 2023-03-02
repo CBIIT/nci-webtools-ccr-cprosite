@@ -48,7 +48,7 @@ export default function MRNACorrelation() {
 
 
     const correlatedParticipants = participantData.filter(
-        (e) => e.firstTumor !== "NA" && e.firstControl !== "NA" && e.secondTumor !== "NA" && e.secondControl !== "NA",
+        (e) => e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) && e.secondControl !== "NA" && Number.isFinite(e.secondControl),
     );
 
     const geneScatter = [
@@ -387,7 +387,8 @@ export default function MRNACorrelation() {
                             />
                         </Col>
                     </Row>
-                    <fieldset className="ml-5 mb-5 border" style={{ color: "grey" }}>
+
+                  <fieldset className="ml-5 mb-5 border" style={{ color: "grey" }}>
                         <Row>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                                 Tumor Correlation:{" "}
@@ -429,14 +430,15 @@ export default function MRNACorrelation() {
                                             ),
                                         correlatedParticipants
                                             .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum))
-                                            .concat(correlatedParticipants.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum))
+                                            .concat(
+                                                correlatedParticipants.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum))
                                             ),
                                         { decimals: 4 },
                                     )
                                     : "NA"}
                             </div>
                         </Row>
-                    </fieldset>
+                                            </fieldset>
 
                     <div className="">
                         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
