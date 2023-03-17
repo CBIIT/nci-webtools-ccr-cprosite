@@ -26,12 +26,12 @@ export default function MRNACorrelation() {
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
     var secondGeneSet = rnaType === "cptac" ? results[1].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[1].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
 
-    const participantData = firstGeneSet.map((first) => {
+    const participantDataall = firstGeneSet.map((first) => {
         const second = secondGeneSet.find((e) => {
             return first.participantId === e.participantId
         })
-
-        if (second) {
+        //console.log(second)
+        if (second != undefined) {
             return {
                 name: first.participantId,
                 firstTumor: first.tumorValue !== null ? Number(Math.log2(first.tumorValue).toFixed(4)) : "NA",
@@ -45,10 +45,10 @@ export default function MRNACorrelation() {
             };
         }
     })
-
-
+    //filter undefined data
+    const participantData = participantDataall.filter(e => e!==undefined)
     const correlatedParticipants = participantData.filter(
-        (e) => e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) && e.secondControl !== "NA" && Number.isFinite(e.secondControl),
+        (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) && e.secondControl !== "NA" && Number.isFinite(e.secondControl)
     );
 
     const geneScatter = [
@@ -237,7 +237,7 @@ export default function MRNACorrelation() {
             columns: correlationColumns.map((e) => {
                 return { title: e.label, width: { wpx: 200 } };
             }),
-            data: participantData.filter(c => c.name).map((e) => {
+            data: participantData.filter(c => c !== undefined && c.name).map((e) => {
                 return [
                     { value: e.name },
                     { value: e.firstTumor },
