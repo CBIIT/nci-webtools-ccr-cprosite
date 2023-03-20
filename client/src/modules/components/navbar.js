@@ -13,7 +13,7 @@ export default function Navbar({ links = [], className, children }) {
             <NavLink
               to={link.path}
               key={link.path}
-              activeClassName="active"
+             // activeClassName="active"
               className="nav-link"
               exact={link.exact}>
               {link.title}

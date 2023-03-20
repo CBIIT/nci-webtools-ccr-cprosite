@@ -12,14 +12,16 @@ import Tooltip from "react-bootstrap/Tooltip";
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
   const [form, setForm] = useState(defaultFormState);
+
   const mergeForm = (obj) => setForm({ ...form, ...obj });
+
   const genes = useRecoilValue(geneState).records.map((e) => {
     return { value: e.id, label: e.name };
   });
 
-  const tumors = cancer.records.map((e) => {
+  const tumors = [{ value: 0, label: "All Tumor Types" }].concat(cancer.records.map((e) => {
     return { value: e.id, label: e.name, singlePool: e.singlePool };
-  });
+  }));
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -39,9 +41,32 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function handleSelectChange(name, selection = []) {
-    if (name === "cancer") {
-      mergeForm({ cancer: [selection] });
-    } else mergeForm({ [name]: selection });
+    // var ifBrain = -1;
+    // var ifBrainFirst= false;
+    // var ifAll = -1;
+    // //const excludeType = "Breast Cancer"
+    // const excludeType = "Brain Cancer"
+    // if (selection.length > 0){
+    //   ifBrain = selection.findIndex(s => s.label === excludeType )
+    //   ifBrainFirst = selection[0].label === excludeType
+    //   ifAll = selection.findIndex(s => s.label === "All Tumor Types")
+    //   console.log(ifBrain,selection,ifBrainFirst,ifAll)
+    // }
+    // if (name === "cancer" && selection.find((option) => option.value === 0)) {
+    //   selection = tumors.slice(1)
+    // }
+    // if (ifBrain > -1 && ifBrainFirst) selection = selection.filter(option => option.label.includes(excludeType))
+    // if ((ifBrain > -1 && !ifBrainFirst) || ifAll > -1) selection = selection.filter(option => !option.label.includes(excludeType))
+
+    //try to exclude a specific cancer if select all types
+    //selection = selection.filter(option => !option.label.includes("Breast"))
+    if (name === "cancer" && selection.find((option) => option.value === 0)) {
+      selection = tumors.slice(1)
+    }
+
+    // selection.sort((a,b) => a.label.localeCompare(b.label))
+    // console.log(selection)
+    mergeForm({ [name]: selection });
   }
 
   // avoid loading all genes as Select options
@@ -53,7 +78,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
   }
 
   function isValid() {
-    if (form.analysis.value === "correlation" && form.correlation === "toAnotherProtein" && !form.correlatedGene)
+    if (form.analysis.value === "correlation" && (form.correlation === "toAnotherProtein" || form.correlation === "toAnotherMRNA") && !form.correlatedGene)
       return false;
 
     return form.cancer && form.dataset && form.analysis && form.gene;
@@ -66,6 +91,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
         <Select
           placeholder="No cancer selected"
           name="cancer"
+          isMulti={true}
           value={form.cancer}
           onChange={(ev) => handleSelectChange("cancer", ev)}
           options={tumors}
@@ -81,14 +107,22 @@ export default function ExploreForm({ onSubmit, onReset }) {
           onChange={(e) => {
             if (
               form.analysis.value === "correlation" &&
-              (e.value === "phosphoproteinData" || e.value === "phosphoproteinRatioData")
+              (e.value === "proteinData" || e.value === "phosphoproteinData" || e.value === "phosphoproteinRatioData")
             ) {
               mergeForm({
                 ["dataset"]: e,
                 ["correlation"]: "toAnotherProtein",
                 ["correlatedGene"]: "",
               });
-            } else handleSelectChange("dataset", e);
+            }
+            else if (form.analysis.value === "correlation" && e.value === "rnaLevel") {
+              mergeForm({
+                ["dataset"]: e,
+                ["correlation"]: "toAnotherMRNA",
+                ["correlatedGene"]: "",
+              });
+            }
+            else handleSelectChange("dataset", e);
           }}
           options={[
             { value: "proteinData", label: "Relative Protein Abundance" },
@@ -97,6 +131,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
               value: "phosphoproteinRatioData",
               label: "Phosphorylation/Protein",
             },
+            { value: "rnaLevel", label: "RNA Level" }
           ]}
           required
         />
@@ -119,6 +154,20 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 ["correlation"]: "toAnotherProtein",
                 ["analysis"]: e,
               });
+            else if (form.dataset.value !== "rnaLevel" && e.value === "correlation") {
+              mergeForm({
+                ["correlatedGene"]: "",
+                ["correlation"]: "toAnotherProtein",
+                ["analysis"]: e,
+              });
+            }
+            else if (form.dataset.value === "rnaLevel" && e.value === "correlation") {
+              mergeForm({
+                ["correlatedGene"]: "",
+                ["correlation"]: "toAnotherMRNA",
+                ["analysis"]: e,
+              });
+            }
             else handleSelectChange("analysis", e);
           }}
           required
@@ -142,7 +191,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           <legend className="legend">Correlation</legend>
 
           <Form.Group className="mb-3">
-            <Form.Check
+            {form.dataset.value !== "rnaLevel" && <Form.Check
               inline
               label="To Another Protein"
               name="correlation"
@@ -151,7 +200,20 @@ export default function ExploreForm({ onSubmit, onReset }) {
               value="toAnotherProtein"
               checked={form.analysis.value === "correlation" && form.correlation === "toAnotherProtein"}
               onChange={handleChange}
-            />
+            />}
+
+            {form.dataset.value === "rnaLevel" && <Form.Check
+              inline
+              label="mRNA to Another mRNA"
+              name="correlation"
+              type="radio"
+              id="correlationToAnotherMRNA"
+              value="toAnotherMRNA"
+              checked={form.analysis.value === "correlation" && form.correlation === "toAnotherMRNA"}
+              onChange={handleChange}
+            />}
+
+
 
             <Form.Check
               inline
@@ -171,12 +233,12 @@ export default function ExploreForm({ onSubmit, onReset }) {
             />
           </Form.Group>
 
-          {form.correlation === "toAnotherProtein" && (
+          {(form.correlation === "toAnotherProtein" || form.correlation === "toAnotherMRNA") && (
             <Form.Group className="mb-3" controlId="correlated-gene">
               <Form.Label
                 className={classNames(
                   "required",
-                  (form.analysis.value !== "correlation" || form.correlation !== "toAnotherProtein") && "text-muted",
+                  (form.analysis.value !== "correlation" || form.correlation !== "toAnotherProtein"),
                 )}>
                 Correlated Gene
               </Form.Label>

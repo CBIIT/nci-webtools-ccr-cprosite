@@ -45,6 +45,7 @@ export function RangeFilter({
 }
 
 export default function Table({ columns, data, options, defaultSort }) {
+  data.sort((a,b)=> (a.name>b.name)?1:-1)
   const {
     getTableProps,
     getTableBodyProps,

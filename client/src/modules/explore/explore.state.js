@@ -3,7 +3,11 @@ import { query } from "../../services/query";
 
 export const cancerState = selector({
   key: "explore.fieldState",
-  get: ({ get }) => query("api/query", { table: "cancer" }),
+  get: ({ get }) => query("api/query", {
+    table: "cancer",
+    orderBy: "name",
+    order: "asc",
+  })
 });
 
 export const casesState = selector({
@@ -28,6 +32,7 @@ export const rnaState = selector({
 
 export async function getData(params, tumor, gene) {
   var summary;
+  var participants
   if (params.dataset.value === "phosphoproteinData" || params.dataset.value === "phosphoproteinRatioData") {
     summary = await query("api/query", {
       "table": params.dataset.value + "Summary",
@@ -36,21 +41,35 @@ export async function getData(params, tumor, gene) {
       "orderBy": "phosphorylationSite",
       "order": "asc",
     });
-  } else {
+
+    participants = await query("api/query", {
+      "table": params.dataset.value,
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
+  } else if (params.dataset.value === "proteinData") {
     summary = await query("api/query", {
       "table": params.dataset.value + "Summary",
       "_cancerId:in": tumor,
       "_geneId": gene,
     });
+
+    participants = await query("api/query", {
+      "table": params.dataset.value,
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
   }
 
-  const participants = await query("api/query", {
-    "table": params.dataset.value,
-    "_cancerId:in": tumor,
-    "_geneId": gene,
-  });
 
-  if (params.correlation === "proteinMRNA") {
+  if (params.dataset.value === "rnaLevel" || params.correlation === "proteinMRNA") {
+    participants = await query("api/query", {
+      "table": "proteinData",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    });
+
+
     const rna = await query("api/query", {
       "table": "rnaData",
       "_cancerId:in": tumor,
@@ -63,7 +82,19 @@ export async function getData(params, tumor, gene) {
       "_geneId": gene,
     });
 
-    return { summary, participants, rna, rnaSummary };
+    const tcga = await query("api/query", {
+      "table": "tcgaRnaData",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    })
+
+    const tcgaSummary = await query("api/query", {
+      "table": "tcgaRnaDataSummary",
+      "_cancerId:in": tumor,
+      "_geneId": gene,
+    })
+
+    return { summary, participants, rna, rnaSummary, tcga, tcgaSummary };
   } else if (params.correlation === "toAnotherProtein" && params.dataset.value !== "proteinData") {
     const protein = await query("api/query", {
       "table": "proteinData",
@@ -73,7 +104,7 @@ export async function getData(params, tumor, gene) {
 
     return { summary, participants, protein };
   }
-
+  //console.log("summary: ",summary)
   return { summary, participants };
 }
 
@@ -83,13 +114,12 @@ export const resultsState = selector({
     const params = get(formState);
     if (!params) return null;
 
-    var results = [];
-    console.log(params);
+    var results = []; 
 
     for (const gene of [params.gene, params.correlatedGene]) {
       if (!gene) continue;
 
-      const { summary, participants, rna, rnaSummary, protein } = await getData(
+      const { summary, participants, rna, rnaSummary, tcga, tcgaSummary, protein } = await getData(
         params,
         params.cancer.map((e) => e.value),
         gene.value,
@@ -100,31 +130,33 @@ export const resultsState = selector({
         participants,
         rnaSummary,
         rna,
+        tcgaSummary,
+        tcga,
         protein,
       });
     }
-    console.log(results);
+    // console.log(results);
     return results;
   },
 });
 
 export const geneState = selector({
   key: "explore.geneState",
-  get: ({ get }) => query("api/query", { table: "gene" }),
+  get: ({ get }) => query("api/query", { table: "geneName" }),
 });
 
 export const dataState = selectorFamily({
   key: "explore.proteinData",
   get:
     ({ table, cancer, gene }) =>
-    async (_) =>
-      table && cancer && gene
-        ? query("api/query", {
+      async (_) =>
+        table && cancer && gene
+          ? query("api/query", {
             "table": table,
             "_cancerId:in": cancer,
             "_geneId": gene,
           })
-        : [],
+          : [],
 });
 
 export const defaultFormState = {

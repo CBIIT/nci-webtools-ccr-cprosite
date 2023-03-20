@@ -13,6 +13,7 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
 // import ReactExport from "react-data-export";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
+import PhosDropdown from "../components/phospy-dropdown"
 
 import { useImperativeHandle, useState } from "react";
 import _ from "lodash";
@@ -74,7 +75,7 @@ export default function PhosResults() {
 
   function summaryViewData() {
     var rows = [];
-    console.log(results);
+    //console.log(tumors);
     sortSummary.map((c) => {
       c[1].map((e) => {
         const currentTumor = tumors.find((f) => f.value === e.cancerId);
@@ -474,7 +475,10 @@ export default function PhosResults() {
             size: 10,
             color: "rgb(255,0,0)",
           },
-          hovertemplate: "Tumor Abundance: %{y}<extra></extra>",
+          text:tumorViewData.length
+            ? tumorViewData.find((e) => e.name === phosView).records.map((d) => d.participantId)
+            : [],
+          hovertemplate: "Patient ID: %{text}<br>Tumor Abundance: %{y}<extra></extra>",
         },
         {
           y: tumorViewData.length
@@ -489,13 +493,15 @@ export default function PhosResults() {
             size: 10,
             color: "rgb(31,119,180)",
           },
+          text:tumorViewData.length
+            ? tumorViewData.find((e) => e.name === phosView).records.map((d) => d.participantId)
+            : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Adj. Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
-
     return [];
   }
 
@@ -591,11 +597,12 @@ export default function PhosResults() {
     var settings = form.cancer.map((e) => {
       return [{ value: e.label }];
     });
-
-    settings[0].push({ value: "Phosphorylation Site" });
-    settings[0].push({ value: "Tumor vs Control" });
-    settings[0].push({ value: form.gene.label });
-
+    settings.forEach((s) => {
+      s.push({ value: "Protein Abundance" })
+      s.push({ value: "Tumor vs Control" })
+      s.push({ value: form.gene.label })
+    });
+   
     return [
       {
         columns: [
@@ -734,12 +741,15 @@ export default function PhosResults() {
         <div className="m-3">
           <div style={{ height: "800px", overflowY: "auto" }}>
             <Plot
+             divID = "phosphoSummery"
               data={heatMapData}
+              
               layout={{
                 ...defaultLayout,
                 title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
                 xaxis: {
                   automargin: true,
+                  autorange:true
                 },
                 yaxis: {
                   title: "<b>Phosphorylation Site</b>",
@@ -788,37 +798,19 @@ export default function PhosResults() {
         </div>
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
-        {/*<Form.Group className="row mx-3" controlId="tumorView">
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
-            Tumor Type
-          </Form.Label>
-          <div className="col-xl-3">
-            <Form.Select
-              name="caseView"
-              onChange={(c) => {
-                setView(parseInt(c.target.value));
-                const phos = sortResults.find((e) => Number(e[0]) === parseInt(c.target.value))
-                  ? Object.entries(
-                      _.groupBy(
-                        sortResults.find((e) => Number(e[0]) === parseInt(c.target.value))[1],
-                        "phosphorylationSite",
-                      ),
-                    ).filter((e) => e[0] !== "null")
-                  : [];
-                setPhosView(phos.length ? phos[0][0] : "");
-                setSite(phos.length ? phos[0][1][0] : "");
-              }}
-              value={form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value}
-              required
-            >
-              {form.cancer.map((o) => (
-                <option value={o.value} key={`dataset-${o.value}`}>
-                  {o.label}
-                </option>
-              ))}
-            </Form.Select>
-          </div>
-              </Form.Group>*/}
+        <Row className="m-3">
+          <Col lg={6}>
+         {tumors.length >1? 
+            <PhosDropdown form={form} 
+            sortResults={sortResults} 
+            view = {view} 
+            setView ={setView} 
+            setPhosView={setPhosView}
+            setSite={setSite}
+            controlid="PhosphSiteDropdown"/>
+          :''}
+          </Col>
+        </Row>
 
         <Row className="m-3">
           <Col xl={12} style={{ overflowX: "auto" }}>
@@ -903,11 +895,25 @@ export default function PhosResults() {
       </Tab>
 
       <Tab eventKey="phosView" title="Phosphorylation Site">
-        <Form.Group className="row mx-3" controlId="phosView">
-          <Form.Label className="col-xl-2 col-xs-12 col-form-label" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
+         <Form.Group className="row mx-3 m-3" controlId="phosView">
+           <Row >
+             <Col lg={tumors.length >1? 6:'auto'} className="p-2">
+           {tumors.length >1? 
+            <PhosDropdown form={form} 
+            sortResults={sortResults} 
+            view = {view} 
+            setView ={setView} 
+            setPhosView={setPhosView}
+            setSite={setSite}
+            controlid="PhosphSiteDropdown"/>
+          :''}
+          </Col>
+          
+          <Form.Label className="col-xl-1 col-xs-12 col-form-label m-2" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
-          <div className="col-xl-3">
+         
+          <div className="col-xl-2 p-2">
             <Form.Select
               name="phosView"
               onChange={(e) => {
@@ -923,12 +929,12 @@ export default function PhosResults() {
               ))}
             </Form.Select>
           </div>
-
+                 
           <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={plotTab}
-            className="col-xl-6"
+            className="col-xl-5 p-2"
             style={{ whiteSpace: "nowrap" }}>
             <ToggleButton
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
@@ -943,6 +949,7 @@ export default function PhosResults() {
               Log<sub>2</sub> Fold Change
             </ToggleButton>
           </ToggleButtonGroup>
+          </Row>
         </Form.Group>
         <Row className="mx-3 mt-3">
           {plotTab === "tumorVsControl" ? (

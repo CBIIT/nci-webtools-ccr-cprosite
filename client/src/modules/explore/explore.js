@@ -12,11 +12,15 @@ import PhosResults from "./phosphorylation-results";
 import ProteinCorrelation from "./protein-correlation";
 import ProteinGeneCorrelation from "./protein-genevsgene";
 import ProteinPhosResults from "./proteinPhos-results";
+import RNAResults from "./rna-results";
+import MRNACorrelation from "./rna-mRNACorrelation";
+
 import {
   SidebarContainer,
   SidebarPanel,
   MainPanel,
 } from "../components/sidebar-container";
+
 
 export default function Explore() {
   const [form, setForm] = useRecoilState(formState);
@@ -63,6 +67,14 @@ export default function Explore() {
         ) : (
           <ProteinGeneCorrelation />
         );
+      case "rnaLevel":
+        return form.analysis.value === "tumor-control" ? (
+          <RNAResults />
+        ) : form.correlation === "toAnotherMRNA" ? (
+          <MRNACorrelation/>
+        ) : (
+          <ProteinCorrelation/>
+        )
       default:
         return "";
     }
