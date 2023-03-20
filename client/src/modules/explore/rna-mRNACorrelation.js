@@ -317,14 +317,14 @@ export default function MRNACorrelation() {
                                 id="log2"
                                 checked={numType === "log2"}
                                 onClick={handleToggle}>
-                                Using Converted Log<sub>2</sub> values
+                                Using Log<sub>2</sub> values
                             </ToggleButton>
                             {currentTumor != 13 ? <ToggleButton
                                 className={numType === "numeric" ? "btn-primary " : "btn-secondary "}
                                 id="numeric"
                                 checked={numType === "numeric"}
                                 onClick={handleToggle}>
-                                Using normal values
+                                Using normal values converted by log<sub>2</sub> values
                             </ToggleButton> : ''}
                         </ToggleButtonGroup>
 
