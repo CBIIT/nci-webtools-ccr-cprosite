@@ -77,7 +77,6 @@ export default function MRNACorrelation() {
             marker: {
                 size: 8,
                 color: "rgb(255,0,0)",
-                cancer: correlatedParticipantsTumor.map((e) => e.cancer),
             },
             customdata: correlatedParticipantsTumor.map((e) => e.cancer),
             mode: "markers",
@@ -95,7 +94,6 @@ export default function MRNACorrelation() {
             marker: {
                 size: 8,
                 color: "rgb(31,119,180)",
-                cancer: correlatedParticipantsControl.map((e) => e.cancer),
             },
             mode: "markers",
             type: "scatter",
