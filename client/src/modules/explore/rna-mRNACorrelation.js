@@ -47,51 +47,69 @@ export default function MRNACorrelation() {
             };
         }
     })
+
+    //console.log(participantDataall);
     //filter undefined data
     const participantData = participantDataall.filter(e => e!==undefined)
     const correlatedParticipants = participantData.filter(
         (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) && e.secondControl !== "NA" && Number.isFinite(e.secondControl)
     );
- 
+
+    //console.log(participantData);
+
+    //filter out first tumors and second tumors that is NA
+    const correlatedParticipantsTumor = participantData.filter(
+        (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) 
+    );
+
+    //console.log(correlatedParticipantsTumor);
+
+    // filter out first control and second control that is NA
+    const correlatedParticipantsControl = participantData.filter(
+        (e) => e !== undefined  && e.firstControl !== "NA" && Number.isFinite(e.firstControl)  && e.secondControl !== "NA" && Number.isFinite(e.secondControl)
+    );
+    
     const geneScatter = [
         //console.log(numType),
         {
-            x: correlatedParticipants.map((e) => numType === "log2" ? e.firstTumor : e.firstTumorNum),
-            y: correlatedParticipants.map((e) => numType === "log2" ? e.secondTumor : e.secondTumor),
+            x: correlatedParticipantsTumor.map((e) => numType === "log2" ? e.firstTumor : e.firstTumorNum),
+            y: correlatedParticipantsTumor.map((e) => numType === "log2" ? e.secondTumor : e.secondTumor),
             marker: {
                 size: 8,
                 color: "rgb(255,0,0)",
+                cancer: correlatedParticipantsTumor.map((e) => e.cancer),
             },
-            customdata: correlatedParticipants.map((e) => e.cancer),
+            customdata: correlatedParticipantsTumor.map((e) => e.cancer),
             mode: "markers",
             type: "scatter",
             name: "Tumor",
-            text: correlatedParticipants.map((e) => e.name),
+            text: correlatedParticipantsTumor.map((e) => e.name),
             hovertemplate:
                 `Tumor: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Tumor Abundance: %{x}<br>` +
                 `${secondGene} Tumor Abuncance: %{y})<extra></extra>`,
         },
         {
-            x: correlatedParticipants.map((e) => numType === "log2" ? e.firstControl : e.firstControlNum),
-            y: correlatedParticipants.map((e) => numType === "log2" ? e.secondControl : e.secondControlNum),
+            x: correlatedParticipantsControl.map((e) => numType === "log2" ? e.firstControl : e.firstControlNum),
+            y: correlatedParticipantsControl.map((e) => numType === "log2" ? e.secondControl : e.secondControlNum),
             marker: {
                 size: 8,
                 color: "rgb(31,119,180)",
-                cancer: correlatedParticipants.map((e) => e.cancer),
+                cancer: correlatedParticipantsControl.map((e) => e.cancer),
             },
             mode: "markers",
             type: "scatter",
             name: "Adjacent Normal",
-            text: correlatedParticipants.map((e) => e.name),
-            customdata: correlatedParticipants.map((e) => e.cancer),
+            text: correlatedParticipantsControl.map((e) => e.name),
+            customdata: correlatedParticipantsControl.map((e) => e.cancer),
             hovertemplate:
                 `Tumor: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Control Abundance: %{x}<br>` +
                 `${secondGene} Control Abundance: %{y}<extra></extra>`,
         },
     ];
-
+    
+    //console.log(geneScatter)
     const correlationColumns = [
          {
             accessor: "cancer",
@@ -381,7 +399,7 @@ export default function MRNACorrelation() {
                                     },
                                     annotations: [
                                         {
-                                            text: correlatedParticipants.length === 0 ? "No data available" : "",
+                                            text: correlatedParticipantsTumor.length === 0 && correlatedParticipantsControl.lenght === 0 ? "No data available" : "",
                                             xref: "paper",
                                             yref: "paper",
                                             showarrow: false,
