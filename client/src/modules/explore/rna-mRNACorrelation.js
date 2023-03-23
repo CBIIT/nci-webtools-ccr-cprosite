@@ -19,10 +19,10 @@ export default function MRNACorrelation() {
     const [label, setLabel] = useState(form.cancer[0].label);
     const [tab, setTab] = useState("summaryView");
     const [numType, setNumType] = useState("log2");
-
+    //console.log(form.cancer)
     const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) : form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
     const currentLabel = currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
-
+   
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
     var secondGeneSet = rnaType === "cptac" ? results[1].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[1].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
 
@@ -31,8 +31,10 @@ export default function MRNACorrelation() {
             return first.participantId === e.participantId
         })
         //console.log(second)
+        const cancerLabel = form.cancer.find(e => e.value==first.cancerId)
         if (second != undefined) {
             return {
+                cancer: cancerLabel? cancerLabel.label:"",
                 name: first.participantId,
                 firstTumor: first.tumorValue !== null ? Number(Math.log2(first.tumorValue).toFixed(4)) : "NA",
                 firstTumorNum: first.tumorValue !== null ? Number(first.tumorValue.toFixed(4)) : "NA",
@@ -50,9 +52,9 @@ export default function MRNACorrelation() {
     const correlatedParticipants = participantData.filter(
         (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) && e.secondControl !== "NA" && Number.isFinite(e.secondControl)
     );
-
+ 
     const geneScatter = [
-        //console.log(numType,proteinGeneCorrelation),
+        //console.log(numType),
         {
             x: correlatedParticipants.map((e) => numType === "log2" ? e.firstTumor : e.firstTumorNum),
             y: correlatedParticipants.map((e) => numType === "log2" ? e.secondTumor : e.secondTumor),
@@ -60,11 +62,13 @@ export default function MRNACorrelation() {
                 size: 8,
                 color: "rgb(255,0,0)",
             },
+            customdata: correlatedParticipants.map((e) => e.cancer),
             mode: "markers",
             type: "scatter",
             name: "Tumor",
             text: correlatedParticipants.map((e) => e.name),
             hovertemplate:
+                `Tumor: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Tumor Abundance: %{x}<br>` +
                 `${secondGene} Tumor Abuncance: %{y})<extra></extra>`,
         },
@@ -74,18 +78,31 @@ export default function MRNACorrelation() {
             marker: {
                 size: 8,
                 color: "rgb(31,119,180)",
+                cancer: correlatedParticipants.map((e) => e.cancer),
             },
             mode: "markers",
             type: "scatter",
             name: "Adjacent Normal",
             text: correlatedParticipants.map((e) => e.name),
+            customdata: correlatedParticipants.map((e) => e.cancer),
             hovertemplate:
+                `Tumor: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Control Abundance: %{x}<br>` +
                 `${secondGene} Control Abundance: %{y}<extra></extra>`,
         },
     ];
 
     const correlationColumns = [
+         {
+            accessor: "cancer",
+            id: "cancer",
+            label: "cancer",
+            Header: (
+                <OverlayTrigger overlay={<Tooltip id="protein_correlation_patient">Tumor</Tooltip>}>
+                    <b>Tumor</b>
+                </OverlayTrigger>
+            ),
+        },
         {
             accessor: "name",
             id: "name",
@@ -239,6 +256,7 @@ export default function MRNACorrelation() {
             }),
             data: participantData.filter(c => c !== undefined && c.name).map((e) => {
                 return [
+                    { value: e.cancer },
                     { value: e.name },
                     { value: e.firstTumor },
                     { value: e.firstTumorNum },
