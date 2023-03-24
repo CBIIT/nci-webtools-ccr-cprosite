@@ -23,6 +23,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
     return { value: e.id, label: e.name, singlePool: e.singlePool };
   }));
 
+
   function handleChange(event) {
     const { name, value } = event.target;
     // todo: validate selected gene
@@ -31,7 +32,15 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (onSubmit) onSubmit(form);
+    
+    if (form.cancer[0].value === 0) {
+      if (onSubmit) onSubmit({...form, cancer: tumors.slice(1)});
+    } else {
+      if (onSubmit) onSubmit(form);
+    }
+    // selection.sort((a,b) => a.label.localeCompare(b.label))
+    // console.log(selection)
+    
   }
 
   function handleReset(event) {
@@ -63,7 +72,6 @@ export default function ExploreForm({ onSubmit, onReset }) {
     if (name === "cancer" && selection.find((option) => option.value === 0)) {
       selection = tumors.slice(1)
     }
-
     // selection.sort((a,b) => a.label.localeCompare(b.label))
     // console.log(selection)
     mergeForm({ [name]: selection });

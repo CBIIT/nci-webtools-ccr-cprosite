@@ -352,6 +352,30 @@ export default function RNAResults() {
         ])
     }
 
+
+    function summaryDataEmpty(records) {
+        records = records.sort((a, b) => a.name.localeCompare(b.name))
+      
+        return records.map((e) => {     
+            if (e.tumorAverage === "NA" || e.controlAverage === "NA") {
+                return {
+                    x: xlabelmap(e),
+                    y: 0,
+                    xref: 'x',
+                    yref: 'y',
+                    showarrow: false,
+                    text: "No data available",
+                    textangle: 90,
+                    xanchor: 'left',
+                    yanchor: 'bottom',
+                    align: 'center',
+                  };
+            }
+          return null;
+        }).filter(e => e !== null);
+      }
+
+
     function boxPlotData(records) {
 
         return (
@@ -385,6 +409,7 @@ export default function RNAResults() {
             ]
         )
     }
+
 
     function foldData(records) {
         if (records.length !== 0) {
@@ -426,7 +451,6 @@ export default function RNAResults() {
             ];
         }
     }
-    console.log(foldData(rna))
     const exportAbundanceSettings = [
         {
             columns: [
@@ -579,6 +603,7 @@ export default function RNAResults() {
                                             color: "grey",
                                         },
                                     },
+                                    ...summaryDataEmpty(rnaType === "cptac" ? rnaSummary : tcgaSummary),
                                 ],
                             }}
                             config={{
@@ -831,8 +856,8 @@ export default function RNAResults() {
                             />
                         </div>
                     </Row>}
-                    {console.log(rnaSummary)}
-                    {console.log(tcgaSummary)}
+                    {/* {console.log(rnaSummary)}
+                    {console.log(tcgaSummary)} */}
                     {rnaType === "tcga" && <Row className="mx-3 mt-3">
                         {plotTab === "tumorVsControl" && (
                             <Col xl={12} style={{ height: "800px" }}>

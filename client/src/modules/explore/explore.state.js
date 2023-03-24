@@ -161,7 +161,8 @@ export const dataState = selectorFamily({
 
 export const defaultFormState = {
   openSidebar: true,
-  cancer: [{ value: 6, label: "Lung Adenocarcinoma" }],
+  // cancer: [{ value: 6, label: "Lung Adenocarcinoma" }],
+  cancer: [{ value: 0, label: "All Tumor Types" }],
   gene: { value: 1722, label: "CDK1" },
   analysis: { value: "tumor-control", label: "Tumor vs Normal Tissue Adjacent to the Tumor" },
   dataset: { value: "proteinData", label: "Relative Protein Abundance" },
