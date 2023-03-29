@@ -810,8 +810,8 @@ export default function ProteinPhosResults() {
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3 m-3" controlId="phosSiteView">
-           <Row className="m-3">
-          <Col lg={6}>
+           <Row>
+          <Col lg={tumors.length >1? 6:'auto'}  className="p-2">
           {tumors.length >1? 
             <PhosDropdown form={form} 
             sortResults={sortPhospho} 
@@ -821,7 +821,26 @@ export default function ProteinPhosResults() {
             setSite={setSite}
             controlid="phosphySiteProteinPhosDropdown"/>
           :''}
-          </Col>
+            </Col>
+            <ToggleButtonGroup
+            type="radio"
+            name="plot-tab"
+            value={plotTab}
+            className="col-xl-6 p-2"
+            style={{ whiteSpace: "nowrap" }}>
+            <ToggleButton
+              className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
+              id={"tumorVsControl"}
+              onClick={handleToggle}>
+              Tumor vs Adj. Normal
+            </ToggleButton>
+            <ToggleButton
+              className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
+              id={"foldChange"}
+              onClick={handleToggle}>
+              Log<sub>2</sub> Fold Change
+            </ToggleButton>
+          </ToggleButtonGroup>
           </Row>
         </Form.Group>
 

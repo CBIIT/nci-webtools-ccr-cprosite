@@ -799,7 +799,7 @@ export default function PhosResults() {
       </Tab>
       <Tab eventKey="tumorView" title="Tumor View">
         <Row className="m-3">
-          <Col lg={6}>
+          <Col lg={tumors.length >1? 6:'auto'}  className="p-2">
          {tumors.length >1? 
             <PhosDropdown form={form} 
             sortResults={sortResults} 
@@ -810,6 +810,25 @@ export default function PhosResults() {
             controlid="PhosphSiteDropdown"/>
           :''}
           </Col>
+          <ToggleButtonGroup
+            type="radio"
+            name="plot-tab"
+            value={plotTab}
+            className="col-xl-6 p-2"
+            style={{ whiteSpace: "nowrap" }}>
+            <ToggleButton
+              className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
+              id={"tumorVsControl"}
+              onClick={handleToggle}>
+              Tumor vs Adj. Normal
+            </ToggleButton>
+            <ToggleButton
+              className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
+              id={"foldChange"}
+              onClick={handleToggle}>
+              Log<sub>2</sub> Fold Change
+            </ToggleButton>
+          </ToggleButtonGroup>
         </Row>
 
         <Row className="m-3">
