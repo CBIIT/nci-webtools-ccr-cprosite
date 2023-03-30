@@ -120,14 +120,16 @@ export default function ExploreForm({ onSubmit, onReset }) {
               mergeForm({
                 ["dataset"]: e,
                 ["correlation"]: "toAnotherProtein",
-                ["correlatedGene"]: "",
+                // ["correlatedGene"]: "",
+                
               });
             }
             else if (form.analysis.value === "correlation" && e.value === "rnaLevel") {
               mergeForm({
                 ["dataset"]: e,
                 ["correlation"]: "toAnotherMRNA",
-                ["correlatedGene"]: "",
+                // ["correlatedGene"]: "",
+                
               });
             }
             else handleSelectChange("dataset", e);
