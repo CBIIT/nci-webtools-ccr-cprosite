@@ -34,7 +34,7 @@ export default function ProteinGeneCorrelation() {
   //if (view.length>1) setView(tumors)
   //have to update the view value if form value changes
   //useEffect(()=>{setView(tumors);console.log("this view in effect",view)},[])
-  console.log(view, tumors)
+  //console.log(view, tumors)
 
   const [siteTumor, setSiteTumor] = useState({
     value: form.cancer[0].value,
@@ -135,6 +135,16 @@ export default function ProteinGeneCorrelation() {
   }
 
   const correlationColumns = [
+    {
+      accessor: "cancer",
+      id: "cancer",
+      label: "cancer",
+      Header: (
+          <OverlayTrigger overlay={<Tooltip id="protein_correlation_tumor">Tumor Type</Tooltip>}>
+              <b>Tumor Type</b>
+          </OverlayTrigger>
+      ),
+  },
     {
       accessor: "name",
       id: "name",
@@ -314,8 +324,10 @@ export default function ProteinGeneCorrelation() {
     const second = secondFilteredSet.find((d) => {
       return first.participantId === d.participantId && first.phosphorylationSite === d.phosphorylationSite;
     });
+    const cancerLabel = form.cancer.find(e => e.value==first.cancerId)
     if (second) {
       return {
+        cancer: cancerLabel? cancerLabel.label:"",
         name: first.participantId,
         firstTumor: first.tumorValue !== null ? Number(first.tumorValue.toFixed(4)) : "NA",
         firstTumorNum: first.tumorValue !== null ? Number(Math.pow(2, first.tumorValue).toFixed(4)) : "NA",
@@ -446,7 +458,6 @@ export default function ProteinGeneCorrelation() {
     displaylogo: false,
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
-
   const geneScatter = [
     //console.log(numType,proteinGeneCorrelation),
     {
@@ -456,13 +467,15 @@ export default function ProteinGeneCorrelation() {
         size: 8,
         color: "rgb(255,0,0)",
       },
+      customdata: proteinGeneCorrelation.map((e) => e.cancer),
       mode: "markers",
       type: "scatter",
       name: "Tumor",
       text: proteinGeneCorrelation.map((e) => e.name),
       hovertemplate:
+      `Tumor Type: %{customdata}<br>`+
         `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
-        `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y})<extra></extra>`,
+        `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
     {
       x: proteinGeneCorrelation
@@ -479,12 +492,13 @@ export default function ProteinGeneCorrelation() {
       type: "scatter",
       name: "Adjacent Normal",
       text: proteinGeneCorrelation.map((e) => e.name),
+      customdata: proteinGeneCorrelation.map((e) => e.cancer),
       hovertemplate:
+      `Tumor Type: %{customdata}<br>`+
         `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
-
   const siteScatter = [
     {
       x: siteData.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
@@ -497,7 +511,9 @@ export default function ProteinGeneCorrelation() {
       type: "scatter",
       name: "Tumor",
       text: siteData.map((e) => e.name),
+      customdata: siteData.map((e) => e.cancer),
       hovertemplate:
+      `Tumor Type: %{customdata}<br>`+
         `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
@@ -516,7 +532,9 @@ export default function ProteinGeneCorrelation() {
       type: "scatter",
       name: "Adjacent Normal",
       text: siteData.map((e) => e.name),
+      customdata: siteData.map((e) => e.cancer),
       hovertemplate:
+      `Tumor Type: %{customdata}<br>`+
         `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
@@ -557,6 +575,7 @@ export default function ProteinGeneCorrelation() {
       }),
       data: proteinGene.filter(c => c.name).map((e) => {
         return [
+          {value: e.cancer},
           { value: e.name },
           { value: e.firstTumor },
           { value: e.firstTumorNum },
@@ -631,6 +650,7 @@ export default function ProteinGeneCorrelation() {
         }),
         data: unfilteredSiteData.map((c) => {
           return [
+            {value: c.cancer},
             { value: c.name },
             { value: c.firstPhospho },
             { value: c.secondPhospho },
@@ -823,6 +843,7 @@ export default function ProteinGeneCorrelation() {
               defaultSort={[{ id: "name", asec: true }]}
               data={proteinGene.map((c) => {
                 return {
+                  cancer: c.cancer,
                   name: c.name,
                   firstTumor: c.firstTumor,
                   firstTumorNum: c.firstTumorNum,
