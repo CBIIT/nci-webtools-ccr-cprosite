@@ -34,7 +34,7 @@ export default function ProteinGeneCorrelation() {
   //if (view.length>1) setView(tumors)
   //have to update the view value if form value changes
   //useEffect(()=>{setView(tumors);console.log("this view in effect",view)},[])
-  console.log(view, tumors)
+  //console.log(view, tumors)
 
   const [siteTumor, setSiteTumor] = useState({
     value: form.cancer[0].value,
@@ -458,7 +458,6 @@ export default function ProteinGeneCorrelation() {
     displaylogo: false,
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
-console.log(proteinGeneCorrelation)
   const geneScatter = [
     //console.log(numType,proteinGeneCorrelation),
     {
@@ -476,7 +475,7 @@ console.log(proteinGeneCorrelation)
       hovertemplate:
       `Tumor Type: %{customdata}<br>`+
         `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
-        `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y})<extra></extra>`,
+        `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
     {
       x: proteinGeneCorrelation
@@ -500,7 +499,6 @@ console.log(proteinGeneCorrelation)
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
-  console.log(siteData);
   const siteScatter = [
     {
       x: siteData.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
@@ -570,7 +568,6 @@ console.log(proteinGeneCorrelation)
     ];
   }
 
-  console.log(proteinGene);
   const exportSummary = [
     {
       columns: correlationColumns.map((e) => {

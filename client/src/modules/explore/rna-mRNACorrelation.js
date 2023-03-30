@@ -86,7 +86,7 @@ export default function MRNACorrelation() {
             hovertemplate:
                 `Tumor Type: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Tumor Abundance: %{x}<br>` +
-                `${secondGene} Tumor Abuncance: %{y})<extra></extra>`,
+                `${secondGene} Tumor Abuncance: %{y}<extra></extra>`,
         },
         {
             x: correlatedParticipantsControl.map((e) => numType === "log2" ? e.firstControl : e.firstControlNum),
