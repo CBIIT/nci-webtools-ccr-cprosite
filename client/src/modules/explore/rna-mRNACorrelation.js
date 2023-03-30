@@ -84,7 +84,7 @@ export default function MRNACorrelation() {
             name: "Tumor",
             text: correlatedParticipantsTumor.map((e) => e.name),
             hovertemplate:
-                `Tumor: %{customdata}<br>`+
+                `Tumor Type: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Tumor Abundance: %{x}<br>` +
                 `${secondGene} Tumor Abuncance: %{y})<extra></extra>`,
         },
@@ -101,7 +101,7 @@ export default function MRNACorrelation() {
             text: correlatedParticipantsControl.map((e) => e.name),
             customdata: correlatedParticipantsControl.map((e) => e.cancer),
             hovertemplate:
-                `Tumor: %{customdata}<br>`+
+                `Tumor Type: %{customdata}<br>`+
                 `Patient ID: %{text}<br>${firstGene} Control Abundance: %{x}<br>` +
                 `${secondGene} Control Abundance: %{y}<extra></extra>`,
         },
@@ -114,8 +114,8 @@ export default function MRNACorrelation() {
             id: "cancer",
             label: "cancer",
             Header: (
-                <OverlayTrigger overlay={<Tooltip id="protein_correlation_patient">Tumor</Tooltip>}>
-                    <b>Tumor</b>
+                <OverlayTrigger overlay={<Tooltip id="protein_correlation_tumor">Tumor Type</Tooltip>}>
+                    <b>Tumor Type</b>
                 </OverlayTrigger>
             ),
         },
