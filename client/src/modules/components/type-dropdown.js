@@ -3,7 +3,7 @@ import Form from "react-bootstrap/Form";
 const TypeDropdown = ({form,results, view,setView,controlid}) => {
   let sortedCancer = [...form.cancer]
   sortedCancer = sortedCancer.sort((a,b)=> (a.label>b.label)?1:-1)
-  console.log(view);
+  //console.log(view);
   return(
           <div className="col-xl-4" style={{width: "35%"}}>
             <Form.Select
