@@ -264,7 +264,23 @@ export default function Results() {
       tumorError: e.tumorSampleStandardError !== null ? Number(e.tumorSampleStandardError.toFixed(4)) : "NA",
     };
   });
+
+  //sort by name to bring Brain cancer up front
+  averages.sort((a, b) => {
+    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
   
+    // names must be equal
+    return 0;
+  });
+  
+
  function xlabelmap(c){
     var xlabel = c.name;
     if (xlabel.includes("Lung Adenocarcinoma")) xlabel = "Lung AD";
