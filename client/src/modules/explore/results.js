@@ -32,15 +32,16 @@ export default function Results() {
   const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
- 
+ //console.log("results: ",results)
   const [view, setView] = useState(form.cancer[0].value);
 
+  
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
     : results.length
     ? Number(results[0][0])
     : form.cancer[0].value;
-  //console.log(currentTumor);
+  //console.log("currentTumor: ", currentTumor);
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -224,7 +225,7 @@ export default function Results() {
       hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
     },
   ];
-
+  //console.log("boxPlotData: ",boxPlotData);
   const averages = getResults[0].summary.records.map((e) => {
     return {
       id: e.cancerId,
@@ -263,7 +264,23 @@ export default function Results() {
       tumorError: e.tumorSampleStandardError !== null ? Number(e.tumorSampleStandardError.toFixed(4)) : "NA",
     };
   });
+
+  //sort by name to bring Brain cancer up front
+  averages.sort((a, b) => {
+    const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+    const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
   
+    // names must be equal
+    return 0;
+  });
+  
+
  function xlabelmap(c){
     var xlabel = c.name;
     if (xlabel.includes("Lung Adenocarcinoma")) xlabel = "Lung AD";
@@ -276,7 +293,8 @@ export default function Results() {
 
   function multiBarPlotData() {
     //console.log("averages: ",averages)
-    const hovertext = averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c))
+    // const hovertext = averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c))
+    const hovertext = averages.map((c) => xlabelmap(c))
     const hovertextdisplay = hovertext.map(ht =>{
       ht = ht.replace("(","<br>Tumor Count:");
       ht = ht.replace("-","<br>Adj. Normal Count:");
@@ -287,9 +305,10 @@ export default function Results() {
     return (
       results.length > 1?
       [{
-       x: averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c)),
-       y: averages.filter(c => !c.name.includes("Brain")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
-   
+      //  x: averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c)),
+      //  y: averages.filter(c => !c.name.includes("Brain")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
+      x: averages.map((c) => xlabelmap(c)),
+      y: averages.map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
         //x: averages.filter(c => !c.name.includes("Breast")).map((c) => xlabelmap(c)),
         //y: averages.filter(c => !c.name.includes("Breast")).map((c) => results.length >1? c.proteinDiff :c.tumorAverage),
        // y: averages.map((c) => c.tumorAverage),
@@ -360,6 +379,7 @@ export default function Results() {
         Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4)),
       );
 
+      
       return [
         {
           type: "bar",
@@ -420,7 +440,8 @@ export default function Results() {
         columns: summaryColumns.map((e) => {
           return { title: e.label, width: { wpx: 160 } };
         }),
-        data: averages.filter(c => !c.name.includes("Brain")).map((e) => {
+        // data: averages.filter(c => !c.name.includes("Brain")).map((e) => {
+          data: averages.map((e) => {
           return [
             { value: e.name },
             { value: e.tumorAverage },
@@ -587,7 +608,8 @@ export default function Results() {
             </ExcelFile>
           </div>
 
-          <Table columns={summaryColumns} data={averages.length>1? averages.filter(c => !c.name.includes("Brain")):averages} 
+          {/* <Table columns={summaryColumns} data={averages.length>1? averages.filter(c => !c.name.includes("Brain")):averages}  */}
+          <Table columns={summaryColumns} data={averages} 
           defaultSort={[{ id: "link", desc: false }]} />
         </div>
       </Tab>
@@ -688,8 +710,8 @@ export default function Results() {
               />
             </Col>
           )}
-          {console.log(results.filter((f) =>
-                          Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value))}
+          {/* {console.log(results.filter((f) =>
+                          Number(f[0]) === form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value))} */}
           {plotTab === "foldChange" && (
             <Col xl={12} style={{ height: "800px", overflowY: "auto" }}>
               <Plot

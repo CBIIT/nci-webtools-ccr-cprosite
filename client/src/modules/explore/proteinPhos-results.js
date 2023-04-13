@@ -42,7 +42,7 @@ export default function ProteinPhosResults() {
 
       return first - second;
     });
-  console.log(sortSummary);
+  //console.log(sortSummary);
 
   const heatmap = sortSummary.reverse().map((e) => {
     var toAdd = Array(10).fill(null);
@@ -57,7 +57,7 @@ export default function ProteinPhosResults() {
 
   function summaryViewData() {
     var rows = [];
-    console.log(results);
+   // console.log(results);
     sortSummary.map((c) => {
       c[1].map((e) => {
         const tumor = tumors.find((f) => f.value === e.cancerId);

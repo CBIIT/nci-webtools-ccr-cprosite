@@ -48,6 +48,16 @@ export default function ProteinCorrelation() {
 
   const correlationColumns = [
     {
+      accessor: "cancer",
+      id: "cancer",
+      label: "cancer",
+      Header: (
+          <OverlayTrigger overlay={<Tooltip id="protein_correlation_tumor">Tumor Type</Tooltip>}>
+              <b>Tumor Type</b>
+          </OverlayTrigger>
+      ),
+  },
+    {
       accessor: "name",
       id: "name",
       label: "Patient ID",
@@ -167,9 +177,10 @@ export default function ProteinCorrelation() {
     const rna = rnaData.find((d) => {
       return e.participantId === d.participantId;
     });
-
+    const cancerLabel = form.cancer.find(c => c.value == e.cancerId);
     if (rna) {
       return {
+        cancer: cancerLabel? cancerLabel.label:"",
         name: e.participantId,
         proteinTumor: e.tumorValue !== null ? Number(e.tumorValue.toFixed(4)) : "NA",
         proteinTumorNum: e.tumorValue !== null ? Number(Math.pow(2, e.tumorValue).toFixed(4)) : "NA",
@@ -276,6 +287,7 @@ export default function ProteinCorrelation() {
       }),
       data: proteinRNA.map((e) => {
         return [
+          {value: e.cancer},
           { value: e.name },
           { value: e.proteinTumorNum },
           { value: e.proteinTumor },
@@ -302,8 +314,9 @@ export default function ProteinCorrelation() {
       type: "scatter",
       name: "Tumor",
       text: proteinRNA.map((e) => e.name),
-      hovertemplate: `Patient ID: %{text}<br>Protein Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Tumor ${numType === "log2" ? "Log2" : "Abundance"
-        }: %{y})<extra></extra>`,
+      customdata: proteinRNA.map((e) => e.cancer),
+      hovertemplate: `Tumor Type: %{customdata}<br>`+ `Patient ID: %{text}<br>Protein Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Tumor ${numType === "log2" ? "Log2" : "Abundance"
+        }: %{y}<extra></extra>`,
     },
     {
       x: proteinRNA.map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl))),
@@ -316,8 +329,9 @@ export default function ProteinCorrelation() {
       type: "scatter",
       name: "Adjacent Normal",
       text: proteinRNA.map((e) => e.name),
-      hovertemplate: `Patient ID: %{text}<br>Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${numType === "log2" ? "Log2" : "Abundance"
-        }: %{y})<extra></extra>`,
+      customdata: proteinRNA.map((e) => e.cancer),
+      hovertemplate: `Tumor Type: %{customdata}<br>`+ `Patient ID: %{text}<br>Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${numType === "log2" ? "Log2" : "Abundance"
+        }: %{y}<extra></extra>`,
     },
   ];
   { console.log(results) }
@@ -344,7 +358,7 @@ export default function ProteinCorrelation() {
             data={proteinRNAScatter}
             layout={{
               ...defaultLayout,
-              title: `<b>CPTAC ${currentLabel} ${form.gene.label} to mRNA Abundance Correlation</b><br>(${numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
+              title: `<b>CPTAC ${currentLabel} ${form.gene.label} to mRNA Level Correlation</b><br>(${numType === "log2" ? "Log<sub>2</sub>" : "Converted Normal"
                 } Values)`,
               autosize: true,
               legend: {
@@ -446,6 +460,7 @@ export default function ProteinCorrelation() {
           defaultSort={[{ id: "name", asec: true }]}
           data={proteinRNA.map((c) => {
             return {
+              cancer: c.cancer,
               name: c.name,
               proteinTumor: c.proteinTumor,
               proteinTumorNum: c.proteinTumorNum,

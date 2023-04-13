@@ -33,12 +33,12 @@ export default function Explore() {
 
   function handleSubmit(event) {
     setForm({ ...event, submitted: true });
-    console.log("submit", event);
+    //console.log("submit", event);
   }
 
   function handleReset(event) {
     setForm(event);
-    console.log("reset", event);
+    //console.log("reset", event);
   }
 
   function results() {
