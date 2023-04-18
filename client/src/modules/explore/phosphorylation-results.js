@@ -305,7 +305,7 @@ export default function PhosResults() {
       label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+          <b>Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -349,7 +349,7 @@ export default function PhosResults() {
       label: "Average Adjacent Normal",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>}>
-          <b>Avg. Adj. Normal</b>
+          <b>Avg. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -383,7 +383,7 @@ export default function PhosResults() {
       label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_control_count">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+          <b>Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -401,7 +401,7 @@ export default function PhosResults() {
       label: "Adjacent Normal Standard Error",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_control_se">Adjacent Normal Standard Error</Tooltip>}>
-          <b>Adj. Normal SE</b>
+          <b>Normal SE</b>
         </OverlayTrigger>
       ),
     },
