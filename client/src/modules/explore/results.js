@@ -67,7 +67,7 @@ export default function Results() {
       label: "Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>}>
-          <b>Adj. Normal Abundance</b>
+          <b>Normal Abundance</b>
         </OverlayTrigger>
       ),
     },
