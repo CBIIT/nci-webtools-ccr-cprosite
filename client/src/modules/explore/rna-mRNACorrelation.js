@@ -61,13 +61,16 @@ export default function MRNACorrelation() {
     const correlatedParticipantsTumor = participantData.filter(
         (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) 
     );
-
-    //console.log(correlatedParticipantsTumor);
+    console.log("correlatedParticipantsTumor");
+    console.log(correlatedParticipantsTumor);
 
     // filter out first control and second control that is NA
     const correlatedParticipantsControl = participantData.filter(
         (e) => e !== undefined  && e.firstControl !== "NA" && Number.isFinite(e.firstControl)  && e.secondControl !== "NA" && Number.isFinite(e.secondControl)
     );
+    
+    console.log("correlatedParticipantsTumor")
+    console.log(correlatedParticipantsControl)
     
     const geneScatter = [
         //console.log(numType),
