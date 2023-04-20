@@ -112,24 +112,24 @@ export default function Results() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Adjacent Normal",
+      label: "Average Normal",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>}>
-          <b>Avg. Adj. Normal</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Normal</Tooltip>}>
+          <b>Avg. Normal</b>
         </OverlayTrigger>
       ),
     },
     {
       accessor: "proteinDiff",
-      label: "Tumor vs Adjacent Normal",
+      label: "Tumor vs Normal",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
+              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Normal)
             </Tooltip>
           }>
-          <b>Tumor vs Adj. Normal</b>
+          <b>Tumor vs Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -144,10 +144,10 @@ export default function Results() {
     },
     {
       accessor: "controlNum",
-      label: "Adjacent Normal Count",
+      label: "Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Normal Sample Number</Tooltip>}>
+          <b>Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -162,10 +162,10 @@ export default function Results() {
     },
     {
       accessor: "controlError",
-      label: "Adjacent Normal SE",
+      label: "Normal SE",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_control_se">Adjacent Normal Stanadard Error</Tooltip>}>
-          <b>Adj. Normal SE</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_control_se">Normal Stanadard Error</Tooltip>}>
+          <b>Normal SE</b>
         </OverlayTrigger>
       ),
     },
