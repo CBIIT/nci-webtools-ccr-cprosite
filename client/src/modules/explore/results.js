@@ -32,16 +32,19 @@ export default function Results() {
   const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
- //console.log("results: ",results)
+  console.log(form)
+  console.log("results: ", results)
+  console.log("getResults: ",getResults)
   const [view, setView] = useState(form.cancer[0].value);
 
+  console.log("view", view);
   
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
     : results.length
     ? Number(results[0][0])
     : form.cancer[0].value;
-  //console.log("currentTumor: ", currentTumor);
+  console.log("currentTumor: ", currentTumor);
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -64,10 +67,10 @@ export default function Results() {
     },
     {
       accessor: "normalValue",
-      label: "Adjacent Normal Abundance",
+      label: currentTumor === 12 ? "Normal Abundance" : "Adjacent Normal Abundance",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>}>
-          <b>Adj. Normal Abundance</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_normal_val">{currentTumor === 12 ? "Normal Abundance" : "Adjacent Normal Abundance"}</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal Abundance</b> : <b>Adj. Normal Abundance</b>}
         </OverlayTrigger>
       ),
     },
@@ -78,7 +81,7 @@ export default function Results() {
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_log_fold">
-              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
+              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs {currentTumor === 12 ? "Normal": "Adjacent Normal"})
             </Tooltip>
           }>
           <b>
@@ -213,7 +216,7 @@ export default function Results() {
         : [],
       type: "box",
       boxpoints: "all",
-      name: "<b>Adjacent Normal</b>",
+      name: currentTumor === 12 ? "<b>Normal</b>": "<b>Adjacent Normal</b>",
       jitter: 0.6,
       marker: {
         size: 10,
@@ -633,7 +636,7 @@ export default function Results() {
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Adj. Normal
+              {currentTumor === 12 ? "Tumor vs  Normal" :"Tumor vs Adj. Normal"}
             </ToggleButton>
            <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
