@@ -170,10 +170,10 @@ export default function RNAResults() {
         },
         {
             accessor: "normalValue",
-            label: "Normal Abundance",
+            label: "Adjacent Normal Abundance",
             Header: (
                 <OverlayTrigger overlay={<Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>}>
-                    <b>Normal Abundance</b>
+                    <b>Adj. Normal Abundance</b>
                 </OverlayTrigger>
             ),
         },
@@ -218,16 +218,16 @@ export default function RNAResults() {
         },
         {
             accessor: "controlAverage",
-            label: "Average Normal",
+            label: "Average Adjacent Normal",
             Header: (
                 <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>}>
-                    <b>Avg.  Normal</b>
+                    <b>Avg. Adj. Normal</b>
                 </OverlayTrigger>
             ),
         },
         {
             accessor: "proteinDiff",
-            label: "Tumor vs Normal",
+            label: "Tumor vs Adjacent Normal",
             Header: (
                 <OverlayTrigger
                     overlay={
@@ -235,7 +235,7 @@ export default function RNAResults() {
                             Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
                         </Tooltip>
                     }>
-                    <b>Tumor vs Normal</b>
+                    <b>Tumor vs Adj. Normal</b>
                 </OverlayTrigger>
             ),
         },
@@ -250,10 +250,10 @@ export default function RNAResults() {
         },
         {
             accessor: "controlNum",
-            label: "Normal Count",
+            label: "Adjacent Normal Count",
             Header: (
                 <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Adjacent Normal Sample Number</Tooltip>}>
-                    <b>Normal Count</b>
+                    <b>Adj. Normal Count</b>
                 </OverlayTrigger>
             ),
         },
@@ -268,10 +268,10 @@ export default function RNAResults() {
         },
         {
             accessor: "controlError",
-            label: "Normal SE",
+            label: "Adjacent Normal SE",
             Header: (
                 <OverlayTrigger overlay={<Tooltip id="protein_control_se">Adjacent Normal Stanadard Error</Tooltip>}>
-                    <b> Normal SE</b>
+                    <b>Adj. Normal SE</b>
                 </OverlayTrigger>
             ),
         },
@@ -309,7 +309,7 @@ export default function RNAResults() {
         const hovertext = records.map((e) => xlabelmap(e))
         const hovertextdisplay = hovertext.map(ht => {
             ht = ht.replace("(", "<br>Tumor Count:");
-            ht = ht.replace("-", "<br>Normal Count:");
+            ht = ht.replace("-", "<br>Adj. Normal Count:");
             ht = ht.replace(")", "");
             return ht;
         })
@@ -397,14 +397,14 @@ export default function RNAResults() {
                     y: records.filter((e) => Number(e.cancerId) === currentTumor).map((e) => e.normalValue),
                     type: "box",
                     boxpoints: "all",
-                    name: "<b>Normal</b>",
+                    name: "<b>Adjacent Normal</b>",
                     jitter: 0.6,
                     marker: {
                         size: 10,
                         color: "rgb(31,119,180)",
                     },
                     text: records.filter((e) => Number(e.cancerId) === currentTumor).map((e) => e.participantId),
-                    hovertemplate: "Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>",
+                    hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
                 },
             ]
         )

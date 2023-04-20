@@ -179,7 +179,7 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Normal Count",
+      label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>}>
           <b>Normal Count</b>
@@ -210,9 +210,9 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlValue",
-      label: "Normal Value",
+      label: "Adjacent Normal Value",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_val">Normal Value</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_val">Adjacent Normal Value</Tooltip>}>
           <b>Normal Value</b>
         </OverlayTrigger>
       ),
@@ -262,9 +262,9 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Normal",
+      label: "Average Adjacent Normal",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Normal</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>}>
           <b>Avg. Normal</b>
         </OverlayTrigger>
       ),
@@ -296,9 +296,9 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Normal Count",
+      label: "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_count">Normal Sample Number</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_count">Adjacent Normal Sample Number</Tooltip>}>
           <b>Normal Count</b>
         </OverlayTrigger>
       ),
@@ -314,9 +314,9 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlError",
-      label: "Normal Standard Error",
+      label: "Adjacent Normal Standard Error",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_se">Normal Standard Error</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_se">Adjacent Normal Standard Error</Tooltip>}>
           <b>Normal SE</b>
         </OverlayTrigger>
       ),
@@ -472,7 +472,7 @@ export default function ProteinPhosResults() {
         color: "rgb(31,119,180)",
       },
       type: "bar",
-      name: "Normal",
+      name: "Adjacent Normal",
       hovertemplate: "%{x}: %{y} <extra></extra>",
     },
   ];
@@ -503,7 +503,8 @@ export default function ProteinPhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "<b>Normal</b>",
+          name: "<b>Adjacent Normal</b>",
+          jitter: 0.6,
           jitter: 0.6,
           marker: {
             size: 10,

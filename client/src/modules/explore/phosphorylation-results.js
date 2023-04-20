@@ -213,7 +213,7 @@ export default function PhosResults() {
       label: "Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>}>
-          <b>Normal Abundance</b>
+          <b>Adj. Normal Abundance</b>
         </OverlayTrigger>
       ),
       sortType: (a, b) => {
@@ -302,9 +302,9 @@ export default function PhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Normal Count",
+      label: "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="tumor_type">Normal Sample Number</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>}>
           <b>Normal Count</b>
         </OverlayTrigger>
       ),
@@ -346,9 +346,9 @@ export default function PhosResults() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Normal",
+      label: "Average Adjacent Normal",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Normal</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>}>
           <b>Avg. Normal</b>
         </OverlayTrigger>
       ),
@@ -380,9 +380,9 @@ export default function PhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Normal Count",
+      label: "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_count">Normal Sample Number</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_count">Adjacent Normal Sample Number</Tooltip>}>
           <b>Normal Count</b>
         </OverlayTrigger>
       ),
@@ -398,9 +398,9 @@ export default function PhosResults() {
     },
     {
       accessor: "controlError",
-      label: "Normal Standard Error",
+      label: "Adjacent Normal Standard Error",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_se">Normal Standard Error</Tooltip>}>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_se">Adjacent Normal Standard Error</Tooltip>}>
           <b>Normal SE</b>
         </OverlayTrigger>
       ),
@@ -455,7 +455,7 @@ export default function PhosResults() {
         color: "rgb(31,119,180)",
       },
       type: "bar",
-      name: "Normal",
+      name: "Adjacent Normal",
       hovertemplate: "%{x}: %{y} <extra></extra>",
     },
   ];
@@ -486,7 +486,8 @@ export default function PhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "<b>Normal</b>",
+          name: "<b>Adjacent Normal</b>",
+          jitter: 0.6,
           jitter: 0.6,
           marker: {
             size: 10,
@@ -497,7 +498,7 @@ export default function PhosResults() {
             : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
@@ -745,7 +746,7 @@ export default function PhosResults() {
               
               layout={{
                 ...defaultLayout,
-                title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Normal</b>`,
+                title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
                 xaxis: {
                   automargin: true,
                   autorange:true
@@ -767,7 +768,7 @@ export default function PhosResults() {
                 ...defaultConfig,
                 toImageButtonOptions: {
                   ...defaultConfig.toImageButtonOptions,
-                  filename: `Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`,
+                  filename: `Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
                 },
               }}
               style={{
@@ -786,7 +787,7 @@ export default function PhosResults() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
+              filename={`Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportSummary} name="Summary Data" />
@@ -883,7 +884,7 @@ export default function PhosResults() {
                   ...defaultConfig.toImageButtonOptions,
                   filename: `${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`,
+                  }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
                 },
               }}
               useResizeHandler
@@ -902,7 +903,7 @@ export default function PhosResults() {
             <ExcelFile
               filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
+              }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportTumorSettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportTumor} name="Tumor View Data" />
@@ -1023,7 +1024,7 @@ export default function PhosResults() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${phosView}_${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`,
+                    }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
                   },
                 }}
                 useResizeHandler
@@ -1040,7 +1041,7 @@ export default function PhosResults() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${phosView}_${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Phosphorylation_Site_Tumor_vs_Normal_Log_Fold_Change-${form.gene.label}`,
+                    }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal_Log_Fold_Change-${form.gene.label}`,
                   },
                 }}
                 layout={{
@@ -1119,7 +1120,7 @@ export default function PhosResults() {
             <ExcelFile
               filename={`${phosView}_${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
+              }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSiteSettings} name="Input Configuration" />
               <ExcelSheet dataSet={exportSite()} name="Phosphorylation Site" />
