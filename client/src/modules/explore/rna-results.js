@@ -16,12 +16,17 @@ export default function RNAResults() {
     const [rnaType, setRNAType] = useState("cptac")
     const [view, setView] = useState(form.cancer.length ? form.cancer[0].value : 0)
 
+    //console.log(form)
     const currentTumor = form.cancer.find((e) => e.value === view)
         ? view
         : form.cancer.length
             ? form.cancer[0].value
             : 0;
 
+    //console.log("currentTumor: ", currentTumor);
+
+    const hasValueID12 = form.cancer.some((item) => item.value === 12);
+    
     const rna = getResults[0].rna.records;
     const rnaSummary = getResults[0].rnaSummary.records.map((e) => {
         return ({
@@ -60,6 +65,7 @@ export default function RNAResults() {
             controlError: e.normalSampleStandardError !== null ? Number(e.normalSampleStandardError.toFixed(4)) : "NA",
         })
     });
+  
     const tcga = getResults[0].tcga.records;
     const tcgaSummary = getResults[0].tcgaSummary.records.map((e) => {
         return ({
@@ -98,12 +104,13 @@ export default function RNAResults() {
             controlError: e.normalSampleStandardError !== null ? Number(e.normalSampleStandardError.toFixed(4)) : "NA",
         })
     }); 
+
     function exportSummarySettings() {
         var settings = form.cancer.map((e) => {
             return [{ value: e.label }];
         });
         settings.forEach((s) => {
-            s.push({ value: "Protein Abundance" })
+            s.push({ value: "RNA Level" })
             s.push({ value: "Tumor vs Control" })
             s.push({ value: form.gene.label })
         });
@@ -170,10 +177,10 @@ export default function RNAResults() {
         },
         {
             accessor: "normalValue",
-            label: "Adjacent Normal Abundance",
+            label: currentTumor === 12 ?"Normal Abundance" : "Adjacent Normal Abundance",
             Header: (
-                <OverlayTrigger overlay={<Tooltip id="protein_normal_val">Adjacent Normal Abundance</Tooltip>}>
-                    <b>Adj. Normal Abundance</b>
+                <OverlayTrigger overlay={<Tooltip id="protein_normal_val">{currentTumor === 12 ? "" : "Adjacent "}Normal Abundance</Tooltip>}>
+                    {currentTumor === 12 ? <b>Normal Abundance</b> : <b>Adj. Normal Abundance</b>}
                 </OverlayTrigger>
             ),
         },
@@ -218,24 +225,24 @@ export default function RNAResults() {
         },
         {
             accessor: "controlAverage",
-            label: "Average Adjacent Normal",
+            label: hasValueID12 ? "Average Normal" : "Average Adjacent Normal",
             Header: (
-                <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>}>
-                    <b>Avg. Adj. Normal</b>
+                <OverlayTrigger overlay={<Tooltip id="protein_av_normal">{hasValueID12 ? "Average Normal" : "Average Adjacent Normal"}</Tooltip>}>
+                    {hasValueID12 ? <b>Avg. Normal</b> : <b>Avg. Adj. Normal</b>}
                 </OverlayTrigger>
             ),
         },
         {
             accessor: "proteinDiff",
-            label: "Tumor vs Adjacent Normal",
+            label: hasValueID12 ? "Tumor vs Normal": "Tumor vs Adjacent Normal",
             Header: (
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="protein_diff">
-                            Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
+                            Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs {hasValueID12 ? "Normal" : "Adjacent Normal"})
                         </Tooltip>
                     }>
-                    <b>Tumor vs Adj. Normal</b>
+                    {hasValueID12 ? <b>Tumor vs Normal</b>:<b>Tumor vs Adj. Normal</b> }
                 </OverlayTrigger>
             ),
         },
@@ -250,10 +257,10 @@ export default function RNAResults() {
         },
         {
             accessor: "controlNum",
-            label: "Adjacent Normal Count",
+            label: hasValueID12 ? "Normal Count" : "Adjacent Normal Count",
             Header: (
-                <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Adjacent Normal Sample Number</Tooltip>}>
-                    <b>Adj. Normal Count</b>
+                <OverlayTrigger overlay={<Tooltip id="protein_normal_count">{hasValueID12 ? "" : "Adjacient "}Normal Sample Number</Tooltip>}>
+                    {hasValueID12 ? <b>Normal Count</b> : <b>Adj. Normal Count</b>}
                 </OverlayTrigger>
             ),
         },
@@ -268,10 +275,10 @@ export default function RNAResults() {
         },
         {
             accessor: "controlError",
-            label: "Adjacent Normal SE",
+            label:  hasValueID12 ? "Normal SE" : "Adjacent Normal SE",
             Header: (
-                <OverlayTrigger overlay={<Tooltip id="protein_control_se">Adjacent Normal Stanadard Error</Tooltip>}>
-                    <b>Adj. Normal SE</b>
+                <OverlayTrigger overlay={<Tooltip id="protein_control_se">{hasValueID12 ? "": "Adjacent "}Normal Stanadard Error</Tooltip>}>
+                    {hasValueID12 ? <b>Normal SE</b> : <b>Adj. Normal SE</b>}
                 </OverlayTrigger>
             ),
         },
@@ -397,14 +404,14 @@ export default function RNAResults() {
                     y: records.filter((e) => Number(e.cancerId) === currentTumor).map((e) => e.normalValue),
                     type: "box",
                     boxpoints: "all",
-                    name: "<b>Adjacent Normal</b>",
+                    name: currentTumor === 12 ? "<b>Normal</b>":  "<b>Adjacent Normal</b>",
                     jitter: 0.6,
                     marker: {
                         size: 10,
                         color: "rgb(31,119,180)",
                     },
                     text: records.filter((e) => Number(e.cancerId) === currentTumor).map((e) => e.participantId),
-                    hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
+                    hovertemplate: currentTumor === 12 ?"Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>" : "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
                 },
             ]
         )
@@ -466,7 +473,7 @@ export default function RNAResults() {
                             ? form.cancer.find((e) => e.value === currentTumor).label
                             : "NA",
                     },
-                    { value: "Protein Abundance" },
+                    { value: "RNA Level" },
                     { value: "Tumor vs Control" },
                     { value: form.gene.label },
                 ],
@@ -676,7 +683,7 @@ export default function RNAResults() {
                             className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
                             id={"tumorVsControl"}
                             onClick={handleToggle}>
-                            Tumor vs Adj. Normal
+                            {currentTumor === 12 ? "Tumor vs Normal": "Tumor vs Adj. Normal"}
                         </ToggleButton>
                         <ToggleButton
                             className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
