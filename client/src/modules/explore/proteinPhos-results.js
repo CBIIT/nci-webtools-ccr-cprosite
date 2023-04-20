@@ -31,6 +31,7 @@ export default function ProteinPhosResults() {
 
   const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
 
+  const hasValueID12 = form.cancer.some((item) => item.value === 12);
   const results = useRecoilValue(resultsState);
   const currentTumor = form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value;
 
@@ -179,10 +180,10 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Adjacent Normal Count",
+      label: hasValueID12 ? "Normal Count":  "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="tumor_type">{hasValueID12 ? "" : "Adjacent "}Normal Sample Number</Tooltip>}>
+          {hasValueID12 ? <b>Normal Count</b> : <b>Adj. Normal Count</b>}
         </OverlayTrigger>
       ),
     },
@@ -210,10 +211,10 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlValue",
-      label: "Adjacent Normal Value",
+      label: currentTumor === 12 ? "Normal Value" :"Adjacent Normal Value",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_val">Adjacent Normal Value</Tooltip>}>
-          <b>Adj. Normal Value</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_val">{currentTumor === 12 ? "" : "Adjacent "}Normal Value</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal Value</b> :<b>Adj. Normal Value</b> }
         </OverlayTrigger>
       ),
     },
@@ -262,10 +263,10 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Adjacent Normal",
+      label:  currentTumor === 12 ? "Average Normal" : "Average Adjacent Normal",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>}>
-          <b>Avg. Adj. Normal</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average {currentTumor === 12 ? "" : "Adjacent "}Normal</Tooltip>}>
+          {currentTumor === 12 ? <b>Avg. Normal</b> : <b>Avg. Adj. Normal</b>}
         </OverlayTrigger>
       ),
     },
@@ -296,10 +297,10 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Adjacent Normal Count",
+      label: currentTumor === 12 ? "Normal Count" : "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_count">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_count">{currentTumor === 12 ? "" : "Adjacent "}Normal Sample Number</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal Count</b> :<b>Adj. Normal Count</b>}
         </OverlayTrigger>
       ),
     },
@@ -503,8 +504,7 @@ export default function ProteinPhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "<b>Adjacent Normal</b>",
-          jitter: 0.6,
+          name: currentTumor === 12 ?  "<b>Normal</b>" : "<b>Adjacent Normal</b>",
           jitter: 0.6,
           marker: {
             size: 10,
@@ -515,7 +515,7 @@ export default function ProteinPhosResults() {
             : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: currentTumor === 12 ? "Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>" :  "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
@@ -832,7 +832,7 @@ export default function ProteinPhosResults() {
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Adj. Normal
+              {currentTumor === 12 ? "Tumor vs Normal" : "Tumor vs Adj. Normal"}
             </ToggleButton>
             <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
@@ -967,7 +967,7 @@ export default function ProteinPhosResults() {
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Adj. Normal
+              {currentTumor === 12 ? "Tumor vs Normal" : "Tumor vs Adj. Normal"}
             </ToggleButton>
             <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
