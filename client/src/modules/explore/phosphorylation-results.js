@@ -33,6 +33,8 @@ export default function PhosResults() {
 
   const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
 
+  const hasValueID12 = form.cancer.some((item) => item.value === 12);
+
   const sortResults = Object.entries(_.groupBy(results[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
@@ -75,7 +77,6 @@ export default function PhosResults() {
 
   function summaryViewData() {
     var rows = [];
-    //console.log(tumors);
     sortSummary.map((c) => {
       c[1].map((e) => {
         const currentTumor = tumors.find((f) => f.value === e.cancerId);
@@ -210,10 +211,10 @@ export default function PhosResults() {
     },
     {
       accessor: "controlValue",
-      label: "Adjacent Normal Abundance",
+      label: currentTumor === 12 ? " Normal Abundance": "Adjacent Normal Abundance",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_val">Adjacent Normal Abundance</Tooltip>}>
-          <b>Adj. Normal Abundance</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_val">{currentTumor === 12 ? "" : "Adjacent "}Normal Abundance</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal Abundance</b> : <b>Adj. Normal Abundance</b>}
         </OverlayTrigger>
       ),
       sortType: (a, b) => {
@@ -302,10 +303,10 @@ export default function PhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Adjacent Normal Count",
+      label: hasValueID12 ? "Normal Count":  "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="tumor_type">{hasValueID12 ? "" : "Adjacent "}Normal Sample Number</Tooltip>}>
+          {hasValueID12 ? <b>Normal Count</b> : <b>Adj. Normal Count</b>}
         </OverlayTrigger>
       ),
     },
@@ -346,10 +347,10 @@ export default function PhosResults() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Adjacent Normal",
+      label: currentTumor === 12 ? "Average Normal" : "Average Adjacent Normal",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>}>
-          <b>Avg. Adj. Normal</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average {currentTumor === 12 ? "" : "Adjacent "}Normal</Tooltip>}>
+          {currentTumor === 12 ? <b>Avg. Normal</b> : <b>Avg. Adj. Normal</b>}
         </OverlayTrigger>
       ),
     },
@@ -380,10 +381,10 @@ export default function PhosResults() {
     },
     {
       accessor: "controlNum",
-      label: "Adjacent Normal Count",
+      label: currentTumor === 12 ? "Normal Count" : "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_count">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_count">{currentTumor === 12 ? "" : "Adjacent "}Normal Sample Number</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal Count</b> :<b>Adj. Normal Count</b>}
         </OverlayTrigger>
       ),
     },
@@ -398,10 +399,10 @@ export default function PhosResults() {
     },
     {
       accessor: "controlError",
-      label: "Adjacent Normal Standard Error",
+      label: currentTumor === 12 ? "Normal Standard Error" :"Adjacent Normal Standard Error",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_se">Adjacent Normal Standard Error</Tooltip>}>
-          <b>Adj. Normal SE</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_se">{currentTumor === 12 ? "" : "Adjacent "}Normal Standard Error</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal SE</b> :<b>Adj. Normal SE</b>}
         </OverlayTrigger>
       ),
     },
@@ -486,8 +487,7 @@ export default function PhosResults() {
             : [],
           type: "box",
           boxpoints: "all",
-          name: "<b>Adjacent Normal</b>",
-          jitter: 0.6,
+          name: currentTumor === 12 ? "<b>Normal</b>" :"<b>Adjacent Normal</b>",
           jitter: 0.6,
           marker: {
             size: 10,
@@ -498,7 +498,7 @@ export default function PhosResults() {
             : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: currentTumor === 12 ? "Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>" :  "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
@@ -820,7 +820,7 @@ export default function PhosResults() {
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Adj. Normal
+              {currentTumor === 12 ? "Tumor vs Normal" : "Tumor vs Adj. Normal"}
             </ToggleButton>
             <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
@@ -959,7 +959,7 @@ export default function PhosResults() {
               className={plotTab === "tumorVsControl" ? "btn-primary" : "btn-secondary"}
               id={"tumorVsControl"}
               onClick={handleToggle}>
-              Tumor vs Adj. Normal
+              {currentTumor === 12 ? "Tumor vs Normal" : "Tumor vs Adj. Normal"}
             </ToggleButton>
             <ToggleButton
               className={plotTab === "foldChange" ? "btn-primary" : "btn-secondary"}
