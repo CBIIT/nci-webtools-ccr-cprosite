@@ -482,7 +482,7 @@ export default function RNAResults() {
                         return { title: e.label, width: { wpx: 160 } };
                     }),
                     data:
-                        records.filter((e) => Number(e) === currentTumor)
+                        records.filter((e) => Number(e.cancerId) === currentTumor)              
                             .map((c) => {
                                 return [
                                     { value: c.participantId },
