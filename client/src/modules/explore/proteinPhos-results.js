@@ -315,10 +315,10 @@ export default function ProteinPhosResults() {
     },
     {
       accessor: "controlError",
-      label: "Adjacent Normal Standard Error",
+      label: currentTumor === 12 ? "Normal Standard Error" :"Adjacent Normal Standard Error",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="phos_control_se">Adjacent Normal Standard Error</Tooltip>}>
-          <b>Adj. Normal SE</b>
+        <OverlayTrigger overlay={<Tooltip id="phos_control_se">{currentTumor === 12 ? "" : "Adjacent "}Normal Standard Error</Tooltip>}>
+          {currentTumor === 12 ? <b>Normal SE</b> : <b>Adj. Normal SE</b>}
         </OverlayTrigger>
       ),
     },
