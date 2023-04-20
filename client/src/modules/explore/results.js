@@ -32,19 +32,22 @@ export default function Results() {
   const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
-  console.log(form)
-  console.log("results: ", results)
-  console.log("getResults: ",getResults)
+  // console.log(form)
+  // console.log("results: ", results)
+  // console.log("getResults: ", getResults)
+  
+  const hasElementWith12 = results.some(([value]) => value === "12");
+
   const [view, setView] = useState(form.cancer[0].value);
 
-  console.log("view", view);
+  //console.log("view", view);
   
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
     : results.length
     ? Number(results[0][0])
     : form.cancer[0].value;
-  console.log("currentTumor: ", currentTumor);
+  //console.log("currentTumor: ", currentTumor);
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -115,24 +118,24 @@ export default function Results() {
     },
     {
       accessor: "controlAverage",
-      label: "Average Normal",
+      label: hasElementWith12 ? "Average Normal": "Average Adjacent Normal",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Normal</Tooltip>}>
-          <b>Avg. Normal</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_av_normal">{hasElementWith12 ? "Average Normal" : "Average Adjacent Normal"}</Tooltip>}>
+           {hasElementWith12 ? <b>Avg. Normal</b> : <b>Avg. Adj. Normal</b>}
         </OverlayTrigger>
       ),
     },
     {
       accessor: "proteinDiff",
-      label: "Tumor vs Normal",
+      label: hasElementWith12 ? "Tumor vs Normal": "Tumor vs Adjacent Normal",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_diff">
-              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Normal)
+              Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs {hasElementWith12 ? "Normal" : "Adjacent Normal"})
             </Tooltip>
           }>
-          <b>Tumor vs Normal</b>
+          {hasElementWith12 ? <b>Tumor vs Normal</b>:<b>Tumor vs Adj. Normal</b> }
         </OverlayTrigger>
       ),
     },
@@ -147,10 +150,10 @@ export default function Results() {
     },
     {
       accessor: "controlNum",
-      label: "Normal Count",
+      label: hasElementWith12 ? "Normal Count" : "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Normal Sample Number</Tooltip>}>
-          <b>Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_normal_count">{hasElementWith12 ? "" : "Adjacient "}Normal Sample Number</Tooltip>}>
+          {hasElementWith12 ? <b>Normal Count</b> : <b>Adj. Normal Count</b>}
         </OverlayTrigger>
       ),
     },
@@ -165,10 +168,10 @@ export default function Results() {
     },
     {
       accessor: "controlError",
-      label: "Normal SE",
+      label: hasElementWith12 ? "Normal SE" : "Adjacent Normal SE",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_control_se">Normal Stanadard Error</Tooltip>}>
-          <b>Normal SE</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_control_se">{hasElementWith12 ? "": "Adjacent " }Normal Stanadard Error</Tooltip>}>
+          {hasElementWith12 ? <b>Normal SE</b> : <b>Adj. Normal SE</b>}
         </OverlayTrigger>
       ),
     },
