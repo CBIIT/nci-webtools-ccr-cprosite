@@ -182,7 +182,7 @@ export default function ProteinPhosResults() {
       label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="tumor_type">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Normal Count</b>
+          <b>Adj. Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -213,7 +213,7 @@ export default function ProteinPhosResults() {
       label: "Adjacent Normal Value",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_control_val">Adjacent Normal Value</Tooltip>}>
-          <b>Normal Value</b>
+          <b>Adj. Normal Value</b>
         </OverlayTrigger>
       ),
     },
@@ -265,7 +265,7 @@ export default function ProteinPhosResults() {
       label: "Average Adjacent Normal",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_av_control">Average Adjacent Normal</Tooltip>}>
-          <b>Avg. Normal</b>
+          <b>Avg. Adj. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -299,7 +299,7 @@ export default function ProteinPhosResults() {
       label: "Adjacent Normal Count",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_control_count">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Normal Count</b>
+          <b>Adj. Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -317,7 +317,7 @@ export default function ProteinPhosResults() {
       label: "Adjacent Normal Standard Error",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="phos_control_se">Adjacent Normal Standard Error</Tooltip>}>
-          <b>Normal SE</b>
+          <b>Adj. Normal SE</b>
         </OverlayTrigger>
       ),
     },
@@ -515,7 +515,7 @@ export default function ProteinPhosResults() {
             : [],
           hovertext: ["1", "2"],
           hoverinfo: "x+y",
-          hovertemplate: "Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>",
+          hovertemplate: "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
         },
       ];
     }
