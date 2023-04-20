@@ -115,7 +115,7 @@ export default function Results() {
       label: "Average Normal",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="protein_av_normal">Average Adjacent Normal</Tooltip>}>
-          <b>Avg. Normal</b>
+          <b>Avg. Adj. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -129,7 +129,7 @@ export default function Results() {
               Average Protein Abundance Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
             </Tooltip>
           }>
-          <b>Tumor vs Normal</b>
+          <b>Tumor vs Adj. Normal</b>
         </OverlayTrigger>
       ),
     },
@@ -147,7 +147,7 @@ export default function Results() {
       label: "Normal Count",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="protein_normal_count">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Normal Count</b>
+          <b>Adj. Normal Count</b>
         </OverlayTrigger>
       ),
     },
@@ -165,7 +165,7 @@ export default function Results() {
       label: "Normal SE",
       Header: (
         <OverlayTrigger overlay={<Tooltip id="protein_control_se">Adjacent Normal Stanadard Error</Tooltip>}>
-          <b>Normal SE</b>
+          <b>Adj. Normal SE</b>
         </OverlayTrigger>
       ),
     },
