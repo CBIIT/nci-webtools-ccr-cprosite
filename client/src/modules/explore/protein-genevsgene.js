@@ -31,6 +31,7 @@ export default function ProteinGeneCorrelation() {
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer.map((e) => e.value));
 
+
   //if (view.length>1) setView(tumors)
   //have to update the view value if form value changes
   //useEffect(()=>{setView(tumors);console.log("this view in effect",view)},[])
@@ -59,6 +60,7 @@ export default function ProteinGeneCorrelation() {
     ? siteTumor.value
     : form.cancer[0].value;
 
+  
   const currentLabel =
     currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
   // form.dataset.label === "Relative Protein Abundance" && (tumors.length > 1 && label === "All Selected Tumor Type")
@@ -66,7 +68,16 @@ export default function ProteinGeneCorrelation() {
   //   : form.cancer.find((e) => e.value === siteTumor.value)
   //   ? label
   //   : form.cancer[0].label;
-  //console.log(label,currentLabel,tumors)    
+  //console.log(label,currentLabel,tumors)
+
+  
+  let hasValueID12; 
+  if ((form.dataset.value === "proteinData" && currentTumor.includes(12)) || (form.dataset.value === "phosphoproteinData" && currentSiteTumor == 12) || (form.dataset.value ==="phosphoproteinRatioData" && currentSiteTumor == 12)) {
+    hasValueID12 = true;
+    console.log("YES")
+    console.log( form.dataset.value + " - HAS 12")
+  } else { hasValueID12 = false; console.log("NO"); console.log(form.dataset.value +  " - DONT HAVE 12")}
+
   var firstGeneSet = results[0].participants.records.filter((e) => tumors.includes(e.cancerId));
 
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
@@ -207,52 +218,58 @@ export default function ProteinGeneCorrelation() {
     },
     {
       accessor: "firstControl",
-      label: `${firstGene} Adjacent Normal Log2`,
+      label: hasValueID12 ? `${firstGene} Adjacent Normal Log2` : `${firstGene} Normal Log2` ,
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="first_correlation_control_log2">
-              ${firstGene} Adjacent Normal Log<sub>2</sub>
+              ${firstGene} {hasValueID12 ? "" : "Adjacent"} Normal Log<sub>2</sub>
             </Tooltip>
           }>
-          <b>
-            {firstGene} Adj. Normal Log<sub>2</sub>
-          </b>
+          {hasValueID12 ?
+            <b>
+              {firstGene} Normal Log<sub>2</sub>
+            </b> : <b>
+              {firstGene} Adj. Normal Log<sub>2</sub>
+            </b>
+          }
         </OverlayTrigger>
       ),
     },
     {
       accessor: "firstControlNum",
-      label: `${firstGene} Adjacent Normal Abundance`,
+      label: hasValueID12 ? `${firstGene} Normal Abundance` :`${firstGene} Adjacent Normal Abundance`,
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_correlation_control_num">{firstGene} Adjacent Normal Abundance</Tooltip>}>
-          <b>{firstGene} Adj. Normal Abundance</b>
+          overlay={<Tooltip id="protein_correlation_control_num">{firstGene} {hasValueID12 ? "" : "Adjacent"} Normal Abundance</Tooltip>}>
+          {hasValueID12 ? <b>{firstGene} Normal Abundance</b> : <b>{firstGene} Adj. Normal Abundance</b>}
         </OverlayTrigger>
       ),
     },
     {
       accessor: "secondControl",
-      label: `${secondGene} Adjacent Normal Log2`,
+      label: hasValueID12 ? `${secondGene} Normal Log2` :`${secondGene} Adjacent Normal Log2`,
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="second_control_log2">
-              {secondGene} Adjacent Normal Log<sub>2</sub>
+              {secondGene} {hasValueID12 ? "" : "Adjacent"} Normal Log<sub>2</sub>
             </Tooltip>
-          }>
-          <b>
-            {secondGene} Adj. Normal Log<sub>2</sub>
-          </b>
+          }>{hasValueID12 ?
+            <b>
+              {secondGene} Normal Log<sub>2</sub>
+            </b> : <b>
+              {secondGene} Adj. Normal Log<sub>2</sub>
+            </b>}
         </OverlayTrigger>
       ),
     },
     {
       accessor: "secondControlNum",
-      label: `${secondGene} Adjacent Normal Abundance`,
+      label: hasValueID12 ? `${secondGene} Normal Abundance` : `${secondGene} Adjacent Normal Abundance`,
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="second_control_num">{secondGene} Adjacent Normal Abundance</Tooltip>}>
-          <b>{secondGene} Adj. Normal Abundance</b>
+        <OverlayTrigger overlay={<Tooltip id="second_control_num">{secondGene} {hasValueID12 ? "" : "Adjacent"} Normal Abundance</Tooltip>}>
+          {hasValueID12 ? <b>{secondGene} Normal Abundance</b> : <b>{secondGene} Adj. Normal Abundance</b>}
         </OverlayTrigger>
       ),
     },
@@ -302,10 +319,10 @@ export default function ProteinGeneCorrelation() {
     },
     {
       accessor: "normalSampleCount",
-      label: "Adjacent Normal Count",
+      label: hasValueID12 ? "Normal Count" : "Adjacent Normal Count",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="site_correlation_peptide">Adjacent Normal Sample Number</Tooltip>}>
-          <b>Adj. Normal Count</b>
+        <OverlayTrigger overlay={<Tooltip id="site_correlation_peptide">{hasValueID12 ? "" : "Adjacent "}Normal Sample Number</Tooltip>}>
+          {hasValueID12 ? <b>Normal Count</b>: <b>Adj. Normal Count</b>}
         </OverlayTrigger>
       ),
     },
@@ -490,7 +507,7 @@ export default function ProteinGeneCorrelation() {
       },
       mode: "markers",
       type: "scatter",
-      name: "Adjacent Normal",
+      name: hasValueID12 ? "Normal" : "Adjacent Normal",
       text: proteinGeneCorrelation.map((e) => e.name),
       customdata: proteinGeneCorrelation.map((e) => e.cancer),
       hovertemplate:
@@ -530,7 +547,7 @@ export default function ProteinGeneCorrelation() {
       },
       mode: "markers",
       type: "scatter",
-      name: "Adjacent Normal",
+      name: hasValueID12 ? "Normal" : "Adjacent Normal",
       text: siteData.map((e) => e.name),
       customdata: siteData.map((e) => e.cancer),
       hovertemplate:
@@ -764,7 +781,7 @@ export default function ProteinGeneCorrelation() {
                   : "NA"}
               </div>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Adj. Normal Correlation:{" "}
+              {hasValueID12 ? "Normal Correlation: " : "Adj. Normal Correlation: "}
                 {proteinGeneCorrelation.length
                   ? calculateCorrelation(
                     proteinGeneCorrelation.map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
@@ -1071,7 +1088,7 @@ export default function ProteinGeneCorrelation() {
                   : "NA"}
               </div>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Adj. Normal Correlation:{" "}
+              {hasValueID12 ? "Normal Correlation: " : "Adj. Normal Correlation: "}
                 {unfilteredSiteData.filter(
                   (f) =>
                     f.firstControl !== "NA" &&

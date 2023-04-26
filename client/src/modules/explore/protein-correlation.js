@@ -25,12 +25,14 @@ export default function ProteinCorrelation() {
   const [view, setView] = useState(form.cancer.map((e) => e.value));
   const [label, setLabel] = useState(form.cancer[0].label);
   const currentTumor = form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
-
+  const hasValueID12 = form.cancer.some((item) => item.value == 12);
   const proteinData = results[0].participants.records.filter((e) => currentTumor.includes(e.cancerId));
   const rnaData = results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId));
   const currentLabel =
     currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
 
+  
+  console.log("currentTumor",currentTumor);
   const datasetName =
     form.dataset.label === "Protein Abundance"
       ? "Protein_Abundance"
@@ -120,53 +122,53 @@ export default function ProteinCorrelation() {
 
     {
       accessor: "proteinControl",
-      label: "Protein Adjacent Normal Log2",
+      label:currentTumor.includes(12) ? "Protein Normal Log2" :"Protein Adjacent Normal Log2",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_correlation_control_log2">
-              Protein Adjacent Normal Log<sub>2</sub>
+              Protein {currentTumor.includes(12) ? "" : "Adjacent"} Normal Log<sub>2</sub>
             </Tooltip>
           }>
-          <b>
-            Protein Adj. Normal Log<sub>2</sub>
-          </b>
+          {currentTumor.includes(12) ? <b> Protein Normal Log<sub>2</sub></b> : <b> Protein Adj. Normal Log<sub>2</sub></b>}
         </OverlayTrigger>
       ),
     },
     {
       accessor: "proteinControlNum",
-      label: "Protein Adjacent Normal Abundance",
+      label: currentTumor.includes(12) ? "Protein Normal Abundance" :"Protein Adjacent Normal Abundance",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_correlation_control_num">Protein Adjacent Normal Abundance</Tooltip>}>
-          <b>Protein Adj. Normal Abundance</b>
+          overlay={<Tooltip id="protein_correlation_control_num">Protein {currentTumor.includes(12) ? "" : "Adjacent"}  Normal Abundance</Tooltip>}>
+          {currentTumor.includes(12) ? <b>Protein Normal Abundance</b> : <b>Protein Adj. Normal Abundance</b> }
         </OverlayTrigger>
       ),
     },
 
     {
       accessor: "rnaControlNum",
-      label: "RNA Adjacent Normal Abundance",
+      label: currentTumor.includes(12) ? "RNA Normal Abundance" :"RNA Adjacent Normal Abundance",
       Header: (
-        <OverlayTrigger overlay={<Tooltip id="protein_rna_contro_num">RNA Adjacent Normal Abundance</Tooltip>}>
-          <b>RNA Adj. Normal Abundance</b>
+        <OverlayTrigger overlay={<Tooltip id="protein_rna_contro_num">RNA {currentTumor.includes(12) ? "" : "Adjacent"} Normal Abundance</Tooltip>}>
+          {currentTumor.includes(12) ? <b>RNA Normal Abundance</b> : <b>RNA Adj. Normal Abundance</b>}
         </OverlayTrigger>
       ),
     },
     {
       accessor: "rnaControl",
-      label: "RNA Adjacent Normal Log2",
+      label: currentTumor.includes(12) ? "RNA Normal Log2" :"RNA Adjacent Normal Log2",
       Header: (
         <OverlayTrigger
           overlay={
             <Tooltip id="protein_rna_contro_log2">
-              RNA Adjacent Normal Log<sub>2</sub>
+              RNA {currentTumor.includes(12) ? "" : "Adjacent"}  Normal Log<sub>2</sub>
             </Tooltip>
-          }>
-          <b>
-            RNA Adj. Normal Log<sub>2</sub>
-          </b>
+          }>{currentTumor.includes(12) ?
+            <b>
+              RNA Normal Log<sub>2</sub>
+            </b> : <b>
+              RNA Adj. Normal Log<sub>2</sub>
+            </b>}
         </OverlayTrigger>
       ),
     },
@@ -327,14 +329,14 @@ export default function ProteinCorrelation() {
       },
       mode: "markers",
       type: "scatter",
-      name: "Adjacent Normal",
+      name: currentTumor.includes(12) ? "Normal" : "Adjacent Normal",
       text: proteinRNA.map((e) => e.name),
       customdata: proteinRNA.map((e) => e.cancer),
       hovertemplate: `Tumor Type: %{customdata}<br>`+ `Patient ID: %{text}<br>Protein Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>RNA Control ${numType === "log2" ? "Log2" : "Abundance"
         }: %{y}<extra></extra>`,
     },
   ];
-  { console.log(results) }
+  // { console.log(results) }
   return (
     <div>
       <Form.Group className="row mx-3 m-3 " controlId="tumorView">
@@ -413,7 +415,7 @@ export default function ProteinCorrelation() {
               : "NA"}
           </div>
           <div className="col-xl-4 my-2 d-flex justify-content-center">
-            Adj. Normal Correlation:{" "}
+            {currentTumor.includes(12) ? "Normal Correlation: " : "Adj. Normal Correlation: "}
             {proteinRNA.filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA").length
               ? calculateCorrelation(
                 proteinRNA

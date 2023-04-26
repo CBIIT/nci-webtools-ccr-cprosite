@@ -21,7 +21,7 @@ export default function MRNACorrelation() {
     const [numType, setNumType] = useState("log2");
     const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) : form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
     const currentLabel = currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
-   
+
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
     var secondGeneSet = rnaType === "cptac" ? results[1].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[1].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
 
@@ -91,7 +91,7 @@ export default function MRNACorrelation() {
             },
             mode: "markers",
             type: "scatter",
-            name: "Adjacent Normal",
+            name: currentTumor.includes(12) ? "Normal" : "Adjacent Normal",
             text: correlatedParticipantsControl.map((e) => e.name),
             customdata: correlatedParticipantsControl.map((e) => e.cancer),
             hovertemplate:
@@ -174,52 +174,56 @@ export default function MRNACorrelation() {
         },
         {
             accessor: "firstControl",
-            label: `${firstGene} Adjacent Normal`,
+            label: currentTumor.includes(12) ? `${firstGene} Normal` : `${firstGene} Adjacent Normal`,
             Header: (
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="first_control">
-                            {firstGene} Adjacent Normal Log<sub>2</sub>
+                            {firstGene} {currentTumor.includes(12) ? "" : "Adjacent "}Normal Log<sub>2</sub>
                         </Tooltip>
-                    }>
-                    <b>
-                        {firstGene} Adj. Normal Log<sub>2</sub>
-                    </b>
+                    }>{currentTumor.includes(12) ?
+                        <b>
+                            {firstGene} Normal Log<sub>2</sub>
+                        </b> : <b>
+                            {firstGene} Adj. Normal Log<sub>2</sub>
+                        </b>}
                 </OverlayTrigger>
             ),
         },
         {
             accessor: "firstControlNum",
-            label: `${firstGene} Adjacent Normal Abundance`,
+            label: currentTumor.includes(12) ? `${firstGene} Normal Abundance` : `${firstGene} Adjacent Normal Abundance`,
             Header: (
                 <OverlayTrigger
-                    overlay={<Tooltip id="protein_correlation_control_num">{firstGene} Adjacent Normal Abundance</Tooltip>}>
-                    <b>{firstGene} Adj. Normal Abundance</b>
+                    overlay={<Tooltip id="protein_correlation_control_num">{firstGene} {currentTumor.includes(12) ? "" : "Adjacent "}Normal Abundance</Tooltip>}>
+                    {currentTumor.includes(12) ? <b>{firstGene} Normal Abundance</b> : <b>{firstGene} Adj. Normal Abundance</b>}
                 </OverlayTrigger>
             ),
         },
         {
             accessor: "secondControl",
-            label: `${secondGene} Adjacent Normal`,
+            label: currentTumor.includes(12) ?  `${secondGene} Normal` : `${secondGene} Adjacent Normal`,
             Header: (
                 <OverlayTrigger
                     overlay={
                         <Tooltip id="second_control">
-                            {secondGene} Adjacent Normal Log<sub>2</sub>
+                            {secondGene} {currentTumor.includes(12) ? "" : "Adjacent "}Normal Log<sub>2</sub>
                         </Tooltip>
-                    }>
-                    <b>
-                        {secondGene} Adj. Normal Log<sub>2</sub>
-                    </b>
+                    }>{currentTumor.includes(12) ?
+                        <b>
+                            {secondGene} Normal Log<sub>2</sub>
+                        </b> : <b>
+                            {secondGene} Adj. Normal Log<sub>2</sub>
+                        </b>}
                 </OverlayTrigger>
             ),
         },
         {
             accessor: "secondControlNum",
-            label: `${secondGene} Adjacent Normal Abundance`,
+            label: currentTumor.includes(12) ? `${secondGene} Normal Abundance` : `${secondGene} Adjacent Normal Abundance`,
             Header: (
-                <OverlayTrigger overlay={<Tooltip id="second_control_num">{secondGene} Adjacent Normal Abundance</Tooltip>}>
-                    <b>{secondGene} Adj. Normal Abundance</b>
+                <OverlayTrigger overlay={<Tooltip id="second_control_num">{secondGene} {currentTumor.includes(12) ? "" : "Adjacent "}Normal Abundance</Tooltip>}>
+                    {currentTumor.includes(12) ? <b>{secondGene} Normal Abundance</b> : <b>{secondGene} Adj. Normal Abundance</b>}
                 </OverlayTrigger>
             ),
         },
@@ -432,7 +436,7 @@ export default function MRNACorrelation() {
                                     : "NA"}
                             </div>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
-                                Adj. Normal Correlation:{" "}
+                            {currentTumor.includes(12) ? "Normal Correlation: " : "Adj. Normal Correlation: "}
                                 {correlatedParticipants.filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA").length
                                     ? calculateCorrelation(
                                         correlatedParticipants
