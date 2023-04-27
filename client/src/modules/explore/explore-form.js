@@ -11,7 +11,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 
 export default function ExploreForm({ onSubmit, onReset }) {
   const cancer = useRecoilValue(cancerState);
-  const [form, setForm] = useState(defaultFormState);
+  // const [form, setForm] = useState(defaultFormState);
 
   const mergeForm = (obj) => setForm({ ...form, ...obj });
 
@@ -23,7 +23,21 @@ export default function ExploreForm({ onSubmit, onReset }) {
     return { value: e.id, label: e.name, singlePool: e.singlePool };
   }));
 
-
+  const defaultForm = {
+    openSidebar: true,
+    // cancer: [{ value: 6, label: "Lung Adenocarcinoma" }],
+    cancer: cancer.records.map((e) => {
+      return { value: e.id, label: e.name, singlePool: e.singlePool };
+    }),
+    gene: { value: 1722, label: "CDK1" },
+    analysis: { value: "tumor-control", label: "Analysis Tumor vs Normal Tissue" },
+    dataset: { value: "proteinData", label: "Relative Protein Abundance" },
+    correlation: "toAnotherProtein",
+    correlatedGene: "",
+    submitted: false,
+  };
+  
+  const [form, setForm] = useState(defaultForm);
   function handleChange(event) {
     const { name, value } = event.target;
     // todo: validate selected gene
@@ -45,8 +59,10 @@ export default function ExploreForm({ onSubmit, onReset }) {
 
   function handleReset(event) {
     event.preventDefault();
-    setForm(defaultFormState);
-    if (onReset) onReset(defaultFormState);
+    // setForm(defaultFormState);
+    // if (onReset) onReset(defaultFormState);
+    setForm(defaultForm);
+    if (onReset) onReset(defaultForm);
   }
 
   function handleSelectChange(name, selection = []) {
