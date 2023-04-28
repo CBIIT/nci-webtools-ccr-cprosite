@@ -24,7 +24,7 @@ export default function MRNACorrelation() {
 
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
     var secondGeneSet = rnaType === "cptac" ? results[1].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[1].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
-    console.log("form",form)
+   
     const participantDataall = firstGeneSet.map((first) => {
         const second = secondGeneSet.find((e) => {
             return first.participantId === e.participantId
