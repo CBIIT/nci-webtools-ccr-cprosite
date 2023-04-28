@@ -839,7 +839,7 @@ export default function RNAResults() {
                                     element={<a href="javascript:void(0)">Export Data</a>}>
 
                                     <ExcelSheet dataSet={exportAbundanceSettings} name="Input Configuration" />
-                                    <ExcelSheet dataSet={exportAbundance(rna)} name="Protein Abundance Data" />
+                                    <ExcelSheet dataSet={exportAbundance(rna)} name="RNA Abundance Data" />
                                 </ExcelFile>
                             </div>
 
@@ -1011,7 +1011,7 @@ export default function RNAResults() {
                                     element={<a href="javascript:void(0)">Export Data</a>}>
 
                                     <ExcelSheet dataSet={exportAbundanceSettings} name="Input Configuration" />
-                                    <ExcelSheet dataSet={exportAbundance(tcga)} name="Protein Abundance Data" />
+                                    <ExcelSheet dataSet={exportAbundance(tcga)} name="RNA Abundance Data" />
                                 </ExcelFile>
                             </div>
 
