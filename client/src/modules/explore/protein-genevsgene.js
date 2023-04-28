@@ -47,13 +47,13 @@ export default function ProteinGeneCorrelation() {
   const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
 
   const datasetName =
-    form.dataset.label === "Protein Abundance"
-      ? "Protein_Abundance"
-      : form.dataset.label === "Phosphorylation Site"
-        ? "Phosphorylation_Site"
-        : "Phosphorylation_Protein";
+  form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
+  form.dataset.label === "RNA Level" ? "RNA_Protein" :
+  form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+  "Phosphorylation_Protein";
 
-          
+  
+
   //adjust label if it is brain, since the dropdown will not contains brain
   //view.length>1? setView(tumors):''
   const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) : form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
@@ -1193,8 +1193,8 @@ export default function ProteinGeneCorrelation() {
             <div className="row">
               <div className="col d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
-                  //filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
-                  filename={fileName}
+                  filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
+                  //filename={fileName}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
                   <ExcelSheet dataSet={exportSiteData()} name="Site Data" />

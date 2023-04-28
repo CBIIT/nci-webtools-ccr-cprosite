@@ -34,13 +34,12 @@ export default function ProteinCorrelation() {
   console.log("form",form)
 
   const datasetName =
-    form.dataset.label === "Protein Abundance"
-      ? "Protein_Abundance"
-      : form.dataset.label === "Phosphorylation Site"
-        ? "Phosphorylation_Site"
-        : "Phosphorylation_Protein";
+  form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
+  form.dataset.label === "RNA Level" ? "RNA_Protein" :
+  form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+  "Phosphorylation_Protein";
 
-  
+
   let fileName = "";
   if (currentLabel !== "") {
     fileName =  currentLabel + "_" + datasetName + "_Correlation-" + form.gene.label;
@@ -462,8 +461,8 @@ export default function ProteinCorrelation() {
       <div className="m-3">
         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
           <ExcelFile
-            //filename={`${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}`}
-            filename={fileName}
+            filename={`${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}`}
+            //filename={fileName}
             element={<a href="javascript:void(0)">Export Data</a>}>
             <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
             <ExcelSheet dataSet={exportSummary} name="Summary Data" />

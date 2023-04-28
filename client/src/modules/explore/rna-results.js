@@ -16,7 +16,7 @@ export default function RNAResults() {
     const [rnaType, setRNAType] = useState("cptac")
     const [view, setView] = useState(form.cancer.length ? form.cancer[0].value : 0)
 
-    //console.log(form)
+    console.log(form)
     const currentTumor = form.cancer.find((e) => e.value === view)
         ? view
         : form.cancer.length
