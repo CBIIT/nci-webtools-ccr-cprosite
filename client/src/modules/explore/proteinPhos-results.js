@@ -822,7 +822,7 @@ export default function ProteinPhosResults() {
             controlid="phosphySiteProteinPhosDropdown"/>
           :''}
             </Col>
-            <ToggleButtonGroup
+            {/* <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={plotTab}
@@ -840,7 +840,7 @@ export default function ProteinPhosResults() {
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
             </ToggleButton>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
           </Row>
         </Form.Group>
 

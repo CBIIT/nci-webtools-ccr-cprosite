@@ -229,7 +229,7 @@ export default function PhosResults() {
       label: "Log2 Fold Change",
       Header: (
         <OverlayTrigger
-          overlay={<Tooltip id="protein_diff">Difference between Tumor and Adjacent Normal Abundance</Tooltip>}>
+          overlay={<Tooltip id="protein_diff">Difference between Tumor and {currentTumor === 12 ? "" : "Adjacent "}Normal Abundance</Tooltip>}>
           <b>
             Log<sub>2</sub> Fold Change
           </b>
@@ -283,7 +283,7 @@ export default function PhosResults() {
         <OverlayTrigger
           overlay={
             <Tooltip id="tumor_type">
-              Average Protein Phosphorylation Level Difference (log<sub>2</sub> ratio between Tumor vs Adjacent Normal)
+              Average Protein Phosphorylation Level Difference (log<sub>2</sub> ratio between Tumor vs {currentTumor === 12 ? "" : "Adjacent "}Normal)
             </Tooltip>
           }>
           <b>
@@ -746,7 +746,7 @@ export default function PhosResults() {
               
               layout={{
                 ...defaultLayout,
-                title: `<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
+                title: hasValueID12 ? `<b>${form.gene.label} Phosphorylation Site Tumor vs Normal</b>`:`<b>${form.gene.label} Phosphorylation Site Tumor vs Adjacent Normal</b>`,
                 xaxis: {
                   automargin: true,
                   autorange:true
@@ -810,7 +810,7 @@ export default function PhosResults() {
             controlid="PhosphSiteDropdown"/>
           :''}
           </Col>
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             type="radio"
             name="plot-tab"
             value={plotTab}
@@ -828,7 +828,7 @@ export default function PhosResults() {
               onClick={handleToggle}>
               Log<sub>2</sub> Fold Change
             </ToggleButton>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
         </Row>
 
         <Row className="m-3">
