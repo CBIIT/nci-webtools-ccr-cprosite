@@ -53,6 +53,7 @@ export default function ProteinGeneCorrelation() {
         ? "Phosphorylation_Site"
         : "Phosphorylation_Protein";
 
+          
   //adjust label if it is brain, since the dropdown will not contains brain
   //view.length>1? setView(tumors):''
   const currentTumor = view.length > 1 ? form.cancer.map((e) => e.value) : form.cancer.find((e) => e.value === view[0]) ? view : form.cancer.map((e) => e.value);
@@ -70,13 +71,24 @@ export default function ProteinGeneCorrelation() {
   //   : form.cancer[0].label;
   //console.log(label,currentLabel,tumors)
 
-  
+  console.log("form", form);
+  let fileName = "";
+  if (currentLabel != "") {
+    fileName =  currentLabel + "_" + datasetName + "_Correlation-" + form.gene.label;
+  } else {
+    if (form.correlation === "proteinMRNA") {
+      fileName = "RNA_Protein_Correlation-" + form.gene.label;
+    } else if (form.correlation === "toAnotherProtein") {
+      fileName = "RNA_Protein_Correlation-" + form.gene.label;
+    } 
+    else { fileName = datasetName + "_Correlation-" + form.gene.label; }
+    
+  }  
+//console.log("filename ", fileName)
   let hasValueID12; 
   if ((form.dataset.value === "proteinData" && currentTumor.includes(12)) || (form.dataset.value === "phosphoproteinData" && currentSiteTumor == 12) || (form.dataset.value ==="phosphoproteinRatioData" && currentSiteTumor == 12)) {
     hasValueID12 = true;
-    console.log("YES")
-    console.log( form.dataset.value + " - HAS 12")
-  } else { hasValueID12 = false; console.log("NO"); console.log(form.dataset.value +  " - DONT HAVE 12")}
+  } else { hasValueID12 = false; }
 
   var firstGeneSet = results[0].participants.records.filter((e) => tumors.includes(e.cancerId));
 
@@ -1181,7 +1193,8 @@ export default function ProteinGeneCorrelation() {
             <div className="row">
               <div className="col d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
-                  filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
+                  //filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
+                  filename={fileName}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
                   <ExcelSheet dataSet={exportSiteData()} name="Site Data" />

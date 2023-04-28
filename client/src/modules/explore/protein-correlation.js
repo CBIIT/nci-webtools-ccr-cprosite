@@ -31,8 +31,8 @@ export default function ProteinCorrelation() {
   const currentLabel =
     currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
 
-  
-  console.log("currentTumor",currentTumor);
+  console.log("form",form)
+
   const datasetName =
     form.dataset.label === "Protein Abundance"
       ? "Protein_Abundance"
@@ -40,6 +40,17 @@ export default function ProteinCorrelation() {
         ? "Phosphorylation_Site"
         : "Phosphorylation_Protein";
 
+  
+  let fileName = "";
+  if (currentLabel !== "") {
+    fileName =  currentLabel + "_" + datasetName + "_Correlation-" + form.gene.label;
+  } else {
+    if (form.correlation === "proteinMRNA") {
+      fileName = "RNA_Protein_Correlation-" + form.gene.label;
+    } else {fileName =  datasetName + "_Correlation-" + form.gene.label;}
+    
+  }
+  
   const [numType, setNumType] = useState("log2");
 
   function handleToggle(e) {
@@ -451,7 +462,8 @@ export default function ProteinCorrelation() {
       <div className="m-3">
         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
           <ExcelFile
-            filename={`${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}`}
+            //filename={`${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}`}
+            filename={fileName}
             element={<a href="javascript:void(0)">Export Data</a>}>
             <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
             <ExcelSheet dataSet={exportSummary} name="Summary Data" />
