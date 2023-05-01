@@ -50,9 +50,10 @@ export default function ProteinGeneCorrelation() {
   form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
   form.dataset.label === "RNA Level" ? "RNA_Protein" :
   form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+  form.dataset.value  === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein_Correlation":
   "Phosphorylation_Protein";
 
-  
+  console.log("datasetName", datasetName)
 
   //adjust label if it is brain, since the dropdown will not contains brain
   //view.length>1? setView(tumors):''
@@ -72,19 +73,18 @@ export default function ProteinGeneCorrelation() {
   //console.log(label,currentLabel,tumors)
 
   console.log("form", form);
-  let fileName = "";
-  if (currentLabel != "") {
-    fileName =  currentLabel + "_" + datasetName + "_Correlation-" + form.gene.label;
-  } else {
-    if (form.correlation === "proteinMRNA") {
-      fileName = "RNA_Protein_Correlation-" + form.gene.label;
-    } else if (form.correlation === "toAnotherProtein") {
-      fileName = "RNA_Protein_Correlation-" + form.gene.label;
-    } 
-    else { fileName = datasetName + "_Correlation-" + form.gene.label; }
-    
-  }  
-//console.log("filename ", fileName)
+  // let fileName = "";
+  // if (currentLabel !== "") {
+  //   if (form.correlation === "proteinMRNA" && form.dataset.value==="proteinData") {
+  //     fileName = currentLabel + "_RNA_Protein_Correlation-" + form.gene.label;
+  //   } else {fileName = currentLabel + "_"+ datasetName + "_Correlation-" + form.gene.label;}
+  // } else {
+  //   if (form.correlation === "proteinMRNA" && form.dataset.value==="proteinData") {
+  //     fileName = "RNA_Protein_Correlation-" + form.gene.label;
+  //   } else {fileName =  datasetName + "_Correlation-" + form.gene.label;} 
+  // }
+  // console.log("fileName", fileName)
+
   let hasValueID12; 
   if ((form.dataset.value === "proteinData" && currentTumor.includes(12)) || (form.dataset.value === "phosphoproteinData" && currentSiteTumor == 12) || (form.dataset.value ==="phosphoproteinRatioData" && currentSiteTumor == 12)) {
     hasValueID12 = true;
@@ -618,7 +618,7 @@ export default function ProteinGeneCorrelation() {
       }),
     },
   ];
-
+console.log(exportSummary)
   function exportSiteSettings(gene) {
     return [
       {
@@ -646,7 +646,16 @@ export default function ProteinGeneCorrelation() {
 
   function exportSiteData() {
     const columns = [
-      ...correlationColumns.slice(0, 1),
+      ...correlationColumns.slice(0, 2),
+      // {
+      //   accessor: "name",
+      //   label: "Patient ID",
+      //   Header: (
+      //     <OverlayTrigger overlay={<Tooltip id="protein_correlation_patient">Patient ID</Tooltip>}>
+      //       <b>Patient ID</b>
+      //     </OverlayTrigger>
+      //   ),
+      // },
       {
         accessor: "firstPhospho",
         label: form.gene.label + " Phosphorylation Site",
@@ -669,7 +678,7 @@ export default function ProteinGeneCorrelation() {
           </OverlayTrigger>
         ),
       },
-      ...correlationColumns.slice(1),
+      ...correlationColumns.slice(2),
     ];
 
     return [
@@ -1073,7 +1082,7 @@ export default function ProteinGeneCorrelation() {
                   ...defaultConfig,
                   toImageButtonOptions: {
                     ...defaultConfig.toImageButtonOptions,
-                    filename: `${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`,
+                    filename: `${currentLabel ? `${currentLabel}_` : ''}${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`,
                   },
                 }}
                 useResizeHandler
@@ -1193,7 +1202,7 @@ export default function ProteinGeneCorrelation() {
             <div className="row">
               <div className="col d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
-                  filename={`${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
+                  filename={currentLabel ?  `${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`: `${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
                   //filename={fileName}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
