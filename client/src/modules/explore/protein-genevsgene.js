@@ -647,16 +647,7 @@ console.log(exportSummary)
   function exportSiteData() {
     const columns = [
       ...correlationColumns.slice(0, 2),
-      // {
-      //   accessor: "name",
-      //   label: "Patient ID",
-      //   Header: (
-      //     <OverlayTrigger overlay={<Tooltip id="protein_correlation_patient">Patient ID</Tooltip>}>
-      //       <b>Patient ID</b>
-      //     </OverlayTrigger>
-      //   ),
-      // },
-      {
+     {
         accessor: "firstPhospho",
         label: form.gene.label + " Phosphorylation Site",
         Header: (
