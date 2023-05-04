@@ -594,7 +594,7 @@ export default function Results() {
                 ...defaultConfig,
                 toImageButtonOptions: {
                   ...defaultConfig.toImageButtonOptions,
-                  filename: `Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                  filename: `Protein_Abundance_Tumor_vs_Normal-${form.gene.label}`,
                 },
               }}
               useResizeHandler
@@ -607,7 +607,7 @@ export default function Results() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
+              filename={`Protein_Abundance_Tumor_vs_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportSummary()} name="Summary Data" />
@@ -708,7 +708,7 @@ export default function Results() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                    }_Protein_Abundance_Tumor_vs_Normal-${form.gene.label}`,
                   },
                 }}
                 useResizeHandler
@@ -728,7 +728,7 @@ export default function Results() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Protein_Abundance_Tumor_vs_Adjacent_Normal_Log_Fold_Change-${form.gene.label}`,
+                    }_Protein_Abundance_Tumor_vs_Normal_Log_Fold_Change-${form.gene.label}`,
                   },
                 }}
                 layout={{
@@ -801,7 +801,7 @@ export default function Results() {
             <ExcelFile
               filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Protein_Abundance_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
+              }_Protein_Abundance_Tumor_vs_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
                 
               <ExcelSheet dataSet={exportAbundanceSettings} name="Input Configuration" />

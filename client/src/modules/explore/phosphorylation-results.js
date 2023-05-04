@@ -768,7 +768,7 @@ export default function PhosResults() {
                 ...defaultConfig,
                 toImageButtonOptions: {
                   ...defaultConfig.toImageButtonOptions,
-                  filename: `Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                  filename: `Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`,
                 },
               }}
               style={{
@@ -787,7 +787,7 @@ export default function PhosResults() {
         <div className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
+              filename={`Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportSummary} name="Summary Data" />
@@ -884,7 +884,7 @@ export default function PhosResults() {
                   ...defaultConfig.toImageButtonOptions,
                   filename: `${
                     form.cancer.find((f) => f.value === currentTumor).label
-                  }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                  }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`,
                 },
               }}
               useResizeHandler
@@ -903,7 +903,7 @@ export default function PhosResults() {
             <ExcelFile
               filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
+              }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportTumorSettings()} name="Input Configuration" />
               <ExcelSheet dataSet={exportTumor} name="Tumor View Data" />
@@ -1024,7 +1024,7 @@ export default function PhosResults() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${phosView}_${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`,
+                    }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`,
                   },
                 }}
                 useResizeHandler
@@ -1041,7 +1041,7 @@ export default function PhosResults() {
                     ...defaultConfig.toImageButtonOptions,
                     filename: `${phosView}_${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal_Log_Fold_Change-${form.gene.label}`,
+                    }_Phosphorylation_Site_Tumor_vs_Normal_Log_Fold_Change-${form.gene.label}`,
                   },
                 }}
                 layout={{
@@ -1120,7 +1120,7 @@ export default function PhosResults() {
             <ExcelFile
               filename={`${phosView}_${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Phosphorylation_Site_Tumor_vs_Adjacent_Normal-${form.gene.label}`}
+              }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSiteSettings} name="Input Configuration" />
               <ExcelSheet dataSet={exportSite()} name="Phosphorylation Site" />
