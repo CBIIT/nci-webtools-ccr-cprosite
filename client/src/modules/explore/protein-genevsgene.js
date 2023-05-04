@@ -77,17 +77,6 @@ export default function ProteinGeneCorrelation() {
   //console.log(label,currentLabel,tumors)
 
   console.log("form", form);
-  // let fileName = "";
-  // if (currentLabel !== "") {
-  //   if (form.correlation === "proteinMRNA" && form.dataset.value==="proteinData") {
-  //     fileName = currentLabel + "_RNA_Protein_Correlation-" + form.gene.label;
-  //   } else {fileName = currentLabel + "_"+ datasetName + "_Correlation-" + form.gene.label;}
-  // } else {
-  //   if (form.correlation === "proteinMRNA" && form.dataset.value==="proteinData") {
-  //     fileName = "RNA_Protein_Correlation-" + form.gene.label;
-  //   } else {fileName =  datasetName + "_Correlation-" + form.gene.label;} 
-  // }
-  // console.log("fileName", fileName)
 
   let hasValueID12; 
   if ((form.dataset.value === "proteinData" && currentTumor.includes(12)) || (form.dataset.value === "phosphoproteinData" && currentSiteTumor == 12) || (form.dataset.value ==="phosphoproteinRatioData" && currentSiteTumor == 12)) {
@@ -1316,7 +1305,7 @@ console.log(exportSummary)
 
             <Table
               columns={[
-                ...correlationColumns.slice(0, 1),
+                ...correlationColumns.slice(0, 2),
                 {
                   accessor: "firstPhospho",
                   // label: form.gene.label + "Phosphorylation Site",
@@ -1351,7 +1340,7 @@ console.log(exportSummary)
                     </OverlayTrigger>
                   ),
                 },
-                ...correlationColumns.slice(1),
+                ...correlationColumns.slice(2),
               ]}
               defaultSort={[{ id: "name", asec: true }]}
               data={unfilteredSiteData.map((c) => {
