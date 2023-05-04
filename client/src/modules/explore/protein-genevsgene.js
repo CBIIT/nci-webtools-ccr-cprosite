@@ -47,13 +47,17 @@ export default function ProteinGeneCorrelation() {
   const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
 
   const datasetName =
-  form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
-  form.dataset.label === "RNA Level" ? "RNA_Protein" :
-  form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
-  form.dataset.value  === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein_Correlation":
-  "Phosphorylation_Protein";
+    form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
+      form.dataset.label === "RNA Level" ? "RNA_Protein" :
+        form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+          form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein_Correlation" :
+            "Phosphorylation_Protein";
 
   console.log("datasetName", datasetName)
+
+  const dataSetCorrelation = form.analysis.value === "correlation" && form.dataset.value === "proteinData" ? "RNA Protein" :
+    form.analysis.value === "correlation" && form.dataset.value === "rnaLevel" ? "RNA Level" :
+    form.analysis.value === "correlation" && form.dataset.value === "phosphoproteinData" ? "Phosphoylation Protein" : "Phosphorylation Site"
 
   //adjust label if it is brain, since the dropdown will not contains brain
   //view.length>1? setView(tumors):''
@@ -649,23 +653,30 @@ console.log(exportSummary)
       ...correlationColumns.slice(0, 2),
      {
         accessor: "firstPhospho",
-        label: form.gene.label + " Phosphorylation Site",
+        //label: form.gene.label + " Phosphorylation Site",
+        label: form.gene.label + " " + dataSetCorrelation,
         Header: (
           <OverlayTrigger
-            overlay={<Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>}>
-            <b>{form.gene.label} Phospho. Site</b>
+            // overlay={<Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>}>
+            overlay={<Tooltip id="site_correlation_phospho1">{form.gene.label} {dataSetCorrelation}</Tooltip>}>
+            {/* <b>{form.gene.label} Phospho. Site</b> */}
+            <b>{form.gene.label} {dataSetCorrelation}</b>
           </OverlayTrigger>
         ),
       },
       {
         accessor: "secondPhospho",
-        label: form.correlatedGene.label + " Phosphorylation Site",
+        //label: form.correlatedGene.label + " Phosphorylation Site",
+        label: form.correlatedGene.label + " " + dataSetCorrelation,
         Header: (
           <OverlayTrigger
+            // overlay={
+            //   <Tooltip id="site_correlation_phospho2">{form.correlatedGene.label} Phosphorylation Site</Tooltip>
             overlay={
-              <Tooltip id="site_correlation_phospho2">{form.correlatedGene.label} Phosphorylation Site</Tooltip>
+              <Tooltip id="site_correlation_phospho2">{form.correlatedGene.label} {dataSetCorrelation}</Tooltip>
             }>
-            <b>{form.correlatedGene.label} Phospho. Site</b>
+            {/* <b>{form.correlatedGene.label} Phospho. Site</b> */}
+            <b>{form.correlatedGene.label}  {dataSetCorrelation}</b>
           </OverlayTrigger>
         ),
       },
@@ -1207,27 +1218,35 @@ console.log(exportSummary)
                 ...correlationColumns.slice(0, 1),
                 {
                   accessor: "firstPhospho",
-                  label: form.gene.label + "Phosphorylation Site",
+                  // label: form.gene.label + "Phosphorylation Site",
+                  label: form.gene.label +  " " + dataSetCorrelation,
                   Header: (
                     <OverlayTrigger
                       overlay={
                         <Tooltip id="site_correlation_phospho1">{form.gene.label} Phosphorylation Site</Tooltip>
                       }>
-                      <b>{form.gene.label} Phospho. Site</b>
+                      {/* <b>{form.gene.label} Phospho. Site</b> */}
+                      <b>{form.gene.label} {dataSetCorrelation}</b>
                     </OverlayTrigger>
                   ),
                 },
                 {
                   accessor: "secondPhospho",
-                  label: form.correlatedGene.label + "Phosphorylation Site",
+                  // label: form.correlatedGene.label + "Phosphorylation Site",
+                  label: form.correlatedGene.label + " " + dataSetCorrelation,
                   Header: (
                     <OverlayTrigger
+                      // overlay={
+                      //   <Tooltip id="site_correlation_phospho2">
+                      //     {form.correlatedGene.label} Phosphorylation Site
+                      //   </Tooltip>
                       overlay={
                         <Tooltip id="site_correlation_phospho2">
-                          {form.correlatedGene.label} Phosphorylation Site
+                          {form.correlatedGene.label} {dataSetCorrelation},
                         </Tooltip>
                       }>
-                      <b>{form.correlatedGene.label} Phospho. Site</b>
+                      {/* <b>{form.correlatedGene.label} Phospho. Site</b> */}
+                      <b>{form.correlatedGene.label} {dataSetCorrelation}</b>
                     </OverlayTrigger>
                   ),
                 },
