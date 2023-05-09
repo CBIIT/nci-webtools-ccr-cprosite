@@ -37,23 +37,13 @@ export default function ProteinCorrelation() {
   form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
   form.dataset.label === "RNA Level" ? "RNA_Protein" :
   form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
-  form.dataset.value  === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein_Correlation":
-  "Phosphorylation_Protein";
+  form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "Protein" :
+  form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
 
-  console.log("datasetName",datasetName)
+  //console.log("datasetName",datasetName)
 
-  // let fileName = "";
-  // if (currentLabel !== "") {
-  //   if (form.correlation === "proteinMRNA" && form.dataset.value==="proteinData") {
-  //     fileName = currentLabel + "_RNA_Protein_Correlation-" + form.gene.label;
-  //   } else {fileName = currentLabel + "_"+ datasetName + "_Correlation-" + form.gene.label;}
-  // } else {
-  //   if (form.correlation === "proteinMRNA" && form.dataset.value==="proteinData") {
-  //     fileName = "RNA_Protein_Correlation-" + form.gene.label;
-  //   } else {fileName =  datasetName + "_Correlation-" + form.gene.label;} 
-  // }
-  // console.log("fileName", fileName)
-  console.log("currentLabel", currentLabel);
+  
+  //console.log("currentLabel", currentLabel);
 
   const [numType, setNumType] = useState("log2");
 

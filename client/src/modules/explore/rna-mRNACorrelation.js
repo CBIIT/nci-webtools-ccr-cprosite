@@ -23,7 +23,7 @@ export default function MRNACorrelation() {
     const currentLabel = currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
     var secondGeneSet = rnaType === "cptac" ? results[1].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[1].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
-   
+    console.log("form", form);
     const participantDataall = firstGeneSet.map((first) => {
         const second = secondGeneSet.find((e) => {
             return first.participantId === e.participantId
@@ -473,8 +473,8 @@ export default function MRNACorrelation() {
                     <div className="">
                         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                             <ExcelFile
-                                filename={currentLabel ? `${currentLabel}_ ${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA Correlation-${form.gene.label}-${form.correlatedGene.label}`
-                                    : `${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA Correlation-${form.gene.label}-${form.correlatedGene.label}`}
+                                filename={currentLabel ? `${currentLabel}_ ${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA_Correlation-${form.gene.label}-${form.correlatedGene.label}`
+                                    : `${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
                                 element={<a href="javascript:void(0)">Export Data</a>}>
 
                                 <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />

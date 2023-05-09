@@ -50,10 +50,10 @@ export default function ProteinGeneCorrelation() {
     form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
       form.dataset.label === "RNA Level" ? "RNA_Protein" :
         form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
-          form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein_Correlation" :
-            "Phosphorylation_Protein";
+          form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "Protein" :
+          form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
 
-  console.log("datasetName", datasetName)
+  //console.log("datasetName", datasetName)
 
   const dataSetCorrelation = form.analysis.value === "correlation" && form.dataset.value === "proteinData" ? "RNA Protein" :
     form.analysis.value === "correlation" && form.dataset.value === "rnaLevel" ? "RNA Level" :
@@ -378,7 +378,7 @@ export default function ProteinGeneCorrelation() {
   const proteinGene = getData.filter(
     (e) => e.firstTumor !== null && e.firstControl !== null && e.secondTumor !== null && e.secondControl !== null,
   );
-  console.log("proteinGene", proteinGene);
+  //console.log("proteinGene", proteinGene);
 
   // const proteinGeneCorrelation = proteinGene.filter(
   //   (e) => e.firstTumor !== "NA" && e.firstControl !== "NA" && e.secondTumor !== "NA" && e.secondControl !== "NA",
@@ -387,7 +387,7 @@ export default function ProteinGeneCorrelation() {
    const proteinGeneCorrelation = proteinGene.filter(
     (e) => e.firstTumor !== "NA"  && e.secondTumor !== "NA",
   );
-  console.log("proteinGeneCorrelation", proteinGeneCorrelation);
+  //console.log("proteinGeneCorrelation", proteinGeneCorrelation);
   function getSite() {
     const currentTumor = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.value : form.cancer[0].value;
 
@@ -444,7 +444,7 @@ export default function ProteinGeneCorrelation() {
           (e.firstTumor !== "NA" && e.secondTumor !== "NA") || (e.firstControl !== "NA" && e.secondControl !== "NA"),
       )
       : [];
-  console.log("siteData ", siteData);
+  //console.log("siteData ", siteData);
   const defaultLayout = {
     xaxis: {
       title: `<b>${firstGene} ${form.cancer.find((e) => e.value === currentTumor[0]).singlePool === 1 ? "Tumor/Normal" : ""
@@ -528,7 +528,7 @@ export default function ProteinGeneCorrelation() {
     },
   ];
 
-  console.log("geneScatter", geneScatter);
+  //console.log("geneScatter", geneScatter);
   const siteScatter = [
     {
       x: siteData.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
@@ -569,7 +569,7 @@ export default function ProteinGeneCorrelation() {
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
-  console.log("siteScatter", siteScatter)
+  //console.log("siteScatter", siteScatter)
   
   function exportSummarySettings() {
     var settings = form.cancer
@@ -620,7 +620,7 @@ export default function ProteinGeneCorrelation() {
       }),
     },
   ];
-console.log(exportSummary)
+//console.log(exportSummary)
   function exportSiteSettings(gene) {
     return [
       {
