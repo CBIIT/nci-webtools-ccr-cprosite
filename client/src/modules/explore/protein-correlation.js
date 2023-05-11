@@ -31,17 +31,18 @@ export default function ProteinCorrelation() {
   const currentLabel =
     currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
 
-  console.log("form",form)
+  console.log("form", form)
+  
 
   const datasetName =
-  form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
-  form.dataset.label === "RNA Level" ? "RNA_Protein" :
-  form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
-  form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA") ? "mRNA_Protein" :
-  form.dataset.value === "proteinData" && (form.correlation === "toAnotherProtein") ? "Protein" :
-  form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
+    form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :     
+        form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+          form.dataset.value === "proteinData" && form.correlation === "proteinMRNA" ? "mRNA_Protein" :
+            form.dataset.value === "proteinData" && form.correlation === "toAnotherProtein" ? "Protein" :
+              form.dataset.value === "rnaLevel" && form.correlation === "proteinMRNA"  ? "RNA_Protein" :
+                form.dataset.value === "rnaLevel" && form.correlation === "toAnotherProtein" ? "RNA_Protein" : "Phosphorylation_Protein";
 
-  //console.log("datasetName",datasetName)
+  console.log("datasetName",datasetName)
 
   
   //console.log("currentLabel", currentLabel);
@@ -458,7 +459,6 @@ export default function ProteinCorrelation() {
         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
           <ExcelFile
             filename={ `${currentLabel ? currentLabel + "_" : ""}${datasetName}_Correlation-${form.gene.label}`}
-            //filename={fileName}
             element={<a href="javascript:void(0)">Export Data</a>}>
             <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
             <ExcelSheet dataSet={exportSummary} name="Summary Data" />

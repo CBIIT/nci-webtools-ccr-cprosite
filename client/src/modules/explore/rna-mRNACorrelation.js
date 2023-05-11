@@ -418,22 +418,28 @@ export default function MRNACorrelation() {
                   <fieldset className="ml-5 mb-5 border" style={{ color: "grey" }}>
                         <Row>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
-                                Tumor Correlation:{" "}
-                                {participantData.filter(
-                                    (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor)).length
-                                    ? calculateCorrelation(
-                                    participantData
-                                        .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
-                                        .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
-                                        participantData
-                                        .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
-                                        .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
-                                    { decimals: 4 },
-                                ) : "NA"}
+                                Tumor Correlation:{" "}                               
+                                {participantData.length
+                                    ? (() => {
+                                        const firstTumorData = participantData.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
+                                        numType === "log2" ? e.firstTumor : e.firstTumorNum
+                                        );
+                                        const secondTumorData = participantData.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
+                                        numType === "log2" ? e.secondTumor : e.secondTumorNum
+                                        );
+                                        if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number") || firstTumorData.length !== secondTumorData.length) {
+                                        return "NA";
+                                        }
+                                        const result = calculateCorrelation(firstTumorData, secondTumorData, {
+                                        decimals: 4,
+                                        });
+                                        return isNaN(result) ? "NA" : result.toFixed(4);
+                                    })()
+                                    : "NA"}
                             </div>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                             {currentTumor.includes(12) ? "Normal Correlation: " : "Adj. Normal Correlation: "}
-                                {participantData.filter( (e) => e !== undefined  && e.firstControl !== "NA" && Number.isFinite(e.firstControl)  && e.secondControl !== "NA" && Number.isFinite(e.secondControl)).length
+                                {/* {participantData.filter( (e) => e !== undefined  && e.firstControl !== "NA" && Number.isFinite(e.firstControl)  && e.secondControl !== "NA" && Number.isFinite(e.secondControl)).length
                                 ? calculateCorrelation(
                                     participantData.filter((e) => e !== undefined && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondControl !== "NA" && Number.isFinite(e.secondControl))
                                         .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
@@ -441,12 +447,40 @@ export default function MRNACorrelation() {
                                         .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum)),
                                     { decimals: 4 },
                                 )
-                                : "NA"}
+                                : "NA"} */}
+                                {participantData.length
+                                    ? (() => {
+                                        const firstControlData = participantData.filter(
+                                        (f) =>
+                                            f.firstControl !== "NA" &&
+                                            f.firstControlNum !== "NA" 
+                                        ).map((e) =>
+                                        numType === "log2" ? e.firstControl : e.firstControlNum
+                                        );
+                                        const secondControlData = participantData.filter(
+                                        (f) =>
+                                        f.secondControlNum !== "NA" &&
+                                        f.secondControl !== "NA"
+                                        
+                                    ).map((e) =>
+                                        numType === "log2" ? e.secondControl : e.secondControlNum
+                                        );
+                                        if (firstControlData.length === 0 || secondControlData.length === 0 || !firstControlData.every((value) => typeof value === "number") || !secondControlData.every((value) => typeof value === "number")) {
+                                        return "NA";
+                                        }
+                                        const result = calculateCorrelation(
+                                        firstControlData,
+                                        secondControlData,
+                                        { decimals: 4 }
+                                        );
+                                        return isNaN(result) ? "NA" : result.toFixed(4);
+                                    })()
+                                    : "NA"}
                             </div>
 
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                                 Total Correlation:{" "}
-                                {participantData.length
+                                {/* {participantData.length
                                     ? calculateCorrelation(
                                         participantData
                                         .filter((e) => e !== undefined && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondControl !== "NA" && Number.isFinite(e.secondControl))
@@ -462,16 +496,69 @@ export default function MRNACorrelation() {
                                             ),
                                         { decimals: 4 },
                                     )
+                                    : "NA"} */}
+                                    {participantData.length
+                                    ? (() => {
+                                        const firstControlData = participantData
+                                        .filter(
+                                            (f) =>
+                                            f.firstControl !== "NA" &&
+                                            f.firstControlNum !== "NA"
+                                        )
+                                            .map((e) =>
+                                            numType === "log2" ? e.firstControl : e.firstControlNum
+                                            );
+                                        const firstTumorData = participantData
+                                            .filter(
+                                            (f) =>
+                                            f.firstTumor !== "NA" &&
+                                            f.firstTumorNum !== "NA" 
+                                            )
+                                            .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
+                                        const secondControlData = participantData
+                                            .filter(
+                                            (f) =>
+                                            f.secondControl !== "NA" &&
+                                            f.secondControlNum !== "NA"
+                                            )
+                                            .map((e) =>
+                                            numType === "log2" ? e.secondControl : e.secondControlNum
+                                            );
+                                        const secondTumorData = participantData
+                                            .filter(
+                                            (f) =>
+                                            f.secondTumor !== "NA" &&
+                                            f.secondTumorNum !== "NA" 
+                                            )
+                                            .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum));
+
+                                        if (
+                                            !firstControlData.every((value) => typeof value === "number") ||
+                                            !firstTumorData.every((value) => typeof value === "number") ||
+                                            !secondControlData.every((value) => typeof value === "number") ||
+                                            !secondTumorData.every((value) => typeof value === "number")
+                                        ) {
+                                            return "NA";
+                                        }
+
+                                        const result = calculateCorrelation(
+                                            firstControlData.concat(firstTumorData),
+                                            secondControlData.concat(secondTumorData),
+                                            { decimals: 4 }
+                                        );
+                                        return isNaN(result) ? "NA" : result.toFixed(4);
+                                        
+                                        })()
                                     : "NA"}
                             </div>
                         </Row>
-                                            </fieldset>
+                    </fieldset>
 
                     <div className="">
                         <div className="d-flex" style={{ justifyContent: "flex-end" }}>
                             <ExcelFile
-                                filename={currentLabel ? `${currentLabel}_ ${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA_Correlation-${form.gene.label}-${form.correlatedGene.label}`
-                                    : `${rnaType === "cptac" ? "CPTAC" : "TCGA"}_mRNA_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
+                                filename={currentLabel ? `${currentLabel}_ ${rnaType === "cptac" ? "CPTAC" : "TCGA"}_RNA_Correlation-${form.gene.label}-${form.correlatedGene.label}`
+                                    : `${rnaType === "cptac" ? "CPTAC" : "TCGA"}_RNA_Correlation-${form.gene.label}-${form.correlatedGene.label}`}
                                 element={<a href="javascript:void(0)">Export Data</a>}>
 
                                 <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
