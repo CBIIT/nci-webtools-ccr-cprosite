@@ -23,7 +23,6 @@ export default function MRNACorrelation() {
     const currentLabel = currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
     var firstGeneSet = rnaType === "cptac" ? results[0].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[0].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
     var secondGeneSet = rnaType === "cptac" ? results[1].rna.records.filter((e) => currentTumor.includes(e.cancerId)) : results[1].tcga.records.filter((e) => currentTumor.includes(e.cancerId));
-    console.log("form", form);
     const participantDataall = firstGeneSet.map((first) => {
         const second = secondGeneSet.find((e) => {
             return first.participantId === e.participantId
@@ -44,7 +43,6 @@ export default function MRNACorrelation() {
             };
         }
     })
-
     //filter undefined data
     const participantData = participantDataall.filter(e => e!==undefined)
     const correlatedParticipants = participantData.filter(
@@ -56,12 +54,11 @@ export default function MRNACorrelation() {
         (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor) 
     );
 
-
     // filter out first control and second control that is NA
     const correlatedParticipantsControl = participantData.filter(
         (e) => e !== undefined  && e.firstControl !== "NA" && Number.isFinite(e.firstControl)  && e.secondControl !== "NA" && Number.isFinite(e.secondControl)
     );
-    
+   
     const geneScatter = [
         
         {
@@ -422,46 +419,46 @@ export default function MRNACorrelation() {
                         <Row>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                                 Tumor Correlation:{" "}
-                                {correlatedParticipants.filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA").length
+                                {participantData.filter(
+                                    (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor)).length
                                     ? calculateCorrelation(
-                                        correlatedParticipants
-                                            .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
-                                            .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
-                                        correlatedParticipants
-                                            .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
-                                            .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
-                                        { decimals: 4 },
-                                    )
-                                    : "NA"}
+                                    participantData
+                                        .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                        .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
+                                        participantData
+                                        .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                        .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
+                                    { decimals: 4 },
+                                ) : "NA"}
                             </div>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                             {currentTumor.includes(12) ? "Normal Correlation: " : "Adj. Normal Correlation: "}
-                                {correlatedParticipants.filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA").length
-                                    ? calculateCorrelation(
-                                        correlatedParticipants
-                                            .filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA")
-                                            .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
-                                        correlatedParticipants
-                                            .filter((f) => f.firstControl !== "NA" && f.secondControl !== "NA")
-                                            .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum)),
-                                        { decimals: 4 },
-                                    )
-                                    : "NA"}
+                                {participantData.filter( (e) => e !== undefined  && e.firstControl !== "NA" && Number.isFinite(e.firstControl)  && e.secondControl !== "NA" && Number.isFinite(e.secondControl)).length
+                                ? calculateCorrelation(
+                                    participantData.filter((e) => e !== undefined && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondControl !== "NA" && Number.isFinite(e.secondControl))
+                                        .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
+                                        participantData.filter((e) => e !== undefined && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondControl !== "NA" && Number.isFinite(e.secondControl))
+                                        .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum)),
+                                    { decimals: 4 },
+                                )
+                                : "NA"}
                             </div>
 
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                                 Total Correlation:{" "}
-                                {correlatedParticipants.length
+                                {participantData.length
                                     ? calculateCorrelation(
-                                        correlatedParticipants
-                                            .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum))
-                                            .concat(
-                                                correlatedParticipants.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum))
-                                            ),
-                                        correlatedParticipants
+                                        participantData
+                                        .filter((e) => e !== undefined && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondControl !== "NA" && Number.isFinite(e.secondControl))
+                                        .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum))
+                                        .concat(participantData.filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                            .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum))
+                                        ),
+                                        participantData
+                                        .filter((e) => e !== undefined && e.firstControl !== "NA" && Number.isFinite(e.firstControl) && e.secondControl !== "NA" && Number.isFinite(e.secondControl))
                                             .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum))
-                                            .concat(
-                                                correlatedParticipants.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum))
+                                            .concat(participantData.filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                                .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum))
                                             ),
                                         { decimals: 4 },
                                     )

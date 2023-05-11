@@ -795,13 +795,13 @@ export default function ProteinGeneCorrelation() {
                 Tumor Correlation:{" "}
                   {proteinGeneCorrelation.length
                     ? (() => {
-                        const firstTumorData = proteinGeneCorrelation.map((e) =>
+                        const firstTumorData = proteinGeneCorrelation.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
                           numType === "log2" ? e.firstTumor : e.firstTumorNum
                         );
-                        const secondTumorData = proteinGeneCorrelation.map((e) =>
+                        const secondTumorData = proteinGeneCorrelation.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
                           numType === "log2" ? e.secondTumor : e.secondTumorNum
                         );
-                        if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number")) {
+                        if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number") || firstTumorData.length !== secondTumorData.length) {
                           return "NA";
                         }
                         const result = calculateCorrelation(firstTumorData, secondTumorData, {
@@ -815,13 +815,22 @@ export default function ProteinGeneCorrelation() {
               {hasValueID12 ? "Normal Correlation: " : "Adj. Normal Correlation: "}
                   {proteinGeneCorrelation.length
                     ? (() => {
-                        const firstControlData = proteinGeneCorrelation.map((e) =>
+                        const firstControlData = proteinGeneCorrelation.filter(
+                          (f) =>
+                            f.firstControl !== "NA" &&
+                            f.firstControlNum !== "NA" 
+                        ).map((e) =>
                           numType === "log2" ? e.firstControl : e.firstControlNum
                         );
-                        const secondControlData = proteinGeneCorrelation.map((e) =>
+                        const secondControlData = proteinGeneCorrelation.filter(
+                        (f) =>
+                          f.secondControlNum !== "NA" &&
+                          f.secondControl !== "NA"
+                         
+                      ).map((e) =>
                           numType === "log2" ? e.secondControl : e.secondControlNum
                         );
-                        if (!firstControlData.every((value) => typeof value === "number") || !secondControlData.every((value) => typeof value === "number")) {
+                        if (firstControlData.length === 0 || secondControlData.length === 0 || !firstControlData.every((value) => typeof value === "number") || !secondControlData.every((value) => typeof value === "number")) {
                           return "NA";
                         }
                         const result = calculateCorrelation(
@@ -834,119 +843,62 @@ export default function ProteinGeneCorrelation() {
                     : "NA"}
               </div>
 
-              {/* <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Total Correlation:{" "}
-                {proteinGeneCorrelation.filter(
-                  (f) => f.firstTumor !== 0 && f.firstControl !== 0 && f.secondTumor !== 0 && f.secondControl !== 0,
-                ).length
-                  ? calculateCorrelation(
-                    proteinGeneCorrelation
-                      .filter(
-                        (f) =>
-                          f.firstTumor !== 0 && f.firstControl !== 0 && f.secondTumor !== 0 && f.secondControl !== 0,
-                      )
-                      .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum))
-                      .concat(
-                        proteinGeneCorrelation
-                          .filter(
-                            (f) =>
-                              f.firstTumor !== 0 &&
-                              f.firstControl !== 0 &&
-                              f.secondTumor !== 0 &&
-                              f.secondControl !== 0,
-                          )
-                          .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
-                      ),
-                    proteinGeneCorrelation
-                      .filter(
-                        (f) =>
-                          f.firstTumor !== 0 && f.firstControl !== 0 && f.secondTumor !== 0 && f.secondControl !== 0,
-                      )
-                      .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum))
-                      .concat(
-                        proteinGeneCorrelation
-                          .filter(
-                            (f) =>
-                              f.firstTumor !== 0 &&
-                              f.firstControl !== 0 &&
-                              f.secondTumor !== 0 &&
-                              f.secondControl !== 0,
-                          )
-                          .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
-                      ),
-                    { decimals: 4 },
-                  )
-                  : "NA"}
-              </div> */}
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-  Total Correlation:{" "}
-  {proteinGeneCorrelation.filter(
-    (f) =>
-      f.firstTumor !== 0 &&
-      f.firstControl !== 0 &&
-      f.secondTumor !== 0 &&
-      f.secondControl !== 0
-  ).length
-    ? (() => {
-        const firstControlData = proteinGeneCorrelation
-          .filter(
-            (f) =>
-              f.firstTumor !== 0 &&
-              f.firstControl !== 0 &&
-              f.secondTumor !== 0 &&
-              f.secondControl !== 0
-          )
-          .map((e) =>
-            numType === "log2" ? e.firstControl : e.firstControlNum
-          );
-        const firstTumorData = proteinGeneCorrelation
-          .filter(
-            (f) =>
-              f.firstTumor !== 0 &&
-              f.firstControl !== 0 &&
-              f.secondTumor !== 0 &&
-              f.secondControl !== 0
-          )
-          .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
-        const secondControlData = proteinGeneCorrelation
-          .filter(
-            (f) =>
-              f.firstTumor !== 0 &&
-              f.firstControl !== 0 &&
-              f.secondTumor !== 0 &&
-              f.secondControl !== 0
-          )
-          .map((e) =>
-            numType === "log2" ? e.secondControl : e.secondControlNum
-          );
-        const secondTumorData = proteinGeneCorrelation
-          .filter(
-            (f) =>
-              f.firstTumor !== 0 &&
-              f.firstControl !== 0 &&
-              f.secondTumor !== 0 &&
-              f.secondControl !== 0
-          )
-          .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum));
+                Total Correlation:{" "}
+                {proteinGeneCorrelation.length
+                  ? (() => {
+                      const firstControlData = proteinGeneCorrelation
+                      .filter(
+                        (f) =>
+                          f.firstControl !== "NA" &&
+                          f.firstControlNum !== "NA"
+                      )
+                        .map((e) =>
+                          numType === "log2" ? e.firstControl : e.firstControlNum
+                        );
+                      const firstTumorData = proteinGeneCorrelation
+                        .filter(
+                          (f) =>
+                          f.firstTumor !== "NA" &&
+                          f.firstTumorNum !== "NA" 
+                        )
+                        .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
+                      const secondControlData = proteinGeneCorrelation
+                        .filter(
+                          (f) =>
+                          f.secondControl !== "NA" &&
+                          f.secondControlNum !== "NA"
+                        )
+                        .map((e) =>
+                          numType === "log2" ? e.secondControl : e.secondControlNum
+                        );
+                      const secondTumorData = proteinGeneCorrelation
+                        .filter(
+                          (f) =>
+                          f.secondTumor !== "NA" &&
+                          f.secondTumorNum !== "NA" 
+                        )
+                        .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum));
 
-        if (
-          !firstControlData.every((value) => typeof value === "number") ||
-          !firstTumorData.every((value) => typeof value === "number") ||
-          !secondControlData.every((value) => typeof value === "number") ||
-          !secondTumorData.every((value) => typeof value === "number")
-        ) {
-          return "NA";
-        }
+                    if (
+                        !firstControlData.every((value) => typeof value === "number") ||
+                        !firstTumorData.every((value) => typeof value === "number") ||
+                        !secondControlData.every((value) => typeof value === "number") ||
+                        !secondTumorData.every((value) => typeof value === "number")
+                      ) {
+                        return "NA";
+                      }
 
-        const result = calculateCorrelation(
-          firstControlData.concat(firstTumorData),
-          secondControlData.concat(secondTumorData),
-          { decimals: 4 }
-        );
-        return isNaN(result) ? "NA" : result.toFixed(4);
-      })()
-    : "NA"}
-</div>
+                      const result = calculateCorrelation(
+                        firstControlData.concat(firstTumorData),
+                        secondControlData.concat(secondTumorData),
+                        { decimals: 4 }
+                      );
+                      return isNaN(result) ? "NA" : result.toFixed(4);
+                    
+                    })()
+                  : "NA"}
+              </div>
 
             </Row>
           </fieldset>
@@ -1187,100 +1139,115 @@ export default function ProteinGeneCorrelation() {
           <fieldset className="mx-5 mb-3 border" style={{ color: "grey" }}>
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Tumor Correlation:{" "}
-                {unfilteredSiteData.filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA").length
-                  ? calculateCorrelation(
-                    unfilteredSiteData
-                      .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
-                      .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
-                    unfilteredSiteData
-                      .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
-                      .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
-                    { decimals: 4 },
-                  )
-                  : "NA"}
+                Tumor Correlation:{" "}                              
+                  {unfilteredSiteData.length
+                    ? (() => {
+                        const firstTumorData = unfilteredSiteData.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
+                          numType === "log2" ? e.firstTumor : e.firstTumorNum
+                        );
+                        const secondTumorData = unfilteredSiteData.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
+                          numType === "log2" ? e.secondTumor : e.secondTumorNum
+                        );
+
+                        if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number") || firstTumorData.length !== secondTumorData.length) {
+                          return "NA";
+                        }
+                        const result = calculateCorrelation(firstTumorData, secondTumorData, {
+                          decimals: 4,
+                        });
+                    
+                        return isNaN(result) ? "NA" : result.toFixed(4);
+                      })()
+                    : "NA"}
               </div>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
               {hasValueID12 ? "Normal Correlation: " : "Adj. Normal Correlation: "}
-                {unfilteredSiteData.filter(
-                  (f) =>
-                    f.firstControl !== "NA" &&
-                    f.secondControl !== "NA" &&
-                    f.firstControl !== 0 &&
-                    f.secondControl !== 0,
-                ).length
-                  ? calculateCorrelation(
-                    unfilteredSiteData
-                      .filter(
+                  {unfilteredSiteData.length
+                  ? (() => {
+                        const firstControlData = unfilteredSiteData.filter(
+                          (f) =>
+                            f.firstControl !== "NA" &&
+                            f.firstControlNum !== "NA" 
+                        ).map((e) =>
+                          numType === "log2" ? e.firstControl : e.firstControlNum
+                        );
+                        const secondControlData = unfilteredSiteData.filter(
                         (f) =>
-                          f.firstControl !== "NA" &&
-                          f.secondControl !== "NA" &&
-                          f.firstControl !== 0 &&
-                          f.secondControl !== 0,
-                      )
-                      .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum)),
-                    unfilteredSiteData
-                      .filter(
-                        (f) =>
-                          f.firstControl !== "NA" &&
-                          f.secondControl !== "NA" &&
-                          f.firstControl !== 0 &&
-                          f.secondControl !== 0,
-                      )
-                      .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum)),
-                    { decimals: 4 },
-                  )
-                  : "NA"}
+                          f.secondControlNum !== "NA" &&
+                          f.secondControl !== "NA"
+                         
+                      ).map((e) =>
+                          numType === "log2" ? e.secondControl : e.secondControlNum
+                        );
+                        if (firstControlData.length === 0 || secondControlData.length === 0 || firstControlData.length !== secondControlData.length ||  !firstControlData.every((value) => typeof value === "number") || !secondControlData.every((value) => typeof value === "number")) {
+                          return "NA";
+                        }
+                        const result = calculateCorrelation(
+                          firstControlData,
+                          secondControlData,
+                          { decimals: 4 }
+                        );
+                        return isNaN(result) ? "NA" : result.toFixed(4);
+                      })()
+                  : "NA"}               
               </div>
 
               <div className="col-xl-4 my-2 d-flex justify-content-center">
-                Total Correlation:{" "}
-                {siteData.filter(
-                  (f) => f.firstTumor !== 0 && f.firstControl !== 0 && f.secondTumor !== 0 && f.secondControl !== 0,
-                ).length
-                  ? calculateCorrelation(
-                    unfilteredSiteData
+                Total Correlation:{" "}                
+                  {unfilteredSiteData.length
+                  ? (() => {
+                      const firstControlData = unfilteredSiteData
                       .filter(
                         (f) =>
                           f.firstControl !== "NA" &&
-                          f.secondControl !== "NA" &&
-                          f.firstControl !== 0 &&
-                          f.secondControl !== 0,
+                          f.firstControlNum !== "NA"
                       )
-                      .map((e) => (numType === "log2" ? e.firstControl : e.firstControlNum))
-                      .concat(
-                        unfilteredSiteData
-                          .filter(
-                            (f) =>
-                              f.firstTumor !== "NA" &&
-                              f.secondTumor !== "NA" &&
-                              f.firstControl !== 0 &&
-                              f.secondControl !== 0,
-                          )
-                          .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
-                      ),
-                    unfilteredSiteData
-                      .filter(
-                        (f) =>
-                          f.firstControl !== "NA" &&
+                        .map((e) =>
+                          numType === "log2" ? e.firstControl : e.firstControlNum
+                        );
+                      const firstTumorData = unfilteredSiteData
+                        .filter(
+                          (f) =>
+                          f.firstTumor !== "NA" &&
+                          f.firstTumorNum !== "NA" 
+                        )
+                        .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
+                      const secondControlData = unfilteredSiteData
+                        .filter(
+                          (f) =>
                           f.secondControl !== "NA" &&
-                          f.firstControl !== 0 &&
-                          f.secondControl !== 0,
-                      )
-                      .map((e) => (numType === "log2" ? e.secondControl : e.secondControlNum))
-                      .concat(
-                        unfilteredSiteData
-                          .filter(
-                            (f) =>
-                              f.firstTumor !== "NA" &&
-                              f.secondTumor !== "NA" &&
-                              f.firstControl !== 0 &&
-                              f.secondControl !== 0,
-                          )
-                          .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
-                      ),
-                    { decimals: 4 },
-                  )
+                          f.secondControlNum !== "NA"
+                        )
+                        .map((e) =>
+                          numType === "log2" ? e.secondControl : e.secondControlNum
+                        );
+                      const secondTumorData = unfilteredSiteData
+                        .filter(
+                          (f) =>
+                          f.secondTumor !== "NA" &&
+                          f.secondTumorNum !== "NA" 
+                        )
+                        .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum));
+                
+                    if (
+                        !firstControlData.every((value) => typeof value === "number") ||
+                        !firstTumorData.every((value) => typeof value === "number") ||
+                        !secondControlData.every((value) => typeof value === "number") ||
+                        !secondTumorData.every((value) => typeof value === "number") ||
+                        firstControlData.length !== secondControlData.length ||
+                        firstTumorData.length !== secondTumorData.length
+                      ) {
+                        return "NA";
+                      }
+
+                      const result = calculateCorrelation(
+                        firstControlData.concat(firstTumorData),
+                        secondControlData.concat(secondTumorData),
+                        { decimals: 4 }
+                      );
+                      return isNaN(result) ? "NA" : result.toFixed(4);
+                    
+                    })()
                   : "NA"}
               </div>
             </Row>
