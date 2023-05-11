@@ -37,7 +37,8 @@ export default function ProteinCorrelation() {
   form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
   form.dataset.label === "RNA Level" ? "RNA_Protein" :
   form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
-  form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "Protein" :
+  form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA") ? "mRNA_Protein" :
+  form.dataset.value === "proteinData" && (form.correlation === "toAnotherProtein") ? "Protein" :
   form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
 
   //console.log("datasetName",datasetName)
