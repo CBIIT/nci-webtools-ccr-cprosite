@@ -30,7 +30,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       return { value: e.id, label: e.name, singlePool: e.singlePool };
     }),
     gene: { value: 1722, label: "CDK1" },
-    analysis: { value: "tumor-control", label: "Analysis Tumor vs Normal Tissue" },
+    analysis: { value: "tumor-control", label: "Tumor vs Normal Tissue" },
     dataset: { value: "proteinData", label: "Relative Protein Abundance" },
     correlation: "toAnotherProtein",
     correlatedGene: "",
@@ -170,7 +170,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
           name="analysis"
           value={form.analysis}
           options={[
-            { value: "tumor-control", label: "Analysis Tumor vs Normal Tissue" },
+            { value: "tumor-control", label: "Tumor vs Normal Tissue" },
             { value: "correlation", label: "Correlation" },
           ]}
           onChange={(e) => {
