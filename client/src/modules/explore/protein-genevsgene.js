@@ -818,12 +818,16 @@ export default function ProteinGeneCorrelation() {
                         const firstControlData = proteinGeneCorrelation.filter(
                           (f) =>
                             f.firstControl !== "NA" &&
-                            f.firstControlNum !== "NA" 
+                            f.firstControlNum !== "NA" &&
+                            f.secondControlNum !== "NA" &&
+                            f.secondControl !== "NA"
                         ).map((e) =>
                           numType === "log2" ? e.firstControl : e.firstControlNum
                         );
                         const secondControlData = proteinGeneCorrelation.filter(
                         (f) =>
+                          f.firstControl !== "NA" &&
+                          f.firstControlNum !== "NA" &&
                           f.secondControlNum !== "NA" &&
                           f.secondControl !== "NA"
                          
@@ -851,7 +855,9 @@ export default function ProteinGeneCorrelation() {
                       .filter(
                         (f) =>
                           f.firstControl !== "NA" &&
-                          f.firstControlNum !== "NA"
+                          f.firstControlNum !== "NA" &&
+                          f.secondControl !== "NA" &&
+                          f.secondControlNum !== "NA"
                       )
                         .map((e) =>
                           numType === "log2" ? e.firstControl : e.firstControlNum
@@ -860,12 +866,16 @@ export default function ProteinGeneCorrelation() {
                         .filter(
                           (f) =>
                           f.firstTumor !== "NA" &&
-                          f.firstTumorNum !== "NA" 
+                          f.firstTumorNum !== "NA" &&
+                          f.secondTumor !== "NA" &&
+                          f.secondTumorNum !== "NA"
                         )
                         .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
                       const secondControlData = proteinGeneCorrelation
                         .filter(
                           (f) =>
+                          f.firstControl !== "NA" &&
+                          f.firstControlNum !== "NA" &&
                           f.secondControl !== "NA" &&
                           f.secondControlNum !== "NA"
                         )
@@ -875,8 +885,10 @@ export default function ProteinGeneCorrelation() {
                       const secondTumorData = proteinGeneCorrelation
                         .filter(
                           (f) =>
+                          f.firstTumor !== "NA" &&
+                          f.firstTumorNum !== "NA" &&
                           f.secondTumor !== "NA" &&
-                          f.secondTumorNum !== "NA" 
+                          f.secondTumorNum !== "NA"
                         )
                         .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum));
 
@@ -1167,14 +1179,18 @@ export default function ProteinGeneCorrelation() {
                         const firstControlData = unfilteredSiteData.filter(
                           (f) =>
                             f.firstControl !== "NA" &&
-                            f.firstControlNum !== "NA" 
+                            f.firstControlNum !== "NA" &&
+                            f.secondControlNum !== "NA" &&
+                            f.secondControl !== "NA"
                         ).map((e) =>
                           numType === "log2" ? e.firstControl : e.firstControlNum
                         );
                         const secondControlData = unfilteredSiteData.filter(
                         (f) =>
-                          f.secondControlNum !== "NA" &&
-                          f.secondControl !== "NA"
+                            f.firstControl !== "NA" &&
+                            f.firstControlNum !== "NA" &&
+                            f.secondControlNum !== "NA" &&
+                            f.secondControl !== "NA"
                          
                       ).map((e) =>
                           numType === "log2" ? e.secondControl : e.secondControlNum
@@ -1200,7 +1216,9 @@ export default function ProteinGeneCorrelation() {
                       .filter(
                         (f) =>
                           f.firstControl !== "NA" &&
-                          f.firstControlNum !== "NA"
+                          f.firstControlNum !== "NA" &&
+                          f.secondControl !== "NA" &&
+                          f.secondControlNum !== "NA"
                       )
                         .map((e) =>
                           numType === "log2" ? e.firstControl : e.firstControlNum
@@ -1209,12 +1227,16 @@ export default function ProteinGeneCorrelation() {
                         .filter(
                           (f) =>
                           f.firstTumor !== "NA" &&
-                          f.firstTumorNum !== "NA" 
+                          f.firstTumorNum !== "NA" &&
+                          f.secondTumor !== "NA" &&
+                          f.secondTumorNum !== "NA" 
                         )
                         .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
                       const secondControlData = unfilteredSiteData
                         .filter(
                           (f) =>
+                          f.firstControl !== "NA" &&
+                          f.firstControlNum !== "NA" &&
                           f.secondControl !== "NA" &&
                           f.secondControlNum !== "NA"
                         )
@@ -1224,6 +1246,8 @@ export default function ProteinGeneCorrelation() {
                       const secondTumorData = unfilteredSiteData
                         .filter(
                           (f) =>
+                          f.firstTumor !== "NA" &&
+                          f.firstTumorNum !== "NA" &&
                           f.secondTumor !== "NA" &&
                           f.secondTumorNum !== "NA" 
                         )

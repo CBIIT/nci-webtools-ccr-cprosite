@@ -503,7 +503,9 @@ export default function MRNACorrelation() {
                                         .filter(
                                             (f) =>
                                             f.firstControl !== "NA" &&
-                                            f.firstControlNum !== "NA"
+                                            f.firstControlNum !== "NA" && 
+                                            f.secondControl !== "NA" &&
+                                            f.secondControlNum !== "NA"
                                         )
                                             .map((e) =>
                                             numType === "log2" ? e.firstControl : e.firstControlNum
@@ -512,12 +514,16 @@ export default function MRNACorrelation() {
                                             .filter(
                                             (f) =>
                                             f.firstTumor !== "NA" &&
-                                            f.firstTumorNum !== "NA" 
+                                            f.firstTumorNum !== "NA" &&
+                                            f.secondTumor !== "NA" &&
+                                            f.secondTumorNum !== "NA" 
                                             )
                                             .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum));
                                         const secondControlData = participantData
                                             .filter(
                                             (f) =>
+                                            f.firstControl !== "NA" &&
+                                            f.firstControlNum !== "NA" && 
                                             f.secondControl !== "NA" &&
                                             f.secondControlNum !== "NA"
                                             )
@@ -527,6 +533,8 @@ export default function MRNACorrelation() {
                                         const secondTumorData = participantData
                                             .filter(
                                             (f) =>
+                                            f.firstTumor !== "NA" &&
+                                            f.firstTumorNum !== "NA" &&
                                             f.secondTumor !== "NA" &&
                                             f.secondTumorNum !== "NA" 
                                             )

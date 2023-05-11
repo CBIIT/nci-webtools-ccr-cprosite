@@ -438,7 +438,7 @@ export default function ProteinCorrelation() {
 
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             Total Correlation:{" "}
-            {correlationData.length
+            {/* {correlationData.length
               ? calculateCorrelation(
                 correlationData
                   .map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl)))
@@ -450,6 +450,60 @@ export default function ProteinCorrelation() {
                   .concat(correlationData.map((e) => (numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor)))),
                 { decimals: 4 },
               )
+              
+              : "NA"} */}
+            
+              {proteinRNA.length
+              ? (() => {
+                  const firstControlData = proteinRNA
+                  .filter(
+                      (f) =>
+                      f.proteinControl !== "NA" &&
+                      f.rnaControl !== "NA"  
+                    )
+                      .map((e) =>
+                      numType === "log2" ? e.proteinControl :Math.pow(2, e.proteinControl)
+                      );
+                  const firstTumorData = proteinRNA
+                      .filter(
+                      (f) =>
+                      f.proteinTumor !== "NA" && f.rnaTumor !== "NA"
+                      )
+                      .map((e) => (numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor)));
+                  const secondControlData = proteinRNA
+                      .filter(
+                      (f) =>
+                      f.proteinControl !== "NA" &&
+                      f.rnaControl !== "NA"                     
+                      )
+                      .map((e) =>
+                      numType === "log2" ? e.rnaControl :  Math.pow(2, e.proteinControl)
+                      );
+                  const secondTumorData = proteinRNA
+                      .filter(
+                      (f) =>
+                      f.proteinTumor !== "NA" && f.rnaTumor !== "NA"
+                      )
+                      .map((e) => (numType === "log2" ? e.rnaTumor : Math.pow(2,e.rnaTumor)));
+                 
+                if (
+                     
+                      !firstControlData.every((value) => typeof value === "number") ||
+                      !firstTumorData.every((value) => typeof value === "number") ||
+                      !secondControlData.every((value) => typeof value === "number") ||
+                      !secondTumorData.every((value) => typeof value === "number")
+                  ) {
+                      return "NA";
+                  }
+
+                const result = calculateCorrelation(
+                      firstControlData.concat(firstTumorData),
+                      secondControlData.concat(secondTumorData),
+                      { decimals: 4 }
+                  );
+                  return isNaN(result) ? "NA" : result.toFixed(4);
+                  
+                  })()
               : "NA"}
           </div>
         </Row>
