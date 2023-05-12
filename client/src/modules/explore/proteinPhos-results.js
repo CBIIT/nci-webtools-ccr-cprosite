@@ -35,6 +35,8 @@ export default function ProteinPhosResults() {
   const results = useRecoilValue(resultsState);
   const currentTumor = form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value;
 
+  
+
   var sortSummary = Object.entries(_.groupBy(results[0].summary.records, "phosphorylationSite"))
     .filter((e) => e[0] !== "null" && e[0] !== "all")
     .sort((a, b) => {
@@ -44,6 +46,7 @@ export default function ProteinPhosResults() {
       return first - second;
     });
   //console.log(sortSummary);
+  console.log("form ", form);
 
   const heatmap = sortSummary.reverse().map((e) => {
     var toAdd = Array(10).fill(null);
@@ -407,7 +410,7 @@ export default function ProteinPhosResults() {
 
   const [phosView, setPhosView] = useState(tumorViewData.length > 0 ? tumorViewData[0].name : "");
   const [site, setSite] = useState(tumorViewData.length > 0 ? tumorViewData[0] : "");
-
+  const filenamePrefix = phosView  ? `${phosView}_` : '';
   /*
   const siteTableData =
     tumorViewData.length && tumorViewData.find((e) => e.name === phosView)
@@ -1031,7 +1034,10 @@ export default function ProteinPhosResults() {
                   ...defaultConfig,
                   toImageButtonOptions: {
                     ...defaultConfig.toImageButtonOptions,
-                    filename: `${phosView}_${
+                    // filename: `${phosView}_${
+                    //   form.cancer.find((f) => f.value === currentTumor).label
+                    // }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`,
+                    filename: `${filenamePrefix}${
                       form.cancer.find((f) => f.value === currentTumor).label
                     }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`,
                   },
@@ -1123,12 +1129,16 @@ export default function ProteinPhosResults() {
         <Row className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`${phosView}_${
+              // filename=  {`${phosView}_${
+              //   form.cancer.find((f) => f.value === currentTumor).label
+              //   }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`} 
+              filename=  {`${filenamePrefix}${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`}
+                }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`} 
+              
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSiteSettings} name="Input Configuration" />
-              <ExcelSheet dataSet={exportSite()} name="Phosphorylation/Protein Site" />
+              <ExcelSheet dataSet={exportSite()} name="Phosphorylation_Protein Site" />
             </ExcelFile>
           </div>
           <Table
