@@ -87,6 +87,12 @@ export default function ProteinGeneCorrelation() {
 
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
 
+
+  console.log("firstGeneSet ", firstGeneSet);
+  console.log("secondGeneSet ", secondGeneSet);
+  console.log("currentSiteTumor ", currentSiteTumor);
+  console.log(" ---- ", results[0].participants.records.filter((f) => f.cancerId === currentSiteTumor));
+
   const [numType, setNumType] = useState("log2");
 
   var firstSites = Object.entries(
@@ -103,6 +109,7 @@ export default function ProteinGeneCorrelation() {
       return getNumericPosition(a.value) - getNumericPosition(b.value);
     });
 
+  console.log("firstSites ", firstSites);
   var secondSites = Object.entries(
     _.groupBy(
       results[1].participants.records.filter((f) => f.cancerId === currentSiteTumor),
@@ -116,6 +123,8 @@ export default function ProteinGeneCorrelation() {
     .sort((a, b) => {
       return getNumericPosition(a.value) - getNumericPosition(b.value);
     });
+  
+  console.log("secondSites ", secondSites);
 
   secondSites = [
     {
@@ -802,7 +811,7 @@ export default function ProteinGeneCorrelation() {
                         const firstTumorData = proteinGeneCorrelation.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
                           numType === "log2" ? e.firstTumor : e.firstTumorNum
                         );
-                        const secondTumorData = proteinGeneCorrelation.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
+                        const secondTumorData = proteinGeneCorrelation.filter((f) => f.secondTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
                           numType === "log2" ? e.secondTumor : e.secondTumorNum
                         );
                         if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number") || firstTumorData.length !== secondTumorData.length) {
@@ -1070,7 +1079,7 @@ export default function ProteinGeneCorrelation() {
                 }}
               />
             </Form.Group>
-            <Form.Group className="col-md-3" controlId="site2">
+            <Form.Group className="col-xl-3 col-md-3" controlId="site2">
               <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
                 {secondGene} Phosphorylation Site or Protein
               </Form.Label>
@@ -1161,7 +1170,7 @@ export default function ProteinGeneCorrelation() {
                         const firstTumorData = unfilteredSiteData.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
                           numType === "log2" ? e.firstTumor : e.firstTumorNum
                         );
-                        const secondTumorData = unfilteredSiteData.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
+                        const secondTumorData = unfilteredSiteData.filter((f) => f.secondTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
                           numType === "log2" ? e.secondTumor : e.secondTumorNum
                         );
 

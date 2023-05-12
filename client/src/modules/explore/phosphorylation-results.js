@@ -26,7 +26,7 @@ export default function PhosResults() {
   const tumors = form.cancer;
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer[0].value);
-
+  console.log("form, ", form);
   const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
   const currentTumor = form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value;
@@ -182,6 +182,8 @@ export default function PhosResults() {
   const [site, setSite] = useState(
     sortResults.length > 0 ? sortResults[0][1].filter((f) => f.accession && f.phosphopeptide)[0] : "",
   );
+
+  const filenamePrefix = phosView  ? `${phosView}_` : '';
 
   const phosSiteColumns = [
     {
@@ -1039,7 +1041,7 @@ export default function PhosResults() {
                   ...defaultConfig,
                   toImageButtonOptions: {
                     ...defaultConfig.toImageButtonOptions,
-                    filename: `${phosView}_${
+                    filename: `${filenamePrefix}${
                       form.cancer.find((f) => f.value === currentTumor).label
                     }_Phosphorylation_Site_Tumor_vs_Normal_Log_Fold_Change-${form.gene.label}`,
                   },
@@ -1118,7 +1120,7 @@ export default function PhosResults() {
         <Row className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`${phosView}_${
+              filename={`${filenamePrefix}${
                 form.cancer.find((f) => f.value === currentTumor).label
               }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
