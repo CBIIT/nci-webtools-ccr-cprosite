@@ -390,7 +390,7 @@ export default function ProteinGeneCorrelation() {
   //console.log("proteinGeneCorrelation", proteinGeneCorrelation);
   function getSite() {
     const currentTumor = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.value : form.cancer[0].value;
-
+    const currentTumorName = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.label : form.cancer[0].label;
     const firstFiltered = firstGeneSet.filter(
       (f) => f.cancerId === currentTumor && f.phosphorylationSite === firstSite.value,
     );
@@ -416,6 +416,7 @@ export default function ProteinGeneCorrelation() {
       dataPoints = dataPoints.concat(
         second.map((e) => {
           return {
+            cancer: currentTumorName,
             name: first.participantId,
             firstPhospho: first.phosphorylationSite,
             secondPhospho: e.phosphorylationSite ? e.phosphorylationSite : form.correlatedGene.label,
@@ -495,13 +496,14 @@ export default function ProteinGeneCorrelation() {
         size: 8,
         color: "rgb(255,0,0)",
       },
-      customdata: proteinGeneCorrelation.map((e) => e.cancer),
+      //customdata: proteinGeneCorrelation.map((e) => e.cancer),
+      customdata: proteinGeneCorrelation.map((e) => ({ cancer: e.cancer, name: e.name })),
       mode: "markers",
       type: "scatter",
       name: "Tumor",
       text: proteinGeneCorrelation.map((e) => e.name),
       hovertemplate:
-      `Tumor Type: %{customdata}<br>`+
+      `Tumor Type: %{customdata.cancer}<br>`+
         `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
@@ -520,9 +522,10 @@ export default function ProteinGeneCorrelation() {
       type: "scatter",
       name: hasValueID12 ? "Normal" : "Adjacent Normal",
       text: proteinGeneCorrelation.map((e) => e.name),
-      customdata: proteinGeneCorrelation.map((e) => e.cancer),
+      //customdata: proteinGeneCorrelation.map((e) => e.cancer),
+      customdata: proteinGeneCorrelation.map((e) => ({ cancer: e.cancer, name: e.name })),
       hovertemplate:
-      `Tumor Type: %{customdata}<br>`+
+      `Tumor Type: %{customdata.cancer}<br>`+
         `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
@@ -541,10 +544,10 @@ export default function ProteinGeneCorrelation() {
       type: "scatter",
       name: "Tumor",
       text: siteData.map((e) => e.name),
-      customdata: siteData.map((e) => e.cancer),
+      customdata: siteData.map((e) => ({ cancer: e.cancer, name: e.name })),
       hovertemplate:
-      `Tumor Type: %{customdata}<br>`+
-        `Patient ID: %{text}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
+      `Tumor Type: %{customdata.cancer}<br>`+
+        `Patient ID: %{customdata.name}<br>${firstGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Tumor ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
     {
@@ -562,9 +565,10 @@ export default function ProteinGeneCorrelation() {
       type: "scatter",
       name: hasValueID12 ? "Normal" : "Adjacent Normal",
       text: siteData.map((e) => e.name),
-      customdata: siteData.map((e) => e.cancer),
+      //customdata: siteData.map((e) => e.cancer),
+      customdata: siteData.map((e) => ({ cancer: e.cancer, name: e.name })),
       hovertemplate:
-      `Tumor Type: %{customdata}<br>`+
+      `Tumor Type: %{customdata.cancer}<br>`+
         `Patient ID: %{text}<br>${firstGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{x}<br>` +
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
