@@ -32,22 +32,19 @@ export default function Results() {
   const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
-  // console.log(form)
-  // console.log("results: ", results)
-  // console.log("getResults: ", getResults)
+   console.log(form)
+
   
   const hasValueID12 = results.some(([value]) => value === "12");
 
   const [view, setView] = useState(form.cancer[0].value);
 
-  //console.log("view", view);
   
   const currentTumor = form.cancer.find((e) => e.value === view)
     ? view
     : results.length
     ? Number(results[0][0])
     : form.cancer[0].value;
-  //console.log("currentTumor: ", currentTumor);
   const proteinAbundanceColumns = [
     {
       accessor: "name",
@@ -231,7 +228,6 @@ export default function Results() {
       hovertemplate: currentTumor === 12 ? "Patient ID: %{text}<br>Normal Abundance: %{y}<extra></extra>": "Patient ID: %{text}<br>Adj. Normal Abundance: %{y}<extra></extra>",
     },
   ];
-  //console.log("boxPlotData: ",boxPlotData);
   const averages = getResults[0].summary.records.map((e) => {
     return {
       id: e.cancerId,
@@ -298,7 +294,6 @@ export default function Results() {
   }
 
   function multiBarPlotData() {
-    //console.log("averages: ",averages)
     // const hovertext = averages.filter(c => !c.name.includes("Brain")).map((c) => xlabelmap(c))
     const hovertext = averages.map((c) => xlabelmap(c))
     const hovertextdisplay = hovertext.map(ht =>{

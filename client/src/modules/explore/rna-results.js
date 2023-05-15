@@ -23,8 +23,6 @@ export default function RNAResults() {
             ? form.cancer[0].value
             : 0;
 
-    //console.log("currentTumor: ", currentTumor);
-
     const hasValueID12 = form.cancer.some((item) => item.value === 12);
     
     const rna = getResults[0].rna.records;

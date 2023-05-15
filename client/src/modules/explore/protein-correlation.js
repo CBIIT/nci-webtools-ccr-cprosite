@@ -35,17 +35,14 @@ export default function ProteinCorrelation() {
   
 
   const datasetName =
-    form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :     
-        form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
-          form.dataset.value === "proteinData" && form.correlation === "proteinMRNA" ? "Protein_mRNA" :
-            form.dataset.value === "proteinData" && form.correlation === "toAnotherProtein" ? "Protein" :
-              form.dataset.value === "rnaLevel" && form.correlation === "proteinMRNA"  ? "RNA_Protein" :
-                form.dataset.value === "rnaLevel" && form.correlation === "toAnotherProtein" ? "RNA_Protein" : "Phosphorylation_Protein";
+    form.dataset.value === "proteinData" ? "Protein_Abundance" :   
+    form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+    form.dataset.value === "phosphoproteinRatioData" ? "Phosphorylation_Protein" :
+    form.dataset.value === "proteinData" && form.correlation === "proteinMRNA" ? "Protein_mRNA" :
+    form.dataset.value === "proteinData" && form.correlation === "toAnotherProtein" ? "Protein" :
+    form.dataset.value === "rnaLevel" && form.correlation === "proteinMRNA"  ? "RNA_Protein" :
+    form.dataset.value === "rnaLevel" && form.correlation === "toAnotherProtein" ? "RNA_Protein" : "Phosphorylation_Protein";
 
-  // console.log("datasetName",datasetName)
-
-  
-  //console.log("currentLabel", currentLabel);
 
   const [numType, setNumType] = useState("log2");
 
@@ -343,7 +340,6 @@ export default function ProteinCorrelation() {
         }: %{y}<extra></extra>`,
     },
   ];
-  // { console.log(results) }
   return (
     <div>
       <Form.Group className="row mx-3 m-3 " controlId="tumorView">

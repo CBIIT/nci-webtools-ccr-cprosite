@@ -48,13 +48,12 @@ export default function ProteinGeneCorrelation() {
 
   const datasetName =
     form.dataset.value === "proteinData" ? "Protein_Abundance" :
-      form.dataset.label === "RNA Level" ? "RNA_Protein" :
-        form.dataset.value === "phosphoproteinData" ? "Phosphorylation_Site" :
-          form.dataset.value === "phosphoproteinRatioData" ? "Phosphorylation_Protein" :
-          form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "Protein" :
-          form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
+    form.dataset.label === "RNA Level" ? "RNA_Protein" :
+    form.dataset.value === "phosphoproteinData" ? "Phosphorylation_Site" :
+    form.dataset.value === "phosphoproteinRatioData" ? "Phosphorylation_Protein" :
+    form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "Protein" :
+    form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
 
-  //console.log("datasetName", datasetName)
   const analysisName = 
   form.analysis.value === "correlation" ? "Correlation": "Tumor_vs_Normal"
 
@@ -91,12 +90,7 @@ export default function ProteinGeneCorrelation() {
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
 
 
-  // console.log("firstGeneSet ", firstGeneSet);
-  // console.log("secondGeneSet ", secondGeneSet);
-  // console.log("currentSiteTumor ", currentSiteTumor);
-  // console.log(" ---- ", results[0].participants.records.filter((f) => f.cancerId === currentSiteTumor));
-  // console.log("siteTumor: ", siteTumor);
-  // console.log("currentLabel ", currentLabel);
+
 
   const [numType, setNumType] = useState("log2");
 
@@ -392,7 +386,6 @@ export default function ProteinGeneCorrelation() {
   const proteinGene = getData.filter(
     (e) => e.firstTumor !== null && e.firstControl !== null && e.secondTumor !== null && e.secondControl !== null,
   );
-  //console.log("proteinGene", proteinGene);
 
   // const proteinGeneCorrelation = proteinGene.filter(
   //   (e) => e.firstTumor !== "NA" && e.firstControl !== "NA" && e.secondTumor !== "NA" && e.secondControl !== "NA",
@@ -401,7 +394,6 @@ export default function ProteinGeneCorrelation() {
    const proteinGeneCorrelation = proteinGene.filter(
     (e) => e.firstTumor !== "NA"  && e.secondTumor !== "NA",
   );
-  //console.log("proteinGeneCorrelation", proteinGeneCorrelation);
   function getSite() {
     const currentTumor = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.value : form.cancer[0].value;
     const currentTumorName = form.cancer.find((e) => e.value === siteTumor.value) ? siteTumor.label : form.cancer[0].label;
@@ -529,7 +521,7 @@ export default function ProteinGeneCorrelation() {
     modeBarButtonsToRemove: ["select2d", "lasso2d", "hoverCompareCartesian", "hoverClosestCartesian"],
   };
   const geneScatter = [
-    //console.log(numType,proteinGeneCorrelation),
+   
     {
       x: proteinGeneCorrelation.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
       y: proteinGeneCorrelation.map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
@@ -572,7 +564,6 @@ export default function ProteinGeneCorrelation() {
     },
   ];
 
-  //console.log("geneScatter", geneScatter);
   const siteScatter = [
     {
       x: siteData.map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
@@ -614,7 +605,6 @@ export default function ProteinGeneCorrelation() {
         `${secondGene} Control ${numType === "log2" ? "Log2" : "Abundance"}: %{y}<extra></extra>`,
     },
   ];
-  //console.log("siteScatter", siteScatter)
   
   function exportSummarySettings() {
     var settings = form.cancer
@@ -665,7 +655,6 @@ export default function ProteinGeneCorrelation() {
       }),
     },
   ];
-//console.log(exportSummary)
   function exportSiteSettings(gene) {
     return [
       {
