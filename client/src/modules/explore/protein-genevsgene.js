@@ -1042,59 +1042,60 @@ export default function ProteinGeneCorrelation() {
 
       {(form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
-          <Row className="m-1">
-            <Form.Group className="col-xl-4 col-md-3" style={{ width: "35%" }} controlId="site1" >
-              <Form.Label className="required " style={{ whiteSpace: "nowrap ", minWidth: "120px" }}>
-                Tumor Type
-              </Form.Label>
-              <div className="col-xl-12">
+            <Row className="m-1">
+              <Form.Group className="col-xxl-4 col-xl-12 col-lg-4 col-md-12 col-sm-12" controlId="site1" >
+                <Form.Label className="required " style={{ whiteSpace: "nowrap ", minWidth: "120px" }}>
+                  Tumor Type
+                </Form.Label>
+                <div className="col-xl-12">
+                  <Select
+                    name="siteTumor"
+                    value={
+                      form.cancer.find((e) => e.value === siteTumor.value)
+                        ? siteTumor
+                        : {
+                          label: form.cancer[0].label,
+                          value: form.cancer[0].value,
+                        }
+                    }
+                    options={[...form.cancer].sort((a, b) => (a.label > b.label) ? 1 : -1)}
+                    onChange={(e) => {
+                      setSiteTumor(e);
+                      setLabel(form.cancer.find((d) => d.value === e.value).label);
+                    }}
+                  />
+                </div>
+              </Form.Group>
+              <Form.Group className="col-xxl-3 col-xl-6 col-lg-3 col-md-12 col-sm-12 header-padding" controlId="site1">
+                <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
+                  {firstGene} Phosphorylation Site
+                </Form.Label>
                 <Select
-                  name="siteTumor"
-                  value={
-                    form.cancer.find((e) => e.value === siteTumor.value)
-                      ? siteTumor
-                      : {
-                        label: form.cancer[0].label,
-                        value: form.cancer[0].value,
-                      }
-                  }
-                  options={[...form.cancer].sort((a, b) => (a.label > b.label) ? 1 : -1)}
+                  name="firstSite"
+                  value={firstSite}
+                  options={firstSites}
                   onChange={(e) => {
-                    setSiteTumor(e);
-                    setLabel(form.cancer.find((d) => d.value === e.value).label);
+                    setFirstSite(e);
                   }}
                 />
-              </div>
-            </Form.Group>
-            <Form.Group className="col-xl-3 col-md-3" controlId="site1">
-              <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
-                {firstGene} Phosphorylation Site
-              </Form.Label>
-              <Select
-                name="firstSite"
-                value={firstSite}
-                options={firstSites}
-                onChange={(e) => {
-                  setFirstSite(e);
-                }}
-              />
-            </Form.Group>
-            <Form.Group className="col-xl-3 col-md-3" controlId="site2">
-              <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
-                {secondGene} Phosphorylation Site or Protein
-              </Form.Label>
-              <Select
-                name="secondSite"
-                value={secondSite}
-                options={secondSites}
-                onChange={(e) => {
-                  setSecondSite(e);
-                }}
-              />
-            </Form.Group>
-          </Row>
+              </Form.Group>
+              <Form.Group className="col-xxl-4 col-xl-6 col-lg-4 col-md-12 col-sm-12 header-padding" controlId="site2">
+                <Form.Label className="required" style={{ whiteSpace: "nowrap " }}>
+                  {secondGene} Phosphorylation Site or Protein
+                </Form.Label>
+                <Select
+                  name="secondSite"
+                  value={secondSite}
+                  options={secondSites}
+                  onChange={(e) => {
+                    setSecondSite(e);
+                  }}
+                />
+              </Form.Group>
+            </Row>
+          
           <Row className="m-1">
-            <Form.Group className="col-xl-12 col-md-12 col-form-label p-2">
+            <Form.Group className="col-xxl-12 col-xl-12 col-md-12 col-form-label p-2">
               <CorrelationToggleButton numType={numType} handleToggle={handleToggle} currentTumor={currentSiteTumor}></CorrelationToggleButton>
             </Form.Group>
           </Row>

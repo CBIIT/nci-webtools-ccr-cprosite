@@ -3,3 +3,9 @@
 @import "~bootstrap-icons/font/bootstrap-icons.css";
 @import "./bootstrap-theme.scss";
 @import "./overrides.scss";
+
+.header-padding {
+    @media (min-width: 1200px) and (max-width: 1399px) {       
+          padding-top: 10px; /* Add desired padding value */    
+      }
+}
