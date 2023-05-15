@@ -37,7 +37,9 @@ export default function Explore() {
   }
 
   function handleReset(event) {
-    setForm(event);
+    //setForm(event);
+    setForm({ ...event, submitted: false }); // Reset the submitted state
+    
     //console.log("reset", event);
     // Refresh the page
     //window.location.reload();
