@@ -47,13 +47,16 @@ export default function ProteinGeneCorrelation() {
   const getNumericPosition = (site) => +String(site).match(/\d+/g)[0] || 0;
 
   const datasetName =
-    form.dataset.label === "Protein Abundance" ? "Protein_Abundance" :
+    form.dataset.value === "proteinData" ? "Protein_Abundance" :
       form.dataset.label === "RNA Level" ? "RNA_Protein" :
-        form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
+        form.dataset.value === "phosphoproteinData" ? "Phosphorylation_Site" :
+          form.dataset.value === "phosphoproteinRatioData" ? "Phosphorylation_Protein" :
           form.dataset.value === "proteinData" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "Protein" :
           form.dataset.value === "rnaLevel" && (form.correlation === "proteinMRNA" || form.correlation === "toAnotherProtein") ? "RNA_Protein" :  "Phosphorylation_Protein";
 
   //console.log("datasetName", datasetName)
+  const analysisName = 
+  form.analysis.value === "correlation" ? "Correlation": "Tumor_vs_Normal"
 
   const dataSetCorrelation = form.analysis.value === "correlation" && form.dataset.value === "proteinData" ? "RNA Protein" :
     form.analysis.value === "correlation" && form.dataset.value === "rnaLevel" ? "RNA Level" :
@@ -88,10 +91,12 @@ export default function ProteinGeneCorrelation() {
   var secondGeneSet = results[1].participants.records.filter((e) => tumors.includes(e.cancerId));
 
 
-  console.log("firstGeneSet ", firstGeneSet);
-  console.log("secondGeneSet ", secondGeneSet);
-  console.log("currentSiteTumor ", currentSiteTumor);
-  console.log(" ---- ", results[0].participants.records.filter((f) => f.cancerId === currentSiteTumor));
+  // console.log("firstGeneSet ", firstGeneSet);
+  // console.log("secondGeneSet ", secondGeneSet);
+  // console.log("currentSiteTumor ", currentSiteTumor);
+  // console.log(" ---- ", results[0].participants.records.filter((f) => f.cancerId === currentSiteTumor));
+  // console.log("siteTumor: ", siteTumor);
+  // console.log("currentLabel ", currentLabel);
 
   const [numType, setNumType] = useState("log2");
 
@@ -109,7 +114,6 @@ export default function ProteinGeneCorrelation() {
       return getNumericPosition(a.value) - getNumericPosition(b.value);
     });
 
-  console.log("firstSites ", firstSites);
   var secondSites = Object.entries(
     _.groupBy(
       results[1].participants.records.filter((f) => f.cancerId === currentSiteTumor),
@@ -124,7 +128,7 @@ export default function ProteinGeneCorrelation() {
       return getNumericPosition(a.value) - getNumericPosition(b.value);
     });
   
-  console.log("secondSites ", secondSites);
+
 
   secondSites = [
     {
@@ -154,6 +158,7 @@ export default function ProteinGeneCorrelation() {
       value: form.correlatedGene.label,
       label: form.correlatedGene.label + " (Protein)",
     };
+  
 
   function handleToggle(e) {
     setNumType(e.target.control.id);
@@ -454,7 +459,34 @@ export default function ProteinGeneCorrelation() {
           (e.firstTumor !== "NA" && e.secondTumor !== "NA") || (e.firstControl !== "NA" && e.secondControl !== "NA"),
       )
       : [];
-  //console.log("siteData ", siteData);
+
+  const secondSiteLabel = secondSite.value === form.correlatedGene.label ? " (Protein)" : "_" + secondSite.label;
+
+  let filenamePhos; 
+  if (currentLabel ) {
+    if (Object.keys(firstSite).length && firstSite.value !== '' && firstSite.label !== '' && firstSite.value !== "undefined" && firstSite.label !== "undefined") {
+      filenamePhos = `${currentLabel}_${datasetName}_${analysisName}-${form.gene.label}_${firstSite.label}-${form.correlatedGene.label}${secondSiteLabel}`;
+    } else {
+      filenamePhos = `${currentLabel}_${datasetName}_${analysisName}-${form.gene.label}-${form.correlatedGene.label}${secondSiteLabel}`;
+   }
+    
+  } else if (siteTumor) {
+    if (Object.keys(firstSite).length && firstSite.value !== '' && firstSite.label !== '' && firstSite.value !== "undefined" && firstSite.label !== "undefined") {
+      filenamePhos = `${siteTumor.label}_${datasetName}_${analysisName}-${form.gene.label}_${firstSite.label}-${form.correlatedGene.label}${secondSiteLabel}` 
+    } else {
+      filenamePhos = `${siteTumor.label}_${datasetName}_${analysisName}-${form.gene.label}-${form.correlatedGene.label}${secondSiteLabel}` 
+    }
+    
+  } else {
+    if (Object.keys(firstSite).length && firstSite.value !== '' && firstSite.label !== '' && firstSite.value !== "undefined" && firstSite.label !== "undefined") {
+      filenamePhos = `${datasetName}_${analysisName}-${form.gene.label}_${firstSite.label}-${form.correlatedGene.label}${secondSiteLabel}` 
+    } else {
+      filenamePhos = `${datasetName}_${analysisName}-${form.gene.label}-${form.correlatedGene.label}${secondSiteLabel}` 
+    }
+    
+  }
+   
+
   const defaultLayout = {
     xaxis: {
       title: `<b>${firstGene} ${form.cancer.find((e) => e.value === currentTumor[0]).singlePool === 1 ? "Tumor/Normal" : ""
@@ -1299,8 +1331,8 @@ export default function ProteinGeneCorrelation() {
             <div className="row">
               <div className="col d-flex" style={{ justifyContent: "flex-end" }}>
                 <ExcelFile
-                  filename={currentLabel ?  `${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`: `${datasetName}_Correlation-${firstSite.label}-${secondSite.label}`}
-                  //filename={fileName}
+                  //filename={currentLabel ?  `${currentLabel}_${datasetName}_Correlation-${firstSite.label}-${form.gene.label}-${form.correlatedGene.label}_${secondSite.label}`: `${datasetName}_Correlation-${form.gene.label}_${firstSite.label}-${form.correlatedGene.label}_${secondSite.label}`}
+                  filename={filenamePhos}
                   element={<a href="javascript:void(0)">Export Data</a>}>
                   <ExcelSheet dataSet={exportSummarySettings()} name="Input Configuration" />
                   <ExcelSheet dataSet={exportSiteData()} name="Site Data" />

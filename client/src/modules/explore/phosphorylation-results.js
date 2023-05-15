@@ -183,7 +183,7 @@ export default function PhosResults() {
     sortResults.length > 0 ? sortResults[0][1].filter((f) => f.accession && f.phosphopeptide)[0] : "",
   );
 
-  const filenamePrefix = phosView  ? `${phosView}_` : '';
+  const filenamePrefix = phosView ? `_${phosView}` : '';
 
   const phosSiteColumns = [
     {
@@ -1041,9 +1041,9 @@ export default function PhosResults() {
                   ...defaultConfig,
                   toImageButtonOptions: {
                     ...defaultConfig.toImageButtonOptions,
-                    filename: `${filenamePrefix}${
+                    filename: `${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Phosphorylation_Site_Tumor_vs_Normal_Log_Fold_Change-${form.gene.label}`,
+                    }_Phosphorylation_Site_Tumor_vs_Normal_Log_Fold_Change-${form.gene.label}_${filenamePrefix}`,
                   },
                 }}
                 layout={{
@@ -1120,9 +1120,9 @@ export default function PhosResults() {
         <Row className="m-3">
           <div className="d-flex" style={{ justifyContent: "flex-end" }}>
             <ExcelFile
-              filename={`${filenamePrefix}${
+              filename={`${
                 form.cancer.find((f) => f.value === currentTumor).label
-              }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}`}
+              }_Phosphorylation_Site_Tumor_vs_Normal-${form.gene.label}${filenamePrefix}`}
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSiteSettings} name="Input Configuration" />
               <ExcelSheet dataSet={exportSite()} name="Phosphorylation Site" />

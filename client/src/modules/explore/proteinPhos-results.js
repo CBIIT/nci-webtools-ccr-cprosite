@@ -47,6 +47,7 @@ export default function ProteinPhosResults() {
     });
   //console.log(sortSummary);
   console.log("form ", form);
+  
 
   const heatmap = sortSummary.reverse().map((e) => {
     var toAdd = Array(10).fill(null);
@@ -410,7 +411,8 @@ export default function ProteinPhosResults() {
 
   const [phosView, setPhosView] = useState(tumorViewData.length > 0 ? tumorViewData[0].name : "");
   const [site, setSite] = useState(tumorViewData.length > 0 ? tumorViewData[0] : "");
-  const filenamePrefix = phosView  ? `${phosView}_` : '';
+  const filenamePrefix = phosView ? `_${phosView}` : '';
+  
   /*
   const siteTableData =
     tumorViewData.length && tumorViewData.find((e) => e.name === phosView)
@@ -1037,9 +1039,9 @@ export default function ProteinPhosResults() {
                     // filename: `${phosView}_${
                     //   form.cancer.find((f) => f.value === currentTumor).label
                     // }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`,
-                    filename: `${filenamePrefix}${
+                    filename: `${
                       form.cancer.find((f) => f.value === currentTumor).label
-                    }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`,
+                    }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}${filenamePrefix}`,
                   },
                 }}
                 useResizeHandler
@@ -1132,9 +1134,9 @@ export default function ProteinPhosResults() {
               // filename=  {`${phosView}_${
               //   form.cancer.find((f) => f.value === currentTumor).label
               //   }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`} 
-              filename=  {`${filenamePrefix}${
+              filename=  {`${
                 form.cancer.find((f) => f.value === currentTumor).label
-                }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}`} 
+                }_Phosphorylation_Protein_Tumor_vs_Normal-${form.gene.label}${filenamePrefix}`} 
               
               element={<a href="javascript:void(0)">Export Data</a>}>
               <ExcelSheet dataSet={exportSiteSettings} name="Input Configuration" />
