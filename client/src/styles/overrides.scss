@@ -16,3 +16,8 @@ legend {
   cursor: not-allowed;
   pointer-events: all !important;
 }
+
+.label-wrapper {
+  display: flex;
+  align-items: center;
+}

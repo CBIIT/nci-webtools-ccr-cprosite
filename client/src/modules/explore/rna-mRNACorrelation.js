@@ -418,22 +418,44 @@ export default function MRNACorrelation() {
                   <fieldset className="ml-5 mb-5 border" style={{ color: "grey" }}>
                         <Row>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
+                            {/* Tumor Correlation:{" "}
+                                {participantData.filter(
+                                    (e) => e !== undefined && e.firstTumor !== "NA" && Number.isFinite(e.firstTumor) && e.secondTumor !== "NA" && Number.isFinite(e.secondTumor)).length
+                                    ? calculateCorrelation(
+                                    participantData
+                                        .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                        .map((e) => (numType === "log2" ? e.firstTumor : e.firstTumorNum)),
+                                        participantData
+                                        .filter((f) => f.firstTumor !== "NA" && f.secondTumor !== "NA")
+                                        .map((e) => (numType === "log2" ? e.secondTumor : e.secondTumorNum)),
+                                    { decimals: 4 },
+                                ) : "NA"} */}
                                 Tumor Correlation:{" "}                               
                                 {participantData.length
                                     ? (() => {
                                         const firstTumorData = participantData.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
                                         numType === "log2" ? e.firstTumor : e.firstTumorNum
                                         );
+                                        console.log("firstTumorData ", firstTumorData);
                                         const secondTumorData = participantData.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
                                         numType === "log2" ? e.secondTumor : e.secondTumorNum
                                         );
+                                        console.log("secondTumorData ", secondTumorData);
                                         if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number") || firstTumorData.length !== secondTumorData.length) {
                                         return "NA";
                                         }
-                                        const result = calculateCorrelation(firstTumorData, secondTumorData, {
+                                        console.log("firstTumorData length ", firstTumorData.length);
+                                        console.log("secondTumorData length ", secondTumorData.length);
+                                        try {
+                                            const result = calculateCorrelation(firstTumorData, secondTumorData, {
                                         decimals: 4,
                                         });
                                         return isNaN(result) ? "NA" : result.toFixed(4);
+                                        } catch (error){
+                                            console.log(error);
+                                            return "NA";
+                                        }
+                                        
                                     })()
                                     : "NA"}
                             </div>
@@ -468,12 +490,17 @@ export default function MRNACorrelation() {
                                         if (firstControlData.length === 0 || secondControlData.length === 0 || !firstControlData.every((value) => typeof value === "number") || !secondControlData.every((value) => typeof value === "number")) {
                                         return "NA";
                                         }
-                                        const result = calculateCorrelation(
-                                        firstControlData,
-                                        secondControlData,
-                                        { decimals: 4 }
-                                        );
-                                        return isNaN(result) ? "NA" : result.toFixed(4);
+                                        try {
+                                            const result = calculateCorrelation(
+                                            firstControlData,
+                                            secondControlData,
+                                            { decimals: 4 }
+                                            );
+                                            return isNaN(result) ? "NA" : result.toFixed(4);
+                                        } catch (error) {
+                                            return "NA";
+                                        }
+                                       
                                     })()
                                     : "NA"}
                             </div>
@@ -548,13 +575,18 @@ export default function MRNACorrelation() {
                                         ) {
                                             return "NA";
                                         }
-
-                                        const result = calculateCorrelation(
+                                        try {
+                                            const result = calculateCorrelation(
                                             firstControlData.concat(firstTumorData),
                                             secondControlData.concat(secondTumorData),
                                             { decimals: 4 }
                                         );
                                         return isNaN(result) ? "NA" : result.toFixed(4);
+                                        } catch (error) {
+                                            console.log(error);
+                                            return "NA";
+                                        }
+                                        
                                         
                                         })()
                                     : "NA"}

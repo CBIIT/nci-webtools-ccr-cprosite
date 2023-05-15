@@ -407,7 +407,7 @@ export default function ProteinCorrelation() {
 
       <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
         <Row>
-          <div className="col-xl-4 my-2 d-flex justify-content-center">
+          {/* <div className="col-xl-4 my-2 d-flex justify-content-center">
             Tumor Correlation:{" "}
             {proteinRNA.filter((f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA").length
               ? calculateCorrelation(
@@ -420,10 +420,37 @@ export default function ProteinCorrelation() {
                 { decimals: 4 },
               )
               : "NA"}
+          </div> */}
+          <div className="col-xl-4 my-2 d-flex justify-content-center">
+            Tumor Correlation:{" "}
+            {(() => {
+              try {
+                const filteredData = proteinRNA.filter(
+                  (f) => f.proteinTumor !== "NA" && f.rnaTumor !== "NA"
+                );
+                if (filteredData.length > 0) {
+                  const proteinValues = filteredData.map((e) =>
+                    numType === "log2" ? e.proteinTumor : Math.pow(2, e.proteinTumor)
+                  );
+                  const rnaValues = filteredData.map((e) =>
+                    numType === "log2" ? e.rnaTumor : Math.pow(2, e.rnaTumor)
+                  );
+                  return calculateCorrelation(proteinValues, rnaValues, { decimals: 4 });
+                } else {
+                  return "NA";
+                }
+              } catch (error) {
+                // Handle the error here
+                console.error("An error occurred:", error);
+                return "Error occurred";
+              }
+            })()}
           </div>
+
           <div className="col-xl-4 my-2 d-flex justify-content-center">
             {currentTumor.includes(12) ? "Normal Correlation: " : "Adj. Normal Correlation: "}
-            {proteinRNA.filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA").length
+            
+            {/* {proteinRNA.filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA").length
               ? calculateCorrelation(
                 proteinRNA
                   .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
@@ -433,7 +460,28 @@ export default function ProteinCorrelation() {
                   .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl))),
                 { decimals: 4 },
               )
-              : "NA"}
+              : "NA"} */}
+              {(() => {
+                try {
+                  const proteinControlValues = proteinRNA
+                    .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
+                    .map((e) => (numType === "log2" ? e.proteinControl : Math.pow(2, e.proteinControl)));
+              
+                  const rnaControlValues = proteinRNA
+                    .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
+                    .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl)));
+              
+                  if (proteinControlValues.length > 1 &&  proteinControlValues.length ===  rnaControlValues.length) {
+                    const result = calculateCorrelation(proteinControlValues, rnaControlValues, { decimals: 4 });
+                    return result;
+                  } else {
+                    return "NA";
+                  }
+                } catch (error) {
+                  console.error('Error:', error.message);
+                  return "NA";
+                }
+              })()}          
           </div>
 
           <div className="col-xl-4 my-2 d-flex justify-content-center">
@@ -495,13 +543,17 @@ export default function ProteinCorrelation() {
                   ) {
                       return "NA";
                   }
-
-                const result = calculateCorrelation(
+                try {
+                  const result = calculateCorrelation(
                       firstControlData.concat(firstTumorData),
                       secondControlData.concat(secondTumorData),
                       { decimals: 4 }
                   );
                   return isNaN(result) ? "NA" : result.toFixed(4);
+                } catch (error) {
+                   return "NA"
+                  }
+                
                   
                   })()
               : "NA"}

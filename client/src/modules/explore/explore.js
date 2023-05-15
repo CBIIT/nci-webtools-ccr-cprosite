@@ -39,6 +39,8 @@ export default function Explore() {
   function handleReset(event) {
     setForm(event);
     //console.log("reset", event);
+    // Refresh the page
+    //window.location.reload();
   }
 
   function results() {
