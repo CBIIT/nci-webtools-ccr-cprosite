@@ -14,7 +14,7 @@ import Tooltip from "react-bootstrap/Tooltip";
 // import ReactExport from "react-data-export";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import PhosDropdown from "../components/phospy-dropdown"
-
+import Select from "react-select";
 import { useImperativeHandle, useState } from "react";
 import _ from "lodash";
 
@@ -934,21 +934,27 @@ export default function PhosResults() {
             Phosphorylation Site
           </Form.Label>
          
-          <div className="col-xl-2 p-2">
-            <Form.Select
-              name="phosView"
-              onChange={(e) => {
-                setPhosView(e.target.value);
-                setSite(tumorViewData.find((f) => f.name === e.target.value));
-              }}
-              value={phosView}
-              required>
-              {tumorViewData.map((c) => (
-                <option value={c.name} key={`dataset-${c.name}`}>
-                  {c.name}
-                </option>
-              ))}
-            </Form.Select>
+            <div className="col-xl-2 p-2">
+              {tumorViewData.length === 0 ? (
+                <Select disabled>
+                  <option value="">No Option</option>
+                </Select>
+              ) : (
+                <Form.Select
+                  name="phosView"
+                  onChange={(e) => {
+                    setPhosView(e.target.value);
+                    setSite(tumorViewData.find((f) => f.name === e.target.value));
+                  }}
+                  value={phosView}
+                  required>
+                  {tumorViewData.map((c) => (
+                    <option value={c.name} key={`dataset-${c.name}`}>
+                      {c.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              )}
           </div>
                  
           <ToggleButtonGroup
