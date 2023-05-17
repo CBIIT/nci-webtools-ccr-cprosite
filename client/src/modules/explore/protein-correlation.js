@@ -34,8 +34,7 @@ export default function ProteinCorrelation() {
   console.log("form", form)
   
 
-  const datasetName =
-    form.dataset.value === "proteinData" ? "Protein_Abundance" :   
+  const datasetName = 
     form.dataset.label === "Phosphorylation Site" ? "Phosphorylation_Site" :
     form.dataset.value === "phosphoproteinRatioData" ? "Phosphorylation_Protein" :
     form.dataset.value === "proteinData" && form.correlation === "proteinMRNA" ? "Protein_mRNA" :
@@ -43,7 +42,7 @@ export default function ProteinCorrelation() {
     form.dataset.value === "rnaLevel" && form.correlation === "proteinMRNA"  ? "RNA_Protein" :
     form.dataset.value === "rnaLevel" && form.correlation === "toAnotherProtein" ? "RNA_Protein" : "Phosphorylation_Protein";
 
-
+  console.log("datasetName ", datasetName);
   const [numType, setNumType] = useState("log2");
 
   function handleToggle(e) {
