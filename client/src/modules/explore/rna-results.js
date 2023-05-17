@@ -582,7 +582,7 @@ export default function RNAResults() {
                                     automargin: true,
                                 },
                                 yaxis: {
-                                    title: rnaType === "cptac" ? "<b>HTSeq Counts</b>" : "<b>RNASeq Value</b>",
+                                    title: rnaType === "cptac" ? "<b>Counts in Gene Expression</b>" : "<b>RNASeq Value</b>",
                                     zeroline: false,
                                     titlefont: {
                                         size: 15,
@@ -705,7 +705,7 @@ export default function RNAResults() {
                                             })`,
 
                                         yaxis: {
-                                            title: "<b>HTSeq Counts</b>",
+                                            title: "<b>Counts in Gene Expression</b>",
                                             zeroline: false,
                                             titlefont: {
                                                 size: 15,
