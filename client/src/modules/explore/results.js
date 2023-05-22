@@ -32,7 +32,7 @@ export default function Results() {
   const results = Object.entries(_.groupBy(useRecoilValue(resultsState)[0].participants.records, "cancerId")).filter(
     (e) => e[0] !== "null",
   );
-   console.log(form)
+   //console.log(form)
 
   
   const hasValueID12 = results.some(([value]) => value === "12");
@@ -302,7 +302,6 @@ export default function Results() {
       ht = ht.replace(")","");
       return ht;
     })
-    console.log("averages", averages)
     const data = averages.map((c) => results.length > 1 ? c.proteinDiff : c.tumorAverage);
     //console.log(hovertextdisplay)
     return (
