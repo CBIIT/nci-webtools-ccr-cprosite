@@ -484,16 +484,31 @@ export default function MRNACorrelation() {
                                         f.secondControlNum !== "NA" &&
                                         f.secondControl !== "NA"
                                         
-                                    ).map((e) =>
+                                        ).map((e) =>
                                         numType === "log2" ? e.secondControl : e.secondControlNum
                                         );
-                                        if (firstControlData.length === 0 || secondControlData.length === 0 || !firstControlData.every((value) => typeof value === "number") || !secondControlData.every((value) => typeof value === "number")) {
+
+
+                                        // Create new arrays without null values
+                                        const filteredFirstControlData = [];
+                                        const filteredSecondControlData = [];
+
+                                        for (let i = 0; i < firstControlData.length; i++) {
+                                            if (firstControlData[i] !== null && firstControlData[i] !== -Infinity && secondControlData[i] !== null && secondControlData[i] !== -Infinity) {
+                                            filteredFirstControlData.push(firstControlData[i]);
+                                            filteredSecondControlData.push(secondControlData[i]);
+                                            }
+                                        }
+
+
+
+                                        if (filteredFirstControlData.length === 0 || filteredSecondControlData.length === 0 || !filteredFirstControlData.every((value) => typeof value === "number") || !filteredSecondControlData.every((value) => typeof value === "number")) {
                                         return "NA";
                                         }
                                         try {
                                             const result = calculateCorrelation(
-                                            firstControlData,
-                                            secondControlData,
+                                            filteredFirstControlData,
+                                            filteredSecondControlData,
                                             { decimals: 4 }
                                             );
                                             return isNaN(result) ? "NA" : result.toFixed(4);
@@ -575,10 +590,22 @@ export default function MRNACorrelation() {
                                         ) {
                                             return "NA";
                                         }
+
+                                         // Create new arrays without null values
+                                        const filteredFirstData = [];
+                                        const filteredSecondData = [];
+
+                                        for (let i = 0; i < firstControlData.concat(firstTumorData).length; i++) {
+                                        if (firstControlData.concat(firstTumorData)[i] !== null && firstControlData.concat(firstTumorData)[i] !== -Infinity && secondControlData.concat(secondTumorData)[i] !== null && secondControlData.concat(secondTumorData)[i] !== -Infinity) {
+                                            filteredFirstData.push(firstControlData.concat(firstTumorData)[i]);
+                                            filteredSecondData.push(secondControlData.concat(secondTumorData)[i]);
+                                        }
+                                        }
+
                                         try {
                                             const result = calculateCorrelation(
-                                            firstControlData.concat(firstTumorData),
-                                            secondControlData.concat(secondTumorData),
+                                            filteredFirstData,
+                                            filteredSecondData,
                                             { decimals: 4 }
                                         );
                                         return isNaN(result) ? "NA" : result.toFixed(4);

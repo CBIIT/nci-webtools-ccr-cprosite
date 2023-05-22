@@ -466,14 +466,29 @@ export default function ProteinCorrelation() {
                     .filter((f) => f.proteinControl !== "NA" && f.rnaControl !== "NA")
                     .map((e) => (numType === "log2" ? e.rnaControl : Math.pow(2, e.rnaControl)));
               
-                  if (proteinControlValues.length > 1 &&  proteinControlValues.length ===  rnaControlValues.length) {
-                    const result = calculateCorrelation(proteinControlValues, rnaControlValues, { decimals: 4 });
+
+                  // Create new arrays without null values
+                  const filteredRNAValues = [];
+                  const filteredProteinValues = [];
+
+                  for (let i = 0; i < rnaControlValues.length; i++) {
+                    if (rnaControlValues[i] !== null && rnaControlValues[i] !== -Infinity && proteinControlValues[i] !== null && proteinControlValues[i] !== -Infinity) {
+                      filteredRNAValues.push(rnaControlValues[i]);
+                      filteredProteinValues.push(proteinControlValues[i]);
+                    }
+                  }
+
+                  // The filtered arrays will now have null values removed at corresponding positions
+                
+
+                  if (filteredRNAValues.length > 1 &&  filteredProteinValues.length ===  filteredRNAValues.length) {
+                    const result = calculateCorrelation(filteredProteinValues, filteredRNAValues, { decimals: 4 });
                     return result;
                   } else {
                     return "NA";
                   }
                 } catch (error) {
-                  console.error('Error:', error.message);
+                  console.error('Error:---', error.message);
                   return "NA";
                 }
               })()}          
@@ -537,11 +552,25 @@ export default function ProteinCorrelation() {
                       !secondTumorData.every((value) => typeof value === "number")
                   ) {
                       return "NA";
+                }
+                
+
+
+                // Create new arrays without null values
+                const filteredFirstData = [];
+                const filteredSecondData = [];
+
+                for (let i = 0; i < firstControlData.concat(firstTumorData).length; i++) {
+                  if (firstControlData.concat(firstTumorData)[i] !== null && firstControlData.concat(firstTumorData)[i] !== -Infinity && secondControlData.concat(secondTumorData)[i] !== null && secondControlData.concat(secondTumorData)[i] !== -Infinity) {
+                    filteredFirstData.push(firstControlData.concat(firstTumorData)[i]);
+                    filteredSecondData.push(secondControlData.concat(secondTumorData)[i]);
                   }
+                }
+
                 try {
                   const result = calculateCorrelation(
-                      firstControlData.concat(firstTumorData),
-                      secondControlData.concat(secondTumorData),
+                    filteredFirstData,
+                    filteredSecondData,
                       { decimals: 4 }
                   );
                   return isNaN(result) ? "NA" : result.toFixed(4);
