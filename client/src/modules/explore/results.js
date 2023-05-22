@@ -302,6 +302,7 @@ export default function Results() {
       ht = ht.replace(")","");
       return ht;
     })
+    const data = averages.map((c) => results.length > 1 ? c.proteinDiff : c.tumorAverage);
     //console.log(hovertextdisplay)
     return (
       results.length > 1?
@@ -319,8 +320,11 @@ export default function Results() {
         //   visible: true,
         //   color: "rgb(255,0,0)",
         // },
+        // marker: {
+        //   color: "rgb(255,0,0)",
+        // },
         marker: {
-          color: "rgb(255,0,0)",
+          color: data.map((c) => (c > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)")),
         },
         type: "bar",
         name: "Tumor",
@@ -337,8 +341,11 @@ export default function Results() {
           visible: true,
           color: "rgb(255,0,0)",
         },
+        // marker: {
+        //   color: "rgb(255,0,0)",
+        // },
         marker: {
-          color: "rgb(255,0,0)",
+          color: averages.map((c) => (c.tumorAverage > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)")),
         },
         type: "bar",
         name: "Tumor",
@@ -353,8 +360,11 @@ export default function Results() {
           visible: true,
           color: "rgb(31,119,180)",
         },
+        // marker: {
+        //   color: "rgb(31,119,180)",
+        // },
         marker: {
-          color: "rgb(31,119,180)",
+          color: averages.map((c) => (c.controlAverage > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)")),
         },
         type: "bar",
         name: "Adjacent Normal",
@@ -363,6 +373,7 @@ export default function Results() {
     ]
     )
   }
+
 
   function foldData() {
     if (results.length !== 0) {
@@ -408,6 +419,7 @@ export default function Results() {
 
     return [];
   }
+
 
   function handleToggle(e) {
     setPlot(e.target.control.id);
