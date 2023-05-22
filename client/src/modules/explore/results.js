@@ -302,6 +302,7 @@ export default function Results() {
       ht = ht.replace(")","");
       return ht;
     })
+    console.log("averages", averages)
     const data = averages.map((c) => results.length > 1 ? c.proteinDiff : c.tumorAverage);
     //console.log(hovertextdisplay)
     return (
@@ -339,7 +340,8 @@ export default function Results() {
           type: "data",
           array: averages.map((c) => c.tumorError),
           visible: true,
-          color: "rgb(255,0,0)",
+          //color: "rgb(255,0,0)",
+          color: averages.length > 0? averages[0].tumorAverage > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)" : "rgb(255,0,0)",
         },
         // marker: {
         //   color: "rgb(255,0,0)",
@@ -358,7 +360,8 @@ export default function Results() {
           type: "data",
           array: averages.map((c) => c.controlError),
           visible: true,
-          color: "rgb(31,119,180)",
+          //color: "rgb(31,119,180)",
+          color: averages.length > 0? averages[0].controlAverage > 0 ? "rgb(255,0,0)" : "rgb(31,119,180)" : "rgb(31,119,180)",
         },
         // marker: {
         //   color: "rgb(31,119,180)",
@@ -373,7 +376,6 @@ export default function Results() {
     ]
     )
   }
-
 
   function foldData() {
     if (results.length !== 0) {
