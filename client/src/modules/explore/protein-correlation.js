@@ -31,7 +31,7 @@ export default function ProteinCorrelation() {
   const currentLabel =
     currentTumor.length > 1 ? "" : form.cancer.find((e) => e.value === view[0]) ? label : form.cancer[0].label;
 
-  console.log("form", form)
+  //console.log("form", form)
   
 
   const datasetName = 

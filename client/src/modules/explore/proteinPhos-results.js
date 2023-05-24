@@ -46,7 +46,7 @@ export default function ProteinPhosResults() {
       return first - second;
     });
   //console.log(sortSummary);
-  console.log("form ", form);
+  //console.log("form ", form);
   
 
   const heatmap = sortSummary.reverse().map((e) => {

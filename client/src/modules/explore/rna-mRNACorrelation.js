@@ -43,7 +43,7 @@ export default function MRNACorrelation() {
             };
         }
     })
-    console.log("form ", form);
+    //console.log("form ", form);
     //filter undefined data
     const participantData = participantDataall.filter(e => e!==undefined)
     const correlatedParticipants = participantData.filter(
@@ -437,11 +437,11 @@ export default function MRNACorrelation() {
                                         const firstTumorData = participantData.filter((f) => f.firstTumor !== "NA" && f.firstTumorNum !== "NA").map((e) =>
                                         numType === "log2" ? e.firstTumor : e.firstTumorNum
                                         );
-                                       //console.log("firstTumorData ", firstTumorData);
+                                       
                                         const secondTumorData = participantData.filter((f) => f.firstTumor !== "NA" && f.secondTumorNum !== "NA").map((e) =>
                                         numType === "log2" ? e.secondTumor : e.secondTumorNum
                                         );
-                                        //console.log("secondTumorData ", secondTumorData);
+                                        
                                         if (!firstTumorData.every((value) => typeof value === "number") || !secondTumorData.every((value) => typeof value === "number") || firstTumorData.length !== secondTumorData.length) {
                                         return "NA";
                                         }

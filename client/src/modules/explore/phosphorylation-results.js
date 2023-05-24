@@ -26,7 +26,7 @@ export default function PhosResults() {
   const tumors = form.cancer;
   const results = useRecoilValue(resultsState);
   const [view, setView] = useState(form.cancer[0].value);
-  console.log("form, ", form);
+  //console.log("form, ", form);
   const [tab, setTab] = useState("summaryView");
   const [plotTab, setPlot] = useState("tumorVsControl");
   const currentTumor = form.cancer.find((e) => e.value === view) ? view : form.cancer[0].value;
