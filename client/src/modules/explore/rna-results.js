@@ -853,7 +853,8 @@ export default function RNAResults() {
                                                 normalValue: c.normalValue !== null ? Number(c.normalValue.toFixed(4)) : "NA",
                                                 proteinDiff:
                                                     c.tumorValue !== null && c.normalValue !== null
-                                                        ? Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4))
+                                                        //? Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4))
+                                                        ? Number((Math.log2(c.tumorValue) - Math.log2(c.normalValue)).toFixed(4))
                                                         : "NA",
                                             };
                                         })
@@ -1025,7 +1026,8 @@ export default function RNAResults() {
                                                 normalValue: c.normalValue !== null ? Number(c.normalValue.toFixed(4)) : "NA",
                                                 proteinDiff:
                                                     c.tumorValue !== null && c.normalValue !== null
-                                                        ? Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4))
+                                                        //? Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4))
+                                                        ? Number((Math.log2(c.tumorValue) - Math.log2(c.normalValue)).toFixed(4))
                                                         : "NA",
                                             };
                                         })
