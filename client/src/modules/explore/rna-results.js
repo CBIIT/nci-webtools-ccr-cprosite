@@ -428,7 +428,8 @@ export default function RNAResults() {
                 });
 
             const values = caseList.map((c) =>
-                Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4)),
+                //Number((Number(c.tumorValue.toFixed(4)) - Number(c.normalValue.toFixed(4))).toFixed(4)),
+                Number((Math.log2(c.tumorValue) - Math.log2(c.normalValue)).toFixed(4))
             );
 
             return [
