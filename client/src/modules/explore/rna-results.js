@@ -432,6 +432,9 @@ export default function RNAResults() {
                 Number((Math.log2(c.tumorValue) - Math.log2(c.normalValue)).toFixed(4))
             );
 
+            // Sort values array in descending order
+            values.sort((a, b) =>  a -b);
+
             return [
                 {
                     type: "bar",
