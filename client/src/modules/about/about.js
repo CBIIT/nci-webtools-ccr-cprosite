@@ -106,7 +106,7 @@ export default function About() {
           </p>
 
           <p>
-            If you use cProSite for your analysis, please cite: Wang D,Qian X, Du YC, Sanchez-Solana B, Chen K, Park B, Chen B, Jenkins L, Luo J, Tripathi BK, Durkin ME, Lowy DR. cProSite: A web based interactive platform for on-line proteomics and phosphoproteomics data analysis. [abstract]. In: Proceedings of the 113th Annual Meeting of the American Association for Cancer Research; 2022 Apr 8–13; New Orlans, Louisiana  (LA): AACR; 2022. Abstract nr 3912.
+          If you use cProSite for your analysis, please cite: Wang D, Qian X, Du YN, Sanchez-Solana B, Chen K, Kanigicherla M, Jenkins LM, Luo J, Eng S, Park B, Chen B, Yao X, Nguyen T, Tripathi BK, Durkin ME, Lowy DR. cProSite: A web based interactive platform for online proteomics, phosphoproteomics, and genomics data analysis. J Biotechnol Biomed. 2023;6(4):573-578
           </p>
         </Card.Body>
       </Card>
