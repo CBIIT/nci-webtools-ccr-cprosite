@@ -122,64 +122,35 @@ jobs:
 
             - name: Deploy to EC2 via SSM
               run: |
-                # Create deployment script
-                cat > deploy-script.sh << 'DEPLOY_SCRIPT'
-                #!/bin/bash
-                set -e
-                
-                echo "=== Starting deployment ==="
-                cd ${{ secrets.DOCKER_APP_ROOT }}
-                
-                # Login to ECR
-                echo "=== Logging in to ECR ==="
-                aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
-                
-                # Update docker-compose.yml to use ECR images
-                cat > docker-compose.yml << 'EOF'
-                version: "3"
-                services:
-                  backend:
-                    image: ${{ steps.image-tags.outputs.backend_latest }}
-                    volumes:
-                      - "${{ secrets.DOCKER_APP_CONFIG_FOLDER }}/config.json:/deploy/server/config.json:ro"
-                      - "${{ secrets.DOCKER_APP_LOGS_FOLDER }}:/deploy/logs"
-                    ports:
-                      - "10000:10000"
-                    restart: unless-stopped
-
-                  frontend:
-                    image: ${{ steps.image-tags.outputs.frontend_latest }}
-                    environment:
-                      API_HOST: http://backend:10000
-                    ports:
-                      - "8400:80"
-                    restart: unless-stopped
+                # Create deployment commands as JSON array
+                cat > commands.json << 'EOF'
+                {
+                  "commands": [
+                    "set -e",
+                    "echo '=== Starting deployment ==='",
+                    "cd ${{ secrets.DOCKER_APP_ROOT }}",
+                    "echo '=== Logging in to ECR ==='",
+                    "aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}",
+                    "echo '=== Creating docker-compose.yml ==='",
+                    "cat > docker-compose.yml << 'COMPOSE_EOF'\nversion: \"3\"\nservices:\n  backend:\n    image: ${{ steps.image-tags.outputs.backend_latest }}\n    volumes:\n      - \"${{ secrets.DOCKER_APP_CONFIG_FOLDER }}/config.json:/deploy/server/config.json:ro\"\n      - \"${{ secrets.DOCKER_APP_LOGS_FOLDER }}:/deploy/logs\"\n    ports:\n      - \"10000:10000\"\n    restart: unless-stopped\n  frontend:\n    image: ${{ steps.image-tags.outputs.frontend_latest }}\n    environment:\n      API_HOST: http://backend:10000\n    ports:\n      - \"8400:80\"\n    restart: unless-stopped\nCOMPOSE_EOF",
+                    "echo '=== Pulling latest images ==='",
+                    "docker-compose pull",
+                    "echo '=== Stopping old containers ==='",
+                    "docker-compose down",
+                    "echo '=== Starting new containers ==='",
+                    "docker-compose up -d",
+                    "echo '=== Running containers ==='",
+                    "docker-compose ps",
+                    "echo '=== Deployment completed successfully ==='"
+                  ]
+                }
                 EOF
                 
-                # Pull latest images
-                echo "=== Pulling latest images ==="
-                docker-compose pull
-                
-                # Stop and remove old containers
-                echo "=== Stopping old containers ==="
-                docker-compose down
-                
-                # Start new containers
-                echo "=== Starting new containers ==="
-                docker-compose up -d
-                
-                # Show running containers
-                echo "=== Running containers ==="
-                docker-compose ps
-                
-                echo "=== Deployment completed successfully ==="
-                DEPLOY_SCRIPT
-                
-                # Send script to EC2 and execute
+                # Send command to EC2 and execute
                 COMMAND_ID=$(aws ssm send-command \
                   --instance-ids "${{ steps.get-instance.outputs.instance_id }}" \
                   --document-name "AWS-RunShellScript" \
-                  --parameters "commands=$(cat deploy-script.sh)" \
+                  --cli-input-json file://commands.json \
                   --query "Command.CommandId" \
                   --output text)
                 
