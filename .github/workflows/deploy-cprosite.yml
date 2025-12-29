@@ -36,83 +36,230 @@ on:
 env:
     APP: cprosite
     TZ: America/New_York
+    AWS_REGION: us-east-1
+    ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+    ECR_REPOSITORY: cprosite
 
 jobs:
     Deploy:
         runs-on: ubuntu-latest
         environment: ${{ inputs.tier }}
-        
+        permissions:
+            id-token: write
+            contents: read
         steps:
             - name: Checkout code
-              uses: actions/checkout@v5
-
-            - name: Set up Python
-              uses: actions/setup-python@v5
+              uses: actions/checkout@v4
               with:
-                  python-version: '3.x'
+                ref: ${{ inputs.tier }}
 
-            - name: Install Ansible
+            - name: Configure AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+                aws-region: ${{ env.AWS_REGION }}
+
+            - name: Login to Amazon ECR
+              id: login-ecr
+              uses: aws-actions/amazon-ecr-login@v2
+
+            - name: Set image tags
+              id: image-tags
               run: |
-                  python -m pip install --upgrade pip
-                  pip install ansible
+                echo "backend_tag=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ inputs.tier }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+                echo "frontend_tag=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-${{ github.sha }}" >> $GITHUB_OUTPUT
+                echo "backend_latest=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ inputs.tier }}-latest" >> $GITHUB_OUTPUT
+                echo "frontend_latest=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-latest" >> $GITHUB_OUTPUT
 
-            - name: Configure SSH key
+            - name: Build and push backend image
+              if: ${{ inputs.rebuild_backend_image }}
               run: |
-                  mkdir -p ~/.ssh
-                  echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-                  chmod 600 ~/.ssh/id_rsa
-                  ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+                CACHE_ARG=""
+                if [ "${{ inputs.no_cache }}" == "true" ]; then
+                  CACHE_ARG="--no-cache"
+                fi
+                
+                docker build $CACHE_ARG \
+                  -f docker/backend.dockerfile \
+                  -t ${{ steps.image-tags.outputs.backend_tag }} \
+                  -t ${{ steps.image-tags.outputs.backend_latest }} \
+                  .
+                
+                docker push ${{ steps.image-tags.outputs.backend_tag }}
+                docker push ${{ steps.image-tags.outputs.backend_latest }}
 
-            - name: Create Ansible inventory
+            - name: Build and push frontend image
+              if: ${{ inputs.rebuild_frontend_image }}
               run: |
-                  cat > inventory.ini << EOF
-                  [build]
-                  ${{ secrets.DEPLOY_HOST }} ansible_user=${{ secrets.DEPLOY_USER }}
+                CACHE_ARG=""
+                if [ "${{ inputs.no_cache }}" == "true" ]; then
+                  CACHE_ARG="--no-cache"
+                fi
+                
+                docker build $CACHE_ARG \
+                  -f docker/frontend.dockerfile \
+                  -t ${{ steps.image-tags.outputs.frontend_tag }} \
+                  -t ${{ steps.image-tags.outputs.frontend_latest }} \
+                  .
+                
+                docker push ${{ steps.image-tags.outputs.frontend_tag }}
+                docker push ${{ steps.image-tags.outputs.frontend_latest }}
 
-                  [app]
-                  ${{ secrets.DEPLOY_HOST }} ansible_user=${{ secrets.DEPLOY_USER }}
-                  EOF
-
-            - name: Create Ansible variables file
+            - name: Get EC2 instance ID
+              id: get-instance
               run: |
-                  cat > vars.yml << EOF
-                  tier: ${{ inputs.tier }}
-                  app_git_tag: ${{ github.ref_name }}
-                  rebuild_backend_image: ${{ inputs.rebuild_backend_image }}
-                  rebuild_frontend_image: ${{ inputs.rebuild_frontend_image }}
-                  import_dataset: ${{ inputs.import_dataset }}
-                  no_cache: ${{ inputs.no_cache }}
-                  workspace_folder: ${{ github.workspace }}
-                  docker_registry: ${{ secrets.DOCKER_REGISTRY }}
-                  docker_username: ${{ secrets.DOCKER_USERNAME }}
-                  docker_password: ${{ secrets.DOCKER_PASSWORD }}
-                  docker_app_root: ${{ secrets.DOCKER_APP_ROOT }}
-                  docker_app_code_folder: ${{ secrets.DOCKER_APP_CODE_FOLDER }}
-                  docker_app_config_folder: ${{ secrets.DOCKER_APP_CONFIG_FOLDER }}
-                  docker_app_data_folder: ${{ secrets.DOCKER_APP_DATA_FOLDER }}
-                  docker_app_logs_folder: ${{ secrets.DOCKER_APP_LOGS_FOLDER }}
-                  docker_app_apache_logs_folder: ${{ secrets.DOCKER_APP_APACHE_LOGS_FOLDER }}
-                  ncianalysis_user: ${{ secrets.NCIANALYSIS_USER }}
-                  database_url: ${{ secrets.DATABASE_URL }}
-                  EOF
+                INSTANCE_ID=$(aws ec2 describe-instances \
+                  --filters "Name=tag:Name,Values=${{ secrets.EC2_INSTANCE_NAME }}" \
+                            "Name=instance-state-name,Values=running" \
+                  --query "Reservations[0].Instances[0].InstanceId" \
+                  --output text)
+                
+                if [ "$INSTANCE_ID" == "None" ] || [ -z "$INSTANCE_ID" ]; then
+                  echo "Error: Could not find running EC2 instance with name ${{ secrets.EC2_INSTANCE_NAME }}"
+                  exit 1
+                fi
+                
+                echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+                echo "Found EC2 instance: $INSTANCE_ID"
 
-            - name: Run Ansible playbook
+            - name: Deploy to EC2 via SSM
               run: |
-                  ansible-playbook \
-                    -i inventory.ini \
-                    -e @vars.yml \
-                    cprosite-deploy.yml
+                # Create deployment script
+                cat > deploy-script.sh << 'DEPLOY_SCRIPT'
+                #!/bin/bash
+                set -e
+                
+                echo "=== Starting deployment ==="
+                cd ${{ secrets.DOCKER_APP_ROOT }}
+                
+                # Login to ECR
+                echo "=== Logging in to ECR ==="
+                aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+                
+                # Update docker-compose.yml to use ECR images
+                cat > docker-compose.yml << 'EOF'
+                version: "3"
+                services:
+                  backend:
+                    image: ${{ steps.image-tags.outputs.backend_latest }}
+                    volumes:
+                      - "${{ secrets.DOCKER_APP_CONFIG_FOLDER }}/config.json:/deploy/server/config.json:ro"
+                      - "${{ secrets.DOCKER_APP_LOGS_FOLDER }}:/deploy/logs"
+                    ports:
+                      - "10000:10000"
+                    restart: unless-stopped
+
+                  frontend:
+                    image: ${{ steps.image-tags.outputs.frontend_latest }}
+                    environment:
+                      API_HOST: http://backend:10000
+                    ports:
+                      - "8400:80"
+                    restart: unless-stopped
+                EOF
+                
+                # Pull latest images
+                echo "=== Pulling latest images ==="
+                docker-compose pull
+                
+                # Stop and remove old containers
+                echo "=== Stopping old containers ==="
+                docker-compose down
+                
+                # Start new containers
+                echo "=== Starting new containers ==="
+                docker-compose up -d
+                
+                # Show running containers
+                echo "=== Running containers ==="
+                docker-compose ps
+                
+                echo "=== Deployment completed successfully ==="
+                DEPLOY_SCRIPT
+                
+                # Send script to EC2 and execute
+                COMMAND_ID=$(aws ssm send-command \
+                  --instance-ids "${{ steps.get-instance.outputs.instance_id }}" \
+                  --document-name "AWS-RunShellScript" \
+                  --parameters "commands=$(cat deploy-script.sh)" \
+                  --query "Command.CommandId" \
+                  --output text)
+                
+                echo "SSM Command ID: $COMMAND_ID"
+                
+                # Wait for the command to finish
+                echo "Waiting for deployment to complete..."
+                for i in {1..60}; do
+                  STATUS=$(aws ssm get-command-invocation \
+                    --command-id "$COMMAND_ID" \
+                    --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
+                    --query "Status" \
+                    --output text)
+                  
+                  echo "Status: $STATUS (attempt $i/60)"
+                  
+                  if [[ "$STATUS" == "Success" ]]; then
+                    echo "✅ Deployment successful!"
+                    break
+                  elif [[ "$STATUS" =~ ^(Failed|Cancelled|TimedOut)$ ]]; then
+                    echo "❌ Deployment failed with status: $STATUS"
+                    exit 1
+                  fi
+                  
+                  sleep 5
+                done
+                
+                # Get the output
+                echo "=== Deployment Output ==="
+                aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
+                  --query "StandardOutputContent" \
+                  --output text
+                
+                # Get the error output if any
+                ERROR_OUTPUT=$(aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
+                  --query "StandardErrorContent" \
+                  --output text)
+                
+                if [ -n "$ERROR_OUTPUT" ]; then
+                  echo "=== Deployment Errors ==="
+                  echo "$ERROR_OUTPUT"
+                fi
+
+            - name: Import dataset
+              if: ${{ inputs.import_dataset }}
+              run: |
+                echo "Importing dataset via SSM..."
+                COMMAND_ID=$(aws ssm send-command \
+                  --instance-ids "${{ steps.get-instance.outputs.instance_id }}" \
+                  --document-name "AWS-RunShellScript" \
+                  --parameters 'commands=["cd ${{ secrets.DOCKER_APP_ROOT }}/database && npm run import"]' \
+                  --query "Command.CommandId" \
+                  --output text)
+                
+                # Wait and check status
+                sleep 10
+                aws ssm get-command-invocation \
+                  --command-id "$COMMAND_ID" \
+                  --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
+                  --query "StandardOutputContent" \
+                  --output text
 
             - name: Deployment summary
               if: success()
               run: |
-                  echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Application**: cprosite" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Environment**: ${{ inputs.tier }}" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Git Reference**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Backend Image Rebuilt**: ${{ inputs.rebuild_backend_image }}" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Frontend Image Rebuilt**: ${{ inputs.rebuild_frontend_image }}" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Database Imported**: ${{ inputs.import_dataset }}" >> $GITHUB_STEP_SUMMARY
-                  echo "- **Deployed to**: ${{ secrets.DEPLOY_HOST }}" >> $GITHUB_STEP_SUMMARY
-                  echo "" >> $GITHUB_STEP_SUMMARY
-                  echo "✅ Deployment completed successfully!" >> $GITHUB_STEP_SUMMARY
+                echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+                echo "- **Application**: cprosite" >> $GITHUB_STEP_SUMMARY
+                echo "- **Environment**: ${{ inputs.tier }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **Git Reference**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **Backend Image**: ${{ steps.image-tags.outputs.backend_tag }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **Frontend Image**: ${{ steps.image-tags.outputs.frontend_tag }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **Backend Rebuilt**: ${{ inputs.rebuild_backend_image }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **Frontend Rebuilt**: ${{ inputs.rebuild_frontend_image }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **Database Imported**: ${{ inputs.import_dataset }}" >> $GITHUB_STEP_SUMMARY
+                echo "- **EC2 Instance**: ${{ steps.get-instance.outputs.instance_id }}" >> $GITHUB_STEP_SUMMARY
+                echo "" >> $GITHUB_STEP_SUMMARY
+                echo "✅ Deployment completed successfully!" >> $GITHUB_STEP_SUMMARY
