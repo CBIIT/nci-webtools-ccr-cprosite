@@ -137,6 +137,8 @@ jobs:
                       "echo '=== Checking database ==='",
                       "ls -lh ${{ secrets.DOCKER_APP_ROOT }}/database/ || echo 'Database directory does not exist'",
                       "if [ -f ${{ secrets.DOCKER_APP_ROOT }}/database/cprosite.db ]; then echo 'Database file exists'; ls -lh ${{ secrets.DOCKER_APP_ROOT }}/database/cprosite.db; else echo 'WARNING: Database file not found at ${{ secrets.DOCKER_APP_ROOT }}/database/cprosite.db'; fi",
+                      "echo '=== Searching for existing cprosite.db files on EC2 ==='",
+                      "find /local -name 'cprosite.db' -type f -size +1M 2>/dev/null || echo 'No cprosite.db files larger than 1MB found'",
                       "echo '=== Pulling latest images ==='",
                       "docker compose pull --quiet",
                       "echo '=== Stopping cprosite containers by name ==='",
