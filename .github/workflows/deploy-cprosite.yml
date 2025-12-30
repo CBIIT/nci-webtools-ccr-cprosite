@@ -166,6 +166,8 @@ jobs:
                       "docker compose exec -T backend test -f /deploy/database/cprosite.db && echo 'Database file accessible in container' || echo 'WARNING: Database file NOT accessible in container'",
                       "echo '=== Running containers ==='",
                       "docker compose ps",
+                      "echo '=== Checking backend logs ==='",
+                      "docker compose logs backend --tail 50",
                       "echo '=== Deployment completed successfully ==='"
                     ]
                   }
