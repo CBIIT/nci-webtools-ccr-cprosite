@@ -38,11 +38,11 @@ env:
     TZ: America/New_York
     AWS_REGION: us-east-1
     AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-    ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/${{ env.APP }}
-    ECR_REPOSITORY: ${{ env.APP }}
-    DOCKER_APP_ROOT: /local/content/docker_apps/${{ env.APP }}
-    DOCKER_APP_CONFIG_FOLDER: /local/content/docker_apps/${{ env.APP }}/config
-    DOCKER_APP_LOGS_FOLDER: /local/content/docker_apps/${{ env.APP }}/logs
+    ECR_REGISTRY: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/cprosite
+    ECR_REPOSITORY: cprosite
+    DOCKER_APP_ROOT: /local/content/docker_apps/cprosite
+    DOCKER_APP_CONFIG_FOLDER: /local/content/docker_apps/cprosite/config
+    DOCKER_APP_LOGS_FOLDER: /local/content/docker_apps/cprosite/logs
 
 jobs:
     Deploy:
