@@ -91,6 +91,10 @@ jobs:
                 
                 echo "Rendered docker-compose.yml:"
                 cat docker-compose-rendered.yml
+                
+                # Base64 encode for safe transfer
+                COMPOSE_BASE64=$(base64 -w 0 docker-compose-rendered.yml 2>/dev/null || base64 docker-compose-rendered.yml)
+                echo "compose_base64=$COMPOSE_BASE64" >> $GITHUB_OUTPUT
               id: compose
 
             - name: Get EC2 instance ID
@@ -112,9 +116,6 @@ jobs:
 
             - name: Deploy to EC2 via SSM
               run: |
-                # Read the rendered docker-compose content
-                COMPOSE_CONTENT=$(cat docker-compose-rendered.yml)
-                
                 # Create deployment commands as JSON
                 cat > commands.json << 'EOF'
                 {
@@ -135,8 +136,8 @@ jobs:
                       "cat > docker-compose.yml << 'COMPOSE_EOF'\n$COMPOSE_CONTENT\nCOMPOSE_EOF",
                       "cat docker-compose.yml",
                       "echo '=== Checking database ==='",
-                      "ls -lh ${{ env.DOCKER_APP_DATA_FOLDER }}/ || echo 'Data directory does not exist'",
-                      "if [ -f ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db ]; then echo 'Database file exists'; ls -lh ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db; else echo 'WARNING: Database file not found at ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db'; fi",
+                      "echo '${{ steps.compose.outputs.compose_base64 }}' | base64 -d > docker-compose.yml",
+                      "echo 'Generated docker-compose.yml:'; if [ -f ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db ]; then echo 'Database file exists'; ls -lh ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db; else echo 'WARNING: Database file not found at ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db'; fi",
                       "echo '=== Pulling latest images ==='",
                       "docker compose pull --quiet",
                       "echo '=== Stopping cprosite containers by name ==='",
