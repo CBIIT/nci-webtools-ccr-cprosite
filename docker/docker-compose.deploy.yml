@@ -1,0 +1,18 @@
+version: "3"
+services:
+  backend:
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:backend-${TIER}-latest
+    volumes:
+      - "${DOCKER_APP_CONFIG_FOLDER}/config.json:/deploy/server/config.json:ro"
+      - "${DOCKER_APP_LOGS_FOLDER}:/deploy/logs"
+      - "${DOCKER_APP_DATA_FOLDER}:/deploy/database"
+    ports:
+      - "10000:8000"
+    restart: unless-stopped
+  frontend:
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:frontend-${TIER}-latest
+    environment:
+      API_HOST: http://backend:8000
+    ports:
+      - "8400:80"
+    restart: unless-stopped

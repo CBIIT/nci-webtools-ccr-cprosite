@@ -78,6 +78,21 @@ jobs:
                 cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-buildcache
                 cache-to: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-buildcache,mode=max
 
+            - name: Prepare docker-compose file
+              run: |
+                export ECR_REGISTRY="${{ env.ECR_REGISTRY }}"
+                export ECR_REPOSITORY="${{ env.ECR_REPOSITORY }}"
+                export TIER="${{ inputs.tier }}"
+                export DOCKER_APP_CONFIG_FOLDER="${{ env.DOCKER_APP_CONFIG_FOLDER }}"
+                export DOCKER_APP_LOGS_FOLDER="${{ env.DOCKER_APP_LOGS_FOLDER }}"
+                export DOCKER_APP_DATA_FOLDER="${{ env.DOCKER_APP_DATA_FOLDER }}"
+                
+                envsubst < docker/docker-compose.deploy.yml > docker-compose-rendered.yml
+                
+                echo "Rendered docker-compose.yml:"
+                cat docker-compose-rendered.yml
+              id: compose
+
             - name: Get EC2 instance ID
               id: get-instance
               run: |
@@ -97,6 +112,9 @@ jobs:
 
             - name: Deploy to EC2 via SSM
               run: |
+                # Read the rendered docker-compose content
+                COMPOSE_CONTENT=$(cat docker-compose-rendered.yml)
+                
                 # Create deployment commands as JSON
                 cat > commands.json << 'EOF'
                 {
@@ -114,7 +132,8 @@ jobs:
                       "if [ ! -f ${{ env.DOCKER_APP_CONFIG_FOLDER }}/config.json ]; then echo 'config.json not found, creating default...'; cat > ${{ env.DOCKER_APP_CONFIG_FOLDER }}/config.json << 'CONFIG_EOF'\n{\n  \"database\": \"../database/cprosite.db\",\n  \"server\": {\n    \"port\": 10000,\n    \"client\": \"../client/build\"\n  },\n  \"logs\": {\n    \"folder\": \"logs\",\n    \"level\": \"info\"\n  }\n}\nCONFIG_EOF\nelse echo 'config.json already exists'; fi",
                       "echo 'Current config.json:'; cat ${{ env.DOCKER_APP_CONFIG_FOLDER }}/config.json",
                       "echo '=== Creating docker-compose.yml ==='",
-                      "cat > docker-compose.yml << 'COMPOSE_EOF'\nversion: \"3\"\nservices:\n  backend:\n    image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ inputs.tier }}-latest\n    volumes:\n      - \"${{ env.DOCKER_APP_CONFIG_FOLDER }}/config.json:/deploy/server/config.json:ro\"\n      - \"${{ env.DOCKER_APP_LOGS_FOLDER }}:/deploy/logs\"\n      - \"${{ env.DOCKER_APP_DATA_FOLDER }}:/deploy/database\"\n    ports:\n      - \"10000:8000\"\n    restart: unless-stopped\n  frontend:\n    image: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-latest\n    environment:\n      API_HOST: http://backend:8000\n    ports:\n      - \"8400:80\"\n    restart: unless-stopped\nCOMPOSE_EOF",
+                      "cat > docker-compose.yml << 'COMPOSE_EOF'\n$COMPOSE_CONTENT\nCOMPOSE_EOF",
+                      "cat docker-compose.yml",
                       "echo '=== Checking database ==='",
                       "ls -lh ${{ env.DOCKER_APP_DATA_FOLDER }}/ || echo 'Data directory does not exist'",
                       "if [ -f ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db ]; then echo 'Database file exists'; ls -lh ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db; else echo 'WARNING: Database file not found at ${{ env.DOCKER_APP_DATA_FOLDER }}/cprosite.db'; fi",
