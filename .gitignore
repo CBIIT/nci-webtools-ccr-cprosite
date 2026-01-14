@@ -6,3 +6,4 @@ database/data
 config.json
 server/logs
 *.yaml
+DEPLOYMENT_GUIDE.md
