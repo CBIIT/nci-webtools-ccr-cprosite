@@ -12,11 +12,6 @@ on:
                     - qa
                     - stage
                     - prod
-            import_dataset:
-                description: "Import cprosite.db dataset"
-                required: false
-                default: false
-                type: boolean
 
 env:
     APP: cprosite
@@ -64,7 +59,7 @@ jobs:
                 tags: |
                   ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ inputs.tier }}-${{ github.sha }}
                   ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ inputs.tier }}-latest
-                cache-from: type=registry,ref=${{ env.BACKEND_IMAGE_LATEST }}
+                cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:backend-${{ inputs.tier }}-latest
                 cache-to: type=inline
 
             - name: Build and push frontend image
@@ -76,7 +71,7 @@ jobs:
                 tags: |
                   ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-${{ github.sha }}
                   ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-latest
-                cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE_LATEST }}
+                cache-from: type=registry,ref=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ inputs.tier }}-latest
                 cache-to: type=inline
 
             - name: Prepare docker-compose file
