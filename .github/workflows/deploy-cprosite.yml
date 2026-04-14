@@ -88,6 +88,9 @@ jobs:
         run: |
           envsubst < $DOCKER_COMPOSE_TEMPLATE_PATH > docker-compose-rendered.yml
 
+          echo "Rendered docker-compose.yml:"
+          cat docker-compose-rendered.yml
+
           COMPOSE_BASE64=$(base64 -w 0 docker-compose-rendered.yml 2>/dev/null || base64 docker-compose-rendered.yml)
           echo "compose_base64=$COMPOSE_BASE64" >> $GITHUB_OUTPUT
 
