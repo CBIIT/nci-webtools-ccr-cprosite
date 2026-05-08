@@ -7,10 +7,10 @@ const PhosDropdown = ({form,sortResults,view,setView,setPhosView,setSite,control
   sortedCancer = sortedCancer.sort((a, b) => (a.label > b.label) ? 1 : -1)
   return(
     <Row>
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+          <Form.Label htmlFor={controlid} className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
-            <Form.Select className="col-xl-4 col-xs-12" style={{width: "66%"}}
+            <Form.Select id={controlid} className="col-xl-4 col-xs-12" style={{width: "66%"}}
               name="caseView"
               onChange={(c) => {
                 setView(parseInt(c.target.value));

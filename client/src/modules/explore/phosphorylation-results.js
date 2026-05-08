@@ -781,7 +781,7 @@ export default function PhosResults() {
               }}
             />
           </div>
-          <div className="mx-3" style={{ color: "grey" }}>
+          <div className="mx-3" style={{ color: "#595959" }}>
             Note: Fold Change may not be statistically significant.
           </div>
         </div>
@@ -875,7 +875,7 @@ export default function PhosResults() {
                     showarrow: false,
                     font: {
                       size: 28,
-                      color: "grey",
+                      color: "#595959",
                     },
                   },
                 ],
@@ -930,17 +930,18 @@ export default function PhosResults() {
           :''}
           </Col>
           
-          <Form.Label className="col-xl-1 col-xs-12 col-form-label m-2" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
+          <Form.Label htmlFor="phosViewSelect" className="col-xl-1 col-xs-12 col-form-label m-2" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
          
             <div className="col-xl-2 p-2">
               {tumorViewData.length === 0 ? (
-                <Select disabled>
+                <Form.Select id="phosViewSelect" disabled>
                   <option value="">No Option</option>
-                </Select>
+                </Form.Select>
               ) : (
                 <Form.Select
+                  id="phosViewSelect"
                   name="phosView"
                   onChange={(e) => {
                     setPhosView(e.target.value);
@@ -1021,7 +1022,7 @@ export default function PhosResults() {
                       showarrow: false,
                       font: {
                         size: 28,
-                        color: "grey",
+                        color: "#595959",
                       },
                     },
                   ],
@@ -1102,7 +1103,7 @@ export default function PhosResults() {
                       showarrow: false,
                       font: {
                         size: 28,
-                        color: "grey",
+                        color: "#595959",
                       },
                     },
                   ],
@@ -1117,7 +1118,7 @@ export default function PhosResults() {
             </Col>
           )}
         </Row>
-        <fieldset className="mx-5 mb-5 border row" style={{ color: "grey" }}>
+        <fieldset className="mx-5 mb-5 border row" style={{ color: "#595959" }}>
           <div className="col-xl-6 my-2 d-flex justify-content-center">Accession: {site.accession}</div>
 
           <div className="col-xl-6 my-2 d-flex justify-content-center">Peptide: {site.phosphopeptide}</div>

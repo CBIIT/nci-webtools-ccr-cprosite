@@ -593,7 +593,7 @@ export default function Results() {
                     showarrow: false,
                     font: {
                       size: 28,
-                      color: "grey",
+                      color: "#595959",
                     },
                   },
                 ],
@@ -630,7 +630,7 @@ export default function Results() {
 
       <Tab eventKey="tumorView" title="Tumor View">
         <Form.Group className="row mx-3" controlId="tumorView">
-           {results.length >1? <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+           {results.length >1? <Form.Label htmlFor="tumorViewDropdown" className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
             Tumor Type
           </Form.Label>
           : ''}
@@ -705,7 +705,7 @@ export default function Results() {
                       showarrow: false,
                       font: {
                         size: 28,
-                        color: "grey",
+                        color: "#595959",
                       },
                     },
                   ],
@@ -788,7 +788,7 @@ export default function Results() {
                       showarrow: false,
                       font: {
                         size: 28,
-                        color: "grey",
+                        color: "#595959",
                       },
                     },
                   ],

@@ -1,12 +1,11 @@
 import Form from "react-bootstrap/Form";
 
-const TypeDropdownCorrelation = ({ form, view, setView, setLabel }) => {
-  //let sortedCancer = [...form.cancer.filter(c=>!c.label.includes("Brain"))]
-  let sortedCancer = [...form.cancer.filter(c => c.label)]
-  sortedCancer = sortedCancer.sort((a, b) => (a.label > b.label) ? 1 : -1)
+const TypeDropdownCorrelation = ({ form, view, setView, setLabel, controlid }) => {
+  const sortedCancer = [...form.cancer.filter(c => c.label)].sort((a, b) => (a.label > b.label) ? 1 : -1)
   return (
     <div className="col-xl-5">
       <Form.Select
+        id={controlid}
         name="caseView"
         onChange={(e) => {
           if (e.target.value === "all") {
@@ -17,7 +16,6 @@ const TypeDropdownCorrelation = ({ form, view, setView, setLabel }) => {
             setLabel(form.cancer.find((d) => d.value === parseInt(e.target.value)).label);
           }
         }}
-        // value={view}
         required>
         {form.cancer.length > 1 && (
           <option value="all" key={`dataset-all`}>
