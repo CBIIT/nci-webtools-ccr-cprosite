@@ -14,7 +14,6 @@ import Tooltip from "react-bootstrap/Tooltip";
 // import ReactExport from "react-data-export";
 import { ExcelFile, ExcelSheet } from "../components/excel-export";
 import PhosDropdown from "../components/phospy-dropdown"
-import Select from "react-select";
 import { useImperativeHandle, useState } from "react";
 import _ from "lodash";
 
@@ -802,14 +801,14 @@ export default function PhosResults() {
       <Tab eventKey="tumorView" title="Tumor View">
         <Row className="m-3">
           <Col lg={tumors.length >1? 6:'auto'}  className="p-2">
-         {tumors.length >1? 
-            <PhosDropdown form={form} 
-            sortResults={sortResults} 
-            view = {view} 
-            setView ={setView} 
+         {tumors.length >1?
+            <PhosDropdown form={form}
+            sortResults={sortResults}
+            view = {view}
+            setView ={setView}
             setPhosView={setPhosView}
             setSite={setSite}
-            controlid="PhosphSiteDropdown"/>
+            controlid="PhosphSiteDropdown-tumorView"/>
           :''}
           </Col>
           {/* <ToggleButtonGroup
@@ -919,17 +918,17 @@ export default function PhosResults() {
          <Form.Group className="row mx-3 m-3" controlId="phosView">
            <Row >
              <Col lg={tumors.length >1? 6:'auto'} className="p-2">
-           {tumors.length >1? 
-            <PhosDropdown form={form} 
-            sortResults={sortResults} 
-            view = {view} 
-            setView ={setView} 
+           {tumors.length >1?
+            <PhosDropdown form={form}
+            sortResults={sortResults}
+            view = {view}
+            setView ={setView}
             setPhosView={setPhosView}
             setSite={setSite}
-            controlid="PhosphSiteDropdown"/>
+            controlid="PhosphSiteDropdown-phosView"/>
           :''}
           </Col>
-          
+
           <Form.Label htmlFor="phosViewSelect" className="col-xl-1 col-xs-12 col-form-label m-2" style={{ minWidth: "160px", whiteSpace: "nowrap" }}>
             Phosphorylation Site
           </Form.Label>
