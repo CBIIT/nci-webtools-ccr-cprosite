@@ -609,7 +609,7 @@ export default function RNAResults() {
                                         showarrow: false,
                                         font: {
                                             size: 28,
-                                            color: "grey",
+                                            color: "#595959",
                                         },
                                     },
                                     ...summaryDataEmpty(rnaType === "cptac" ? rnaSummary : tcgaSummary),
@@ -647,7 +647,7 @@ export default function RNAResults() {
             <Tab eventKey="tumorView" title="Tumor View">
                 <Form.Group className="row mx-3" controlId="tumorView">
                     <div className="row col-xl-12 mb-3">
-                        {form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+                        {form.cancer.length > 1 ? <Form.Label htmlFor="tumorViewDropdown" className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
                             Tumor Type
                         </Form.Label>
                             : ''}
@@ -741,7 +741,7 @@ export default function RNAResults() {
                                                 showarrow: false,
                                                 font: {
                                                     size: 28,
-                                                    color: "grey",
+                                                    color: "#595959",
                                                 },
                                             },
                                         ],
@@ -816,7 +816,7 @@ export default function RNAResults() {
                                                 showarrow: false,
                                                 font: {
                                                     size: 28,
-                                                    color: "grey",
+                                                    color: "#595959",
                                                 },
                                             },
                                         ],
@@ -914,7 +914,7 @@ export default function RNAResults() {
                                                 showarrow: false,
                                                 font: {
                                                     size: 28,
-                                                    color: "grey",
+                                                    color: "#595959",
                                                 },
                                             },
                                         ],
@@ -989,7 +989,7 @@ export default function RNAResults() {
                                                 showarrow: false,
                                                 font: {
                                                     size: 28,
-                                                    color: "grey",
+                                                    color: "#595959",
                                                 },
                                             },
                                         ],

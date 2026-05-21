@@ -769,12 +769,12 @@ export default function ProteinGeneCorrelation() {
         <Tab eventKey="summaryView" title="Summary">
           <Form.Group className="row mx-3 m-2" controlId="tumorView">
             {form.cancer.length > 1 ?
-              <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+              <Form.Label htmlFor="tumorGeneDropdown" className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
                 Tumor Type
               </Form.Label> : ''}
             {form.cancer.length > 1 ?
               <div className="col-xl-7">
-                <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} >
+                <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} controlid="tumorGeneDropdown">
                 </TypeDropdownCorrelation>
               </div> : ''}
             <div className="p-3">
@@ -803,7 +803,7 @@ export default function ProteinGeneCorrelation() {
                       showarrow: false,
                       font: {
                         size: 28,
-                        color: "grey",
+                        color: "#595959",
                       },
                     },
                   ],
@@ -823,7 +823,7 @@ export default function ProteinGeneCorrelation() {
             </Col>
           </Row>
 
-          <fieldset className="mx-5 mb-3 border" style={{ color: "grey" }}>
+          <fieldset className="mx-5 mb-3 border" style={{ color: "#595959" }}>
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Tumor Correlation:{" "}
@@ -974,7 +974,7 @@ export default function ProteinGeneCorrelation() {
           </fieldset>
 
           {form.cancer.find((e) => e.value === currentTumor[0]).singlePool === 1 && (
-            <div className="mx-5" style={{ color: "grey" }}>
+            <div className="mx-5" style={{ color: "#595959" }}>
               Note: {form.cancer.find((e) => e.value === currentTumor[0]).label} is a single pool type tumor set
             </div>
           )}
@@ -1020,6 +1020,7 @@ export default function ProteinGeneCorrelation() {
             </Form.Label>
             <div className="col-xl-5" style={{ width: "36%" }}>
               <Select
+                inputId="siteTumor"
                 name="siteTumor"
                 value={
                   form.cancer.find((e) => e.value === siteTumor.value)
@@ -1088,12 +1089,13 @@ export default function ProteinGeneCorrelation() {
       {(form.dataset.value === "phosphoproteinData" || form.dataset.value === "phosphoproteinRatioData") && (
         <Tab eventKey="siteView" title="Phosphorylation Site">
             <Row className="m-1">
-              <Form.Group className="col-xxl-4 col-xl-12 col-lg-4 col-md-12 col-sm-12" controlId="site1" >
+              <Form.Group className="col-xxl-4 col-xl-12 col-lg-4 col-md-12 col-sm-12" controlId="siteViewTumor" >
                 <Form.Label className="required " style={{ whiteSpace: "nowrap ", minWidth: "120px" }}>
                   Tumor Type
                 </Form.Label>
                 <div className="col-xl-12">
                   <Select
+                    inputId="siteViewTumor"
                     name="siteTumor"
                     value={
                       form.cancer.find((e) => e.value === siteTumor.value)
@@ -1116,6 +1118,7 @@ export default function ProteinGeneCorrelation() {
                   {firstGene} Phosphorylation Site
                 </Form.Label>
                 <Select
+                  inputId="site1"
                   name="firstSite"
                   value={firstSite}
                   options={firstSites}
@@ -1129,6 +1132,7 @@ export default function ProteinGeneCorrelation() {
                   {secondGene} Phosphorylation Site or Protein
                 </Form.Label>
                 <Select
+                  inputId="site2"
                   name="secondSite"
                   value={secondSite}
                   options={secondSites}
@@ -1188,7 +1192,7 @@ export default function ProteinGeneCorrelation() {
                       showarrow: false,
                       font: {
                         size: 28,
-                        color: "grey",
+                        color: "#595959",
                       },
                     },
                   ],
@@ -1207,7 +1211,7 @@ export default function ProteinGeneCorrelation() {
             </Col>
           </Row>
 
-          <fieldset className="mx-5 mb-3 border" style={{ color: "grey" }}>
+          <fieldset className="mx-5 mb-3 border" style={{ color: "#595959" }}>
             <Row>
               <div className="col-xl-4 my-2 d-flex justify-content-center">
                 Tumor Correlation:{" "}                              
@@ -1361,7 +1365,7 @@ export default function ProteinGeneCorrelation() {
             </Row>
           </fieldset>
           {siteTumor.singlePool === 1 && (
-            <div className="mx-5" style={{ color: "grey" }}>
+            <div className="mx-5" style={{ color: "#595959" }}>
               Note: {siteTumor.label} is a single pool type tumor set
             </div>
           )}

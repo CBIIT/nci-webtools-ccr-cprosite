@@ -326,7 +326,7 @@ export default function MRNACorrelation() {
             <Tab eventKey="summaryView" title="Summary">
                 <Form.Group className="row m-3" controlId="mRNACorrelationView">
                     <div className="row col-xl-12 mb-3">
-                        {form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
+                        {form.cancer.length > 1 ? <Form.Label htmlFor="tumorViewDropdown" className="col-xl-1 col-xs-12 col-form-label" style={{ minWidth: "120px" }}>
                             Tumor Type
                         </Form.Label>
                             : ''}
@@ -397,7 +397,7 @@ export default function MRNACorrelation() {
                                             showarrow: false,
                                             font: {
                                                 size: 28,
-                                                color: "grey",
+                                                color: "#595959",
                                             },
                                         },
                                     ],
@@ -416,7 +416,7 @@ export default function MRNACorrelation() {
                         </Col>
                     </Row>
 
-                  <fieldset className="ml-5 mb-5 border" style={{ color: "grey" }}>
+                  <fieldset className="ml-5 mb-5 border" style={{ color: "#595959" }}>
                         <Row>
                             <div className="col-xl-4 my-2 d-flex justify-content-center">
                             {/* Tumor Correlation:{" "}
