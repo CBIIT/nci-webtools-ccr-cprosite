@@ -1,20 +1,18 @@
+version: "3"
 services:
   backend:
-    image: ${BACKEND_IMAGE_LATEST}
-    environment:
-      NODE_ENV: production
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:backend-${TIER}-latest
     volumes:
-      - "${APP_HOST_CONFIG_FOLDER}/config.json:/deploy/server/config.json:ro"
-      - "${APP_HOST_CONFIG_FOLDER}/contrast_security.yaml:/deploy/server/contrast_security.yaml:ro"
-      - "${APP_HOST_LOGS_FOLDER}:/deploy/logs"
-      - "${APP_HOST_DATA_FOLDER}:/deploy/database"
+      - "${DOCKER_APP_CONFIG_FOLDER}/config.json:/deploy/server/config.json:ro"
+      - "${DOCKER_APP_LOGS_FOLDER}:/deploy/logs"
+      - "${DOCKER_APP_DATA_FOLDER}:/deploy/database"
     ports:
-      - "${BACKEND_PORT}:8000"
+      - "10000:8000"
     restart: unless-stopped
   frontend:
-    image: ${FRONTEND_IMAGE_LATEST}
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:frontend-${TIER}-latest
     environment:
       API_HOST: http://backend:8000
     ports:
-      - "${FRONTEND_PORT}:80"
+      - "8400:80"
     restart: unless-stopped
