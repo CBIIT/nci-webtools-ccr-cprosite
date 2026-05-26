@@ -25,104 +25,220 @@ jobs:
       APP: cprosite
       TZ: America/New_York
       AWS_REGION: us-east-1
-      APP_HOST_ROOT: /local/content/docker_apps/cprosite
-      APP_HOST_DATA_FOLDER: /local/content/docker_apps/cprosite/data
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6.0.2
 
+    steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6.0.0
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/ec2-role-analysistools-${{ inputs.tier }}-role
+          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Get EC2 instance ID
-        id: get-instance
+      - name: Get infrastructure details
+        id: infra
         run: |
-          INSTANCE_ID=$(aws ec2 describe-instances \
-            --filters "Name=tag:Name,Values=${{ vars.EC2_INSTANCE_NAME }}" \
-                      "Name=instance-state-name,Values=running" \
-            --query "Reservations[0].Instances[0].InstanceId" \
+          # EFS details from storage stack
+          EFS_ID=$(aws cloudformation describe-stacks \
+            --stack-name "cprosite-storage-${{ inputs.tier }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='FileSystemId'].OutputValue" \
             --output text)
 
-          if [ "$INSTANCE_ID" == "None" ] || [ -z "$INSTANCE_ID" ]; then
-            echo "Error: Could not find running EC2 instance with name ${{ vars.EC2_INSTANCE_NAME }}"
-            exit 1
-          fi
+          AP_ID=$(aws cloudformation describe-stacks \
+            --stack-name "cprosite-storage-${{ inputs.tier }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='AccessPointId'].OutputValue" \
+            --output text)
 
-          echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+          # VPC and networking from network stack
+          VPC_ID=$(aws cloudformation describe-stacks \
+            --stack-name "cprosite-network-${{ inputs.tier }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='VpcId'].OutputValue" \
+            --output text)
 
-      - name: Import cprosite.db via SSM
+          # One private subnet is sufficient for a one-off task
+          SUBNET_ID=$(aws ec2 describe-subnets \
+            --filters "Name=vpc-id,Values=$VPC_ID" \
+                      "Name=tag:Name,Values=*Private*" \
+            --query "Subnets[0].SubnetId" \
+            --output text)
+
+          ECS_SG=$(aws ec2 describe-security-groups \
+            --filters "Name=vpc-id,Values=$VPC_ID" \
+                      "Name=group-name,Values=cprosite-${{ inputs.tier }}-ecs" \
+            --query "SecurityGroups[0].GroupId" \
+            --output text)
+
+          EXEC_ROLE=$(aws iam get-role \
+            --role-name "cprosite-${{ inputs.tier }}-ecs-execution" \
+            --query "Role.Arn" --output text)
+
+          TASK_ROLE=$(aws iam get-role \
+            --role-name "cprosite-${{ inputs.tier }}-ecs-task" \
+            --query "Role.Arn" --output text)
+
+          echo "efs_id=$EFS_ID"       >> $GITHUB_OUTPUT
+          echo "ap_id=$AP_ID"         >> $GITHUB_OUTPUT
+          echo "subnet_id=$SUBNET_ID" >> $GITHUB_OUTPUT
+          echo "ecs_sg=$ECS_SG"       >> $GITHUB_OUTPUT
+          echo "exec_role=$EXEC_ROLE" >> $GITHUB_OUTPUT
+          echo "task_role=$TASK_ROLE" >> $GITHUB_OUTPUT
+
+      - name: Ensure CloudWatch log group exists
         run: |
-          # Create command to import database
-          cat > commands.json << 'EOF'
+          aws logs create-log-group \
+            --log-group-name "/ecs/cprosite-${{ inputs.tier }}-import" 2>/dev/null || true
+
+      - name: Register one-off import task definition
+        id: register-task
+        run: |
+          # Import command: backup existing db, download new db, validate size
+          IMPORT_CMD="set -e; \
+            DB=/deploy/database/cprosite.db; \
+            mkdir -p /deploy/database; \
+            if [ -f \$DB ]; then \
+              cp \$DB \${DB}.bak.\$(date +%Y%m%d_%H%M%S) && echo Backup created; \
+            fi; \
+            echo Downloading database...; \
+            curl -fL -o \$DB \"\$DATABASE_URL\"; \
+            if [ ! -s \$DB ]; then echo ERROR: downloaded file is empty; exit 1; fi; \
+            echo Import complete. Size: \$(du -sh \$DB | cut -f1)"
+
+          cat > task-def.json << EOF
           {
-            "Parameters": {
-              "commands": [
-                "set -e",
-                "mkdir -p ${{ env.APP_HOST_DATA_FOLDER }}",
-                "if [ -f ${{ env.APP_HOST_DATA_FOLDER }}/cprosite.db ]; then cp -v ${{ env.APP_HOST_DATA_FOLDER }}/cprosite.db ${{ env.APP_HOST_DATA_FOLDER }}/cprosite.db.backup.$(date +%Y%m%d_%H%M%S); fi",
-                "rm -f ${{ env.APP_HOST_DATA_FOLDER }}/cprosite.db",
-                "curl -o ${{ env.APP_HOST_DATA_FOLDER }}/cprosite.db '${{ vars.DATABASE_URL }}'",
-                "if [ ! -s ${{ env.APP_HOST_DATA_FOLDER }}/cprosite.db ]; then echo 'ERROR: Database file is empty'; exit 1; fi",
-                "cd ${{ env.APP_HOST_ROOT }}",
-                "docker compose restart backend"
-              ]
-            }
+            "family": "cprosite-${{ inputs.tier }}-import",
+            "requiresCompatibilities": ["FARGATE"],
+            "networkMode": "awsvpc",
+            "cpu": "512",
+            "memory": "1024",
+            "executionRoleArn": "${{ steps.infra.outputs.exec_role }}",
+            "taskRoleArn": "${{ steps.infra.outputs.task_role }}",
+            "volumes": [
+              {
+                "name": "database",
+                "efsVolumeConfiguration": {
+                  "fileSystemId": "${{ steps.infra.outputs.efs_id }}",
+                  "transitEncryption": "ENABLED",
+                  "authorizationConfig": {
+                    "accessPointId": "${{ steps.infra.outputs.ap_id }}",
+                    "iam": "ENABLED"
+                  }
+                }
+              }
+            ],
+            "containerDefinitions": [
+              {
+                "name": "importer",
+                "image": "public.ecr.aws/amazonlinux/amazonlinux:2023",
+                "essential": true,
+                "command": ["sh", "-c", "$IMPORT_CMD"],
+                "environment": [
+                  { "name": "DATABASE_URL", "value": "${{ vars.DATABASE_URL }}" }
+                ],
+                "mountPoints": [
+                  {
+                    "sourceVolume": "database",
+                    "containerPath": "/deploy/database",
+                    "readOnly": false
+                  }
+                ],
+                "logConfiguration": {
+                  "logDriver": "awslogs",
+                  "options": {
+                    "awslogs-group": "/ecs/cprosite-${{ inputs.tier }}-import",
+                    "awslogs-region": "${{ env.AWS_REGION }}",
+                    "awslogs-stream-prefix": "importer"
+                  }
+                }
+              }
+            ]
           }
           EOF
 
-          # Send command to EC2
-          COMMAND_ID=$(aws ssm send-command \
-            --instance-ids "${{ steps.get-instance.outputs.instance_id }}" \
-            --document-name "AWS-RunShellScript" \
-            --cli-input-json file://commands.json \
-            --query "Command.CommandId" \
-            --output text \
-            --timeout-seconds 7200)
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://task-def.json \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
 
-          echo "SSM Command ID: $COMMAND_ID"
+          echo "task_def_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+          echo "Registered: $TASK_DEF_ARN"
 
-          # Wait for command to finish (up to 2 hours)
-          for i in {1..1440}; do
-            STATUS=$(aws ssm get-command-invocation \
-              --command-id "$COMMAND_ID" \
-              --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
-              --query "Status" \
+      - name: Run import task on EFS
+        id: run-task
+        run: |
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "cprosite-${{ inputs.tier }}" \
+            --task-definition "${{ steps.register-task.outputs.task_def_arn }}" \
+            --launch-type FARGATE \
+            --platform-version "1.4.0" \
+            --network-configuration "awsvpcConfiguration={subnets=[${{ steps.infra.outputs.subnet_id }}],securityGroups=[${{ steps.infra.outputs.ecs_sg }}],assignPublicIp=DISABLED}" \
+            --query "tasks[0].taskArn" \
+            --output text)
+
+          echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
+          echo "Import task started: $TASK_ARN"
+
+      - name: Wait for import task to complete (up to 2 hours)
+        run: |
+          CLUSTER="cprosite-${{ inputs.tier }}"
+          TASK_ARN="${{ steps.run-task.outputs.task_arn }}"
+
+          echo "Polling task status..."
+          for i in $(seq 1 1440); do
+            LAST_STATUS=$(aws ecs describe-tasks \
+              --cluster "$CLUSTER" \
+              --tasks "$TASK_ARN" \
+              --query "tasks[0].lastStatus" \
               --output text)
 
-            if [[ "$STATUS" == "Success" ]]; then
-              echo "✅ Import successful!"
+            echo "[$i/1440] Status: $LAST_STATUS"
+
+            if [ "$LAST_STATUS" = "STOPPED" ]; then
               break
-            elif [[ "$STATUS" =~ ^(Failed|Cancelled|TimedOut)$ ]]; then
-              echo "❌ Import failed with status: $STATUS"
-              aws ssm get-command-invocation \
-                --command-id "$COMMAND_ID" \
-                --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
-                --query "StandardOutputContent" \
-                --output text
-              aws ssm get-command-invocation \
-                --command-id "$COMMAND_ID" \
-                --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
-                --query "StandardErrorContent" \
-                --output text
-              exit 1
             fi
-            
+
             sleep 5
           done
 
-          aws ssm get-command-invocation \
-            --command-id "$COMMAND_ID" \
-            --instance-id "${{ steps.get-instance.outputs.instance_id }}" \
-            --query "StandardOutputContent" \
-            --output text
+          # Verify final status
+          STOP_CODE=$(aws ecs describe-tasks \
+            --cluster "$CLUSTER" \
+            --tasks "$TASK_ARN" \
+            --query "tasks[0].stopCode" \
+            --output text)
+
+          EXIT_CODE=$(aws ecs describe-tasks \
+            --cluster "$CLUSTER" \
+            --tasks "$TASK_ARN" \
+            --query "tasks[0].containers[?name=='importer'].exitCode | [0]" \
+            --output text)
+
+          echo "Stop code : $STOP_CODE"
+          echo "Exit code : $EXIT_CODE"
+          echo "Logs      : https://${{ env.AWS_REGION }}.console.aws.amazon.com/cloudwatch/home#logsV2:log-groups/log-group/%2Fecs%2Fcprosite-${{ inputs.tier }}-import"
+
+          if [ "$EXIT_CODE" != "0" ]; then
+            echo "❌ Import failed. Check CloudWatch: /ecs/cprosite-${{ inputs.tier }}-import"
+            exit 1
+          fi
+
+          echo "✅ Import complete"
+
+      - name: Force ECS service redeployment
+        run: |
+          echo "Forcing new deployment so the service picks up the updated database..."
+          aws ecs update-service \
+            --cluster "cprosite-${{ inputs.tier }}" \
+            --service "cprosite-${{ inputs.tier }}" \
+            --force-new-deployment \
+            --output table \
+            --query "service.{Status:status,DesiredCount:desiredCount,RunningCount:runningCount}"
 
       - name: Import summary
         if: success()
         run: |
-          echo "## Import Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Tier:** ${{ inputs.tier }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "## Import Summary"                                                  >> $GITHUB_STEP_SUMMARY
+          echo ""                                                                   >> $GITHUB_STEP_SUMMARY
+          echo "- **Tier:** ${{ inputs.tier }}"                                    >> $GITHUB_STEP_SUMMARY
+          echo "- **EFS File System:** ${{ steps.infra.outputs.efs_id }}"          >> $GITHUB_STEP_SUMMARY
+          echo "- **EFS Access Point:** ${{ steps.infra.outputs.ap_id }}"          >> $GITHUB_STEP_SUMMARY
+          echo "- **Task ARN:** ${{ steps.run-task.outputs.task_arn }}"             >> $GITHUB_STEP_SUMMARY
+          echo "- **Logs:** \`/ecs/cprosite-${{ inputs.tier }}-import\`"           >> $GITHUB_STEP_SUMMARY
+

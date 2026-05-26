@@ -1,0 +1,66 @@
+name: Deploy Frontend
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Deploy environment"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy-cloudfront:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.tier }}
+    env:
+      TIER: ${{ inputs.tier }}
+      AWS_REGION: us-east-1
+    steps:
+      - uses: "actions/checkout@v6.0.1"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+          role-session-name: ${{ env.TIER }}-indagent-deploy-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Copy build assets to S3
+        run: |
+          aws s3 sync static/ s3://nci-cbiit-indagent-website-${{ env.TIER }} --delete
+
+      - name: Invalidate CloudFront Cache (get distribution id from cloudformation stack)
+        run: |
+          DISTRIBUTION_ID=$(aws cloudformation describe-stacks \
+            --stack-name "${{ env.TIER }}-indagent-website" \
+            --query "Stacks[0].Outputs[?OutputKey=='DistributionId'].OutputValue" \
+            --output text)
+
+          if [ -z "$DISTRIBUTION_ID" ] || [ "$DISTRIBUTION_ID" = "None" ]; then
+            echo "CloudFront Distribution ID not found. Redeploy CloudFront stack to get the output."
+            exit 1
+          fi
+
+          echo "Invalidating CloudFront cache..."
+          aws cloudfront create-invalidation \
+            --distribution-id "$DISTRIBUTION_ID" \
+            --paths "/*" \
+            --output table \
+            --query "Invalidation.{Status:Status,CreateTime:CreateTime}" 2>/dev/null
+
+          if [ $? -eq 0 ]; then
+            echo "CloudFront cache invalidation successful"
+          else
+            echo "CloudFront cache invalidation failed"
+            exit 1
+          fi
