@@ -342,13 +342,13 @@ export default function ProteinCorrelation() {
   return (
     <div>
       <Form.Group className="row mx-3 m-3 " controlId="tumorView">
-        {form.cancer.length > 1 ? <Form.Label className="col-xl-1 col-xs-12 col-form-label m-3" style={{ minWidth: "120px" }}>
+        {form.cancer.length > 1 ? <Form.Label htmlFor="tumorCorrelationDropdown" className="col-xl-1 col-xs-12 col-form-label m-3" style={{ minWidth: "120px" }}>
           Tumor Type
         </Form.Label>
           : ''}
         {form.cancer.length > 1 ?
           <div className="col-xl-7 m-3">
-            <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel}>
+            <TypeDropdownCorrelation form={form} view={view} setView={setView} setLabel={setLabel} controlid="tumorCorrelationDropdown">
             </TypeDropdownCorrelation>
           </div> : ''}
 
@@ -381,7 +381,7 @@ export default function ProteinCorrelation() {
                   showarrow: false,
                   font: {
                     size: 28,
-                    color: "grey",
+                    color: "#595959",
                   },
                 },
               ],
@@ -400,7 +400,7 @@ export default function ProteinCorrelation() {
         </Col>
       </Row>
 
-      <fieldset className="mx-5 mb-5 border" style={{ color: "grey" }}>
+      <fieldset className="mx-5 mb-5 border" style={{ color: "#595959" }}>
         <Row>
           {/* <div className="col-xl-4 my-2 d-flex justify-content-center">
             Tumor Correlation:{" "}

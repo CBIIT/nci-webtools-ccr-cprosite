@@ -113,6 +113,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       <Form.Group className="mb-3" controlId="cancer">
         <Form.Label className="required">Tumor Types</Form.Label>
         <Select
+          inputId="cancer"
           placeholder="No cancer selected"
           name="cancer"
           isMulti={true}
@@ -125,6 +126,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       <Form.Group className="mb-3" controlId="dataset">
         <Form.Label className="required">Dataset</Form.Label>
         <Select
+          inputId="dataset"
           name="dataset"
           placeholder="No dataset selected"
           value={form.dataset}
@@ -166,6 +168,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       <Form.Group className="mb-3" controlId="analysis">
         <Form.Label className="required">Analysis</Form.Label>
         <Select
+          inputId="analysis"
           placeholder="No analysis selected"
           name="analysis"
           value={form.analysis}
@@ -202,6 +205,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
       <Form.Group className="mb-3" controlId="gene">
         <Form.Label className="required">Gene</Form.Label>
         <AsyncSelect
+          inputId="gene"
           placeholder="No gene selected"
           name="gene"
           value={form.gene}
@@ -269,6 +273,7 @@ export default function ExploreForm({ onSubmit, onReset }) {
                 Correlated Gene
               </Form.Label>
               <AsyncSelect
+                inputId="correlated-gene"
                 placeholder="No gene selected"
                 name="correlatedGene"
                 value={form.correlatedGene}
