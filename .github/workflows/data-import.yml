@@ -23,56 +23,53 @@ jobs:
     environment: ${{ inputs.tier }}
     env:
       APP: cprosite
+      TIER: ${{ inputs.tier }}
       TZ: America/New_York
       AWS_REGION: us-east-1
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+
 
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
-          role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+          role-to-assume: ${{ env.CICD_ROLE_ARN }}
+          role-session-name: ${{ env.TIER }}-cprosite-import-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Download env files from S3
+        run: |
+          aws s3 cp \
+            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/app.env" \
+            "./app.env"
+          aws s3 cp \
+            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-app.env" \
+            "./${{ env.TIER }}-app.env"
 
       - name: Get infrastructure details
         id: infra
         run: |
-          # EFS details from storage stack
-          EFS_ID=$(aws cloudformation describe-stacks \
-            --stack-name "cprosite-storage-${{ inputs.tier }}" \
-            --query "Stacks[0].Outputs[?OutputKey=='FileSystemId'].OutputValue" \
-            --output text)
+          set -a
+          source ./app.env
+          source ./${{ env.TIER }}-app.env
+          set +a
+
+          EFS_ID="$EFS_ID"
 
           AP_ID=$(aws cloudformation describe-stacks \
-            --stack-name "cprosite-storage-${{ inputs.tier }}" \
-            --query "Stacks[0].Outputs[?OutputKey=='AccessPointId'].OutputValue" \
+            --stack-name "cprosite-app-${{ inputs.tier }}" \
+            --query "Stacks[0].Outputs[?OutputKey=='EfsAccessPointId'].OutputValue" \
             --output text)
 
-          # VPC and networking from network stack
-          VPC_ID=$(aws cloudformation describe-stacks \
-            --stack-name "cprosite-network-${{ inputs.tier }}" \
-            --query "Stacks[0].Outputs[?OutputKey=='VpcId'].OutputValue" \
-            --output text)
+          SUBNET_ID=$(echo "$SUBNET_IDS" | cut -d',' -f1 | xargs)
+          ECS_SG=$(echo "$SECURITY_GROUP_IDS" | cut -d',' -f1 | xargs)
 
-          # One private subnet is sufficient for a one-off task
-          SUBNET_ID=$(aws ec2 describe-subnets \
-            --filters "Name=vpc-id,Values=$VPC_ID" \
-                      "Name=tag:Name,Values=*Private*" \
-            --query "Subnets[0].SubnetId" \
-            --output text)
+          EXEC_ROLE="$APP_ROLE_ARN"
+          TASK_ROLE="$APP_ROLE_ARN"
 
-          ECS_SG=$(aws ec2 describe-security-groups \
-            --filters "Name=vpc-id,Values=$VPC_ID" \
-                      "Name=group-name,Values=cprosite-${{ inputs.tier }}-ecs" \
-            --query "SecurityGroups[0].GroupId" \
-            --output text)
-
-          EXEC_ROLE=$(aws iam get-role \
-            --role-name "cprosite-${{ inputs.tier }}-ecs-execution" \
-            --query "Role.Arn" --output text)
-
-          TASK_ROLE=$(aws iam get-role \
-            --role-name "cprosite-${{ inputs.tier }}-ecs-task" \
-            --query "Role.Arn" --output text)
+          CLUSTER_NAME="${ECS_CLUSTER:-${CLUSTER_ARN##*/}}"
+          SERVICE_NAME="${ECS_WEB_SERVICE:-${TIER}-${APP_NAME}-${APP_SERVICE}}"
 
           echo "efs_id=$EFS_ID"       >> $GITHUB_OUTPUT
           echo "ap_id=$AP_ID"         >> $GITHUB_OUTPUT
@@ -80,6 +77,8 @@ jobs:
           echo "ecs_sg=$ECS_SG"       >> $GITHUB_OUTPUT
           echo "exec_role=$EXEC_ROLE" >> $GITHUB_OUTPUT
           echo "task_role=$TASK_ROLE" >> $GITHUB_OUTPUT
+          echo "cluster_name=$CLUSTER_NAME" >> $GITHUB_OUTPUT
+          echo "service_name=$SERVICE_NAME" >> $GITHUB_OUTPUT
 
       - name: Ensure CloudWatch log group exists
         run: |
@@ -90,14 +89,19 @@ jobs:
         id: register-task
         run: |
           # Import command: backup existing db, download new db, validate size
+          # Supports:
+          # - s3://... via IAM auth (aws s3 cp)
+          # - https://... via curl
           IMPORT_CMD="set -e; \
             DB=/deploy/database/cprosite.db; \
             mkdir -p /deploy/database; \
-            if [ -f \$DB ]; then \
-              cp \$DB \${DB}.bak.\$(date +%Y%m%d_%H%M%S) && echo Backup created; \
-            fi; \
             echo Downloading database...; \
-            curl -fL -o \$DB \"\$DATABASE_URL\"; \
+            case \"\$DATABASE_URL\" in s3://*) \
+                dnf -y -q install awscli ca-certificates > /dev/null; \
+                aws s3 cp \"\$DATABASE_URL\" \"\$DB\"; ;; *) \
+                dnf -y -q install curl ca-certificates > /dev/null; \
+                curl -fL -o \$DB \"\$DATABASE_URL\"; ;; \
+            esac; \
             if [ ! -s \$DB ]; then echo ERROR: downloaded file is empty; exit 1; fi; \
             echo Import complete. Size: \$(du -sh \$DB | cut -f1)"
 
@@ -164,7 +168,7 @@ jobs:
         id: run-task
         run: |
           TASK_ARN=$(aws ecs run-task \
-            --cluster "cprosite-${{ inputs.tier }}" \
+            --cluster "${{ steps.infra.outputs.cluster_name }}" \
             --task-definition "${{ steps.register-task.outputs.task_def_arn }}" \
             --launch-type FARGATE \
             --platform-version "1.4.0" \
@@ -177,7 +181,7 @@ jobs:
 
       - name: Wait for import task to complete (up to 2 hours)
         run: |
-          CLUSTER="cprosite-${{ inputs.tier }}"
+          CLUSTER="${{ steps.infra.outputs.cluster_name }}"
           TASK_ARN="${{ steps.run-task.outputs.task_arn }}"
 
           echo "Polling task status..."
@@ -225,8 +229,8 @@ jobs:
         run: |
           echo "Forcing new deployment so the service picks up the updated database..."
           aws ecs update-service \
-            --cluster "cprosite-${{ inputs.tier }}" \
-            --service "cprosite-${{ inputs.tier }}" \
+            --cluster "${{ steps.infra.outputs.cluster_name }}" \
+            --service "${{ steps.infra.outputs.service_name }}" \
             --force-new-deployment \
             --output table \
             --query "service.{Status:status,DesiredCount:desiredCount,RunningCount:runningCount}"
@@ -241,4 +245,8 @@ jobs:
           echo "- **EFS Access Point:** ${{ steps.infra.outputs.ap_id }}"          >> $GITHUB_STEP_SUMMARY
           echo "- **Task ARN:** ${{ steps.run-task.outputs.task_arn }}"             >> $GITHUB_STEP_SUMMARY
           echo "- **Logs:** \`/ecs/cprosite-${{ inputs.tier }}-import\`"           >> $GITHUB_STEP_SUMMARY
+
+      - name: Clean up env files
+        if: always()
+        run: rm -f ./app.env "./${{ env.TIER }}-app.env"
 
