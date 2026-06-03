@@ -102,6 +102,8 @@ export interface pimixtureStackProps extends cdk.StackProps {
 // ---------------------------------------------------------------------------
 // Stack
 // ---------------------------------------------------------------------------
+// Main stack used by the current workflow: imports shared infra identifiers,
+// deploys the ECS service, and publishes app/env settings to SSM.
 export class pimixtureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: pimixtureStackProps) {
     super(scope, id, props);
@@ -140,6 +142,7 @@ export class pimixtureStack extends cdk.Stack {
     // ------------------------------------------------------------------
     // Import shared resources
     // ------------------------------------------------------------------
+    // This stack assumes VPC/subnets/cluster/listener/roles already exist.
     const vpc = ec2.Vpc.fromLookup(this, "Vpc", { vpcId });
 
     const subnets = subnetIds.map((sid, i) =>
@@ -196,6 +199,7 @@ export class pimixtureStack extends cdk.Stack {
       taskRole,
     });
 
+    // Container image is provided via env config so each tier can pin or roll independently.
     taskDef.addContainer("WebContainer", {
       containerName: ms.name,
       image: ecs.ContainerImage.fromRegistry(ms.imageUrl),
@@ -269,6 +273,7 @@ export class pimixtureStack extends cdk.Stack {
     cfnService.addPropertyDeletionOverride("DesiredCount");
 
     // --- Auto-scaling (single ScalableTarget shared by all policies) ---
+    // Keep one scalable target to avoid conflicting min/max settings across policies.
     const needsScaling =
       ms.nonProdSchedule ||
       (ms.enableAutoscaleCpu && props.cpuTarget > 0) ||
@@ -391,6 +396,7 @@ export class pimixtureStack extends cdk.Stack {
     // ==================================================================
     // 3. SSM Parameters (from app.env file)
     // ==================================================================
+    // Publish all runtime keys from tier app env into SSM parameter paths.
     const appEnvVars = parseEnvFile(props.appEnvFile);
     for (const [key, value] of Object.entries(appEnvVars)) {
       const paramName = key.toLowerCase();
@@ -410,6 +416,7 @@ interface NetworkStackProps extends cdk.StackProps {
   existingEcsSecurityGroupId?: string;
 }
 
+// Compatibility stack: supports either importing existing networking or creating a default VPC layout.
 export class NetworkStack extends cdk.Stack {
   public readonly vpc: ec2.IVpc;
   public readonly albSecurityGroup: ec2.ISecurityGroup;
@@ -434,6 +441,7 @@ export class NetworkStack extends cdk.Stack {
     }
 
     if (hasAllExistingNetworkIds) {
+      // Reuse an existing network footprint managed outside this stack.
       this.vpc = ec2.Vpc.fromLookup(this, "ExistingVpc", {
         vpcId: props.existingVpcId,
       });
@@ -450,6 +458,7 @@ export class NetworkStack extends cdk.Stack {
         { mutable: false }
       );
     } else {
+      // Create a standalone network when no existing IDs are provided.
       this.vpc = new ec2.Vpc(this, "Vpc", {
         vpcName: `cprosite-${props.tier}`,
         maxAzs: 2,
@@ -512,6 +521,7 @@ interface StorageStackProps extends cdk.StackProps {
   ecsSecurityGroup: ec2.ISecurityGroup;
 }
 
+// Compatibility stack: provisions EFS and an access point for SQLite persistence.
 export class StorageStack extends cdk.Stack {
   public readonly fileSystem: efs.FileSystem;
   public readonly accessPoint: efs.AccessPoint;
@@ -577,10 +587,12 @@ interface EcsStackProps extends cdk.StackProps {
   efsAccessPointId: string;
 }
 
+// Compatibility stack: full ECS/ALB deployment path for earlier split-stack workflows.
 export class EcsStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: EcsStackProps) {
     super(scope, id, props);
 
+    // Single shared ECR repository; backend/frontend are separated by tags.
     const appRepo = ecr.Repository.fromRepositoryName(this, "AppRepo", "cprosite");
 
     const cluster = new ecs.Cluster(this, "Cluster", {
