@@ -50,7 +50,7 @@ function parseEnvFile(filePath: string): Record<string, string> {
 // ---------------------------------------------------------------------------
 // Stack props
 // ---------------------------------------------------------------------------
-export interface pimixtureStackProps extends cdk.StackProps {
+export interface cprositeStackProps extends cdk.StackProps {
   env?: cdk.Environment;
   tier: string;
   appName: string;
@@ -104,8 +104,8 @@ export interface pimixtureStackProps extends cdk.StackProps {
 // ---------------------------------------------------------------------------
 // Main stack used by the current workflow: imports shared infra identifiers,
 // deploys the ECS service, and publishes app/env settings to SSM.
-export class pimixtureStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: pimixtureStackProps) {
+export class cprositeStack extends cdk.Stack {
+  constructor(scope: Construct, id: string, props: cprositeStackProps) {
     super(scope, id, props);
 
     const {

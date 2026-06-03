@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
-import { pimixtureStack } from "../lib/app-stack";
+import { cprositeStack } from "../lib/app-stack";
 
 const app = new cdk.App();
 
@@ -39,7 +39,7 @@ const env: cdk.Environment = {
   region: process.env.AWS_REGION || process.env.CDK_DEFAULT_REGION || "us-east-1",
 };
 
-new pimixtureStack(app, `cprosite-app-${tier}`, {
+new cprositeStack(app, `cprosite-app-${tier}`, {
   env,
   tier,
   appName: required("APP_NAME"),
