@@ -27,6 +27,10 @@ jobs:
       TIER: ${{ inputs.tier }}
       TZ: America/New_York
       AWS_REGION: us-east-1
+      ECR_REPO_NAME: ${{ vars.ECR_REPO_NAME }}
+      ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
+      ECS_WEB_SERVICE: ${{ vars.ECS_WEB_SERVICE }}
+      ECS_WEB_TASK: ${{ vars.ECS_WEB_TASK }}
       BACKEND_IMAGE: ""
       FRONTEND_IMAGE: ""
       BACKEND_IMAGE_LATEST: ""
@@ -34,37 +38,41 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.0.0
         with:
           role-to-assume: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+          role-session-name: ${{ env.TIER }}-${{ env.APP }}-deploy-${{ github.ref_name }}
           aws-region: ${{ env.AWS_REGION }}
-
-      - name: Download runtime env file from S3
-        run: |
-          aws s3 cp \
-            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-app.env" \
-            "./${{ env.TIER }}-app.env"
-
-      - name: Load runtime variables
-        run: |
-          set -a
-          source "./${{ env.TIER }}-app.env"
-          set +a
-          env | grep -v '^_' >> "$GITHUB_ENV"
-
+          
       - name: Set dynamic environment variables
         run: |
+          DEPLOY_DATE=$(date +"%Y-%m-%d")
           TIMESTAMP=$(date +"%Y%m%d%H%M%S")
-          REPO=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-          ECR_REPO_NAME=${ECR_REPO_NAME:-cprosite}
-          echo "ECR_REGISTRY=$REPO" >> $GITHUB_ENV
-          echo "BACKEND_IMAGE=$REPO/$ECR_REPO_NAME:backend-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
-          echo "FRONTEND_IMAGE=$REPO/$ECR_REPO_NAME:frontend-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
-          echo "BACKEND_IMAGE_LATEST=$REPO/$ECR_REPO_NAME:backend-${{ inputs.tier }}-latest" >> $GITHUB_ENV
-          echo "FRONTEND_IMAGE_LATEST=$REPO/$ECR_REPO_NAME:frontend-${{ inputs.tier }}-latest" >> $GITHUB_ENV
+          REPO=${{ vars.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$APP
+
+          echo "DEPLOY_DATE=$DEPLOY_DATE" >> $GITHUB_ENV
+          echo "IMAGE_REPOSITORY=$REPO" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE=$REPO:frontend-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE=$REPO:backend-${{ github.ref_name }}-$TIMESTAMP" >> $GITHUB_ENV
+          echo "FRONTEND_IMAGE_LATEST=$REPO:frontend-${{ github.ref_name }}-latest" >> $GITHUB_ENV
+          echo "BACKEND_IMAGE_LATEST=$REPO:backend-${{ github.ref_name }}-latest" >> $GITHUB_ENV
+          echo "ENVIRONMENT_TIER=${TIER^^}" >> $GITHUB_ENV
+
+          if [[ "$TIER" == "dev" ]]; then
+              echo "LOG_LEVEL=debug" >> $GITHUB_ENV
+          else
+              echo "LOG_LEVEL=info" >> $GITHUB_ENV
+          fi
+
+
+      - name: Validate required ECS parameters
+        run: |
+          : "${ECS_CLUSTER:?Set ECS_CLUSTER in GitHub environment variables}"
+          : "${ECS_WEB_SERVICE:?Set ECS_WEB_SERVICE in GitHub environment variables}"
+          : "${ECS_WEB_TASK:?Set ECS_WEB_TASK in GitHub environment variables}"
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2.0.1
@@ -120,5 +128,5 @@ jobs:
 
       - name: Clean up env files
         if: always()
-        run: rm -f "./${{ env.TIER }}-app.env"
+        run: true
 

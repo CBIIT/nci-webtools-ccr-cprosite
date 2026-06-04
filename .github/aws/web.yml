@@ -1,0 +1,73 @@
+# CProSite ECS task definition template.
+# This file is intended for env-substitution workflows (e.g. envsubst) before registration.
+family: "${ECS_WEB_TASK}"
+networkMode: awsvpc
+cpu: "${ECS_WEB_TASK_CPU_UNITS}"
+memory: "${ECS_WEB_TASK_MEMORY_UNITS}"
+executionRoleArn: "${ROLE_ARN}"
+taskRoleArn: "${ROLE_ARN}"
+requiresCompatibilities:
+  - FARGATE
+
+volumes:
+  - name: database
+    efsVolumeConfiguration:
+      fileSystemId: "${EFS_ID}"
+      transitEncryption: ENABLED
+      authorizationConfig:
+        accessPointId: "${EFS_ACCESS_POINT_ID}"
+        iam: ENABLED
+
+containerDefinitions:
+  - name: backend
+    image: "${BACKEND_IMAGE_LATEST}"
+    essential: true
+    portMappings:
+      - protocol: tcp
+        containerPort: 10000
+    environment:
+      - name: NODE_ENV
+        value: production
+      - name: DATABASE
+        value: /deploy/database/cprosite.db
+    mountPoints:
+      - sourceVolume: database
+        containerPath: /deploy/database
+        readOnly: false
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: "/ecs/${APP}-${TIER}"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: backend
+
+  - name: frontend
+    image: "${FRONTEND_IMAGE_LATEST}"
+    essential: true
+    portMappings:
+      - protocol: tcp
+        containerPort: ${WEB_CONTAINER_PORT}
+    environment:
+      - name: API_HOST
+        value: http://localhost:10000
+    dependsOn:
+      - containerName: backend
+        condition: START
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: "/ecs/${APP}-${TIER}"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: frontend
+
+tags:
+  - key: Project
+    value: "${APP}"
+  - key: ApplicationName
+    value: "${APP}"
+  - key: ResourceName
+    value: "${TIER}-${APP}-web-ecs-task"
+  - key: ResourceFunction
+    value: Compute
+  - key: EnvironmentTier
+    value: "${ENVIRONMENT_TIER}"

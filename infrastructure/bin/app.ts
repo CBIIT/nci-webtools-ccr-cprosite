@@ -48,14 +48,17 @@ new cprositeStack(app, `cprosite-app-${tier}`, {
   appDomain: required("APP_DOMAIN"),
   appPath: process.env.APP_PATH || "",
   awslogsPrefix: required("AWSLOGS_PREFIX"),
+
   vpcId: required("VPC_ID"),
   subnetIds: parseCsv(required("SUBNET_IDS")),
   securityGroupIds: parseCsv(required("SECURITY_GROUP_IDS")),
   clusterArn: required("CLUSTER_ARN"),
   listenerArn: required("LISTENER_ARN"),
   appRoleArn: required("APP_ROLE_ARN"),
+
   healthCheckPath: required("HEALTH_CHECK_PATH"),
   gracePeriod: parseNumber("GRACE_PERIOD"),
+
   microservice: {
     name: required("WEB_CONTAINER_NAME"),
     port: parseNumber("WEB_CONTAINER_PORT"),
@@ -77,6 +80,7 @@ new cprositeStack(app, `cprosite-app-${tier}`, {
   autoscaleMemMinCapacity: parseNumber("AUTOSCALE_MEM_MIN_CAPACITY"),
   autoscaleMemMaxCapacity: parseNumber("AUTOSCALE_MEM_MAX_CAPACITY"),
   memTarget: parseNumber("MEM_TARGET"),
+  
   efsId: required("EFS_ID"),
   posixUid: parseNumber("POSIX_UID"),
   posixGid: parseNumber("POSIX_GID"),
