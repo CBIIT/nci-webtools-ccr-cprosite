@@ -28,6 +28,17 @@ jobs:
       AWS_REGION: us-east-1
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
       CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+      APP_ROLE_ARN: ${{ vars.APP_ROLE_ARN }}
+      ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
+      ECS_WEB_SERVICE: ${{ vars.ECS_WEB_SERVICE }}
+      SECURITY_GROUP_IDS: ${{ vars.SECURITY_GROUP_IDS }}
+      SUBNET_IDS: ${{ vars.SUBNET_IDS }}
+      EFS_ID: ${{ vars.EFS_ID }}
+      EFS_ACCESS_POINT_ID: ${{ vars.EFS_ACCESS_POINT_ID }}
+      DATABASE_URL: ${{ vars.DATABASE_URL }}
+      ECS_IMPORT_TASK: ${{ vars.ECS_IMPORT_TASK }}
+      ECS_IMPORT_CPU_UNITS: ${{ vars.ECS_IMPORT_CPU_UNITS }}
+      ECS_IMPORT_MEMORY_UNITS: ${{ vars.ECS_IMPORT_MEMORY_UNITS }}
 
 
     steps:
@@ -38,29 +49,31 @@ jobs:
           role-session-name: ${{ env.TIER }}-cprosite-import-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Download env files from S3
+      - name: Validate required import parameters
         run: |
-          aws s3 cp \
-            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/app.env" \
-            "./app.env"
-          aws s3 cp \
-            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-app.env" \
-            "./${{ env.TIER }}-app.env"
+          : "${APP_ROLE_ARN:?Set APP_ROLE_ARN in GitHub environment variables}"
+          : "${ECS_CLUSTER:?Set ECS_CLUSTER in GitHub environment variables}"
+          : "${ECS_WEB_SERVICE:?Set ECS_WEB_SERVICE in GitHub environment variables}"
+          : "${SECURITY_GROUP_IDS:?Set SECURITY_GROUP_IDS in GitHub environment variables}"
+          : "${SUBNET_IDS:?Set SUBNET_IDS in GitHub environment variables}"
+          : "${EFS_ID:?Set EFS_ID in GitHub environment variables}"
+          : "${DATABASE_URL:?Set DATABASE_URL in GitHub environment variables}"
 
       - name: Get infrastructure details
         id: infra
         run: |
-          set -a
-          source ./app.env
-          source ./${{ env.TIER }}-app.env
-          set +a
+          AP_ID="${EFS_ACCESS_POINT_ID}"
+          if [ -z "$AP_ID" ] || [ "$AP_ID" = "None" ]; then
+            AP_ID=$(aws cloudformation describe-stacks \
+              --stack-name "cprosite-app-${{ inputs.tier }}" \
+              --query "Stacks[0].Outputs[?OutputKey=='EfsAccessPointId'].OutputValue" \
+              --output text)
+          fi
 
-          EFS_ID="$EFS_ID"
-
-          AP_ID=$(aws cloudformation describe-stacks \
-            --stack-name "cprosite-app-${{ inputs.tier }}" \
-            --query "Stacks[0].Outputs[?OutputKey=='EfsAccessPointId'].OutputValue" \
-            --output text)
+          if [ -z "$AP_ID" ] || [ "$AP_ID" = "None" ]; then
+            echo "Missing EFS access point ID. Set EFS_ACCESS_POINT_ID or ensure stack output EfsAccessPointId exists."
+            exit 1
+          fi
 
           SUBNET_ID=$(echo "$SUBNET_IDS" | cut -d',' -f1 | xargs)
           ECS_SG=$(echo "$SECURITY_GROUP_IDS" | cut -d',' -f1 | xargs)
@@ -68,8 +81,11 @@ jobs:
           EXEC_ROLE="$APP_ROLE_ARN"
           TASK_ROLE="$APP_ROLE_ARN"
 
-          CLUSTER_NAME="${ECS_CLUSTER:-${CLUSTER_ARN##*/}}"
-          SERVICE_NAME="${ECS_WEB_SERVICE:-${TIER}-${APP_NAME}-${APP_SERVICE}}"
+          CLUSTER_NAME="${ECS_CLUSTER}"
+          SERVICE_NAME="${ECS_WEB_SERVICE}"
+          IMPORT_TASK_FAMILY="${ECS_IMPORT_TASK:-cprosite-${TIER}-import}"
+          IMPORT_CPU_UNITS="${ECS_IMPORT_CPU_UNITS:-512}"
+          IMPORT_MEMORY_UNITS="${ECS_IMPORT_MEMORY_UNITS:-1024}"
 
           echo "efs_id=$EFS_ID"       >> $GITHUB_OUTPUT
           echo "ap_id=$AP_ID"         >> $GITHUB_OUTPUT
@@ -79,6 +95,9 @@ jobs:
           echo "task_role=$TASK_ROLE" >> $GITHUB_OUTPUT
           echo "cluster_name=$CLUSTER_NAME" >> $GITHUB_OUTPUT
           echo "service_name=$SERVICE_NAME" >> $GITHUB_OUTPUT
+          echo "import_task_family=$IMPORT_TASK_FAMILY" >> $GITHUB_OUTPUT
+          echo "import_cpu_units=$IMPORT_CPU_UNITS" >> $GITHUB_OUTPUT
+          echo "import_memory_units=$IMPORT_MEMORY_UNITS" >> $GITHUB_OUTPUT
 
       - name: Ensure CloudWatch log group exists
         run: |
@@ -88,76 +107,19 @@ jobs:
       - name: Register one-off import task definition
         id: register-task
         run: |
-          # Import command: backup existing db, download new db, validate size
-          # Supports:
-          # - s3://... via IAM auth (aws s3 cp)
-          # - https://... via curl
-          IMPORT_CMD="set -e; \
-            DB=/deploy/database/cprosite.db; \
-            mkdir -p /deploy/database; \
-            echo Downloading database...; \
-            case \"\$DATABASE_URL\" in s3://*) \
-                dnf -y -q install awscli ca-certificates > /dev/null; \
-                aws s3 cp \"\$DATABASE_URL\" \"\$DB\"; ;; *) \
-                dnf -y -q install curl ca-certificates > /dev/null; \
-                curl -fL -o \$DB \"\$DATABASE_URL\"; ;; \
-            esac; \
-            if [ ! -s \$DB ]; then echo ERROR: downloaded file is empty; exit 1; fi; \
-            echo Import complete. Size: \$(du -sh \$DB | cut -f1)"
+          export APP_ROLE_ARN="${{ steps.infra.outputs.exec_role }}"
+          export EFS_ID="${{ steps.infra.outputs.efs_id }}"
+          export EFS_ACCESS_POINT_ID="${{ steps.infra.outputs.ap_id }}"
+          export ECS_IMPORT_TASK="${{ steps.infra.outputs.import_task_family }}"
+          export ECS_IMPORT_CPU_UNITS="${{ steps.infra.outputs.import_cpu_units }}"
+          export ECS_IMPORT_MEMORY_UNITS="${{ steps.infra.outputs.import_memory_units }}"
+          export ENVIRONMENT_TIER="${TIER^^}"
 
-          cat > task-def.json << EOF
-          {
-            "family": "cprosite-${{ inputs.tier }}-import",
-            "requiresCompatibilities": ["FARGATE"],
-            "networkMode": "awsvpc",
-            "cpu": "512",
-            "memory": "1024",
-            "executionRoleArn": "${{ steps.infra.outputs.exec_role }}",
-            "taskRoleArn": "${{ steps.infra.outputs.task_role }}",
-            "volumes": [
-              {
-                "name": "database",
-                "efsVolumeConfiguration": {
-                  "fileSystemId": "${{ steps.infra.outputs.efs_id }}",
-                  "transitEncryption": "ENABLED",
-                  "authorizationConfig": {
-                    "accessPointId": "${{ steps.infra.outputs.ap_id }}",
-                    "iam": "ENABLED"
-                  }
-                }
-              }
-            ],
-            "containerDefinitions": [
-              {
-                "name": "importer",
-                "image": "public.ecr.aws/amazonlinux/amazonlinux:2023",
-                "essential": true,
-                "command": ["sh", "-c", "$IMPORT_CMD"],
-                "environment": [
-                  { "name": "DATABASE_URL", "value": "${{ vars.DATABASE_URL }}" }
-                ],
-                "mountPoints": [
-                  {
-                    "sourceVolume": "database",
-                    "containerPath": "/deploy/database",
-                    "readOnly": false
-                  }
-                ],
-                "logConfiguration": {
-                  "logDriver": "awslogs",
-                  "options": {
-                    "awslogs-group": "/ecs/cprosite-${{ inputs.tier }}-import",
-                    "awslogs-region": "${{ env.AWS_REGION }}",
-                    "awslogs-stream-prefix": "importer"
-                  }
-                }
-              }
-            ]
-          }
-          EOF
+          perl -pe 's/\$\{([A-Z0-9_]+)\}/exists $ENV{$1} ? $ENV{$1} : ""/ge' \
+            .github/aws/data-import.yml > task-def.yml
 
           TASK_DEF_ARN=$(aws ecs register-task-definition \
-            --cli-input-json file://task-def.json \
+            --cli-input-yaml file://task-def.yml \
             --query "taskDefinition.taskDefinitionArn" \
             --output text)
 
@@ -248,5 +210,5 @@ jobs:
 
       - name: Clean up env files
         if: always()
-        run: rm -f ./app.env "./${{ env.TIER }}-app.env"
+        run: rm -f ./task-def.yml
 

@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tier:
-        description: "Deployment Tier"
+        description: "Deploy environment"
         required: true
         default: "dev"
         type: choice
@@ -18,27 +18,24 @@ on:
           - prod
 
 jobs:
-  Deploy:
+  deploy-fargate-app:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     environment: ${{ inputs.tier }}
     env:
       APP: cprosite
-      TIER: ${{ inputs.tier }}
+      APP_NAMESPACE: analysistools
       TZ: America/New_York
       AWS_REGION: us-east-1
-      ECR_REPO_NAME: ${{ vars.ECR_REPO_NAME }}
-      ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
-      ECS_WEB_SERVICE: ${{ vars.ECS_WEB_SERVICE }}
-      ECS_WEB_TASK: ${{ vars.ECS_WEB_TASK }}
-      BACKEND_IMAGE: ""
-      FRONTEND_IMAGE: ""
-      BACKEND_IMAGE_LATEST: ""
-      FRONTEND_IMAGE_LATEST: ""
+      TASK_DEFINITION_TEMPLATE_PATH: .github/aws
+      FRONTEND_CONTAINER_PORT: 80
+      BACKEND_CONTAINER_PORT: 8000
+      TIER: ${{ inputs.tier }}
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.0.0
@@ -67,24 +64,68 @@ jobs:
               echo "LOG_LEVEL=info" >> $GITHUB_ENV
           fi
 
-
-      - name: Validate required ECS parameters
+      - name: Retrieve SSM parameters
         run: |
-          : "${ECS_CLUSTER:?Set ECS_CLUSTER in GitHub environment variables}"
-          : "${ECS_WEB_SERVICE:?Set ECS_WEB_SERVICE in GitHub environment variables}"
-          : "${ECS_WEB_TASK:?Set ECS_WEB_TASK in GitHub environment variables}"
+          PARAMETER_PATH="/${APP_NAMESPACE}/${TIER}/${APP}"
+
+          # Map SSM keys (lowercase in Parameter Store) to env vars expected by web.yml.
+          declare -A PARAMS=(
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_web_service"]="ECS_WEB_SERVICE"
+            ["ecs_web_task"]="ECS_WEB_TASK"
+            ["web_cpu"]="ECS_WEB_TASK_CPU_UNITS"
+            ["web_memory"]="ECS_WEB_TASK_MEMORY_UNITS"
+            ["web_container_port"]="WEB_CONTAINER_PORT"
+            ["app_role_arn"]="ROLE_ARN"
+            ["efs_access_point_id"]="EFS_ACCESS_POINT_ID"
+          )
+
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text)
+            echo "${env_var}=${value}" >> $GITHUB_ENV
+            echo "Retrieved ${ssm_name} -> ${env_var}"
+          done
+
+          # Prefer stack-published EFS filesystem parameter; fallback to app-env key if needed.
+          EFS_VALUE=$(aws ssm get-parameter \
+            --name "${PARAMETER_PATH}/efs_filesystem_id" \
+            --with-decryption \
+            --query "Parameter.Value" \
+            --output text 2>/dev/null || true)
+          if [[ -z "$EFS_VALUE" || "$EFS_VALUE" == "None" ]]; then
+            EFS_VALUE=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/efs_id" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text)
+          fi
+          echo "EFS_ID=${EFS_VALUE}" >> $GITHUB_ENV
+          echo "Retrieved efs_filesystem_id/efs_id -> EFS_ID"
 
       - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2.0.1
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2.1.0
+        with:
+          mask-password: true
+
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.12.0
+        uses: docker/setup-buildx-action@v4.0.0
 
-      - name: Build and push backend image
-        uses: docker/build-push-action@v6.18.0
+      - name: Create and use a new builder instance
+        run:  docker buildx create --name mybuilder --use
+
+      - name: Build backend image ${{ env.BACKEND_IMAGE }}
+        uses: docker/build-push-action@v7.0.0
         with:
           context: .
           file: docker/backend.dockerfile
+          pull: true
           push: true
           tags: |
             ${{ env.BACKEND_IMAGE }}
@@ -92,11 +133,12 @@ jobs:
           cache-from: type=registry,ref=${{ env.BACKEND_IMAGE_LATEST }}
           cache-to: type=inline
 
-      - name: Build and push frontend image
-        uses: docker/build-push-action@v6
+      - name: Build frontend image ${{ env.FRONTEND_IMAGE }}
+        uses: docker/build-push-action@v7.0.0
         with:
           context: .
           file: docker/frontend.dockerfile
+          pull: true
           push: true
           tags: |
             ${{ env.FRONTEND_IMAGE }}
@@ -104,19 +146,35 @@ jobs:
           cache-from: type=registry,ref=${{ env.FRONTEND_IMAGE_LATEST }}
           cache-to: type=inline
 
-      - name: Deploy to ECS (force new deployment)
+      - name: Substitute web task definition variables
+        id: substitute-web-task-definition
         run: |
-          CLUSTER="${ECS_CLUSTER:-cprosite-${{ inputs.tier }}}"
-          SERVICE="${ECS_WEB_SERVICE:-cprosite-${{ inputs.tier }}}"
+          echo "Substituting web task definition variables"
+          envsubst < $TASK_DEFINITION_TEMPLATE_PATH/web.yml > web.yml
 
-          echo "Forcing new ECS deployment..."
+      - name: Print rendered web task definition
+        run: |
+          echo "Rendered web Task Definition:"
+          cat web.yml
+
+      - name: Register task definitions
+        id: register-task
+        run: |
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-yaml file://web.yml \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
+          echo "task_def_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+
+      - name: Update web service
+        run: |
           aws ecs update-service \
-            --cluster "$CLUSTER" \
-            --service "$SERVICE" \
-            --force-new-deployment \
-            --region ${{ env.AWS_REGION }} \
-            --output table \
-            --query "service.{Status:status,DesiredCount:desiredCount,RunningCount:runningCount}"
+              --cluster ${{ env.ECS_CLUSTER }} \
+              --service ${{ env.ECS_WEB_SERVICE }} \
+              --task-definition "${{ steps.register-task.outputs.task_def_arn }}" \
+              --desired-count 1 \
+              --propagate-tags TASK_DEFINITION \
+              --force-new-deployment
 
       - name: Remove old task definitions
         run: |
@@ -126,7 +184,11 @@ jobs:
                   | xargs -n1 -r aws ecs deregister-task-definition --task-definition
           done
 
-      - name: Clean up env files
-        if: always()
-        run: true
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tier:** ${{ env.TIER }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch:** ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+      
 

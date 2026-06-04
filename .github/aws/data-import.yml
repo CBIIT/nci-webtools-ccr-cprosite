@@ -1,0 +1,53 @@
+family: "${ECS_IMPORT_TASK}"
+requiresCompatibilities:
+  - FARGATE
+networkMode: awsvpc
+cpu: "${ECS_IMPORT_CPU_UNITS}"
+memory: "${ECS_IMPORT_MEMORY_UNITS}"
+executionRoleArn: "${APP_ROLE_ARN}"
+taskRoleArn: "${APP_ROLE_ARN}"
+volumes:
+  - name: database
+    efsVolumeConfiguration:
+      fileSystemId: "${EFS_ID}"
+      transitEncryption: ENABLED
+      authorizationConfig:
+        accessPointId: "${EFS_ACCESS_POINT_ID}"
+        iam: ENABLED
+containerDefinitions:
+  - name: importer
+    image: public.ecr.aws/amazonlinux/amazonlinux:2023
+    essential: true
+    command:
+      - sh
+      - -c
+      - >-
+        set -e;
+        DB=/deploy/database/cprosite.db;
+        mkdir -p /deploy/database;
+        echo Downloading database...;
+        case "$DATABASE_URL" in s3://*)
+          dnf -y -q install awscli ca-certificates > /dev/null;
+          aws s3 cp "$DATABASE_URL" "$DB";;
+        *)
+          dnf -y -q install curl ca-certificates > /dev/null;
+          curl -fL -o "$DB" "$DATABASE_URL";;
+        esac;
+        if [ ! -s "$DB" ]; then
+          echo ERROR: downloaded file is empty;
+          exit 1;
+        fi;
+        echo Import complete. Size: $(du -sh "$DB" | cut -f1)
+    environment:
+      - name: DATABASE_URL
+        value: "${DATABASE_URL}"
+    mountPoints:
+      - sourceVolume: database
+        containerPath: /deploy/database
+        readOnly: false
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: "/ecs/${APP}-${TIER}-import"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: importer
