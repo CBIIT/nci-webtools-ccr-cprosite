@@ -1,0 +1,36 @@
+family: "${ECS_DATA_IMPORT_TASK}"
+requiresCompatibilities:
+  - FARGATE
+networkMode: awsvpc
+cpu: "${ECS_IMPORT_CPU_UNITS}"
+memory: "${ECS_IMPORT_MEMORY_UNITS}"
+executionRoleArn: "${ROLE_ARN}"
+taskRoleArn: "${ROLE_ARN}"
+volumes:
+  - name: database
+    efsVolumeConfiguration:
+      fileSystemId: "${EFS_ID}"
+      transitEncryption: ENABLED
+      authorizationConfig:
+        accessPointId: "${EFS_ACCESS_POINT_ID}"
+        iam: ENABLED
+containerDefinitions:
+  - name: importer
+    image: "${DATA_IMPORT_IMAGE}"
+    essential: true
+    environment:
+      - name: AWS_DEFAULT_REGION
+        value: "${AWS_REGION}"
+    secrets:
+      - name: DATABASE_URL
+        valueFrom: "/${APP_NAMESPACE}/${TIER}/${APP}/database_url"
+    mountPoints:
+      - sourceVolume: database
+        containerPath: /deploy/database
+        readOnly: false
+    logConfiguration:
+      logDriver: awslogs
+      options:
+        awslogs-group: "/ecs/${APP}-${TIER}-import"
+        awslogs-region: "${AWS_REGION}"
+        awslogs-stream-prefix: importer
