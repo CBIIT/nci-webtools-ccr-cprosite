@@ -1,4 +1,4 @@
-family: "${ECS_IMPORT_TASK}"
+family: "${ECS_DATA_IMPORT_TASK}"
 requiresCompatibilities:
   - FARGATE
 networkMode: awsvpc

@@ -49,6 +49,22 @@ jobs:
             "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-app.env" \
             "${{ env.CDK_DIR }}/${{ env.TIER }}-app.env"
 
+      - name: Ensure APP_ROLE_ARN in app env
+        working-directory: ${{ env.CDK_DIR }}
+        run: |
+          APP_ROLE_ARN=$(grep '^APP_ROLE_ARN=' "${{ env.TIER }}-cdk.env" | cut -d'=' -f2-)
+          if [[ -z "$APP_ROLE_ARN" ]]; then
+            echo "Missing APP_ROLE_ARN in ${{ env.TIER }}-cdk.env"
+            exit 1
+          fi
+
+          if grep -q '^APP_ROLE_ARN=' "${{ env.TIER }}-app.env"; then
+            sed -i.bak "s|^APP_ROLE_ARN=.*$|APP_ROLE_ARN=$APP_ROLE_ARN|" "${{ env.TIER }}-app.env"
+            rm -f "${{ env.TIER }}-app.env.bak"
+          else
+            echo "APP_ROLE_ARN=$APP_ROLE_ARN" >> "${{ env.TIER }}-app.env"
+          fi
+
       - name: Load infrastructure variables from cdk env
         working-directory: ${{ env.CDK_DIR }}
         run: |
