@@ -1,0 +1,107 @@
+name: Import CProSite Data
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Deployment Tier"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+jobs:
+  update-database:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.tier }}
+    env:
+      APP: cprosite
+      TIER: ${{ inputs.tier }}
+      AWS_REGION: us-east-1
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.1
+        with:
+          role-to-assume: ${{ env.CICD_ROLE_ARN }}
+          role-session-name: ${{ env.TIER }}-cprosite-import-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Retrieve SSM parameters
+        run: |
+          PARAMETER_PATH="/analysistools/${TIER}/${APP}"
+
+          # Define parameters to retrieve (SSM name = ENV_VAR_NAME)
+          declare -A PARAMS=(
+            ["data_import_task"]="ECS_DATA_IMPORT_TASK"
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_web_service"]="ECS_WEB_SERVICE"
+          )
+
+          # Retrieve each parameter and export to environment
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>/dev/null || echo "")
+            if [[ -n "$value" && "$value" != "None" ]]; then
+              echo "${env_var}=${value}" >> "$GITHUB_ENV"
+              echo "Retrieved ${ssm_name} -> ${env_var}"
+            else
+              echo "::warning::Parameter ${PARAMETER_PATH}/${ssm_name} not found, using default or skipping"
+            fi
+          done
+
+      - name: Reuse web service network config
+        run: |
+          SUBNETS=$(aws ecs describe-services \
+            --cluster "${ECS_CLUSTER}" \
+            --services "${ECS_WEB_SERVICE}" \
+            --query "services[0].networkConfiguration.awsvpcConfiguration.subnets" \
+            --output text | tr '\t' ',')
+
+          SECURITY_GROUPS=$(aws ecs describe-services \
+            --cluster "${ECS_CLUSTER}" \
+            --services "${ECS_WEB_SERVICE}" \
+            --query "services[0].networkConfiguration.awsvpcConfiguration.securityGroups" \
+            --output text | tr '\t' ',')
+
+          : "${SUBNETS:?Missing subnets from ECS service network configuration}"
+          : "${SECURITY_GROUPS:?Missing security groups from ECS service network configuration}"
+
+          echo "SUBNET_IDS=${SUBNETS}" >> "$GITHUB_ENV"
+          echo "SECURITY_GROUP_IDS=${SECURITY_GROUPS}" >> "$GITHUB_ENV"
+
+          echo "Resolved network from ECS service ${ECS_WEB_SERVICE}"
+          
+      - name: Run database update task
+        id: run-task
+        run: |
+          OVERRIDES='{"containerOverrides":[]}'
+
+          echo "Launching ECS Fargate task..."
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "${ECS_CLUSTER}" \
+            --count 1 \
+            --launch-type FARGATE \
+            --network-configuration "awsvpcConfiguration={subnets=[${SUBNET_IDS}],securityGroups=[${SECURITY_GROUP_IDS}],assignPublicIp=DISABLED}" \
+            --task-definition "${ECS_DATA_IMPORT_TASK}" \
+            --overrides "${OVERRIDES}" \
+            --query "tasks[0].taskArn" \
+            --output text)
+
+          echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
+          echo "Import task started: $TASK_ARN"
+

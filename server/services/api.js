@@ -5,7 +5,7 @@ const config = require("../config");
 const { logRequests, publicCacheControl, withAsync } = require("./middleware");
 const { query } = require("./query");
 
-const database = new sqlite(config.database);
+const database = new sqlite(process.env.DATABASE || config.database);
 
 const lookup = {
   cancer: database.prepare("select id, name from cancer order by name").all(),
