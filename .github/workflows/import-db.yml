@@ -1,0 +1,181 @@
+name: Import CProSite Data
+permissions:
+  id-token: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Deployment Tier"
+        required: true
+        default: "dev"
+        type: choice
+        options:
+          - dev
+          - qa
+          - stage
+          - prod
+
+jobs:
+  Import:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.tier }}
+    env:
+      APP: cprosite
+      APP_NAMESPACE: analysistools
+      TIER: ${{ inputs.tier }}
+      TZ: America/New_York
+      AWS_REGION: us-east-1
+      AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
+      CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
+
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6.0.2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.0.0
+        with:
+          role-to-assume: ${{ env.CICD_ROLE_ARN }}
+          role-session-name: ${{ env.TIER }}-cprosite-import-${{ github.run_id }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Retrieve SSM parameters
+        run: |
+          PARAMETER_PATH="/${APP_NAMESPACE}/${TIER}/${APP}"
+
+          # Map SSM keys (lowercase in Parameter Store) to env vars used by import workflow.
+          declare -A PARAMS=(
+            ["app_role_arn"]="ROLE_ARN"
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_web_service"]="ECS_WEB_SERVICE"
+            ["security_group_ids"]="SECURITY_GROUP_IDS"
+            ["subnet_ids"]="SUBNET_IDS"
+            ["database_url"]="DATABASE_URL"
+            ["efs_id"]="EFS_ID"
+            ["efs_access_point_id"]="EFS_ACCESS_POINT_ID"
+            ["ecs_import_task"]="ECS_IMPORT_TASK"
+            ["ecs_import_cpu_units"]="ECS_IMPORT_CPU_UNITS"
+            ["ecs_import_memory_units"]="ECS_IMPORT_MEMORY_UNITS"
+          )
+
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>/dev/null || true)
+            if [[ -n "$value" && "$value" != "None" ]]; then
+              echo "${env_var}=${value}" >> "$GITHUB_ENV"
+              echo "Retrieved ${ssm_name} -> ${env_var}"
+            fi
+          done
+
+          # Keep backwards compatibility: if efs_id is absent, fallback to efs_filesystem_id.
+          EFS_VALUE=$(aws ssm get-parameter \
+            --name "${PARAMETER_PATH}/efs_id" \
+            --with-decryption \
+            --query "Parameter.Value" \
+            --output text 2>/dev/null || true)
+          if [[ -z "$EFS_VALUE" || "$EFS_VALUE" == "None" ]]; then
+            EFS_VALUE=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/efs_filesystem_id" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>/dev/null || true)
+          fi
+          if [[ -n "$EFS_VALUE" && "$EFS_VALUE" != "None" ]]; then
+            echo "EFS_ID=${EFS_VALUE}" >> "$GITHUB_ENV"
+            echo "Retrieved efs_id/efs_filesystem_id -> EFS_ID"
+          fi
+
+      - name: Validate required import parameters
+        run: |
+          : "${ROLE_ARN:?Missing ROLE_ARN from SSM Parameter Store}"
+          : "${ECS_CLUSTER:?Missing ECS_CLUSTER from SSM Parameter Store}"
+          : "${ECS_WEB_SERVICE:?Missing ECS_WEB_SERVICE from SSM Parameter Store}"
+          : "${SECURITY_GROUP_IDS:?Missing SECURITY_GROUP_IDS from SSM Parameter Store}"
+          : "${SUBNET_IDS:?Missing SUBNET_IDS from SSM Parameter Store}"
+          : "${EFS_ID:?Missing EFS_ID from SSM Parameter Store}"
+          : "${DATABASE_URL:?Missing DATABASE_URL from SSM Parameter Store}"
+
+      - name: Get infrastructure details
+        id: infra
+        run: |
+          if [ -z "${EFS_ACCESS_POINT_ID}" ] || [ "${EFS_ACCESS_POINT_ID}" = "None" ]; then
+            echo "Missing EFS access point ID. Set EFS_ACCESS_POINT_ID or ensure stack output EfsAccessPointId exists."
+            exit 1
+          fi
+
+          IMPORT_TASK_FAMILY="${ECS_IMPORT_TASK:-cprosite-${TIER}-import}"
+          IMPORT_CPU_UNITS="${ECS_IMPORT_CPU_UNITS:-512}"
+          IMPORT_MEMORY_UNITS="${ECS_IMPORT_MEMORY_UNITS:-1024}"
+
+          echo "ECS_IMPORT_TASK=$IMPORT_TASK_FAMILY" >> "$GITHUB_ENV"
+          echo "ECS_DATA_IMPORT_TASK=$IMPORT_TASK_FAMILY" >> "$GITHUB_ENV"
+          echo "ECS_IMPORT_CPU_UNITS=$IMPORT_CPU_UNITS" >> "$GITHUB_ENV"
+          echo "ECS_IMPORT_MEMORY_UNITS=$IMPORT_MEMORY_UNITS" >> "$GITHUB_ENV"
+
+      - name: Ensure CloudWatch log group exists
+        run: |
+          aws logs create-log-group \
+            --log-group-name "/ecs/cprosite-${{ inputs.tier }}-import" 2>/dev/null || true
+
+      - name: Set import image URI
+        run: |
+          IMAGE_REPOSITORY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${APP}"
+          DATA_IMPORT_IMAGE="${IMAGE_REPOSITORY}:data-import-${GITHUB_RUN_ID}"
+          echo "DATA_IMPORT_IMAGE=${DATA_IMPORT_IMAGE}" >> "$GITHUB_ENV"
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2.1.0
+        with:
+          mask-password: true
+
+      - name: Build and push import image
+        uses: docker/build-push-action@v7.0.0
+        with:
+          context: .
+          file: docker/data-import.dockerfile
+          pull: true
+          push: true
+          tags: ${{ env.DATA_IMPORT_IMAGE }}
+
+      - name: Register one-off import task definition
+        id: register-task
+        run: |
+          export ENVIRONMENT_TIER="${TIER^^}"
+
+          perl -pe 's/\$\{([A-Z0-9_]+)\}/exists $ENV{$1} ? $ENV{$1} : ""/ge' \
+            .github/aws/data-import.yml > task-def.yml
+
+          TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-yaml file://task-def.yml \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
+
+          echo "task_def_arn=$TASK_DEF_ARN" >> $GITHUB_OUTPUT
+          echo "Registered: $TASK_DEF_ARN"
+
+      - name: Run import task on EFS
+        id: run-task
+        run: |
+          OVERRIDES='{"containerOverrides":[]}'
+
+          TASK_ARN=$(aws ecs run-task \
+            --cluster "${ECS_CLUSTER}" \
+            --count 1 \
+            --task-definition "${ECS_DATA_IMPORT_TASK}" \
+            --launch-type FARGATE \
+            --platform-version "1.4.0" \
+            --overrides "${OVERRIDES}" \
+            --network-configuration "awsvpcConfiguration={subnets=[${SUBNET_IDS}],securityGroups=[${SECURITY_GROUP_IDS}],assignPublicIp=DISABLED}" \
+            --query "tasks[0].taskArn" \
+            --output text)
+
+          echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
+          echo "Import task started: $TASK_ARN"
+

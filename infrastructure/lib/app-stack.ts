@@ -388,6 +388,13 @@ export class cprositeStack extends cdk.Stack {
       description: `EFS File System ID for ${appName} in ${tier}`,
     });
 
+    // Keep a short legacy-friendly alias used by import workflows.
+    new ssm.StringParameter(this, "SsmEfsId", {
+      parameterName: `/${appNamespace}/${tier}/${appName}/efs_id`,
+      stringValue: props.efsId,
+      description: `EFS ID alias for ${appName} in ${tier}`,
+    });
+
     new cdk.CfnOutput(this, "EfsAccessPointId", {
       value: cfnAccessPoint.attrAccessPointId,
     });
