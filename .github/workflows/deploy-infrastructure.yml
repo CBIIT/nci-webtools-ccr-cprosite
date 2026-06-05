@@ -92,7 +92,7 @@ jobs:
 
       - name: Deploy App Stack
         working-directory: ${{ env.CDK_DIR }}
-        run: npx cdk deploy cprosite-app-${{ env.TIER }} --require-approval never  --no-rollback --progress
+        run: npx cdk deploy cprosite-app-${{ env.TIER }} --require-approval never
 
       - name: Clean up env files
         if: always()
