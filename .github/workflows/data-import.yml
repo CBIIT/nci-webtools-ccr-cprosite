@@ -23,22 +23,12 @@ jobs:
     environment: ${{ inputs.tier }}
     env:
       APP: cprosite
+      APP_NAMESPACE: analysistools
       TIER: ${{ inputs.tier }}
       TZ: America/New_York
       AWS_REGION: us-east-1
       AWS_ACCOUNT_ID: ${{ vars.AWS_ACCOUNT_ID }}
       CICD_ROLE_ARN: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/power-user-github-actions-cicd
-      APP_ROLE_ARN: ${{ vars.APP_ROLE_ARN }}
-      ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
-      ECS_WEB_SERVICE: ${{ vars.ECS_WEB_SERVICE }}
-      SECURITY_GROUP_IDS: ${{ vars.SECURITY_GROUP_IDS }}
-      SUBNET_IDS: ${{ vars.SUBNET_IDS }}
-      EFS_ID: ${{ vars.EFS_ID }}
-      EFS_ACCESS_POINT_ID: ${{ vars.EFS_ACCESS_POINT_ID }}
-      DATABASE_URL: ${{ vars.DATABASE_URL }}
-      ECS_IMPORT_TASK: ${{ vars.ECS_IMPORT_TASK }}
-      ECS_IMPORT_CPU_UNITS: ${{ vars.ECS_IMPORT_CPU_UNITS }}
-      ECS_IMPORT_MEMORY_UNITS: ${{ vars.ECS_IMPORT_MEMORY_UNITS }}
 
 
     steps:
@@ -49,15 +39,64 @@ jobs:
           role-session-name: ${{ env.TIER }}-cprosite-import-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Retrieve SSM parameters
+        run: |
+          PARAMETER_PATH="/${APP_NAMESPACE}/${TIER}/${APP}"
+
+          # Map SSM keys (lowercase in Parameter Store) to env vars used by import workflow.
+          declare -A PARAMS=(
+            ["app_role_arn"]="APP_ROLE_ARN"
+            ["ecs_cluster"]="ECS_CLUSTER"
+            ["ecs_web_service"]="ECS_WEB_SERVICE"
+            ["security_group_ids"]="SECURITY_GROUP_IDS"
+            ["subnet_ids"]="SUBNET_IDS"
+            ["database_url"]="DATABASE_URL"
+            ["efs_access_point_id"]="EFS_ACCESS_POINT_ID"
+            ["ecs_import_task"]="ECS_IMPORT_TASK"
+            ["ecs_import_cpu_units"]="ECS_IMPORT_CPU_UNITS"
+            ["ecs_import_memory_units"]="ECS_IMPORT_MEMORY_UNITS"
+          )
+
+          for ssm_name in "${!PARAMS[@]}"; do
+            env_var="${PARAMS[$ssm_name]}"
+            value=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/${ssm_name}" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>/dev/null || true)
+            if [[ -n "$value" && "$value" != "None" ]]; then
+              echo "${env_var}=${value}" >> "$GITHUB_ENV"
+              echo "Retrieved ${ssm_name} -> ${env_var}"
+            fi
+          done
+
+          # Prefer stack-published EFS filesystem parameter; fallback to app-env key.
+          EFS_VALUE=$(aws ssm get-parameter \
+            --name "${PARAMETER_PATH}/efs_filesystem_id" \
+            --with-decryption \
+            --query "Parameter.Value" \
+            --output text 2>/dev/null || true)
+          if [[ -z "$EFS_VALUE" || "$EFS_VALUE" == "None" ]]; then
+            EFS_VALUE=$(aws ssm get-parameter \
+              --name "${PARAMETER_PATH}/efs_id" \
+              --with-decryption \
+              --query "Parameter.Value" \
+              --output text 2>/dev/null || true)
+          fi
+          if [[ -n "$EFS_VALUE" && "$EFS_VALUE" != "None" ]]; then
+            echo "EFS_ID=${EFS_VALUE}" >> "$GITHUB_ENV"
+            echo "Retrieved efs_filesystem_id/efs_id -> EFS_ID"
+          fi
+
       - name: Validate required import parameters
         run: |
-          : "${APP_ROLE_ARN:?Set APP_ROLE_ARN in GitHub environment variables}"
-          : "${ECS_CLUSTER:?Set ECS_CLUSTER in GitHub environment variables}"
-          : "${ECS_WEB_SERVICE:?Set ECS_WEB_SERVICE in GitHub environment variables}"
-          : "${SECURITY_GROUP_IDS:?Set SECURITY_GROUP_IDS in GitHub environment variables}"
-          : "${SUBNET_IDS:?Set SUBNET_IDS in GitHub environment variables}"
-          : "${EFS_ID:?Set EFS_ID in GitHub environment variables}"
-          : "${DATABASE_URL:?Set DATABASE_URL in GitHub environment variables}"
+          : "${APP_ROLE_ARN:?Missing APP_ROLE_ARN from SSM Parameter Store}"
+          : "${ECS_CLUSTER:?Missing ECS_CLUSTER from SSM Parameter Store}"
+          : "${ECS_WEB_SERVICE:?Missing ECS_WEB_SERVICE from SSM Parameter Store}"
+          : "${SECURITY_GROUP_IDS:?Missing SECURITY_GROUP_IDS from SSM Parameter Store}"
+          : "${SUBNET_IDS:?Missing SUBNET_IDS from SSM Parameter Store}"
+          : "${EFS_ID:?Missing EFS_ID from SSM Parameter Store}"
+          : "${DATABASE_URL:?Missing DATABASE_URL from SSM Parameter Store}"
 
       - name: Get infrastructure details
         id: infra
