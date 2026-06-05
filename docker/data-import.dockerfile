@@ -1,10 +1,11 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+FROM debian:bookworm-slim
 
-RUN dnf -y -q update \
-    && (dnf -y -q install awscli2 curl ca-certificates \
-        || dnf -y -q install awscli curl ca-certificates) \
-    && dnf clean all \
-    && rm -rf /var/cache/dnf
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        awscli \
+        curl \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 CMD ["sh", "-c", "set -e\
 DB=/deploy/database/cprosite.db\
