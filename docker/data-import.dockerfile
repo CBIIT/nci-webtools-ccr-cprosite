@@ -1,7 +1,10 @@
 FROM public.ecr.aws/amazonlinux/amazonlinux:2023
 
-RUN dnf -y -q install awscli curl ca-certificates \
-    && dnf clean all
+RUN dnf -y -q update \
+    && (dnf -y -q install awscli2 curl ca-certificates \
+        || dnf -y -q install awscli curl ca-certificates) \
+    && dnf clean all \
+    && rm -rf /var/cache/dnf
 
 CMD ["sh", "-c", "set -e\
 DB=/deploy/database/cprosite.db\
