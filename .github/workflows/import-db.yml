@@ -64,6 +64,10 @@ jobs:
             fi
           done
 
+      - name: Ensure CloudWatch log group exists
+        run: |
+          aws logs create-log-group --log-group-name "/ecs/${APP}-${TIER}-import" 2>/dev/null || true
+
       - name: Reuse web service network config
         run: |
           SUBNETS=$(aws ecs describe-services \
