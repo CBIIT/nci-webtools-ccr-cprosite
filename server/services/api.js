@@ -1,11 +1,11 @@
 const express = require("express");
 const compression = require("compression");
 const sqlite = require("better-sqlite3");
-const config = require("../config");
 const { logRequests, publicCacheControl, withAsync } = require("./middleware");
 const { query } = require("./query");
 
-const database = new sqlite(process.env.DATABASE || config.database);
+const databasePath = process.env.DATABASE || "/deploy/database/cprosite.db";
+const database = new sqlite(databasePath);
 
 const lookup = {
   cancer: database.prepare("select id, name from cancer order by name").all(),
