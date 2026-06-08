@@ -23,12 +23,6 @@ containerDefinitions:
       options:
         enable-ecs-log-metadata: "true"
     memoryReservation: 50
-    logConfiguration:
-      logDriver: awslogs
-      options:
-        awslogs-group: "/analysistools/${TIER}/${APP}/import"
-        awslogs-region: "${AWS_REGION}"
-        awslogs-stream-prefix: logs
 
   - name: importer
     image: "${DATA_IMPORT_IMAGE}"
