@@ -19,8 +19,11 @@ volumes:
 containerDefinitions:
   - name: logs
     image: public.ecr.aws/aws-observability/aws-for-fluent-bit:stable
+    essential: true
     firelensConfiguration:
       type: fluentbit
+      options:
+        enable-ecs-log-metadata: "true"
     memoryReservation: 50
     logConfiguration:
       logDriver: awslogs
