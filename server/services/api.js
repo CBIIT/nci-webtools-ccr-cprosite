@@ -5,7 +5,11 @@ const { logRequests, publicCacheControl, withAsync } = require("./middleware");
 const { query } = require("./query");
 
 const databasePath = process.env.DATABASE || "/deploy/database/cprosite.db";
-const database = new sqlite(databasePath);
+// Fail fast if DATABASE points to a missing/wrong path instead of creating an empty file.
+const database = new sqlite(databasePath, {
+  readonly: true,
+  fileMustExist: true,
+});
 
 const lookup = {
   cancer: database.prepare("select id, name from cancer order by name").all(),
