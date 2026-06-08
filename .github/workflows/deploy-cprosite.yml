@@ -96,11 +96,11 @@ jobs:
             echo "Retrieved ${ssm_name} -> ${env_var}"
           done
 
-      - name: Ensure CloudWatch log groups exist
-        run: |
-          for lg in "/ecs/${APP}-${TIER}" "/ecs/${APP}-${TIER}-import"; do
-            aws logs create-log-group --log-group-name "$lg" 2>/dev/null || true
-          done
+      # - name: Ensure CloudWatch log groups exist
+      #   run: |
+      #     for lg in "/ecs/${APP}-${TIER}" "/ecs/${APP}-${TIER}-import"; do
+      #       aws logs create-log-group --log-group-name "$lg" 2>/dev/null || true
+      #     done
 
       - name: Login to Amazon ECR
         id: login-ecr
