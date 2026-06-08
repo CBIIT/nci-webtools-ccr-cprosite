@@ -64,6 +64,18 @@ jobs:
             fi
           done
 
+          DATABASE_URL=$(aws ssm get-parameter \
+            --name "${PARAMETER_PATH}/database_url" \
+            --with-decryption \
+            --query "Parameter.Value" \
+            --output text 2>/dev/null || echo "")
+
+          if [[ -z "$DATABASE_URL" || "$DATABASE_URL" == "None" ]]; then
+            echo "::error::Missing required SSM parameter: ${PARAMETER_PATH}/database_url"
+            exit 1
+          fi
+          echo "database_url parameter is present"
+
       - name: Ensure CloudWatch log group exists
         run: |
           aws logs create-log-group --log-group-name "/ecs/${APP}-${TIER}-import" 2>/dev/null || true
