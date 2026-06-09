@@ -1,8 +1,10 @@
 const express = require("express");
-const config = require("./config.json");
 const getLogger = require("./services/logger");
 const forkCluster = require("./services/cluster");
 const { logErrors } = require("./services/middleware");
+
+const serverPort = Number(process.env.PORT || process.env.SERVER_PORT || 10000);
+const clientPath = process.env.CLIENT_PATH || "../client/build";
 const production = process.env.NODE_ENV === "production";
 const logger = getLogger("cprosite");
 
@@ -15,10 +17,10 @@ app.use(logErrors);
 app.use("/api", require("./services/api"));
 
 // serve public folder during local development
-if (!production && config.server.client) app.use(express.static(config.server.client));
+if (!production && clientPath) app.use(express.static(clientPath));
 
-app.listen(config.server.port, () => {
-  logger.info(`Application is running on port: ${config.server.port}`);
+app.listen(serverPort, () => {
+  logger.info(`Application is running on port: ${serverPort}`);
 });
 
 module.exports = app;

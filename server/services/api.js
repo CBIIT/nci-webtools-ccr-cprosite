@@ -1,11 +1,15 @@
 const express = require("express");
 const compression = require("compression");
 const sqlite = require("better-sqlite3");
-const config = require("../config");
 const { logRequests, publicCacheControl, withAsync } = require("./middleware");
 const { query } = require("./query");
 
-const database = new sqlite(process.env.DATABASE || config.database);
+const databasePath = process.env.DATABASE || "/deploy/database/cprosite.db";
+// Fail fast if DATABASE points to a missing/wrong path instead of creating an empty file.
+const database = new sqlite(databasePath, {
+  readonly: true,
+  fileMustExist: true,
+});
 
 const lookup = {
   cancer: database.prepare("select id, name from cancer order by name").all(),

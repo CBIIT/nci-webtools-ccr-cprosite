@@ -81,12 +81,10 @@ jobs:
         uses: actions/setup-node@v6.3.0
         with:
           node-version: "20"
-          cache: "npm"
-          cache-dependency-path: infrastructure/package-lock.json
 
       - name: Install dependencies
         working-directory: ${{ env.CDK_DIR }}
-        run: npm ci
+        run: npm install
 
       - name: CDK Diff (Preview Changes)
         working-directory: ${{ env.CDK_DIR }}

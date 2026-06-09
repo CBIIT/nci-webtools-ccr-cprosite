@@ -2,8 +2,12 @@ const path = require("path");
 const util = require("util");
 const fs = require("fs");
 const { createLogger, format, transports, info } = require("winston");
-const logConfig = require("../config.json").logs;
 require("winston-daily-rotate-file");
+
+const logConfig = {
+  folder: process.env.LOG_FOLDER || "logs",
+  level: process.env.LOG_LEVEL || "info",
+};
 
 function getLogger(name, config = logConfig) {
   const { folder, level } = config;
