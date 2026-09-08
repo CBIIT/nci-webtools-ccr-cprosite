@@ -1,5 +1,6 @@
 const express = require("express");
 const compression = require("compression");
+const { rateLimit } = require("express-rate-limit");
 const sqlite = require("better-sqlite3");
 const { logRequests, publicCacheControl, withAsync } = require("./middleware");
 const { query } = require("./query");
@@ -17,6 +18,14 @@ const lookup = {
 };
 
 const router = express.Router();
+router.use(
+  rateLimit({
+    windowMs: 60 * 1000,
+    limit: 300,
+    standardHeaders: true,
+    legacyHeaders: false,
+  }),
+);
 router.use(express.json());
 router.use(compression());
 router.use(logRequests());
