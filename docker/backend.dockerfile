@@ -4,8 +4,8 @@ RUN dnf -y update \
    && dnf -y install \
    gcc-c++ \
    make \
-   nodejs \
-   npm \
+   nodejs22 \
+   nodejs22-npm \
    && dnf clean all
 
 RUN mkdir -p /deploy/server /deploy/logs
