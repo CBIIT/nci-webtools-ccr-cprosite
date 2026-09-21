@@ -4,9 +4,14 @@ RUN dnf -y update \
    && dnf -y install \
    gcc-c++ \
    make \
-   nodejs22 \
-   nodejs22-npm \
+   nodejs24 \
    && dnf clean all
+
+RUN npm install -g npm@latest
+RUN npm update -g
+
+# restrict python3.9 to root user
+RUN chmod 700 /usr/bin/python3.9 
 
 RUN mkdir -p /deploy/server /deploy/logs
 
