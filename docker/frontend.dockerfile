@@ -1,13 +1,14 @@
-FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023 AS build
 
 RUN dnf -y update \
    && dnf -y install \
    gcc-c++ \
-   httpd \
    make \
    nodejs24 \
    nodejs24-npm \
    && dnf clean all
+
+RUN npm install -g npm@latest
 
 RUN mkdir /client
 
@@ -19,8 +20,17 @@ RUN npm install
 
 COPY client /client/
 
-RUN npm run build \
-   && cp -r /client/build/* /var/www/html
+RUN npm run build
+
+# Final image only ships the static build output and httpd, not Node.js/npm or node_modules
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023
+
+RUN dnf -y update \
+   && dnf -y install \
+   httpd \
+   && dnf clean all
+
+COPY --from=build /client/build/ /var/www/html/
 
 WORKDIR /var/www/html
 

@@ -22,6 +22,11 @@ COPY server/package*.json /deploy/server/
 
 RUN npm install
 
+# strip prebuilt contrast-service binaries for platforms that never run in this linux/x64 container,
+# so their bundled Go stdlib CVEs (net/http, crypto/tls, grpc, etc.) aren't scanned/shipped
+RUN find /deploy/server/node_modules/@contrast/agent/bin -type f \
+   ! -name 'contrast-service-linux-x64' ! -name 'VERSION' -delete
+
 # copy the rest of the application
 COPY . /deploy/
 
