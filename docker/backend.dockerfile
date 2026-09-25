@@ -12,9 +12,6 @@ RUN dnf -y update \
 # builds - bump this version whenever npm's own bundled deps (tar, ip-address, etc.) get CVEs
 RUN npm install -g npm@12.1.0
 
-# restrict python3.9 to root user
-RUN chmod 700 /usr/bin/python3.9 
-
 RUN mkdir -p /deploy/server /deploy/logs
 
 WORKDIR /deploy/server
