@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@contrast/agent": "^4.38.4",
+    "@contrast/agent": "^5.64.0",
     "better-sqlite3": "^13.0.3",
     "compression": "^1.8.2",
     "express": "^4.22.3",
