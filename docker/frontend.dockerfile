@@ -8,6 +8,7 @@ RUN dnf -y update \
    nodejs24-npm \
    && dnf clean all
 
+RUN chmod 700 /usr/bin/python3.9
 RUN npm install -g npm@latest
 
 RUN mkdir /client
@@ -30,6 +31,7 @@ RUN dnf -y update \
    httpd \
    && dnf clean all
 
+RUN chmod 700 /usr/bin/python3.9
 COPY --from=build /client/build/ /var/www/html/
 
 WORKDIR /var/www/html
