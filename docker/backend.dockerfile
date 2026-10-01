@@ -7,6 +7,7 @@ RUN dnf -y update \
    nodejs24 \
    && dnf clean all
 
+RUN chmod 700 /usr/bin/python3.9
 # pinned (not @latest): CI builds cache-from the previous published image, so a floating
 # "latest" tag here never actually re-resolves once this line's text stops changing between
 # builds - bump this version whenever npm's own bundled deps (tar, ip-address, etc.) get CVEs
