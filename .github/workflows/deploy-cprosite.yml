@@ -7,7 +7,11 @@ on:
   workflow_dispatch:
     inputs:
       tier:
+<<<<<<< HEAD
         description: "Deploy environment"
+=======
+        description: "Deployment Tier"
+>>>>>>> stage
         required: true
         default: "dev"
         type: choice
