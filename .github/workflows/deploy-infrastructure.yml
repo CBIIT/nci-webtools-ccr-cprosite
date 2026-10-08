@@ -40,13 +40,24 @@ jobs:
           role-session-name: ${{ env.TIER }}-cprosite-infra-${{ github.run_id }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Determine tier group and CICD bucket
+        run: |
+          set -euo pipefail
+          if [[ "${TIER}" == "dev" || "${TIER}" == "qa" ]]; then
+            TIER_GROUP="nonprod"
+          else
+            TIER_GROUP="prod"
+          fi
+          echo "TIER_GROUP=${TIER_GROUP}" >> "$GITHUB_ENV"
+          echo "CICD_BUCKET=nci-cbiit-cicd-analysistools-${TIER_GROUP}" >> "$GITHUB_ENV"
+
       - name: Download env files from S3
         run: |
           aws s3 cp \
-            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-cdk.env" \
+            "s3://${{ env.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-cdk.env" \
             "${{ env.CDK_DIR }}/${{ env.TIER }}-cdk.env"
           aws s3 cp \
-            "s3://${{ vars.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-app.env" \
+            "s3://${{ env.CICD_BUCKET }}/env/${{ env.TIER }}/cprosite/${{ env.TIER }}-app.env" \
             "${{ env.CDK_DIR }}/${{ env.TIER }}-app.env"
 
       - name: Ensure APP_ROLE_ARN in app env
