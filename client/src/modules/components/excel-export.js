@@ -1,5 +1,5 @@
 import { Children } from "react";
-import * as XLSX from "xlsx";
+import * as XLSX from "@e965/xlsx";
 
 export function exportExcelFile(filename, sheets) {
   const workbook = XLSX.utils.book_new();
