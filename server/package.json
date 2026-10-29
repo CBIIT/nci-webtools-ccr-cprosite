@@ -11,12 +11,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@contrast/agent": "^5.64.0",
+    "@contrast/agent": "^5.67.1",
     "better-sqlite3": "^13.0.3",
     "compression": "^1.8.2",
     "express": "^4.22.3",
-    "express-rate-limit": "^8.7.0",
-    "winston": "^3.8.2",
-    "winston-daily-rotate-file": "^4.7.1"
+    "express-rate-limit": "^8.7.1",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
   }
 }
