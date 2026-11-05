@@ -11,33 +11,41 @@ function query(database, params) {
   limit = limit || 100000;
   offset = offset || 0;
 
-  // validate provided table
-  const isValidTable =
-    database
-      .prepare(
-        `SELECT COUNT(*) FROM sqlite_master
+  // validate provided table, and use the canonical name stored in the
+  // database schema (never the user-provided string) in query strings
+  const canonicalTable = database
+    .prepare(
+      `SELECT tbl_name FROM sqlite_master
         WHERE tbl_name = :table`,
-      )
-      .pluck()
-      .get({ table }) > 0;
+    )
+    .pluck()
+    .get({ table });
 
-  if (!table || !isValidTable) throw new Error("Please provide a valid table");
+  if (!table || !canonicalTable)
+    throw new Error("Please provide a valid table");
 
   // retrieve column metadata
   const columnNames = database
-    .prepare(`pragma table_info('${table}')`)
+    .prepare(`pragma table_info('${canonicalTable}')`)
     .all()
     .map((c) => c.name);
 
-  // determine filters (eg: _column:eq=value)
+  const filterTypes = ["like", "between", "in", "eq", "gt", "gte", "lt", "lte"];
+
+  // determine filters (eg: _column:eq=value), using the canonical column and
+  // filter type names (never the user-provided strings) in query strings
   const filters = Object.entries(params)
     .filter(([key]) => key.startsWith("_"))
     .map(([_key, value]) => {
       // {'column:filter_type': value}
       const [key, type] = _key.split(":");
-      return [key.replace(/^_/, ""), value, type || "eq"];
+      return [
+        columnNames.find((name) => name === key.replace(/^_/, "")),
+        value,
+        filterTypes.find((name) => name === type) || "eq",
+      ];
     })
-    .filter(([key]) => columnNames.includes(key));
+    .filter(([key]) => key !== undefined);
 
   // map filters to an object containing {placeholder: value} props
   let queryParams = {};
@@ -59,12 +67,17 @@ function query(database, params) {
     ? columnNames
     : columns
         .split(",")
-        .map((s) => s.trim())
-        .filter((column) => columnNames.includes(column));
+        .map((s) => columnNames.find((name) => name === s.trim()))
+        .filter((column) => column !== undefined);
 
   if (order && !/^(asc|desc)$/i.test(order)) order = "asc";
 
-  if (orderBy && !columnNames.includes(orderBy)) orderBy = columns[0];
+  // ORDER BY direction can not be a bound parameter; use our own literals
+  const orderDirection = /^desc$/i.test(order) ? "DESC" : "ASC";
+
+  orderBy = orderBy
+    ? columnNames.find((name) => name === orderBy) || columns[0]
+    : undefined;
 
   let conditions = ifDefined(
     filters.length,
@@ -106,8 +119,8 @@ function query(database, params) {
 
   const statement = database.prepare(
     `SELECT ${ifDefined(distinct, "DISTINCT")} ${queryColumns}
-        FROM "${table}" ${conditions}
-        ${ifDefined(order && orderBy, `ORDER BY ${orderBy} ${order}`)} 
+        FROM "${canonicalTable}" ${conditions}
+        ${ifDefined(order && orderBy, `ORDER BY "${orderBy}" ${orderDirection}`)}
         ${ifDefined(limit, `LIMIT :limit`)}
         ${ifDefined(offset, `OFFSET :offset`)}`,
   );
@@ -128,8 +141,8 @@ function query(database, params) {
     result.count = database
       .prepare(
         `SELECT COUNT(*) FROM (
-                SELECT ${ifDefined(distinct, "DISTINCT")} ${queryColumns} 
-                FROM "${table}" ${conditions}
+                SELECT ${ifDefined(distinct, "DISTINCT")} ${queryColumns}
+                FROM "${canonicalTable}" ${conditions}
             )`,
       )
       .pluck()

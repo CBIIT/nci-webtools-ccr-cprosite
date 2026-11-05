@@ -64,6 +64,18 @@ jobs:
             fi
           done
 
+          DATABASE_URL=$(aws ssm get-parameter \
+            --name "${PARAMETER_PATH}/database_url" \
+            --with-decryption \
+            --query "Parameter.Value" \
+            --output text 2>/dev/null || echo "")
+
+          if [[ -z "$DATABASE_URL" || "$DATABASE_URL" == "None" ]]; then
+            echo "::error::Missing required SSM parameter: ${PARAMETER_PATH}/database_url"
+            exit 1
+          fi
+          echo "database_url parameter is present"
+
       - name: Reuse web service network config
         run: |
           SUBNETS=$(aws ecs describe-services \
@@ -104,4 +116,40 @@ jobs:
 
           echo "task_arn=$TASK_ARN" >> $GITHUB_OUTPUT
           echo "Import task started: $TASK_ARN"
+
+      - name: Wait for import task completion
+        run: |
+          TASK_ARN="${{ steps.run-task.outputs.task_arn }}"
+          : "${TASK_ARN:?Missing task ARN from previous step}"
+
+          echo "Waiting for task to stop: ${TASK_ARN}"
+          aws ecs wait tasks-stopped \
+            --cluster "${ECS_CLUSTER}" \
+            --tasks "${TASK_ARN}"
+
+          TASK_JSON=$(aws ecs describe-tasks \
+            --cluster "${ECS_CLUSTER}" \
+            --tasks "${TASK_ARN}" \
+            --output json)
+
+          LAST_STATUS=$(echo "$TASK_JSON" | jq -r '.tasks[0].lastStatus // empty')
+          STOPPED_REASON=$(echo "$TASK_JSON" | jq -r '.tasks[0].stoppedReason // empty')
+          STOP_CODE=$(echo "$TASK_JSON" | jq -r '.tasks[0].stopCode // empty')
+          EXIT_CODE=$(echo "$TASK_JSON" | jq -r '.tasks[0].containers[0].exitCode // -1')
+          CONTAINER_REASON=$(echo "$TASK_JSON" | jq -r '.tasks[0].containers[0].reason // empty')
+
+          echo "Task status: ${LAST_STATUS}"
+          echo "Task stopCode: ${STOP_CODE}"
+          echo "Task stoppedReason: ${STOPPED_REASON}"
+          echo "Container exitCode: ${EXIT_CODE}"
+          if [[ -n "$CONTAINER_REASON" ]]; then
+            echo "Container reason: ${CONTAINER_REASON}"
+          fi
+
+          if [[ "${LAST_STATUS}" != "STOPPED" || "${EXIT_CODE}" != "0" ]]; then
+            echo "::error::Import task failed. stoppedReason='${STOPPED_REASON}', containerReason='${CONTAINER_REASON}', exitCode='${EXIT_CODE}'"
+            exit 1
+          fi
+
+          echo "Import task completed successfully"
 

@@ -162,12 +162,17 @@ export class cprositeStack extends cdk.Stack {
       vpc,
       securityGroups,
     });
+    // Imported shared roles are managed outside this stack; keep them immutable
+    // to avoid cross-stack inline policy ownership conflicts.
     const executionRole = iam.Role.fromRoleArn(
       this,
       "ExecutionRole",
-      appRoleArn
+      appRoleArn,
+      { mutable: false }
     );
-    const taskRole = iam.Role.fromRoleArn(this, "TaskRole", appRoleArn);
+    const taskRole = iam.Role.fromRoleArn(this, "TaskRole", appRoleArn, {
+      mutable: false,
+    });
 
     const listener =
       elbv2.ApplicationListener.fromApplicationListenerAttributes(
